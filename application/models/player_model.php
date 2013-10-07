@@ -63,7 +63,7 @@ class Player_model extends MY_Model
         if($fields)
             $this->site_db()->select($fields);
         $this->site_db()->where_in('cl_player_id', $list_id);
-        $this->site_db()->where_in('site_id', $site_id);
+        $this->site_db()->where('site_id', $site_id);
         return db_get_result_array($this, 'playbasis_player');
     }
 	public function readPlayers($site_id, $fields, $offset = 0, $limit = 10)
