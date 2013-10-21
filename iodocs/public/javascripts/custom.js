@@ -30,7 +30,7 @@ $(document).ready(function(){
 
     $('#detail_nav').on('click',function(){
         $('.nav_menu').removeClass('active');
-        $('#api_nav').addClass('active');
+        $('#detail_nav').addClass('active');
         $('.detail_enclosure').show('fast');
         $('.apidoc_enclosure').hide('fast');
     })
@@ -38,7 +38,7 @@ $(document).ready(function(){
 
     $('#api_nav').on('click',function(){
         $('.nav_menu').removeClass('active');
-        $('#detail_nav').addClass('active');
+        $('#api_nav').addClass('active');
         $('.detail_enclosure').hide('fast');
         $('.apidoc_enclosure').show('fast');
     })
