@@ -55,16 +55,25 @@ h3{/*margin-left: 12px;font-size: 1.1em;font-weight: lighter;text-decoration: un
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000',endColorstr='#222222',GradientType=0);
 
     float:left;
+    text-decoration:none;
 }
 
 .nav_menu .nav_label {
     padding: 0 16px 0 0;
     color: #eee;
-    font-size: 15px;
-    font-weight: bold;
 
     font-size: 15px;
     font-weight: bold;
     line-height: 17px;
     padding: 12px 12px 11px;
+}
+
+.nav_separator {
+    display: block;
+    float: left;
+    border-left: solid 1px #222;
+    border-right: solid 1px #000;
+    height: 20px;
+    width: 0;
+    margin: 10px 0;
 }
