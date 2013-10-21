@@ -3,10 +3,10 @@ $(document).ready(function(){
 	console.log('load custom.js')
 	 
 
-	$('.topbar_area img').on('click',function(){
+	/*$('.topbar_area img').on('click',function(){
 		// console.log('go to playbasis_website')
 		window.location = 'http://www.playbasis.com';
-	})
+	})*/
 
 		
 		$('.detail_enclosure').show('fast');
