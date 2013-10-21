@@ -15,7 +15,7 @@ $(document).ready(function(){
 
 	$('#detail').on('click',function(){
         $('.nav_menu').removeClass('active');
-        $('#detail_nav').addClass('active');
+        $('#api_nav').addClass('active');
 		$('.detail_enclosure').hide('fast');  
 		$('.apidoc_enclosure').show('fast');
 	})
@@ -23,24 +23,24 @@ $(document).ready(function(){
 
 	$('#api').on('click',function(){
         $('.nav_menu').removeClass('active');
-        $('#api_nav').addClass('active');
+        $('#detail_nav').addClass('active');
 		$('.detail_enclosure').show('fast');
 		$('.apidoc_enclosure').hide('fast');
 	})
 
     $('#detail_nav').on('click',function(){
         $('.nav_menu').removeClass('active');
-        $('#detail_nav').addClass('active');
-        $('.detail_enclosure').hide('fast');
-        $('.apidoc_enclosure').show('fast');
+        $('#api_nav').addClass('active');
+        $('.detail_enclosure').show('fast');
+        $('.apidoc_enclosure').hide('fast');
     })
 
 
     $('#api_nav').on('click',function(){
         $('.nav_menu').removeClass('active');
-        $('#api_nav').addClass('active');
-        $('.detail_enclosure').show('fast');
-        $('.apidoc_enclosure').hide('fast');
+        $('#detail_nav').addClass('active');
+        $('.detail_enclosure').hide('fast');
+        $('.apidoc_enclosure').show('fast');
     })
 
 
