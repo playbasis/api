@@ -69,6 +69,10 @@ h3{/*margin-left: 12px;font-size: 1.1em;font-weight: lighter;text-decoration: un
     padding: 12px 12px 11px;
 }
 
+.nav_menu .nav_label.active {
+    color: #999;
+}
+
 .nav_separator {
     display: block;
     float: left;
