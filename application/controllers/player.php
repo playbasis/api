@@ -702,6 +702,58 @@ class Player extends REST_Controller
         $level= $this->level_model->getLevelsDetail($validToken['client_id'], $validToken['site_id']);
         $this->response($this->resp->setRespond($level), 200);
     }
+    public function point_history_get($player_id = '')
+    {
+        $offset = 0;
+        if($this->input->get('offset'))
+            $offset = $this->input->get('offset');
+
+        $limit = 20;
+        if($this->input->get('limit'))
+            $limit = $this->input->get('limit');
+
+        $reward = 'point';
+        if($this->input->get('point_name'))
+            $reward = $this->input->get('point_name');
+
+        $required = $this->input->checkParam(array(
+            'api_key'
+        ));
+        if($required)
+            $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
+        $required = array();
+        if(!$player_id)
+            array_push($required, 'player_id');
+        if($required)
+            $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
+        $validToken = $this->auth_model->createTokenFromAPIKey($this->input->get('api_key'));
+        if(!$validToken)
+            $this->response($this->error->setError('INVALID_API_KEY_OR_SECRET'), 200);
+        $site_id = $validToken['site_id'];
+        //get playbasis player id
+        $pb_player_id = $this->player_model->getPlaybasisId(array_merge($validToken, array(
+            'cl_player_id' => $player_id
+        )));
+        if(!$pb_player_id)
+            $this->response($this->error->setError('USER_NOT_EXIST'), 200);
+
+        $input = array_merge($validToken, array(
+            'reward_name' => $reward
+        ));
+        $reward_id = $this->point_model->findPoint($input);
+        if(!$reward_id)
+            $this->response($this->error->setError('REWARD_NOT_FOUND'), 200);
+
+        $points['points'] = $this->player_model->getPlayerPointsLog($pb_player_id, $site_id, $reward, $offset, $limit);
+        foreach($points['points'] as &$point)
+        {
+            $action_log = $this->player_model->getActionLog($point['action_log_id'], $site_id);
+            $point['action_name'] = $action_log['action_name'];
+            $point['string_filter'] = $action_log['url'];
+            unset($point['action_log_id']);
+        }
+        $this->response($this->resp->setRespond($points), 200);
+    }
 	////////////////
 	// DEPRECATED //
 	////////////////

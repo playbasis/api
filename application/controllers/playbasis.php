@@ -104,7 +104,7 @@ class Playbasis extends CI_Controller
 
         echo "getJigsawProcessor model return : ".$processor."<br><br>";
 
-		$badgePlayer = $this->client_model->updateplayerBadge(1, 1, 1, 1);
+		/*$badgePlayer = $this->client_model->updateplayerBadge(1, 1, 1, 1);
 
         echo "updateplayerBadge model return : ".$badgePlayer."<br><br>";
 
@@ -113,7 +113,7 @@ class Playbasis extends CI_Controller
             'site_id' => $validToken['site_id']
         ));
 
-        echo "updateExpAndLevel model return : ".$lv."<br><br>";
+        echo "updateExpAndLevel model return : ".$lv."<br><br>";*/
 
 		$badge = $this->client_model->getBadgeById(1,1);
 
@@ -207,6 +207,9 @@ class Playbasis extends CI_Controller
 
         echo "findPoint model return : ".$haspoint."<br><br>";
 
+        $pointslog = $this->player_model->getPlayerPointsLog(1,1);
+
+        echo "getPlayerPointsLog model return : ".var_dump($pointslog)."<br><br>";
     }
 }
 ?>

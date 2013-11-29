@@ -140,6 +140,22 @@ class Player_model extends MY_Model
 		));
 		return db_get_result_array($this, 'playbasis_reward_to_player');
 	}
+    public function getPlayerPointsLog($pb_player_id, $site_id, $reward, $offset=0, $limit=20)
+    {
+        $this->set_site($site_id);
+        $this->site_db()->select('reward_id,reward_name,value,message,action_log_id,date_added');
+        $this->site_db()->where('pb_player_id', $pb_player_id);
+        $this->site_db()->where('reward_name', $reward);
+        $this->site_db()->limit($limit, $offset);
+        return db_get_result_array($this, 'playbasis_event_log');
+    }
+    public function getActionLog($action_log_id, $site_id)
+    {
+        $this->set_site($site_id);
+        $this->site_db()->select('action_id,action_name,url');
+        $this->site_db()->where('action_log_id', $action_log_id);
+        return db_get_row_array($this, 'playbasis_action_log');
+    }
 	public function getLastActionPerform($pb_player_id, $site_id)
 	{
 		$this->set_site($site_id);
