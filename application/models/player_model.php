@@ -206,6 +206,7 @@ class Player_model extends MY_Model
 				unset($badges[$key]);
 				continue;
 			}
+            $badgeDetails['amount'] = $badge['amount'];
 			$badge = $badgeDetails;
         }
 		unset($badge);
