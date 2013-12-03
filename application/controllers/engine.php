@@ -259,12 +259,14 @@ class Engine extends REST_Controller
 	}
 	private function processRule($input, $validToken, $fbData, $twData)
 	{
+        $client_id = $validToken['client_id'];
+        $site_id = $validToken['site_id'];
+        $domain_name = $validToken['domain_name'];
+
 		if(!isset($input['player_id']) || !$input['player_id'])
 			$input['player_id'] = $this->player_model->getClientPlayerId($input['pb_player_id'], $site_id);
 		$input['action_log_id'] = $this->tracker_model->trackAction($input); //track action
-		$client_id = $validToken['client_id'];
-		$site_id = $validToken['site_id'];
-		$domain_name = $validToken['domain_name'];
+
 		if(!isset($input['site_id']) || !$input['site_id'])
 			$input['site_id'] = $site_id;
 		$ruleSet = $this->client_model->getRuleSetByActionId(array(
