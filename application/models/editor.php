@@ -147,7 +147,7 @@ class Editor extends CI_Model{
 
         // clear memcached on this table
         $table = "playbasis_rule";
-        $this->memcached_library->update_delete($table);
+        $this->memcached_library->update_delete($table.$data['site_id']);
 
 		//get last rule was added
 		return $this->getRule($this->db->insert_id());

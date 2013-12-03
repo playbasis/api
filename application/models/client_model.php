@@ -118,9 +118,9 @@ class Client_model extends MY_Model
 			));
 			$this->site_db()->set('limit', "`limit`-$quantity", FALSE);
 			$this->site_db()->update('playbasis_reward_to_client');
-			$this->memcached_library->update_delete('playbasis_reward_to_client');
+			$this->memcached_library->update_delete('playbasis_reward_to_client'.$siteId);
 		}
-		$this->memcached_library->update_delete('playbasis_reward_to_player');
+		$this->memcached_library->update_delete('playbasis_reward_to_player'.$siteId);
 	}
 	public function updateCustomReward($rewardName, $quantity, $input, &$jigsawConfig)
 	{
@@ -158,7 +158,7 @@ class Client_model extends MY_Model
 				'date_added' => date('Y-m-d H:i:s'),
 				'date_modified' => date('Y-m-d H:i:s')
 			));
-			$this->memcached_library->update_delete('playbasis_reward_to_client');
+			$this->memcached_library->update_delete('playbasis_reward_to_client'.$input['site_id']);
 		}
 		$level = 0;
 		if($rewardName == 'exp')
@@ -206,7 +206,7 @@ class Client_model extends MY_Model
 			$this->site_db()->set('date_modified', date('Y-m-d H:i:s'));
 			$this->site_db()->where('badge_id', $badgeId);
 			$this->site_db()->update('playbasis_badge');
-			$this->memcached_library->update_delete('playbasis_badge');
+			$this->memcached_library->update_delete('playbasis_badge'.$site_id);
 		}
 		//update player badge table
 		$this->site_db()->where(array(
@@ -235,7 +235,7 @@ class Client_model extends MY_Model
 				'date_modified' => date('Y-m-d H:i:s')
 			));
 		}
-		$this->memcached_library->update_delete('playbasis_badge_to_player');
+		$this->memcached_library->update_delete('playbasis_badge_to_player'.$site_id);
 	}
 	public function updateExpAndLevel($exp, $pb_player_id, $cl_player_id, $clientData)
 	{
@@ -275,7 +275,7 @@ class Client_model extends MY_Model
 		if($level > 0)
 			$this->site_db()->set('level', $level);
 		$this->site_db()->update('playbasis_player');
-		$this->memcached_library->update_delete('playbasis_player');
+		$this->memcached_library->update_delete('playbasis_player'.$clientData['site_id']);
 		//get reward id to update the reward to player table
 		$this->site_db()->select('reward_id');
 		$this->site_db()->where('name', 'exp');

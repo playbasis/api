@@ -21,7 +21,7 @@ class Tracker_model extends MY_Model
 			'date_added' => date('Y-m-d H:i:s'),
 			'date_modified' => date('Y-m-d H:i:s')
 		));
-		$this->memcached_library->update_delete('playbasis_action_log');
+		$this->memcached_library->update_delete('playbasis_action_log'.$input['site_id']);
 		return $this->site_db()->insert_id();
 	}
 	public function trackEvent($type, $message, $input)
@@ -44,7 +44,7 @@ class Tracker_model extends MY_Model
 		$this->site_db()->set('date_added', date('Y-m-d H:i:s'));
 		$this->site_db()->set('date_modified', date('Y-m-d H:i:s'));
 		$this->site_db()->insert('playbasis_event_log');
-		$this->memcached_library->update_delete('playbasis_event_log');
+		$this->memcached_library->update_delete('playbasis_event_log'.$input['site_id']);
 	}
 }
 ?>

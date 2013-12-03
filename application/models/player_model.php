@@ -42,7 +42,7 @@ class Player_model extends MY_Model
 			$inputData['birth_date'] = $data['birth_date'];
 		$this->set_site($data['site_id']);
 		$this->site_db()->insert('playbasis_player', $inputData);
-		$this->memcached_library->update_delete('playbasis_player');
+		$this->memcached_library->update_delete('playbasis_player'.$data['site_id']);
 		return $this->site_db()->insert_id();
 	}
 	public function readPlayer($id, $site_id, $fields)
@@ -82,7 +82,7 @@ class Player_model extends MY_Model
 		$this->set_site($site_id);
 		$this->site_db()->where('pb_player_id', $id);
 		$this->site_db()->update('playbasis_player', $fieldData);
-		$this->memcached_library->update_delete('playbasis_player');
+		$this->memcached_library->update_delete('playbasis_player'.$site_id);
 		return true;
 	}
 	public function deletePlayer($id, $site_id)
@@ -92,7 +92,7 @@ class Player_model extends MY_Model
 		$this->set_site($site_id);
 		$this->site_db()->where('pb_player_id', $id);
 		$this->site_db()->delete('playbasis_player');
-		$this->memcached_library->update_delete('playbasis_player');
+		$this->memcached_library->update_delete('playbasis_player'.$site_id);
 		return true;
 	}
 	public function getPlaybasisId($clientData)
@@ -393,7 +393,7 @@ class Player_model extends MY_Model
         $this->site_db()->where('client_id', $client_id);
         $this->site_db()->where('site_id', $site_id);
         $this->site_db()->update('playbasis_client_site', $fieldData);
-        $this->memcached_library->update_delete('playbasis_client_site');
+        $this->memcached_library->update_delete('playbasis_client_site'.$site_id);
         return true;
     }
 }
