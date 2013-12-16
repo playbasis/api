@@ -134,10 +134,8 @@ class Player_model extends MY_Model
 	{
 		$this->set_site($site_id);
 		$this->site_db()->select('reward_id,value');
-		$this->site_db()->where(array(
-			'pb_player_id' => $pb_player_id,
-			'reward_id' => $reward_id
-		));
+		$this->site_db()->where('pb_player_id', $pb_player_id);
+        $this->site_db()->where('reward_id', $reward_id);
 		return db_get_result_array($this, 'playbasis_reward_to_player');
 	}
     public function getPlayerPointsLog($pb_player_id, $site_id, $reward, $offset=0, $limit=20)
@@ -168,10 +166,8 @@ class Player_model extends MY_Model
 	{
 		$this->set_site($site_id);
         $this->site_db()->select('action_id,action_name,date_added AS time');
-        $this->site_db()->where(array(
-            'pb_player_id' => $pb_player_id,
-            'action_id' => $action_id
-        ));
+        $this->site_db()->where('pb_player_id', $pb_player_id);
+        $this->site_db()->where('action_id', $action_id);
         $this->site_db()->order_by('date_added', 'DESC');
 		return db_get_row_array($this, 'playbasis_action_log');
 	}
