@@ -41,7 +41,7 @@ class Level_model extends MY_Model
 
         $i = 0;
         foreach($levela as $l){
-            $l['max_exp'] = (isset($levela[$i+1]))?intval($levela[$i+1]['min_exp'])-1:null;
+            $l['max_exp'] = (string)(isset($levela[$i+1]))?intval($levela[$i+1]['min_exp'])-1:null;
             $leveldata = $l;
             break;
         }
@@ -72,7 +72,7 @@ class Level_model extends MY_Model
 
         $i = 0;
         foreach($leveldata as &$l){
-            $l['max_exp'] = (isset($leveldata[$i+1]))?intval($leveldata[$i+1]['min_exp'])-1:null;
+            $l['max_exp'] = (string)(isset($leveldata[$i+1]))?intval($leveldata[$i+1]['min_exp'])-1:null;
             $i++;
         }
 
