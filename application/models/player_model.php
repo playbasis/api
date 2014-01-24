@@ -143,7 +143,9 @@ class Player_model extends MY_Model
         $this->set_site($site_id);
         $this->site_db()->select('reward_id,reward_name,value,message,action_log_id,date_added');
         $this->site_db()->where('pb_player_id', $pb_player_id);
-        $this->site_db()->where('reward_name', $reward);
+        if($reward){
+            $this->site_db()->where('reward_name', $reward);
+        }
         $this->site_db()->limit($limit, $offset);
         $this->site_db()->order_by('date_added', 'DESC');
         return db_get_result_array($this, 'playbasis_event_log');

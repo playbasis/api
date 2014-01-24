@@ -712,7 +712,7 @@ class Player extends REST_Controller
         if($this->input->get('limit'))
             $limit = $this->input->get('limit');
 
-        $reward = 'point';
+        $reward = null;
         if($this->input->get('point_name'))
             $reward = $this->input->get('point_name');
 
@@ -737,10 +737,10 @@ class Player extends REST_Controller
         if(!$pb_player_id)
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
 
-        $input = array_merge($validToken, array(
-            'reward_name' => $reward
-        ));
-        $reward_id = $this->point_model->findPoint($input);
+        $reward_id = true;
+        if($reward){
+            $reward_id = $this->point_model->findPoint($reward);
+        }
         if(!$reward_id)
             $this->response($this->error->setError('REWARD_NOT_FOUND'), 200);
 
