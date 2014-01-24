@@ -22,18 +22,20 @@ class Badge_model extends MY_Model
 		if(!$badgeSet)
 			return array();
 		//get data on badges
+        $badgeDetails = array();
 		foreach($badgeSet as $key => &$badge)
 		{
-			$badgeDetails = $this->getBadgeDetailsById($badge['badge_id']);
-			if(!$badgeDetails)
+			$badgeDetails[] = $this->getBadgeDetailsById($badge['badge_id']);
+			/*if(!$badgeDetails)
 			{
 				unset($badgeSet[$key]);
 				continue;
 			}
-			$badge = $badgeDetails;
+			$badge = $badgeDetails;*/
 		}
-		unset($badge);
-		return $badgeSet;
+		/*unset($badge);
+		return $badgeSet;*/
+        return $badgeDetails;
 	}
 	public function getBadge($data)
 	{
