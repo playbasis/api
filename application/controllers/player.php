@@ -736,10 +736,13 @@ class Player extends REST_Controller
         )));
         if(!$pb_player_id)
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
-
         $reward_id = true;
         if($reward){
-            $reward_id = $this->point_model->findPoint($reward);
+            $data_reward = array();
+            $data_reward['site_id'] = $site_id;
+            $data_reward['client_id'] = $validToken['client_id'];
+            $data_reward['reward_name'] = $reward;
+            $reward_id = $this->point_model->findPoint($data_reward);
         }
         if(!$reward_id)
             $this->response($this->error->setError('REWARD_NOT_FOUND'), 200);
