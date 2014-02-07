@@ -47,9 +47,6 @@ div.readable_area_wrapper
                        span Authenticated with OAuth
                        img(src='/images/accept.png')
                    - else
-                       h2 API Credentials
-                         img(src='/images/key.png')
-
                        - if (apiInfo.oauth)
                            input(type='hidden', name='oauth', value='authrequired')
 
