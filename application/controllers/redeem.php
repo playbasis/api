@@ -80,7 +80,7 @@ class Redeem extends REST_Controller
         if(!$this->checkGoodsAmount($goods, $amount)){
             $event = array(
                 'event_type' => 'GOODS_NOT_ENOUGH',
-                'message' => 'goods not enough for redeem'
+                'message' => 'Goods not enough to redeem'
             );
             array_push($redeemResult['events'], $event);
         }
@@ -92,14 +92,16 @@ class Redeem extends REST_Controller
             $this->load->model('point_model');
             $reward_id = $this->point_model->findPoint($input);
             $player_point = $this->player_model->getPlayerPoint($pb_player_id, $reward_id, $validToken['site_id']);
-            if((int)$player_point[0]['value'] < (int)$goods['redeem']['point']["point_value"]){
+            
+            if(isset($player_point[0]['value']) && (int)$player_point[0]['value'] < (int)$goods['redeem']['point']["point_value"]){
                 $event = array(
                     'event_type' => 'POINT_NOT_ENOUGH',
                     'message' => 'user point not enough',
                     'incomplete' => (int)$goods['redeem']['point']["point_value"] - (int)$player_point[0]['value']
                 );
                 array_push($redeemResult['events'], $event);
-            }
+            }    
+            
         }
 
         if(isset($goods['redeem']['badge'])){
