@@ -613,6 +613,66 @@
                     ]
                 },
 				{
+					"MethodName": "Claim Badge",
+					"Synopsis": "Claim a badge that a player has earned.",
+					"HTTPMethod": "POST",
+					"URI": "/Player/:id/badge/:badge_id/claim",
+					"RequiresOAuth": "N",
+					"parameters": [
+						{
+							"Name": "token",
+							"Required": "Y",
+							"Default": "",
+							"Type": "string",
+							"Description": "access token returned from Auth"
+						},
+						{
+							"Name": "id",
+							"Required": "Y",
+							"Default": "",
+							"Type": "string",
+							"Description": "player id as used in client's website"
+						},
+						{
+							"Name": "badge_id",
+							"Required": "Y",
+							"Default": "",
+							"Type": "string",
+							"Description": "id for the badge to change the state."
+						}
+					]
+				},
+				{
+					"MethodName": "Redeem Badge",
+					"Synopsis": "Redeem a badge that a player has claimed.",
+					"HTTPMethod": "POST",
+					"URI": "/Player/:id/badge/:badge_id/redeem",
+					"RequiresOAuth": "N",
+					"parameters": [
+						{
+							"Name": "token",
+							"Required": "Y",
+							"Default": "",
+							"Type": "string",
+							"Description": "access token returned from Auth"
+						},
+						{
+							"Name": "id",
+							"Required": "Y",
+							"Default": "",
+							"Type": "string",
+							"Description": "player id as used in client's website"
+						},
+						{
+							"Name": "badge_id",
+							"Required": "Y",
+							"Default": "",
+							"Type": "string",
+							"Description": "id for the badge to change the state."
+						}
+					]
+				},
+				{
 					"MethodName": "Rank",
 					"Synopsis": "Returns list of players sorted by the specified point type.",
 					"HTTPMethod": "GET",
@@ -632,181 +692,6 @@
 							"Default": "20",
 							"Type": "integer",
 							"Description": "number of results to return"
-						}
-					]
-				},
-				{
-					"MethodName": "Ranks",
-					"Synopsis": "Returns list of players sorted by each point type.",
-					"HTTPMethod": "GET",
-					"URI": "/Player/ranks/:limit",
-					"RequiresOAuth": "N",
-					"parameters": [
-						{
-							"Name": "limit",
-							"Required": "N",
-							"Default": "20",
-							"Type": "integer",
-							"Description": "number of results to return for each point type"
-						}
-					]
-				},
-				{
-					"MethodName": "DEPRECATED - Points",
-					"Synopsis": "Returns information about all point-based rewards that a player currently have.",
-					"HTTPMethod": "POST",
-					"URI": "/Player/:id/points",
-					"RequiresOAuth": "N",
-					"parameters": [
-						{
-							"Name": "token",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "access token returned from Auth"
-						},
-						{
-							"Name": "id",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "player id as used in client's website"
-						}
-					]
-				},
-				{
-					"MethodName": "DEPRECATED - Point",
-					"Synopsis": "Returns how much of specified the point-based reward a player currently have.",
-					"HTTPMethod": "POST",
-					"URI": "/Player/:id/point/:point_name",
-					"RequiresOAuth": "N",
-					"parameters": [
-						{
-							"Name": "token",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "access token returned from Auth"
-						},
-						{
-							"Name": "id",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "player id as used in client's website"
-						},
-						{
-							"Name": "point_name",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "name of the point-based reward to query"
-						}
-					]
-				},
-				{
-					"MethodName": "DEPRECATED - Action Time",
-					"Synopsis": "Returns the last time that player performed the specified action.",
-					"HTTPMethod": "POST",
-					"URI": "/Player/:id/action/:action_name/time",
-					"RequiresOAuth": "N",
-					"parameters": [
-						{
-							"Name": "token",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "access token returned from Auth"
-						},
-						{
-							"Name": "id",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "player id as used in client's website"
-						},
-						{
-							"Name": "action_name",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "name of the action to query"
-						}
-					]
-				},
-				{
-					"MethodName": "DEPRECATED - Last Action",
-					"Synopsis": "Returns the time and action that a player last performed.",
-					"HTTPMethod": "POST",
-					"URI": "/Player/:id/action/time",
-					"RequiresOAuth": "N",
-					"parameters": [
-						{
-							"Name": "token",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "access token returned from Auth"
-						},
-						{
-							"Name": "id",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "player id as used in client's website"
-						}
-					]
-				},
-				{
-					"MethodName": "DEPRECATED - Action Count",
-					"Synopsis": "Returns the number of times that a player has performed the specified action.",
-					"HTTPMethod": "POST",
-					"URI": "/Player/:id/action/:action_name/count",
-					"RequiresOAuth": "N",
-					"parameters": [
-						{
-							"Name": "token",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "access token returned from Auth"
-						},
-						{
-							"Name": "id",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "player id as used in client's website"
-						},
-						{
-							"Name": "action_name",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "name of the action to query"
-						}
-					]
-				},
-				{
-					"MethodName": "DEPRECATED - Badge",
-					"Synopsis": "Returns information about all the badges that a player has earned.",
-					"HTTPMethod": "POST",
-					"URI": "/Player/:id/badge",
-					"RequiresOAuth": "N",
-					"parameters": [
-						{
-							"Name": "token",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "access token returned from Auth"
-						},
-						{
-							"Name": "id",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "player id as used in client's website"
 						}
 					]
 				},
@@ -850,32 +735,18 @@
                     ]
                 },
 				{
-					"MethodName": "DEPRECATED - Rank",
-					"Synopsis": "Returns list of players sorted by the specified point type.",
-					"HTTPMethod": "POST",
-					"URI": "/Player/rank/:rank_by/:limit",
+					"MethodName": "Ranks",
+					"Synopsis": "Returns list of players sorted by each point type.",
+					"HTTPMethod": "GET",
+					"URI": "/Player/ranks/:limit",
 					"RequiresOAuth": "N",
 					"parameters": [
-						{
-							"Name": "token",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "access token returned from Auth"
-						},
-						{
-							"Name": "rank_by",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "name of point-based reward to rank players by"
-						},
 						{
 							"Name": "limit",
 							"Required": "N",
 							"Default": "20",
 							"Type": "integer",
-							"Description": "number of results to return"
+							"Description": "number of results to return for each point type"
 						}
 					]
 				},
@@ -930,190 +801,101 @@
 							"Description": "badge id to query"
 						}
 					]
-				},
-				{
-					"MethodName": "Badge Collections Info",
-					"Synopsis": "Returns information about all available badge collections for the current site.",
-					"HTTPMethod": "GET",
-					"URI": "/Badge/collections",
-					"RequiresOAuth": "N",
-					"parameters": []
-				},
-				{
-					"MethodName": "Badge Collection Info",
-					"Synopsis": "Returns information about the badge collection with the specified id.",
-					"HTTPMethod": "GET",
-					"URI": "/Badge/collection/:id",
-					"RequiresOAuth": "N",
-					"parameters": [
-						{
-							"Name": "id",
-							"Required": "Y",
-							"Default": "",
-							"Type": "integer",
-							"Description": "badge collection id to query"
-						}
-					]
-				},
-				{
-					"MethodName": "DEPRECATED - Badges Info",
-					"Synopsis": "Returns information about all available badges for the current site.",
-					"HTTPMethod": "POST",
-					"URI": "/Badges",
-					"RequiresOAuth": "N",
-					"parameters": [
-						{
-							"Name": "token",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "access token returned from Auth"
-						}
-					]
-				},
-				{
-					"MethodName": "DEPRECATED - Badge Info",
-					"Synopsis": "Returns information about the badge with the specified id.",
-					"HTTPMethod": "POST",
-					"URI": "/Badge/:id",
-					"RequiresOAuth": "N",
-					"parameters": [
-						{
-							"Name": "token",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "access token returned from Auth"
-						},
-						{
-							"Name": "id",
-							"Required": "Y",
-							"Default": "",
-							"Type": "integer",
-							"Description": "badge id to query"
-						}
-					]
-				},
-				{
-					"MethodName": "DEPRECATED - Badge Collections Info",
-					"Synopsis": "Returns information about all available badge collections for the current site.",
-					"HTTPMethod": "POST",
-					"URI": "/Badge/collections",
-					"RequiresOAuth": "N",
-					"parameters": [
-						{
-							"Name": "token",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "access token returned from Auth"
-						}
-					]
-				},
-				{
-					"MethodName": "DEPRECATED - Badge Collection Info",
-					"Synopsis": "Returns information about the badge collection with the specified id.",
-					"HTTPMethod": "POST",
-					"URI": "/Badge/collection/:id",
-					"RequiresOAuth": "N",
-					"parameters": [
-						{
-							"Name": "token",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "access token returned from Auth"
-						},
-						{
-							"Name": "id",
-							"Required": "Y",
-							"Default": "",
-							"Type": "integer",
-							"Description": "badge collection id to query"
-						}
-					]
 				}
 			]
 		},
-		{
-			"name": "Engine API",
-			"methods": [
-				{
-					"MethodName": "Action Config",
-					"Synopsis": "Returns names of actions that can trigger game rules within a client’s website.",
-					"HTTPMethod": "GET",
-					"URI": "/Engine/actionConfig",
-					"RequiresOAuth": "N",
-					"parameters": []
-				},
-				{
-					"MethodName": "Rule",
-					"Synopsis": "Process an action through all the game rules defined for a client’s website.",
-					"HTTPMethod": "POST",
-					"URI": "/Engine/rule",
-					"RequiresOAuth": "N",
-					"parameters": [
-						{
-							"Name": "token",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "access token returned from Auth"
-						},
-						{
-							"Name": "action",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "name of action performed"
-						},
-						{
-							"Name": "player_id",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "player id as used in client's website"
-						},
-						{
-							"Name": "url",
-							"Required": "N",
-							"Default": "",
-							"Type": "string",
-							"Description": "URL of the page that trigger the action or any identifier string - Used for logging, URL specific rules, and rules that trigger only when a specific identifier string is supplied"
-						},
-						{
-							"Name": "reward",
-							"Required": "N",
-							"Default": "",
-							"Type": "string",
-							"Description": "name of the point-based reward to give to player, if the action trigger custom-point reward that doesn't specify reward name"
-						},
-						{
-							"Name": "quantity",
-							"Required": "N",
-							"Default": "",
-							"Type": "string",
-							"Description": "amount of the point-based reward to give to player, if the action trigger custom-point reward that doesn't specify reward quantity"
-						}
-					]
-				},
-				{
-					"MethodName": "DEPRECATED - Action Config",
-					"Synopsis": "Returns names of actions that can trigger game rules within a client’s website.",
-					"HTTPMethod": "POST",
-					"URI": "/Engine/actionConfig",
-					"RequiresOAuth": "N",
-					"parameters": [
-						{
-							"Name": "token",
-							"Required": "Y",
-							"Default": "",
-							"Type": "string",
-							"Description": "access token returned from Auth"
-						}
-					]
-				}
-			]
-		}
+        {
+            "name": "Goods API",
+            "methods": [
+                {
+                    "MethodName": "Goods List Info",
+                    "Synopsis": "Returns information about all available goods for the current site.",
+                    "HTTPMethod": "GET",
+                    "URI": "/Goods",
+                    "RequiresOAuth": "N",
+                    "parameters": []
+                },
+                {
+                    "MethodName": "Goods Info",
+                    "Synopsis": "Returns information about the goods with the specified id.",
+                    "HTTPMethod": "GET",
+                    "URI": "/Goods/:id",
+                    "RequiresOAuth": "N",
+                    "parameters": [
+                        {
+                            "Name": "id",
+                            "Required": "Y",
+                            "Default": "",
+                            "Type": "string",
+                            "Description": "goods id to query"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Engine API",
+            "methods": [
+                {
+                    "MethodName": "Action Config",
+                    "Synopsis": "Returns names of actions that can trigger game rules within a client’s website.",
+                    "HTTPMethod": "GET",
+                    "URI": "/Engine/actionConfig",
+                    "RequiresOAuth": "N",
+                    "parameters": []
+                },
+                {
+                    "MethodName": "Rule",
+                    "Synopsis": "Process an action through all the game rules defined for a client’s website.",
+                    "HTTPMethod": "POST",
+                    "URI": "/Engine/rule",
+                    "RequiresOAuth": "N",
+                    "parameters": [
+                        {
+                            "Name": "token",
+                            "Required": "Y",
+                            "Default": "",
+                            "Type": "string",
+                            "Description": "access token returned from Auth"
+                        },
+                        {
+                            "Name": "action",
+                            "Required": "Y",
+                            "Default": "",
+                            "Type": "string",
+                            "Description": "name of action performed"
+                        },
+                        {
+                            "Name": "player_id",
+                            "Required": "Y",
+                            "Default": "",
+                            "Type": "string",
+                            "Description": "player id as used in client's website"
+                        },
+                        {
+                            "Name": "url",
+                            "Required": "N",
+                            "Default": "",
+                            "Type": "string",
+                            "Description": "URL of the page that trigger the action or any identifier string - Used for logging, URL specific rules, and rules that trigger only when a specific identifier string is supplied"
+                        },
+                        {
+                            "Name": "reward",
+                            "Required": "N",
+                            "Default": "",
+                            "Type": "string",
+                            "Description": "name of the point-based reward to give to player, if the action trigger custom-point reward that doesn't specify reward name"
+                        },
+                        {
+                            "Name": "quantity",
+                            "Required": "N",
+                            "Default": "",
+                            "Type": "string",
+                            "Description": "amount of the point-based reward to give to player, if the action trigger custom-point reward that doesn't specify reward quantity"
+                        }
+                    ]
+                }
+            ]
+        }
 	]
 }
