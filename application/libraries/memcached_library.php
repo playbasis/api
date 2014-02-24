@@ -265,8 +265,8 @@ class Memcached_library
 
     public function update_delete($name, $expiration=NULL)
     {
-        if($this->table_array)
-            //$this->delete_table($name);
+        /*if($this->table_array)
+            $this->delete_table($name);*/
 
         return true;
 //        if(is_null($name))
