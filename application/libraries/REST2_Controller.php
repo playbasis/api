@@ -95,7 +95,7 @@ abstract class REST2_Controller extends REST_Controller
         if (substr($url, 0, 1) != "/") {
             $url = "/".$url;
         }
-        try {
+        /*try {
             $this->client_model->permissionProcess(
                 $this->client_id,
                 $this->site_id,
@@ -109,7 +109,7 @@ abstract class REST2_Controller extends REST_Controller
             else
                 $this->response($this->error->setError(
                     "INTERNAL_ERROR", array()), 200);
-        }
+        }*/
 	}
 
 	/**
