@@ -10,6 +10,7 @@ class Rest_model extends MY_Model
 
 	public function logRequest($data)
 	{
+		return null;
 		$mongoDate = new MongoDate(time());
 		$this->set_site_mongodb($data['site_id']);
 		$data['date_added'] = $mongoDate;
@@ -19,6 +20,7 @@ class Rest_model extends MY_Model
 
 	public function logResponse($id, $site_id, $data)
 	{
+		return null;
 		if (!$id)
 			return false;
 		$data['date_modified'] = new MongoDate(time());
