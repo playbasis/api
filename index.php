@@ -1,7 +1,4 @@
 <?php
-if (extension_loaded ('newrelic')) {
-    newrelic_name_transaction($_SERVER['REQUEST_URI']);
-}
 /*
  *---------------------------------------------------------------
  * APPLICATION ENVIRONMENT
