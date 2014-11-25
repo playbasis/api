@@ -216,7 +216,6 @@ class Mongo_db
 
 		/* MongoCursor::$timeout = -1; */
 		//MongoCursor::$timeout = 2*60000; // prevent MongoCursorTimeoutException, set timeout to be (default = 30000 milli secs, -1 = no timeout)
-		$this->timeout = 2*60000; // prevent MongoCursorTimeoutException, set timeout to be (default = 30000 milli secs, -1 = no timeout)
 
 		$this->load();
 	}
@@ -1946,7 +1945,9 @@ class Mongo_db
 	private function _connect()
 	{
 		$options = array();
-		
+
+        $options['connectTimeoutMS'] = -1;
+        
 		if ($this->_persist === TRUE)
 		{
 			$options['persist'] = $this->_persist_key;
