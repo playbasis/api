@@ -27,6 +27,7 @@ class Push_model extends MY_Model
 
                 $push = new ApnsPHP_Push($environment, $certificate);
 
+
                 // Instantiate a new ApnsPHP_Push object
                 /*$push = new ApnsPHP_Push(
                     ApnsPHP_Abstract::ENVIRONMENT_SANDBOX,
@@ -101,7 +102,7 @@ class Push_model extends MY_Model
 
             case "android":
                 define( 'API_ACCESS_KEY', 'AIzaSyCeCZPwysyiPnP4A-PWKFiSgz_QbWYPFtE' );
-                $registrationIds = $data['device_token'];
+                $registrationIds = array($data['device_token']);
                 $msg = array
                 (
                     'message' 	=> 'here is a message. message',
@@ -125,7 +126,6 @@ class Push_model extends MY_Model
                     'Authorization: key=' . API_ACCESS_KEY,
                     'Content-Type: application/json'
                 );
-
                 $ch = curl_init();
                 curl_setopt( $ch,CURLOPT_URL, 'https://android.googleapis.com/gcm/send' );
                 curl_setopt( $ch,CURLOPT_POST, true );
@@ -134,9 +134,12 @@ class Push_model extends MY_Model
                 curl_setopt( $ch,CURLOPT_SSL_VERIFYPEER, false );
                 curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $fields ) );
                 $result = curl_exec($ch );
+                print_r($result);
                 curl_close( $ch );
+
                 echo $result;
                 break;
+
 
             default:
                 throw new Exception("Unsupported device type: ".$type);

@@ -133,21 +133,21 @@ class Universe extends REST2_Controller
         $this->global_player_model->storeDeviceToken($deviceInfo);
         $this->response($this->resp->setRespond(''), 200);
     }
-    public function directMsg_post($data)
+    public function directMsg_post()
     {
-        /*
+
         $data = array(
-            'title' => $this->input->post('msg'),
+            'title' => 'Congratulations',//$this->input->post('msg'),
             'reward' => 'badge',
             'type' => 'popup',
             'value' => 'unlocked',
             'text' => '100',
             'status' => 'confirm'
-        );*/
+        );
         $type = $this->input->post('type');
         $data = array(
             'title' => $data['title'],
-            'reward' => $data['badge'],
+            'reward' => $data['reward'],
             'type' => 'exp',//$data['type'],
             'value' => $data['value'],
             'text' => 'description test',//$data['text'],
