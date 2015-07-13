@@ -286,6 +286,85 @@
         ]
       },
       {
+        "name":"Health Kit",
+        "methods":[
+          {
+            "MethodName": "Store Health Info",
+            "Synopsis": "save health information for player",
+            "HTTPMethod": "POST",
+            "URI": "/StoreHealthInfo",
+            "RequiresOAuth": "N",
+            "parameters": [
+              {
+                "Name": "token",
+                "Required": "Y",
+                "Default": "",
+                "Type": "string",
+                "Description": "access token returned from Auth"
+              },
+              {
+                "Name": "device_token",
+                "Required": "Y",
+                "Default": "",
+                "Type": "string",
+                "Description": "device token"
+              },
+              {
+                "Name": "player_id",
+                "Required": "Y",
+                "Default": "",
+                "Type": "string",
+                "Description": "player_id"
+              },
+              {
+                "Name": "health_Info",
+                "Required": "Y",
+                "Default": "",
+                "Type": "string",
+                "Description": "Activities Log"
+              }
+            ]
+          },
+          {
+            "MethodName": "Store Health Log",
+            "Synopsis": "save activities and detail to log",
+            "HTTPMethod": "POST",
+            "URI": "/StoreHealthLog",
+            "RequiresOAuth": "N",
+            "parameters": [
+              {
+                "Name": "token",
+                "Required": "Y",
+                "Default": "",
+                "Type": "string",
+                "Description": "access token returned from Auth"
+              },
+              {
+                "Name": "player_id",
+                "Required": "Y",
+                "Default": "",
+                "Type": "string",
+                "Description": "player_id"
+              },
+              {
+                "Name": "device_token",
+                "Required": "Y",
+                "Default": "",
+                "Type": "string",
+                "Description": "device token"
+              },
+              {
+                "Name": "health_log",
+                "Required": "Y",
+                "Default": "",
+                "Type": "string",
+                "Description": "Activities Log"
+              }
+            ]
+          }
+        ]
+      },
+      {
 			"name": "Auth API",
 			"methods": [
 				{
