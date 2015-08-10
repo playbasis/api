@@ -289,7 +289,7 @@ class jigsaw extends MY_Model
 		assert($input != false);
 		assert(is_array($input));
 		assert(isset($config['time_of_day']));
-		assert(isset($config['date_of_month']));
+		assert(isset($config['day_of_month']));
 		$result = $this->getMostRecentJigsaw($input, array(
 			'input'
 		));
@@ -415,6 +415,62 @@ class jigsaw extends MY_Model
 		}
 		return false;
 	}
+	public function random($config, $input, &$exInfo = array())
+	{
+		$this->set_site_mongodb($input['site_id']);
+		$sum = 0;
+		$acc = array();
+		foreach ($config['group_container'] as $each) {
+			$sum += intval($each['weight']);
+			array_push($acc, $sum);
+		}
+		$max = $acc[count($acc)-1];
+		$ran = rand(0, $max-1);
+		foreach ($acc as $i => $value) {
+			if ($ran < $value) {
+				$exInfo['index'] = $i;
+				$exInfo['break'] = false;
+				$conf = $config['group_container'][$i];
+				if (array_key_exists('reward_name', $conf)) {
+					foreach (array('item_id', 'reward_id') as $field) {
+						if (array_key_exists($field, $conf)) $conf[$field] = $conf[$field] ? new MongoId($conf[$field]) : null;
+					}
+					return $this->reward($conf, $input, $exInfo);
+				} else if (array_key_exists('feedback_name', $conf)) {
+					return $this->feedback($conf['feedback_name'], $conf, $input, $exInfo);
+				}
+				return false; // should not reach this line
+			}
+		}
+		return false; // should not reach this line
+	}
+	public function sequence($config, $input, &$exInfo = array())
+	{
+		$this->set_site_mongodb($input['site_id']);
+		$result = $this->getMostRecentJigsaw($input, array(
+			'input'
+		));
+		$i = !$result || !isset($result['input']['index']) ? 0 : $result['input']['index']+1;
+		$exInfo['index'] = $i;
+		$exInfo['break'] = true; // generally, "sequence" will block
+		if ($i > count($config['group_container'])-1) {
+			$exInfo['index'] = $result['input']['index']; // ensure that "index" has not been changed
+			if ($config['loop'] === 'false' || !$config['loop']) return false;
+			$i = 0; // looping, reset to be starting at 0
+			$exInfo['index'] = 0;
+		}
+		if ($i == count($config['group_container'])-1) $exInfo['break'] = false; // if this is last item in the sequence jigsaw, we allow the rule to process next jigsaw
+		$conf = $config['group_container'][$i];
+		if (array_key_exists('reward_name', $conf)) {
+			foreach (array('item_id', 'reward_id') as $field) {
+				if (array_key_exists($field, $conf)) $conf[$field] = $conf[$field] ? new MongoId($conf[$field]) : null;
+			}
+			return $this->reward($conf, $input, $exInfo);
+		} else if (array_key_exists('feedback_name', $conf)) {
+			return $this->feedback($conf['feedback_name'], $conf, $input, $exInfo);
+		}
+		return false; // should not reach this line
+	}
 	public function getMostRecentJigsaw($input, $fields)
 	{
 		assert(isset($input['site_id']));
@@ -490,6 +546,7 @@ class jigsaw extends MY_Model
 		));
 		$this->mongo_db->limit(1);
 		$result = $this->mongo_db->get('playbasis_reward_to_client');
+		if (!$result) return false;
 		$result = $result[0];
 		if(is_null($result['limit'])){
             return true;

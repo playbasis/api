@@ -620,7 +620,18 @@
 							"Default": "",
 							"Type": "string",
 							"Description": "date of birth in the format YYYY-MM-DD (ex.1982-09-29)"
-						}
+						},
+                                                {
+                                                        "Name": "anonymous_flag",
+                                                        "Required": "N",
+                                                        "Default": false,
+                                                        "Type": "enumerated",
+                                                        "Description": "true=Anonymous User, false=Real User",
+                                                        "EnumeratedList": [
+                                                                true,
+                                                                false
+                                                        ]
+                                                }
 					]
 				},
 				{
@@ -1853,6 +1864,13 @@
                             "Default": "",
                             "Type": "string",
                             "Description": "player id as used in client's website"
+                        },
+                        {
+                            "Name": "type",
+                            "Required": "N",
+                            "Default": "",
+                            "Type": "string",
+                            "Description": "quiz, poll"
                         }
                     ]
                 },
@@ -1892,6 +1910,13 @@
                             "Default": "",
                             "Type": "string",
                             "Description": "player id as used in client's website"
+                        },
+                        {
+                            "Name": "type",
+                            "Required": "N",
+                            "Default": "",
+                            "Type": "string",
+                            "Description": "quiz, poll"
                         }
                     ]
                 },
@@ -2028,6 +2053,22 @@
                             "Default": "5",
                             "Type": "string",
                             "Description": "limit number of players"
+                        }
+                    ]
+                },
+                {
+                    "MethodName": "Query for Quiz's Statistics",
+                    "Synopsis": "Query a statistics of a quiz done by all players.",
+                    "HTTPMethod": "GET",
+                    "URI": "/Quiz/:id/stat",
+                    "RequiresOAuth": "N",
+                    "parameters": [
+                        {
+                            "Name": "id",
+                            "Required": "Y",
+                            "Default": "",
+                            "Type": "string",
+                            "Description": "quiz id"
                         }
                     ]
                 },
