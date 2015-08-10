@@ -545,15 +545,18 @@ class Player extends REST2_Controller
 	}
 	public function login_post($player_id = '')
 	{
+        $anonymous_id = "";
+        $anonymous = $this->input->post('anonymous');
+        $anonymous = $anonymous == "TRUE"?true:false;
 		if(!$player_id)
 			$this->response($this->error->setError('PARAMETER_MISSING', array(
 				'player_id'
 			)), 200);
 			
-		$ID_Arr = explode("-",$player_id);
-                $arrCount = count($ID_Arr);
-                if ($arrCount==2) { $anoy_id = $ID_Arr['1']; } else $anoy_id = '';
-                if ($arrCount==2) $player_id = $ID_Arr['0'];
+		//$ID_Arr = explode("-",$player_id);
+        //        $arrCount = count($ID_Arr);
+         //       if ($arrCount==2) { $anoy_id = $ID_Arr['1']; } else $anoy_id = '';
+         //       if ($arrCount==2) $player_id = $ID_Arr['0'];
                 
 		//get playbasis player id
 		$pb_player_id = $this->player_model->getPlaybasisId(array_merge($this->validToken, array(
@@ -594,13 +597,13 @@ class Player extends REST2_Controller
             'device_name' => $this->validToken['device_name']
         ),$this->validToken['site_id']);*/
         
-                if ($anoy_id) {
+                if ($anonymous) {
                         $pb_anoy_id = $this->player_model->getPlaybasisId(array_merge($this->validToken, array(
-                                'cl_player_id' => $anoy_id
+                                'cl_player_id' => $player_id
                         )));
-                        $this->mongo_db->where('_id', $pb_anoy_id);
+                        $this->mongo_db->where('_id', $player_id);
                         $anoy_result = $this->mongo_db->get('playbasis_player');
-                        $anoy_flag = $anoy_result[0]['anonymous_flag'];
+                        $anoy_flag = $anonymous;//$anoy_result[0]['anonymous_flag'];
                         //$this->response($anoy_flag,200);
                         if ($pb_anoy_id && $anoy_flag==true) {
                                 $engine = new Engine;

@@ -809,7 +809,18 @@
 							"Default": "",
 							"Type": "string",
 							"Description": "session expires in seconds"
-						}
+						},
+                        {
+                          "Name": "anonymous",
+                          "Required": "N",
+                          "Default": false,
+                          "Type": "enumerated",
+                          "Description": "true=Anonymous User, false=Real User",
+                          "EnumeratedList": [
+                            "TRUE",
+                            "FALSE"
+                          ]
+                        }
 					]
 				},
 				{
