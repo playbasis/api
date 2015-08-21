@@ -393,6 +393,79 @@ $email = 'pechpras@playbasis.com';
 			}
 		}
 	}
+
+    public function pickLuckyDrawWinner()
+    {
+        if ($this->input->is_cli_request()) {
+            echo "- Running pickWinner CLI!" . PHP_EOL;
+            $this->load->model('luckydraw_model');
+            $this->load->model('reward_model');
+            $this->load->model('client_model');
+
+//          todo(Rook): Need to set to current timestamp before commit
+//          manually set date for development purpose
+            $date = new DateTime('2015-08-19 16:00:00');
+//          use current time + 1 hour to get events from last hours
+            $date_criteria = (int)$date->format("U") + (strtotime("+1 hour") - strtotime("now"));
+
+
+            echo "--- Loop through each lucky draw" . PHP_EOL;
+            foreach ($this->luckydraw_model->getActiveLuckyDrawsByEndingTimestamp($date_criteria) as $event) {
+                echo "----- LD name: " . $event['name'] . PHP_EOL;
+                echo "------- Participate method: ";
+                if ($event['participate_method']) { // true is ask_to_join
+                    echo "Ask to join" . PHP_EOL;
+                    $participants = null;
+                } else {
+                    echo "Recent active player in last 30 days" . PHP_EOL;
+                    $participants = $this->player_model->findRecentPlayersByClientIdSiteId($event['client_id'],
+                        $event['site_id'], 30);
+                }
+                echo "------- Total player count: " . count($participants) . PHP_EOL;
+
+                if (count($participants) > 0) {
+                    foreach ($event['rewards'] as $reward) { // loop thru each reward
+                        echo "--------- Reward ranking# " . $reward['ranking'] . " ,quantity: " . $reward['qty'] . PHP_EOL;
+                        for ($i = 0; $i < (int)$reward['qty']; $i++) {
+                            echo "----------- Draw# " . ($i + 1) . PHP_EOL;
+
+                            $winner_index = mt_rand(0, count($participants));
+                            echo "------------- Winner is $winner_index" . PHP_EOL;
+
+                            echo "--------------- Winner detail: " . PHP_EOL;
+                            $winner = $this->player_model->getById($event['site_id'], $participants[$winner_index]);
+
+                            echo "--------------- Username: " . $winner['username'] . PHP_EOL;
+
+                            echo "------------- Insert to \"reward to player\" collection" . PHP_EOL;
+
+                            foreach ($reward['details'] as $detail_key => $detail_value) {
+                                switch ($detail_key) {
+                                    case "point":
+                                        echo "--------------- Reward type: \"Point\" Value: " . $detail_value['value'] . PHP_EOL;
+                                        break;
+                                    case "exp":
+                                        echo "--------------- Reward type: \"Exp\" Value: " . $detail_value['value'] . PHP_EOL;
+                                        break;
+                                    case "custom":
+                                        echo "--------------- Reward type: \"Custom\" Value: " . $detail_value['value'] . PHP_EOL;
+                                        break;
+                                    case "badge":
+                                        echo "--------------- Reward type: \"Badge\" Value: " . $detail_value['value'] . PHP_EOL;
+                                        break;
+//                                    $this->client_model->updatePlayerPointReward($reward['id'], $reward['qty'], $r);
+                                }
+                            }
+
+                            echo "------------- Record result to LD event document" . PHP_EOL;
+                        }
+                    }
+                }
+
+                echo "----- End loop for " . $event['name'] . PHP_EOL . PHP_EOL;
+            }
+        }
+    }
 }
 
 function urlsafe_b64encode($string) {

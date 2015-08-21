@@ -2195,6 +2195,16 @@ class Player_model extends MY_Model
         return $this->mongo_db->distinct('pb_player_id', 'playbasis_action_log');
     }
 
+    public function findRecentPlayersByClientIdSiteId($client_id, $site_id, $days)
+    {
+        $this->mongo_db->where('client_id',$client_id);
+        $this->mongo_db->where('site_id',$site_id);
+
+        $d = strtotime("-" . $days . " day");
+        $this->mongo_db->where_gt('date_added', new MongoDate($d));
+        return $this->mongo_db->distinct('pb_player_id', 'playbasis_action_log');
+    }
+
     public function findDistinctEmails($pb_player_ids) {
         $this->mongo_db->where_in('_id', $pb_player_ids);
         return $this->mongo_db->distinct('email', 'playbasis_player');
