@@ -394,6 +394,20 @@ $email = 'pechpras@playbasis.com';
 		}
 	}
 
+    private function randWithout($from, $to, array $exceptions)
+    {
+        sort($exceptions); // lets us use break; in the foreach reliably
+        $number = rand($from, $to - count($exceptions)); // or mt_rand()
+        foreach ($exceptions as $exception) {
+            if ($number >= $exception) {
+                $number++; // make up for the gap
+            } else /*if ($number < $exception)*/ {
+                break;
+            }
+        }
+        return $number;
+    }
+
     public function pickLuckyDrawWinner()
     {
         if ($this->input->is_cli_request()) {
@@ -408,9 +422,12 @@ $email = 'pechpras@playbasis.com';
 //          use current time + 1 hour to get events from last hours
             $date_criteria = (int)$date->format("U") + (strtotime("+1 hour") - strtotime("now"));
 
+//          todo(Rook): Need to check whether total rewards is > participants
 
             echo "--- Loop through each lucky draw" . PHP_EOL;
             foreach ($this->luckydraw_model->getActiveLuckyDrawsByEndingTimestamp($date_criteria) as $event) {
+                $winner_index_list = array();
+
                 echo "----- LD name: " . $event['name'] . PHP_EOL;
                 echo "------- Participate method: ";
                 if ($event['participate_method']) { // true is ask_to_join
@@ -429,7 +446,11 @@ $email = 'pechpras@playbasis.com';
                         for ($i = 0; $i < (int)$reward['qty']; $i++) {
                             echo "----------- Draw# " . ($i + 1) . PHP_EOL;
 
-                            $winner_index = mt_rand(0, count($participants));
+                            $rand = $this->randWithout(0, count($participants) - 1,
+                                $winner_index_list); // -1 when use as array index
+                            $winner_index = $rand;
+                            array_push($winner_index_list, $winner_index);
+
                             echo "------------- Winner is $winner_index" . PHP_EOL;
 
                             echo "--------------- Winner detail: " . PHP_EOL;
@@ -442,18 +463,69 @@ $email = 'pechpras@playbasis.com';
                             foreach ($reward['details'] as $detail_key => $detail_value) {
                                 switch ($detail_key) {
                                     case "point":
-                                        echo "--------------- Reward type: \"Point\" Value: " . $detail_value['value'] . PHP_EOL;
+                                        if (!empty($detail_value['value'])) {
+                                            echo "--------------- Reward type: \"Point\" Value: " . $detail_value['value'] . PHP_EOL;
+                                            $name = 'point';
+                                            $id = $this->reward_model->findByName(array(
+                                                'client_id' => $event['client_id'],
+                                                'site_id' => $event['site_id']
+                                            ), $name);
+                                            $value = $detail_value['value'];
+                                            $return_data = array();
+                                            $this->client_model->updateCustomReward($name, $value, array(
+                                                'client_id' => $event['client_id'],
+                                                'site_id' => $event['site_id'],
+                                                'pb_player_id' => $winner['_id'],
+                                                'player_id' => $winner['cl_player_id']
+                                            ), $return_data);
+                                            echo "----------------- Updated to db" . PHP_EOL;
+                                        }
                                         break;
                                     case "exp":
-                                        echo "--------------- Reward type: \"Exp\" Value: " . $detail_value['value'] . PHP_EOL;
+                                        if (!empty($detail_value['value'])) {
+                                            echo "--------------- Reward type: \"Exp\" Value: " . $detail_value['value'] . PHP_EOL;
+                                            $this->client_model->updateExpAndLevel($detail_value['value'],
+                                                $winner['_id'], $winner['cl_player_id'], array(
+                                                    'client_id' => $event['client_id'],
+                                                    'site_id' => $event['site_id']
+                                                ));
+                                            echo "----------------- Updated to db" . PHP_EOL;
+                                        }
                                         break;
                                     case "custom":
-                                        echo "--------------- Reward type: \"Custom\" Value: " . $detail_value['value'] . PHP_EOL;
+                                        if (!empty($detail_value) && is_array($detail_value)) {
+                                            echo "--------------- Reward type: \"Custom\"" . PHP_EOL;
+                                            foreach ($detail_value as $custom) {
+                                                $custom_name = $this->reward_model->getRewardName(array(
+                                                    'client_id' => $event['client_id'],
+                                                    'site_id' => $event['site_id']
+                                                ), $custom['custom_id']);
+                                                echo "----------------- Custom name: \"" . $custom_name . "\" Value: " . $custom['custom_value'] . PHP_EOL;
+                                                $dummy_arr = array();
+                                                $this->client_model->updateCustomReward($custom_name,
+                                                    $custom['custom_value'], array(
+                                                        'client_id' => $event['client_id'],
+                                                        'site_id' => $event['site_id'],
+                                                        'pb_player_id' => $winner['_id'],
+                                                        'player_id' => $winner['cl_player_id']
+                                                    ), $dummy_arr);
+                                                echo "----------------- Updated to db" . PHP_EOL;
+                                            }
+
+                                        }
                                         break;
                                     case "badge":
-                                        echo "--------------- Reward type: \"Badge\" Value: " . $detail_value['value'] . PHP_EOL;
+                                        if (!empty($detail_value) && is_array($detail_value)) {
+                                            echo "--------------- Reward type: \"Badge\"" . PHP_EOL;
+                                            foreach ($detail_value as $badge) {
+                                                $this->client_model->updateplayerBadge($badge['badge_id'],
+                                                    $badge['badge_value'], $winner['_id'], $winner['cl_player_id'],
+                                                    $event['client_id'], $event['site_id']);
+                                                echo "----------------- Updated to db" . PHP_EOL;
+                                            }
+                                        }
                                         break;
-//                                    $this->client_model->updatePlayerPointReward($reward['id'], $reward['qty'], $r);
+
                                 }
                             }
 
