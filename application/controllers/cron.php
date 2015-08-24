@@ -525,19 +525,207 @@ $email = 'pechpras@playbasis.com';
                                             }
                                         }
                                         break;
-
                                 }
                             }
-
                             echo "------------- Record result to LD event document" . PHP_EOL;
                         }
                     }
                 }
-
                 echo "----- End loop for " . $event['name'] . PHP_EOL . PHP_EOL;
             }
         }
     }
+
+//  todo(Rook): Need to provide $event method same as in quiz to luckydraw cron
+//    private function filter_levelup($events) {
+//        $result = array();
+//        foreach ($events as $event) {
+//            if ($event['event_type'] == 'LEVEL_UP') continue;
+//            array_push($result, $event);
+//        }
+//        return $result;
+//    }
+//
+//    private function update_rewards($client_id, $site_id, $pb_player_id, $cl_player_id, $rewards) {
+//        $events = array();
+//        foreach ($rewards as $type => $reward) {
+//            switch ($type) {
+//                case 'exp':
+//                    $name = 'exp';
+//                    $id = $this->reward_model->findByName(array('client_id' => $client_id, 'site_id' => $site_id), $name);
+//                    $value = $reward['exp_value'];
+//                    // update player's exp
+//                    $lv = $this->client_model->updateExpAndLevel($value, $pb_player_id, $cl_player_id, array(
+//                        'client_id' => $client_id,
+//                        'site_id' => $site_id
+//                    ));
+//                    // if level up
+//                    if ($lv > 0) {
+//                        array_push($events, array(
+//                            'event_type' => 'LEVEL_UP',
+//                            'value' => $lv
+//                        ));
+//                    }
+//                    array_push($events, array(
+//                        'event_type' => 'REWARD_RECEIVED',
+//                        'reward_type' => $name,
+//                        'reward_id' => $id,
+//                        'value' => $value
+//                    ));
+//                    break;
+//                case 'point':
+//                    $name = 'point';
+//                    $id = $this->reward_model->findByName(array('client_id' => $client_id, 'site_id' => $site_id), $name);
+//                    $value = $reward['point_value'];
+//                    $return_data = array();
+//                    $this->client_model->updateCustomReward($name, $value, array(
+//                        'client_id' => $client_id,
+//                        'site_id' => $site_id,
+//                        'pb_player_id' => $pb_player_id,
+//                        'player_id' => $cl_player_id
+//                    ), $return_data);
+//                    array_push($events, array(
+//                        'event_type' => 'REWARD_RECEIVED',
+//                        'reward_type' => $name,
+//                        'reward_id' => $id,
+//                        'value' => $value
+//                    ));
+//                    break;
+//                case 'badge':
+//                    if (is_array($reward)) foreach ($reward as $badge) {
+//                        $id = $badge['badge_id'];
+//                        $value = $badge['badge_value'];
+//                        $this->client_model->updateplayerBadge($id, $value, $pb_player_id, $cl_player_id, $client_id, $site_id);
+//                        $badgeData = $this->client_model->getBadgeById($id, $site_id);
+//                        if (!$badgeData) break;
+//                        array_push($events, array(
+//                            'event_type' => 'REWARD_RECEIVED',
+//                            'reward_type' => 'badge',
+//                            'reward_id' => $id,
+//                            'reward_data' => $badgeData,
+//                            'value' => $value
+//                        ));
+//                    }
+//                    break;
+//                case 'custom':
+//                    if (is_array($reward)) foreach ($reward as $custom) {
+//                        $name = $this->reward_model->getRewardName(array('client_id' => $client_id, 'site_id' => $site_id), $custom['custom_id']);
+//                        $id = $custom['custom_id'];
+//                        $value = $custom['custom_value'];
+//                        $return_data = array();
+//                        $this->client_model->updateCustomReward($name, $value, array(
+//                            'client_id' => $client_id,
+//                            'site_id' => $site_id,
+//                            'pb_player_id' => $pb_player_id,
+//                            'player_id' => $cl_player_id
+//                        ), $return_data);
+//                        array_push($events, array(
+//                            'event_type' => 'REWARD_RECEIVED',
+//                            'reward_type' => $name,
+//                            'reward_id' => $id,
+//                            'value' => $value
+//                        ));
+//                    }
+//                    break;
+//                default:
+//                    log_message('error', 'Unsupported type = '.$type);
+//                    break;
+//            }
+//        }
+//        return $events;
+//    }
+//
+//    private function publish_event($client_id, $site_id, $pb_player_id, $cl_player_id, $quiz, $domain_name, $event) {
+//        $message = null;
+//        if($event['value'] == 0 || empty($event['value']))return;
+//
+//        switch ($event['event_type']) {
+//            case 'LEVEL_UP':
+//                $message = array('message' => $this->utility->getEventMessage('level', '', '', '', $event['value']), 'level' => $event['value']);
+//                $this->tracker_model->trackEvent('LEVEL', $message['message'], array(
+//                    'client_id' => $client_id,
+//                    'site_id' => $site_id,
+//                    'pb_player_id' => $pb_player_id,
+//                    'player_id' => $cl_player_id,
+//                    'action_log_id' => null,
+//                    'amount' => $event['value']
+//                ));
+//                break;
+//            case 'REWARD_RECEIVED':
+//                switch ($event['reward_type']) {
+//                    case 'badge':
+//                        $message = array('message' => $this->utility->getEventMessage('badge', '', '', $event['reward_data']['name']), 'badge' => $event['reward_data']);
+//                        $this->tracker_model->trackEvent('REWARD', $message['message'], array(
+//                            'pb_player_id'	=> $pb_player_id,
+//                            'client_id'		=> $client_id,
+//                            'site_id'		=> $site_id,
+//                            'quiz_id'		=> $quiz['_id'],
+//                            'reward_type'	=> 'badge',
+//                            'reward_id'	    => $this->player_model->get_reward_id_by_name($this->validToken, 'badge'),
+//                            'reward_name'	=> $event['reward_type'],
+//                            'item_id'	    => $event['reward_id'],
+//                            'amount'	    => $event['value']
+//                        ));
+//                        break;
+//                    default:
+//                        $message = array('message' => $this->utility->getEventMessage('point', $event['value'], $event['reward_type']), 'amount' => $event['value'], 'point' => $event['reward_type']);
+//                        $this->tracker_model->trackEvent('REWARD', $message['message'], array(
+//                            'pb_player_id'	=> $pb_player_id,
+//                            'client_id'		=> $client_id,
+//                            'site_id'		=> $site_id,
+//                            'quiz_id'		=> $quiz['_id'],
+//                            'reward_type'	=> 'point',
+//                            'reward_id'	    => $event['reward_id'],
+//                            'reward_name'	=> $event['reward_type'],
+//                            'amount'	    => $event['value']
+//                        ));
+//                        break;
+//                }
+//                break;
+//        }
+//        if ($message) {
+//            if ($event['event_type'] == 'LEVEL_UP') {
+//                $this->node->publish(array(
+//                    'client_id' => $client_id,
+//                    'site_id' => $site_id,
+//                    'pb_player_id' => $pb_player_id,
+//                    'player_id' => $cl_player_id,
+//                    'action_name' => 'quiz_reward',
+//                    'action_icon' => 'fa-trophy',
+//                    'message' => $message['message'],
+//                    'level' => $event['value'],
+//                    'quiz' => $quiz,
+//                ), $domain_name, $site_id);
+//            } else {
+//                if ($event['reward_type'] == 'badge') {
+//                    $this->node->publish(array(
+//                        'client_id' => $client_id,
+//                        'site_id' => $site_id,
+//                        'pb_player_id' => $pb_player_id,
+//                        'player_id' => $cl_player_id,
+//                        'action_name' => 'quiz_reward',
+//                        'action_icon' => 'fa-trophy',
+//                        'message' => $message['message'],
+//                        'badge' => $event['reward_data'],
+//                        'quiz' => $quiz,
+//                    ), $domain_name, $site_id);
+//                } else {
+//                    $this->node->publish(array(
+//                        'client_id' => $client_id,
+//                        'site_id' => $site_id,
+//                        'pb_player_id' => $pb_player_id,
+//                        'player_id' => $cl_player_id,
+//                        'action_name' => 'quiz_reward',
+//                        'action_icon' => 'fa-trophy',
+//                        'message' => $message['message'],
+//                        'amount' => $event['value'],
+//                        'point' => $event['reward_type'],
+//                        'quiz' => $quiz,
+//                    ), $domain_name, $site_id);
+//                }
+//            }
+//        }
+//    }
 }
 
 function urlsafe_b64encode($string) {
