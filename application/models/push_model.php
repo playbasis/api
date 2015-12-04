@@ -15,7 +15,7 @@ class Push_model extends MY_Model
         $type = strtolower($type);
         switch ($type) {
             case "ios":
-                $setup = $this->getIosSetup();
+                $setup = $this->getIosSetup($data['data']['client_id']);
                 if (!$setup) break; // suppress the error for now
 
                 $f_cert = tmpfile();
@@ -44,7 +44,8 @@ class Push_model extends MY_Model
                     ApnsPHP_Abstract::ENVIRONMENT_PRODUCTION,
                     APPPATH.'libraries/ApnsPHP/Certificates/push_production.pem'
                 );*/
-
+                $logger = new ApnsPHP_Log_Hidden();
+                $push->setLogger($logger);
                 // Set the Provider Certificate passphrase
                 //$push->setProviderCertificatePassphrase('playbasis');
                 $push->setProviderCertificatePassphrase($password);
