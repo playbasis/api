@@ -1704,6 +1704,25 @@ class Player extends REST2_Controller
             }
         }
     }
+
+	public function saleReport_get($player_id = '',$month=0,$year=0) {
+		if(!$player_id)
+			$this->response($this->error->setError('PARAMETER_MISSING', array(
+					'player_id'
+			)), 200);
+		//get playbasis player id
+		$pb_player_id = $this->player_model->getPlaybasisId(array_merge($this->validToken, array(
+				'cl_player_id' => $player_id
+		)));
+		if(!$pb_player_id)
+			$this->response($this->error->setError('USER_NOT_EXIST'), 200);
+
+		//read player information
+		$player['result'] = $this->player_model->getSaleReport($this->validToken['client_id'],$this->validToken['site_id'],$pb_player_id);
+		$this->response($this->resp->setRespond($player), 200);
+	}
+
+
 }
 
 function index_cl_player_id($obj) {

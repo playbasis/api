@@ -2596,6 +2596,50 @@ class Player_model extends MY_Model
 		return $this->mongo_db->get('playbasis_player_device');
 	}
 
+	public function getSaleReport($client_id, $site_id, $pb_player_id, $month ,$year)
+	{
+		// default is present month
+		if (isset($month) && isset($year))
+		{
+			$selected_time = strtotime($year."-".$month);
+		}
+		else{
+			$selected_time = time();
+		}
+
+		// Aggregate the data
+		$first = date('Y-m-01', $selected_time);
+		$from = strtotime($first.' 00:00:00');
+
+		$last = date('Y-m-t', $selected_time);
+		$to   = strtotime($last.' 23:59:59');
+		$result = $this->mongo_db->aggregate('playbasis_validated_action_log', array(
+				array(
+						'$match' => array(
+								'action_name' => "sell",
+								'player_id' => $pb_player_id,
+								'site_id' => $site_id,
+								'client_id' => $client_id,
+								'date_added' => array('$gte' => new MongoDate($from),'$lte' => new MongoDate($to))
+						),
+				),
+				/*array(
+						'$group' => array(
+
+								'totalPrice': { $sum: { $multiply: [ "$price", "$quantity" ] } },
+				)*/
+				array(
+						'$group' => array(
+								'_id' => array('group' => '$group'),
+								'quantity' => array('$sum' => '$parameter->amount')
+						),
+				),
+		));
+		return $result;
+	}
+
+
+
 }
 
 function index_id($obj) {
