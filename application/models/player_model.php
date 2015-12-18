@@ -2596,49 +2596,125 @@ class Player_model extends MY_Model
 		return $this->mongo_db->get('playbasis_player_device');
 	}
 
-	public function getSaleReport($client_id, $site_id, $pb_player_id, $month ,$year)
-	{
-		// default is present month
-		if (isset($month) && isset($year))
-		{
-			$selected_time = strtotime($year."-".$month);
-		}
-		else{
-			$selected_time = time();
-		}
+	public function getOrgInfoOfNode($client_id, $site_id, $node_id){
+		$this->mongo_db->select(array(
+				'name',
+				'description',
+				'organize',
+				'parent'
 
-		// Aggregate the data
-		$first = date('Y-m-01', $selected_time);
-		$from = strtotime($first.' 00:00:00');
-
-		$last = date('Y-m-t', $selected_time);
-		$to   = strtotime($last.' 23:59:59');
-		$result = $this->mongo_db->aggregate('playbasis_validated_action_log', array(
-				array(
-						'$match' => array(
-								'action_name' => "sell",
-								'player_id' => $pb_player_id,
-								'site_id' => $site_id,
-								'client_id' => $client_id,
-								'date_added' => array('$gte' => new MongoDate($from),'$lte' => new MongoDate($to))
-						),
-				),
-				/*array(
-						'$group' => array(
-
-								'totalPrice': { $sum: { $multiply: [ "$price", "$quantity" ] } },
-				)*/
-				array(
-						'$group' => array(
-								'_id' => array('group' => '$group'),
-								'quantity' => array('$sum' => '$parameter->amount')
-						),
-				),
 		));
+		$this->mongo_db->where(array(
+				'client_id' => $client_id,
+				'site_id' => $site_id,
+				'_id' => $node_id,
+		));
+		$result = $this->mongo_db->get('playbasis_store_organize_to_client');
 		return $result;
 	}
 
+	public function GetOrg($client_id, $site_id){
+		$this->mongo_db->where(array(
+				'client_id' => $client_id,
+				'site_id' => $site_id,
+		));
+		$result = $this->mongo_db->get('playbasis_store_organize');
+		return $result;
+	}
 
+	public function findChildNode($client_id, $site_id,$node_id){
+		$this->mongo_db->select(array(
+				'name',
+				'organize',
+
+		));
+		$this->mongo_db->where(array(
+				'client_id' => $client_id,
+				'site_id' => $site_id,
+				'parent' => $node_id,
+		));
+		$result = $this->mongo_db->get('playbasis_store_organize_to_client');
+		if(empty($result)){
+			return null;
+		}else{
+			return $result;
+		}
+
+	}
+
+	public function getSaleReportOfNode($client_id, $site_id,$node_list,$month=null ,$year=null){
+		$result = array();
+		$current_month_sales = 0;
+		$previous_month_sales = 0;
+
+		//$node_list = self::getAllStoreOfNode($client_id, $site_id,$node_id);
+		$store_to_match = array();
+		foreach($node_list as $node){
+			array_push($store_to_match, array('node_id'=>new MongoId($node)));
+		}
+		// default is present month
+		if (isset($month) && isset($year))
+		{
+			$this_month_time = strtotime($year."-".$month);
+			$month = $month-1;
+			$previous_month_time = strtotime($year."-".$month);
+		}
+		else{
+			$this_month_time = time();
+			$previous_month_time = strtotime('last month');
+		}
+
+		$current_month = date("m",$this_month_time);
+		$previous_month = date("m",$previous_month_time);
+		// Aggregate the data
+		$first = date('Y-m-01', $previous_month_time);
+		$from = strtotime($first.' 00:00:00');
+
+		$last = date('Y-m-t', $this_month_time);
+		$to   = strtotime($last.' 23:59:59');
+
+		$status = $this->mongo_db->aggregate('playbasis_validated_action_log', array(
+
+				array(
+						'$match' => array(
+								'action_name' => "sell",
+								'site_id' => $site_id,
+								'client_id' => $client_id,
+								'date_added' => array('$gte' => new MongoDate($from),'$lte' => new MongoDate($to)),
+								'$or' => $store_to_match
+						),
+				),
+				array(
+						'$group' => array(
+
+								'_id' => array('$month' => '$date_added'),
+								'amount' => array('$push' => '$parameters.amount'))
+				),
+		));
+
+		foreach($status['result'] as $entry){
+			if($entry['_id']==$current_month){
+				$current_month_sales = array_sum($entry['amount']);
+			}elseif($entry['_id']==$previous_month){
+				$previous_month_sales = array_sum($entry['amount']);
+			}
+		}
+
+		//$result[self::getTypeOfNode($client_id, $site_id,$node_id)]=$node_id;
+
+		if($current_month_sales==0&&$previous_month_sales==0){
+			$result['percent_changed']=0;
+		}elseif($previous_month_sales==0){
+			$result['percent_changed']=100;
+		}else{
+			$result['percent_changed']=(($current_month_sales-$previous_month_sales)*100)/$previous_month_sales;
+		}
+
+		$result['$current_month_sales']=$current_month_sales;
+		$result['$previous_month_sales']= $previous_month_sales;
+
+		return $result;
+	}
 
 }
 

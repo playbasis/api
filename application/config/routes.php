@@ -166,6 +166,9 @@ $route['Player/code'] = 'player/code';
 $route['Player/code'] = 'player/code';
 
 $route['Player/'.ANY_STRING.'/saleReport/'.ANY_NUMBER.'/'.ANY_NUMBER] = 'player/saleReport/$1/$2/$3';
+$route['Player/'.ANY_STRING.'/saleReport'] = 'player/saleReport/$1';
+
+$route['Player/getChildNode/'.ANY_STRING.'/'.ANY_STRING] = 'player/getChildNode/$1/$2';
 
 //badge API
 $route['Badge/'.ANY_STRING] = 'badge/index/$1';

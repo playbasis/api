@@ -1705,7 +1705,48 @@ class Player extends REST2_Controller
         }
     }
 
-	public function saleReport_get($player_id = '',$month=0,$year=0) {
+	public function recurGetChild($client_id,$site_id,$parent_node,&$result, $num,&$layer){
+
+		//array_push($result,$num);
+		//array_push($result,$layer);
+		if($num++<=$layer || $layer==0){
+			array_push($result,$parent_node);
+			
+		}
+
+		$nodes = $this->player_model->findChildNode($client_id,$site_id,new MongoId($parent_node));
+		if(isset($nodes)){
+			foreach($nodes as $node){
+
+				$this->recurGetChild($client_id,$site_id,$node['_id'],$result,$num,$layer);
+			}
+		}else{
+			return $result;
+		}
+	}
+
+	public function getChildNode_get($node_id = '',$layer=0)
+	{
+		$result = array();
+
+		if(!$node_id)
+			$this->response($this->error->setError('PARAMETER_MISSING', array(
+					'node_id'
+			)), 200);
+		$num = 0;
+		$this->recurGetChild($this->validToken['client_id'],$this->validToken['site_id'],new MongoId($node_id),$result,$num,$layer);
+
+		$this->response($this->resp->setRespond($result), 200);
+	}
+
+	public function getParentNodeOfPlayer($client_id,$site_id,$player_id){
+
+
+	}
+
+	public function saleReport_get($player_id = '',$month=null,$year=null) {
+		$result = array();
+		$nodes = array();
 		if(!$player_id)
 			$this->response($this->error->setError('PARAMETER_MISSING', array(
 					'player_id'
@@ -1717,12 +1758,16 @@ class Player extends REST2_Controller
 		if(!$pb_player_id)
 			$this->response($this->error->setError('USER_NOT_EXIST'), 200);
 
-		//read player information
-		$player['result'] = $this->player_model->getSaleReport($this->validToken['client_id'],$this->validToken['site_id'],$pb_player_id);
-		$this->response($this->resp->setRespond($player), 200);
+		$parent_node = $this->getParentNodeOfPlayer($this->validToken['client_id'],$this->validToken['site_id'],$player_id);
+
+		$this->recurGetChild($this->validToken['client_id'],$this->validToken['site_id'],$parent_node,$nodes);
+
+		array_push($result,$this->player_model->getSaleReportOfNode($this->validToken['client_id'],$this->validToken['site_id'],$nodes,$month,$year)) ;
+
+
+
+		$this->response($this->resp->setRespond($result), 200);
 	}
-
-
 }
 
 function index_cl_player_id($obj) {
