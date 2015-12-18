@@ -1711,10 +1711,10 @@ class Player extends REST2_Controller
 		//array_push($result,$layer);
 		if($num++<=$layer || $layer==0){
 			array_push($result,$parent_node);
-			
+
 		}
 
-		$nodes = $this->player_model->findChildNode($client_id,$site_id,new MongoId($parent_node));
+		$nodes = $this->player_model->findAdjacentChildNode($client_id,$site_id,new MongoId($parent_node));
 		if(isset($nodes)){
 			foreach($nodes as $node){
 
@@ -1739,10 +1739,11 @@ class Player extends REST2_Controller
 		$this->response($this->resp->setRespond($result), 200);
 	}
 
-	public function getParentNodeOfPlayer($client_id,$site_id,$player_id){
+	/*public function getParentNodeOfPlayer($client_id,$site_id,$player_id){
 
 
-	}
+
+	}*/
 
 	public function saleReport_get($player_id = '',$month=null,$year=null) {
 		$result = array();
@@ -1758,9 +1759,12 @@ class Player extends REST2_Controller
 		if(!$pb_player_id)
 			$this->response($this->error->setError('USER_NOT_EXIST'), 200);
 
-		$parent_node = $this->getParentNodeOfPlayer($this->validToken['client_id'],$this->validToken['site_id'],$player_id);
-
-		$this->recurGetChild($this->validToken['client_id'],$this->validToken['site_id'],$parent_node,$nodes);
+		$pb_player_id = $this->player_model->getPlaybasisId(array_merge($this->validToken, array(
+				'cl_player_id' => $player_id
+		)));
+		$parent_node = $this->player_model->getParentNodeOfPlayer($this->validToken['client_id'],$this->validToken['site_id'],$pb_player_id);
+		$num = 0;
+		$this->recurGetChild($this->validToken['client_id'],$this->validToken['site_id'],new MongoId($parent_node),$nodes,$num,$layer);
 
 		array_push($result,$this->player_model->getSaleReportOfNode($this->validToken['client_id'],$this->validToken['site_id'],$nodes,$month,$year)) ;
 

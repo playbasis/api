@@ -2613,16 +2613,34 @@ class Player_model extends MY_Model
 		return $result;
 	}
 
-	public function GetOrg($client_id, $site_id){
+	/*public function GetOrg($client_id, $site_id){
 		$this->mongo_db->where(array(
 				'client_id' => $client_id,
 				'site_id' => $site_id,
 		));
 		$result = $this->mongo_db->get('playbasis_store_organize');
 		return $result;
+	}*/
+	public function getParentNodeOfPlayer($client_id, $site_id,$player_id){
+		$this->mongo_db->select(array(
+				'node_id',
+				//'organize',
+
+		));
+		$this->mongo_db->where(array(
+				'client_id' => $client_id,
+				'site_id' => $site_id,
+				'pb_player_id' => $player_id,
+		));
+		$result = $this->mongo_db->get('playbasis_store_organize_to_player');
+		if(empty($result)){
+			return null;
+		}else{
+			return $result[0]['node_id'];
+		}
 	}
 
-	public function findChildNode($client_id, $site_id,$node_id){
+	public function findAdjacentChildNode($client_id, $site_id,$node_id){
 		$this->mongo_db->select(array(
 				'name',
 				'organize',
