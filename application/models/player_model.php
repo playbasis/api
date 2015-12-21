@@ -2613,18 +2613,20 @@ class Player_model extends MY_Model
 		return $result;
 	}
 
-	/*public function GetOrg($client_id, $site_id){
+	/*public function GetOrgInfoOfNode($client_id, $site_id, $node_id){
 		$this->mongo_db->where(array(
 				'client_id' => $client_id,
 				'site_id' => $site_id,
+				'_id' => $node_id,
 		));
 		$result = $this->mongo_db->get('playbasis_store_organize');
 		return $result;
 	}*/
-	public function getParentNodeOfPlayer($client_id, $site_id,$player_id){
+	public function getAssociatedNodeOfPlayer($client_id, $site_id,$player_id){
+
 		$this->mongo_db->select(array(
 				'node_id',
-				//'organize',
+				'role',
 
 		));
 		$this->mongo_db->where(array(
@@ -2636,11 +2638,33 @@ class Player_model extends MY_Model
 		if(empty($result)){
 			return null;
 		}else{
-			return $result[0]['node_id'];
+			//return $result[0]['node_id'];
+			return $result;
 		}
 	}
 
-	public function findAdjacentChildNode($client_id, $site_id,$node_id){
+	public function getRoleOfPlayer($client_id, $site_id, $player_id, $node_id){
+
+		$this->mongo_db->select(array(
+				'role',
+
+		));
+		$this->mongo_db->where(array(
+				'client_id' => $client_id,
+				'site_id' => $site_id,
+				'pb_player_id' => $player_id,
+				'node_id' => $node_id,
+		));
+		$result = $this->mongo_db->get('playbasis_store_organize_to_player');
+		if(empty($result)){
+			return null;
+		}else{
+			//return $result[0]['node_id'];
+			return $result;
+		}
+	}
+
+	public function findAdjacentChildNode($client_id, $site_id, $node_id){
 		$this->mongo_db->select(array(
 				'name',
 				'organize',
@@ -2660,30 +2684,32 @@ class Player_model extends MY_Model
 
 	}
 
-	public function getSaleReportOfNode($client_id, $site_id,$node_list,$month=null ,$year=null){
+	public function getSaleReportOfNode($client_id, $site_id, $node_list, $action, $month=null, $year=null){
 		$result = array();
 		$current_month_sales = 0;
 		$previous_month_sales = 0;
 
 		//$node_list = self::getAllStoreOfNode($client_id, $site_id,$node_id);
-		$store_to_match = array();
+		$node_to_match = array();
 		foreach($node_list as $node){
-			array_push($store_to_match, array('node_id'=>new MongoId($node)));
+			array_push($node_to_match, array('node_id'=>new MongoId($node)));
 		}
-		// default is present month
-		if (isset($month) && isset($year))
-		{
-			$this_month_time = strtotime($year."-".$month);
-			$month = $month-1;
-			$previous_month_time = strtotime($year."-".$month);
+		// default is present month/year
+		if(!isset($month)){
+			$month = date("m",time());
 		}
-		else{
-			$this_month_time = time();
-			$previous_month_time = strtotime('last month');
+		if(!isset($year)){
+			$year = date("Y",time());
 		}
 
+		$this_month_time = strtotime($year."-".$month);
+		$month = $month-1;
+		$previous_month_time = strtotime($year."-".$month);
+
 		$current_month = date("m",$this_month_time);
+		$current_year = date("Y",$this_month_time);
 		$previous_month = date("m",$previous_month_time);
+		$previous_year = date("Y",$previous_month_time);
 		// Aggregate the data
 		$first = date('Y-m-01', $previous_month_time);
 		$from = strtotime($first.' 00:00:00');
@@ -2695,11 +2721,11 @@ class Player_model extends MY_Model
 
 				array(
 						'$match' => array(
-								'action_name' => "sell",
+								'action_name' => $action,
 								'site_id' => $site_id,
 								'client_id' => $client_id,
 								'date_added' => array('$gte' => new MongoDate($from),'$lte' => new MongoDate($to)),
-								'$or' => $store_to_match
+								'$or' => $node_to_match
 						),
 				),
 				array(
@@ -2728,12 +2754,87 @@ class Player_model extends MY_Model
 			$result['percent_changed']=(($current_month_sales-$previous_month_sales)*100)/$previous_month_sales;
 		}
 
-		$result['$current_month_sales']=$current_month_sales;
-		$result['$previous_month_sales']= $previous_month_sales;
+		$result['current_month_sales']=$current_month_sales;
+		$result['previous_month_sales']= $previous_month_sales;
 
 		return $result;
 	}
 
+	public function getSaleHistoryOfNode($client_id, $site_id, $node_list, $action, $month=null, $year=null,$count){
+		$result = array();
+		$current_month_sales = 0;
+		//$previous_month_sales = 0;
+
+		//$node_list = self::getAllStoreOfNode($client_id, $site_id,$node_id);
+		$node_to_match = array();
+		foreach($node_list as $node){
+			array_push($node_to_match, array('node_id'=>new MongoId($node)));
+		}
+		// default is present month/year
+		if(!isset($month)){
+			$month = date("m",time());
+		}
+		if(!isset($year)){
+			$year = date("Y",time());
+		}
+
+		$this_month_time = strtotime($year."-".$month);
+		$month = $month-$count;
+		$previous_month_time = strtotime($year."-".$month);
+
+		$current_month = date("m",$this_month_time);
+		//$previous_month = date("m",$previous_month_time);
+		// Aggregate the data
+		$first = date('Y-m-01', $previous_month_time);
+		$from = strtotime($first.' 00:00:00');
+
+		$last = date('Y-m-t', $this_month_time);
+		$to   = strtotime($last.' 23:59:59');
+
+		$status = $this->mongo_db->aggregate('playbasis_validated_action_log', array(
+
+				array(
+						'$match' => array(
+								'action_name' => $action,
+								'site_id' => $site_id,
+								'client_id' => $client_id,
+								'date_added' => array('$gte' => new MongoDate($from),'$lte' => new MongoDate($to)),
+								'$or' => $node_to_match
+						),
+				),
+				array(
+						'$group' => array(
+								'_id' => array("month"=> array('$month' => '$date_added'),"year"=>array('$year' => '$date_added')),
+								//'_id' => array('$and' => array(array('$month' => '$date_added'),array('$year' => '$date_added'))),
+								'amount' => array('$push' => '$parameters.amount'))
+				),
+		));
+
+
+		foreach($status['result'] as $entry){
+			$result[$entry['_id']['year']][$entry['_id']['month']] = array_sum($entry['amount']);
+			/*if($entry['_id']==$current_month){
+				$current_month_sales = array_sum($entry['amount']);
+			}elseif($entry['_id']==$previous_month){
+				$previous_month_sales = array_sum($entry['amount']);
+			}*/
+		}
+
+		//$result[self::getTypeOfNode($client_id, $site_id,$node_id)]=$node_id;
+
+		/*if($current_month_sales==0&&$previous_month_sales==0){
+			$result['percent_changed']=0;
+		}elseif($previous_month_sales==0){
+			$result['percent_changed']=100;
+		}else{
+			$result['percent_changed']=(($current_month_sales-$previous_month_sales)*100)/$previous_month_sales;
+		}
+
+		$result['$current_month_sales']=$current_month_sales;
+		$result['$previous_month_sales']= $previous_month_sales;*/
+
+		return $result;
+	}
 }
 
 function index_id($obj) {
