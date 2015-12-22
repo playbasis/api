@@ -165,16 +165,16 @@ $route['Player/code'] = 'player/code';
 
 $route['Player/code'] = 'player/code';
 
-$route['Player/'.ANY_STRING.'/getNode'] = 'player/getAssociatedNode/$1';
+$route['Player/'.ANY_STRING.'/getNode'] = 'player/getAssociatedNode/$1'; //Done
+$route['Player/'.ANY_STRING.'/getRole/'.ANY_STRING] = 'player/getRole/$1/$2'; //Done
 $route['Player/'.ANY_STRING.'/saleReport'] = 'player/saleReport/$1';
 $route['Player/'.ANY_STRING.'/saleHistory/'.ANY_STRING] = 'player/saleHistory/$1/$2';
-$route['Player/'.ANY_STRING.'/getRole/'.ANY_STRING] = 'player/getRole/$1/$2';
-$route['Player/'.ANY_STRING.'/saleBoard/'.ANY_STRING] = 'player/saleBoard/$1/$2';
 
-
-// supposed to be move to Organization controller
-$route['Player/'.ANY_STRING.'/getChildNode/'.ANY_STRING] = 'player/getChildNode/$1/$2';
-$route['Player/'.ANY_STRING.'/Node_saleReport'] = 'player/Node_saleReport/$1';
+// supposed to be moved to Organization controller
+$route['Player/'.ANY_STRING.'/getChildNode/'.ANY_STRING] = 'player/getChildNode/$1/$2';  //Done
+$route['Player/'.ANY_STRING.'/Node_saleReport'] = 'player/Node_saleReport/$1'; //Done
+$route['Player/'.ANY_STRING.'/Node_saleHistory/'.ANY_STRING] = 'player/Node_saleHistory/$1/$2'; //Done
+$route['Player/'.ANY_STRING.'/saleBoard/'.ANY_STRING] = 'player/saleBoard/$1/$2'; //Done
 
 //badge API
 $route['Badge/'.ANY_STRING] = 'badge/index/$1';

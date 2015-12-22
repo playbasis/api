@@ -2638,7 +2638,6 @@ class Player_model extends MY_Model
 		if(empty($result)){
 			return null;
 		}else{
-			//return $result[0]['node_id'];
 			return $result;
 		}
 	}
@@ -2659,7 +2658,6 @@ class Player_model extends MY_Model
 		if(empty($result)){
 			return null;
 		}else{
-			//return $result[0]['node_id'];
 			return $result;
 		}
 	}
@@ -2689,7 +2687,6 @@ class Player_model extends MY_Model
 		$current_month_sales = 0;
 		$previous_month_sales = 0;
 
-		//$node_list = self::getAllStoreOfNode($client_id, $site_id,$node_id);
 		$node_to_match = array();
 		foreach($node_list as $node){
 			array_push($node_to_match, array('node_id'=>new MongoId($node)));
@@ -2703,19 +2700,18 @@ class Player_model extends MY_Model
 		}
 
 		$this_month_time = strtotime($year."-".$month);
-		$month = $month-1;
-		$previous_month_time = strtotime($year."-".$month);
+		$previous_month_time = strtotime('-1 month', $this_month_time);
 
-		$current_month = date("m",$this_month_time);
-		$current_year = date("Y",$this_month_time);
-		$previous_month = date("m",$previous_month_time);
-		$previous_year = date("Y",$previous_month_time);
-		// Aggregate the data
 		$first = date('Y-m-01', $previous_month_time);
 		$from = strtotime($first.' 00:00:00');
 
 		$last = date('Y-m-t', $this_month_time);
 		$to   = strtotime($last.' 23:59:59');
+
+		$current_month = date("m",$this_month_time);
+		//$current_year = date("Y",$this_month_time);
+		$previous_month = date("m",$previous_month_time);
+		//$previous_year = date("Y",$previous_month_time);
 
 		$status = $this->mongo_db->aggregate('playbasis_validated_action_log', array(
 
@@ -2744,8 +2740,6 @@ class Player_model extends MY_Model
 			}
 		}
 
-		//$result[self::getTypeOfNode($client_id, $site_id,$node_id)]=$node_id;
-
 		if($current_month_sales==0&&$previous_month_sales==0){
 			$result['percent_changed']=0;
 		}elseif($previous_month_sales==0){
@@ -2760,12 +2754,9 @@ class Player_model extends MY_Model
 		return $result;
 	}
 
-	public function getSaleHistoryOfNode($client_id, $site_id, $node_list, $action, $month=null, $year=null,$count){
+	public function getSaleHistoryOfNode($client_id, $site_id, $node_list, $action, $parameter, $month=null, $year=null,$count){
 		$result = array();
-		$current_month_sales = 0;
-		//$previous_month_sales = 0;
 
-		//$node_list = self::getAllStoreOfNode($client_id, $site_id,$node_id);
 		$node_to_match = array();
 		foreach($node_list as $node){
 			array_push($node_to_match, array('node_id'=>new MongoId($node)));
@@ -2779,17 +2770,14 @@ class Player_model extends MY_Model
 		}
 
 		$this_month_time = strtotime($year."-".$month);
-		$month = $month-$count;
-		$previous_month_time = strtotime($year."-".$month);
 
-		$current_month = date("m",$this_month_time);
-		//$previous_month = date("m",$previous_month_time);
-		// Aggregate the data
-		$first = date('Y-m-01', $previous_month_time);
+		$first = date('Y-m-01', strtotime('-'.($count).' month', $this_month_time));
 		$from = strtotime($first.' 00:00:00');
 
 		$last = date('Y-m-t', $this_month_time);
 		$to   = strtotime($last.' 23:59:59');
+
+
 
 		$status = $this->mongo_db->aggregate('playbasis_validated_action_log', array(
 
@@ -2804,34 +2792,28 @@ class Player_model extends MY_Model
 				),
 				array(
 						'$group' => array(
-								'_id' => array("month"=> array('$month' => '$date_added'),"year"=>array('$year' => '$date_added')),
-								//'_id' => array('$and' => array(array('$month' => '$date_added'),array('$year' => '$date_added'))),
-								'amount' => array('$push' => '$parameters.amount'))
+								'_id' => array("year"=>array('$year' => '$date_added'),"month"=> array('$month' => '$date_added')),
+								$parameter => array('$push' => '$parameters.'.$parameter))
 				),
+				array(
+						'$sort' => array('_id' => -1),
+				)
 		));
 
+		array_push($status['result'],0);
+		$gap=0;
+		for($index = 0; $index < $count; $index++){
+			$current_month = date("m",strtotime('-'.($index).' month', $this_month_time));
+			$current_year = date("Y",strtotime('-'.($index).' month', $this_month_time));
 
-		foreach($status['result'] as $entry){
-			$result[$entry['_id']['year']][$entry['_id']['month']] = array_sum($entry['amount']);
-			/*if($entry['_id']==$current_month){
-				$current_month_sales = array_sum($entry['amount']);
-			}elseif($entry['_id']==$previous_month){
-				$previous_month_sales = array_sum($entry['amount']);
-			}*/
+			if($status['result'][$index-$gap]['_id']['month']!=$current_month || $status['result'][$index-$gap]['_id']['year']!=$current_year){
+				$result[$current_year][$current_month]=array($parameter=>0);
+				$gap++;
+			}else{
+				$result[$current_year][$current_month]= array($parameter=>array_sum($status['result'][$index-$gap][$parameter]));
+			}
+
 		}
-
-		//$result[self::getTypeOfNode($client_id, $site_id,$node_id)]=$node_id;
-
-		/*if($current_month_sales==0&&$previous_month_sales==0){
-			$result['percent_changed']=0;
-		}elseif($previous_month_sales==0){
-			$result['percent_changed']=100;
-		}else{
-			$result['percent_changed']=(($current_month_sales-$previous_month_sales)*100)/$previous_month_sales;
-		}
-
-		$result['$current_month_sales']=$current_month_sales;
-		$result['$previous_month_sales']= $previous_month_sales;*/
 
 		return $result;
 	}
