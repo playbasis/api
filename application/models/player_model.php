@@ -1507,24 +1507,43 @@ class Player_model extends MY_Model
 
     public function computeDau($action, $d)
     {
+        // compute for player
         $this->mongo_db->select(array());
         $this->mongo_db->where(array(
             'pb_player_id' => $action['pb_player_id'],
+            'client_id' => $action['client_id'],
+            'site_id' => $action['site_id'],
+            'date_added' => new MongoDate($d)
+        ));
+        $this->mongo_db->limit(1);
+        $r = $this->mongo_db->get('playbasis_player_dau');
+        if (!$r){
+            // only keep new day, player
+            $this->mongo_db->insert('playbasis_player_dau', array(
+                'pb_player_id' => $action['pb_player_id'],
+                'client_id' => $action['client_id'],
+                'site_id' => $action['site_id'],
+                'date_added' => new MongoDate($d)
+            ), array("w" => 0, "j" => false));
+        }
+
+        // compute for Action
+        $this->mongo_db->select(array());
+        $this->mongo_db->where(array(
             'client_id' => $action['client_id'],
             'site_id' => $action['site_id'],
             'action_id' => $action['action_id'],
             'date_added' => new MongoDate($d)
         ));
         $this->mongo_db->limit(1);
-        $r = $this->mongo_db->get('playbasis_player_dau');
+        $r = $this->mongo_db->get('playbasis_player_action_dau');
         if ($r) {
             $r = $r[0];
             $this->mongo_db->where(array('_id' => $r['_id']));
             $this->mongo_db->inc('count', 1);
-            $this->mongo_db->update('playbasis_player_dau', array("w" => 0, "j" => false));
+            $this->mongo_db->update('playbasis_player_action_dau', array("w" => 0, "j" => false));
         } else {
-            $this->mongo_db->insert('playbasis_player_dau', array(
-                'pb_player_id' => $action['pb_player_id'],
+            $this->mongo_db->insert('playbasis_player_action_dau', array(
                 'client_id' => $action['client_id'],
                 'site_id' => $action['site_id'],
                 'action_id' => $action['action_id'],
@@ -1949,14 +1968,9 @@ class Player_model extends MY_Model
     public function new_registration($data, $from = null, $to = null)
     {
         $this->set_site_mongodb($data['site_id']);
-        $action_id = $this->findAction(array_merge($data, array('action_name' => 'register')));
-        if (!$action_id) {
-            return array();
-        }
         $match = array(
             'client_id' => $data['client_id'],
             'site_id' => $data['site_id'],
-            'action_id' => $action_id,
         );
         if (($from || $to) && !isset($match['date_added'])) {
             $match['date_added'] = array();
@@ -1967,7 +1981,7 @@ class Player_model extends MY_Model
         if ($to) {
             $match['date_added']['$lte'] = new MongoDate(strtotime($to . ' 23:59:59'));
         }
-        $_result = $this->mongo_db->aggregate('playbasis_player_dau', array(
+        $_result = $this->mongo_db->aggregate('playbasis_player', array(
             array(
                 '$match' => $match,
             ),
@@ -1976,20 +1990,43 @@ class Player_model extends MY_Model
             ),
         ));
         $_result = $_result ? $_result['result'] : array();
-        $result = array();
+
         if (is_array($_result)) {
+            $arr = array();
             foreach ($_result as $key => $value) {
-                array_push($result, array('_id' => date('Y-m-d', $value['_id']->sec), 'value' => $value['value']));
+                array_push($arr, array('_id' => date('Y-m-d', $value['_id']->sec), 'value' => $value['value']));
+            }
+            $result = array();
+            foreach ($arr as $data) {
+                $id = $data['_id'];
+                if ($this->isIdExistInArray($id, '_id',$result , $index)) {
+                    $result[$index]['value'] += $data['value'];
+                } else {
+                    array_push($result,$data);
+                }
             }
         }
+
         usort($result, 'cmp1');
+
         if ($from && (!isset($result[0]['_id']) || $result[0]['_id'] != $from)) {
             array_unshift($result, array('_id' => $from, 'value' => 0));
         }
         if ($to && (!isset($result[count($result) - 1]['_id']) || $result[count($result) - 1]['_id'] != $to)) {
             array_push($result, array('_id' => $to, 'value' => 0));
         }
+
         return $result;
+    }
+    private function isIdExistInArray($id, $key, $array , &$index){
+        if (is_array($array)){
+            foreach ($array as $index => $value){
+                if ($value[$key] == $id){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public function findAction($data)
@@ -2031,7 +2068,7 @@ class Player_model extends MY_Model
                 '$match' => $match,
             ),
             array(
-                '$group' => array('_id' => '$date_added', 'value' => array('$sum' => '$count'))
+                '$group' => array('_id' => '$date_added', 'value' => array('$sum' => 1))
             ),
         ));
         $_result = $_result ? $_result['result'] : array();
