@@ -1042,41 +1042,11 @@ class jigsaw extends MY_Model
         $anon_result = $this->mongo_db->get('playbasis_player');
         $anon_flag = isset($anon_result[0]['anonymous_flag']) ? $anon_result[0]['anonymous_flag'] : false;
 
-        // update badge master table
-        $this->set_site_mongodb($site_id);
-        $this->mongo_db->select(array(
-            'substract',
-            'quantity',
-            'claim',
-            'redeem'
-        ));
-        $this->mongo_db->where(array(
-            'client_id' => $client_id,
-            'site_id' => $site_id,
-            'badge_id' => $badgeId,
-            'deleted' => false
-        ));
-        $this->mongo_db->limit(1);
-        $result = $this->mongo_db->get('playbasis_badge_to_client');
-        if (!$result) {
+        if ($anon_flag) {
             return;
         }
-        $badgeInfo = $result[0];
-        $mongoDate = new MongoDate(time());
-        if (!$anon_flag && isset($badgeInfo['substract']) && $badgeInfo['substract']) {
-            $remainingQuantity = (int)$badgeInfo['quantity'] - (int)$quantity;
-            if ($remainingQuantity < 0) {
-                $remainingQuantity = 0;
-                $quantity = $badgeInfo['quantity'];
-            }
-            $this->mongo_db->set('quantity', $remainingQuantity);
-            $this->mongo_db->set('date_modified', $mongoDate);
-            $this->mongo_db->where('client_id', $client_id);
-            $this->mongo_db->where('site_id', $site_id);
-            $this->mongo_db->where('badge_id', $badgeId);
-            $this->mongo_db->update('playbasis_badge_to_client');
-        }
 
+        $mongoDate = new MongoDate(time());
         // update player badge table
         $this->mongo_db->where(array(
             'pb_player_id' => $pb_player_id,
@@ -1089,11 +1059,7 @@ class jigsaw extends MY_Model
                 'badge_id' => $badgeId
             ));
             $this->mongo_db->set('date_modified', $mongoDate);
-            if (isset($badgeInfo['claim']) && $badgeInfo['claim']) {
-                $this->mongo_db->inc('claimed', intval($quantity));
-            } else {
-                $this->mongo_db->dec('value', intval($quantity));
-            }
+            $this->mongo_db->dec('value', intval($quantity));
             $this->mongo_db->update('playbasis_reward_to_player');
         } else {
             $data = array(
@@ -1106,13 +1072,7 @@ class jigsaw extends MY_Model
                 'date_added' => $mongoDate,
                 'date_modified' => $mongoDate
             );
-            if (isset($badgeInfo['claim']) && $badgeInfo['claim']) {
-                $data['value'] = 0;
-                $data['claimed'] = intval($quantity);
-            } else {
-                $data['value'] = intval($quantity);
-                $data['claimed'] = 0;
-            }
+            $data['value'] = intval($quantity);
             $this->mongo_db->insert('playbasis_reward_to_player', $data);
         }
     }
