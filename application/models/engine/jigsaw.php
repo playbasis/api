@@ -992,7 +992,7 @@ class jigsaw extends MY_Model
                 'reward_id' => $rewardId
             ));
             $this->mongo_db->set('date_modified', new MongoDate(time()));
-            $this->mongo_db->inc('value', intval($quantity));
+            $this->mongo_db->dec('value', intval($quantity));
             $this->mongo_db->update('playbasis_reward_to_player');
         } else {
             $mongoDate = new MongoDate(time());
@@ -1092,7 +1092,7 @@ class jigsaw extends MY_Model
             if (isset($badgeInfo['claim']) && $badgeInfo['claim']) {
                 $this->mongo_db->inc('claimed', intval($quantity));
             } else {
-                $this->mongo_db->inc('value', intval($quantity));
+                $this->mongo_db->dec('value', intval($quantity));
             }
             $this->mongo_db->update('playbasis_reward_to_player');
         } else {
