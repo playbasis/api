@@ -14,10 +14,10 @@ class Node_stream extends MY_Model
         $this->load->library('mongo_db');
     }
 
-    public function publish($data, $domain_name, $site_id)
+    public function publish($data, $site_name, $site_id)
     {
         //get chanel name
-        $chanelName = preg_replace('/(http[s]?:\/\/)?([w]{3}\.)?/', '', $domain_name);
+        $chanelName = preg_replace('/(http[s]?:\/\/)?([w]{3}\.)?/', '', $site_name);
         $chanelName = preg_replace('/\//', '\\', $chanelName);
         $message = json_encode($this->activityFeedFormatter($data, $site_id));
         $ch = curl_init();

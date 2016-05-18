@@ -85,7 +85,6 @@ db.once('open', function callback(){
         date_modified: Date,
         date_start: Date,
         deleted: Boolean,
-        domain_name: String,
         image: String,
         last_send_limit_users: Date,
         limit_users: Number,
@@ -148,15 +147,15 @@ function verifyChannel(channel, callback)
 		callback(null, channel)
 	});*/
 
-    ClientSite.findOne({$or : [{domain_name: channel}, {domain_name: 'www.' + channel}]}, function (err, data) {
+    ClientSite.findOne({$or : [{site_name: channel}, {site_name: 'www.' + channel}]}, function (err, data) {
         if(err){
             console.log(err);
             callback(err);
             return;
         }
         console.log(data);
-        if(data && data.domain_name){
-            console.log('domain valid: ' + data.domain_name);
+        if(data && data.site_name){
+            console.log('domain valid: ' + data.site_name);
             callback(null, channel);
         }else{
             callback('channel does not exist', channel);
