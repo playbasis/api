@@ -11,10 +11,10 @@ from pprint import pprint
 HEAD_TAG = "# "
 API_TAG  = "## "
 TITILE_TAG = "#### "
-PARAM_HEADER = "Name | Type | Required | Description \n ---|:---:|--- :|---\n"
-RESPONSE_TEMPLATE = "Name | Type | Nullable | Description | Format\n---|:---:|--- :| ---\n"
+PARAM_HEADER = "| Name | Type | Required | Description | \n | --- | --- | --- |--- |\n"
+RESPONSE_TEMPLATE = "| Name | Type | Nullable | Description | Format| \n| --- | --- | --- | --- | --- |\n"
 RESPONSE_SAMPLE_TEMPLATE = "```json \n\n ```\n"
-ERROR_RESPONSE_TEMPLATE = "Name | Error Code | Message\n---|:---: |:---\n"
+ERROR_RESPONSE_TEMPLATE = "| Name | Error Code | Message | \n | --- | --- | --- |\n"
 
 ''' Sample
 "endpoints": [
@@ -108,10 +108,11 @@ def process(in_json):
 
                 parameters = method["parameters"]
                 for parameter in parameters:
+                    md_file.write("| ")
                     md_file.write(parameter["Name"] + " | ")
                     md_file.write(parameter["Type"] + " | ")
                     md_file.write(("NO | ") if parameter["Type"] == 'N' or parameter["Type"] == 'n' else "YES | ")
-                    md_file.write(parameter["Description"] + "\n")
+                    md_file.write(parameter["Description"] + " | \n")
 
                 md_file.write(TITILE_TAG + "Response" + "\n")
                 md_file.write(RESPONSE_TEMPLATE)
