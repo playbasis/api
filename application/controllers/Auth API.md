@@ -8,16 +8,16 @@ POST
 #### RequiresOAuth
 NO
 #### Parameters
-Name | Type | Required | Description |
- ---|:---:|--- :|--- :|
-api_key | string | YES | api key issued by Playbasis |
-api_secret | string | YES | api secret issued by Playbasis |
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| api_key | string | YES | api key issued by Playbasis |
+| api_secret | string | YES | api secret issued by Playbasis |
 
 #### Response
-Name | Type | Nullable | Description | Format |
----|:---:|--- :| --- :|
-token | `String` | NO | access token | |
-date_expire | `DateTime` | NO | access token | YYYY-MM-DDThh:mm:ssTZD |
+| Name | Type | Nullable | Description | Format |
+| --- | --- | --- | --- | --- |
+| token | `String` | NO | access token | |
+| date_expire | `DateTime` | NO | access token | YYYY-MM-DDThh:mm:ssTZD |
 
 #### Response Example
 ```json
@@ -27,9 +27,9 @@ date_expire | `DateTime` | NO | access token | YYYY-MM-DDThh:mm:ssTZD |
 }
  ```
 #### Error Response
-Name | Error Code | Message |
----|:---: |:--- |
-Invalid API-KEY OR API-SECRET | 0001 | Invalid API-KEY OR API-SECRET
+| Name | Error Code | Message |
+| --- | --- | --- |
+| Invalid API-KEY OR API-SECRET | 0001 | Invalid API-KEY OR API-SECRET
 
 ## Renew
 Create a new token and discard the current token
@@ -40,16 +40,16 @@ POST
 #### RequiresOAuth
 NO
 #### Parameters
-Name | Type | Required | Description
- ---|:---:|--- :|---
-api_key | string | YES | api key issued by Playbasis
-api_secret | string | YES | api secret issued by Playbasis
+| Name | Type | Required | Description
+| --- | --- | --- | --- | --- |
+| api_key | string | YES | api key issued by Playbasis
+| api_secret | string | YES | api secret issued by Playbasis
 
 #### Response
-Name | Type | Nullable | Description | Format |
----|:---:|--- :| ---:|
-token | `String` | NO | access token | |
-date_expire | `DateTime` | NO | access token | YYYY-MM-DDThh:mm:ssTZD |
+| Name | Type | Nullable | Description | Format |
+| --- | --- | --- | --- | --- |
+| token | `String` | NO | access token | |
+| date_expire | `DateTime` | NO | access token | YYYY-MM-DDThh:mm:ssTZD |
 
 
 #### Response Example
@@ -60,6 +60,6 @@ date_expire | `DateTime` | NO | access token | YYYY-MM-DDThh:mm:ssTZD |
 }
  ```
 #### Error Response
-Name | Error Code | Message |
----|:---: |:--- |
-Invalid API-KEY OR API-SECRET | 0001 | Invalid API-KEY OR API-SECRET
+| Name | Error Code | Message |
+| --- | --- | --- |
+| Invalid API-KEY OR API-SECRET | 0001 | Invalid API-KEY OR API-SECRET
