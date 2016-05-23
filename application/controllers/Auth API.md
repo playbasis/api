@@ -17,7 +17,7 @@ NO
 | Name | Type | Nullable | Description | Format |
 | --- | --- | --- | --- | --- |
 | token | `String` | NO | access token | |
-| date_expire | `DateTime` | NO | access token | YYYY-MM-DDThh:mm:ssTZD |
+| date_expire | `DateTime` | NO | token's expire date and time | YYYY-MM-DDThh:mm:ssTZD |
 
 #### Response Example
 ```json
@@ -49,7 +49,7 @@ NO
 | Name | Type | Nullable | Description | Format |
 | --- | --- | --- | --- | --- |
 | token | `String` | NO | access token | |
-| date_expire | `DateTime` | NO | access token | YYYY-MM-DDThh:mm:ssTZD |
+| date_expire | `DateTime` | NO | token's expire date and time | YYYY-MM-DDThh:mm:ssTZD |
 
 
 #### Response Example
