@@ -8,19 +8,19 @@ GET
 #### RequiresOAuth
 NO
 #### Parameters
-Name | Type | Required | Description 
- ---|:---:|--- :|---
-tags | string | YES | Specific tag(s) to find (e.g. foo,bar)
+| Name | Type | Required | Description | 
+ | --- | --- | --- |--- |
+| tags | string | YES | Specific tag(s) to find (e.g. foo,bar) | 
 #### Response
-Name | Type | Nullable | Description | Format
----|:---:|--- :| ---
+| Name | Type | Nullable | Description | Format| 
+| --- | --- | --- | --- | --- |
 #### Response Example
 ```json 
 
  ```
 #### Error Response
-Name | Error Code | Message
----|:---: |:---
+| Name | Error Code | Message | 
+ | --- | --- | --- |
 ## Badge Info
 Returns information about the badge with the specified id.
 #### HTTPMethod
@@ -30,16 +30,16 @@ GET
 #### RequiresOAuth
 NO
 #### Parameters
-Name | Type | Required | Description 
- ---|:---:|--- :|---
-id | integer | YES | badge id to query
+| Name | Type | Required | Description | 
+ | --- | --- | --- |--- |
+| id | integer | YES | badge id to query | 
 #### Response
-Name | Type | Nullable | Description | Format
----|:---:|--- :| ---
+| Name | Type | Nullable | Description | Format| 
+| --- | --- | --- | --- | --- |
 #### Response Example
 ```json 
 
  ```
 #### Error Response
-Name | Error Code | Message
----|:---: |:---
+| Name | Error Code | Message | 
+ | --- | --- | --- |
