@@ -8,20 +8,20 @@ GET
 #### RequiresOAuth
 NO
 #### Parameters
-| Name | Type | Required | Description | 
- | --- | --- | --- |--- |
+| Name | Type | Required | Description |
+| --- | --- | --- |--- |
 | action | string | YES | name of action performed | 
 | player_id | string | YES | player id as used in client's website | 
 #### Response
-| Name | Type | Nullable | Description | Format| 
+| Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
 ```json 
 
  ```
 #### Error Response
-| Name | Error Code | Message | 
- | --- | --- | --- |
+| Name | Error Code | Message |
+| --- | --- | --- |
 ## Rule Detail
 Get the detail of the rule.
 #### HTTPMethod
@@ -31,20 +31,20 @@ GET
 #### RequiresOAuth
 NO
 #### Parameters
-| Name | Type | Required | Description | 
- | --- | --- | --- |--- |
+| Name | Type | Required | Description |
+| --- | --- | --- |--- |
 | id | string | YES | rule id | 
 | player_id | string | YES | player id as used in client's website | 
 #### Response
-| Name | Type | Nullable | Description | Format| 
+| Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
 ```json 
 
  ```
 #### Error Response
-| Name | Error Code | Message | 
- | --- | --- | --- |
+| Name | Error Code | Message |
+| --- | --- | --- |
 ## Rule
 Process an action through all the game rules defined for a client’s website.
 #### HTTPMethod
@@ -54,8 +54,8 @@ POST
 #### RequiresOAuth
 NO
 #### Parameters
-| Name | Type | Required | Description | 
- | --- | --- | --- |--- |
+| Name | Type | Required | Description |
+| --- | --- | --- |--- |
 | token | string | YES | access token returned from Auth | 
 | action | string | YES | name of action performed | 
 | player_id | string | YES | player id as used in client's website | 
@@ -66,12 +66,12 @@ NO
 | node_id | string | YES | if needed, you can also specify a node id so that rule engine will process with that rule | 
 | session_id | string | YES | you can specify a session id to extend expire session time for that player | 
 #### Response
-| Name | Type | Nullable | Description | Format| 
+| Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
 ```json 
 
  ```
 #### Error Response
-| Name | Error Code | Message | 
- | --- | --- | --- |
+| Name | Error Code | Message |
+| --- | --- | --- |

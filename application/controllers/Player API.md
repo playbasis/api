@@ -390,19 +390,19 @@ POST
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| token | string | YES | access token returned from Auth |
-| id | string | YES | player id as used in client's website |
+| --- | --- | --- |--- |
+| token | string | YES | access token returned from Auth | 
+| id | string | YES | player id as used in client's website | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## List Custom Fields of Player
 Get custom fields information about a player
 #### HTTPMethod
@@ -413,18 +413,18 @@ GET
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| id | string | YES | player id as used in client's website |
+| --- | --- | --- |--- |
+| id | string | YES | player id as used in client's website | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Set Custom Field of Player
 Set custom field of a player
 #### HTTPMethod
@@ -435,21 +435,21 @@ POST
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| token | string | YES | access token returned from Auth |
-| id | string | YES | player id as used in client's website |
-| key | string | YES | custom field keys separated by comma |
-| value | string | YES | custom field values separated by comma |
+| --- | --- | --- |--- |
+| token | string | YES | access token returned from Auth | 
+| id | string | YES | player id as used in client's website | 
+| key | string | YES | custom field keys separated by comma | 
+| value | string | YES | custom field values separated by comma | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Register
 Register a user from client's website as a Playbasis player.
 #### HTTPMethod
@@ -460,34 +460,34 @@ POST
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| token | string | YES | access token returned from Auth |
-| id | string | YES | player id as used in client's website *** It's available only [A-Za-z0-9_-] |
-| username | string | YES | username of the player |
-| email | string | YES | email address of the player |
-| image | string | YES | url to the player profile image |
-| phone_number | string | YES | +66xxyyyzzzz |
-| facebook_id | string | YES | facebook id of the player |
-| twitter_id | string | YES | twitter id of the player |
-| password | string | YES | password of the player |
-| first_name | string | YES | first name of the player |
-| last_name | string | YES | last name of the player |
-| gender | enumerated | YES | 1=Male, 2=Female |
-| birth_date | string | YES | date of birth in the format YYYY-MM-DD (ex.1982-09-29) |
-| code | string | YES | referral code of another player for invitation system |
-| anonymous | enumerated | YES | anonymous flag |
-| device_id | string | YES | device id to verify with SMS verification process |
-| approve_status | enumerated | YES | approval status |
+| --- | --- | --- |--- |
+| token | string | YES | access token returned from Auth | 
+| id | string | YES | player id as used in client's website *** It's available only [A-Za-z0-9_-] | 
+| username | string | YES | username of the player | 
+| email | string | YES | email address of the player | 
+| image | string | YES | url to the player profile image | 
+| phone_number | string | YES | +66xxyyyzzzz | 
+| facebook_id | string | YES | facebook id of the player | 
+| twitter_id | string | YES | twitter id of the player | 
+| password | string | YES | password of the player | 
+| first_name | string | YES | first name of the player | 
+| last_name | string | YES | last name of the player | 
+| gender | enumerated | YES | 1=Male, 2=Female | 
+| birth_date | string | YES | date of birth in the format YYYY-MM-DD (ex.1982-09-29) | 
+| code | string | YES | referral code of another player for invitation system | 
+| anonymous | enumerated | YES | anonymous flag | 
+| device_id | string | YES | device id to verify with SMS verification process | 
+| approve_status | enumerated | YES | approval status | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Update
 Update player information.
 #### HTTPMethod
@@ -498,34 +498,34 @@ POST
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| token | string | YES | access token returned from Auth |
-| id | string | YES | player id as used in client's website |
-| username | string | YES | username of the player |
-| email | string | YES | email address of the player |
-| image | string | YES | url to the player profile image |
-| phone_number | string | YES | +66xxyyyzzzz |
-| exp | number | YES | player's experience points |
-| level | number | YES | player's level |
-| facebook_id | string | YES | facebook id of the player |
-| twitter_id | string | YES | twitter id of the player |
-| password | string | YES | password of the player |
-| first_name | string | YES | first name of the player |
-| last_name | string | YES | last name of the player |
-| gender | enumerated | YES | 1=Male, 2=Female |
-| birth_date | string | YES | date of birth in the format YYYY-MM-DD (ex.1982-09-29) |
-| device_id | string | YES | device id to verify with SMS verification process |
-| approve_status | enumerated | YES | approval status |
+| --- | --- | --- |--- |
+| token | string | YES | access token returned from Auth | 
+| id | string | YES | player id as used in client's website | 
+| username | string | YES | username of the player | 
+| email | string | YES | email address of the player | 
+| image | string | YES | url to the player profile image | 
+| phone_number | string | YES | +66xxyyyzzzz | 
+| exp | number | YES | player's experience points | 
+| level | number | YES | player's level | 
+| facebook_id | string | YES | facebook id of the player | 
+| twitter_id | string | YES | twitter id of the player | 
+| password | string | YES | password of the player | 
+| first_name | string | YES | first name of the player | 
+| last_name | string | YES | last name of the player | 
+| gender | enumerated | YES | 1=Male, 2=Female | 
+| birth_date | string | YES | date of birth in the format YYYY-MM-DD (ex.1982-09-29) | 
+| device_id | string | YES | device id to verify with SMS verification process | 
+| approve_status | enumerated | YES | approval status | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Reset player password
 Reset player password that store in Playbasis system.
 #### HTTPMethod
@@ -536,19 +536,19 @@ POST
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| token | string | YES | access token returned from Auth |
-| email | string | YES | email as used in client's website |
+| --- | --- | --- |--- |
+| token | string | YES | access token returned from Auth | 
+| email | string | YES | email as used in client's website | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Verify player email
 Verify player email that store in Playbasis system.
 #### HTTPMethod
@@ -559,19 +559,19 @@ POST
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| token | string | YES | access token returned from Auth |
-| id | string | YES | player id as used in client's website |
+| --- | --- | --- |--- |
+| token | string | YES | access token returned from Auth | 
+| id | string | YES | player id as used in client's website | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Delete
 Permenently delete a player from Playbasis database.
 #### HTTPMethod
@@ -582,19 +582,19 @@ POST
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| token | string | YES | access token returned from Auth |
-| id | string | YES | player id as used in client's website |
+| --- | --- | --- |--- |
+| token | string | YES | access token returned from Auth | 
+| id | string | YES | player id as used in client's website | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Login
 Tell Playbasis system that a player has logged in.
 #### HTTPMethod
@@ -605,21 +605,21 @@ POST
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| token | string | YES | access token returned from Auth |
-| id | string | YES | player id as used in client's website |
-| session_id | string | YES | session id of the player |
-| session_expires_in | string | YES | session expires in seconds |
+| --- | --- | --- |--- |
+| token | string | YES | access token returned from Auth | 
+| id | string | YES | player id as used in client's website | 
+| session_id | string | YES | session id of the player | 
+| session_expires_in | string | YES | session expires in seconds | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Player Auth
 Authenticate player with data in Playbasis system then login and also create session.
 #### HTTPMethod
@@ -630,22 +630,22 @@ POST
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| token | string | YES | access token returned from Auth |
-| email | string | YES | email as used in client's website (either email or username is required) |
-| username | string | YES | username as used in client's website (either email or username is required) |
-| password | string | YES | password of the player |
-| device_token | string | YES | device token to verify with SMS verification process |
+| --- | --- | --- |--- |
+| token | string | YES | access token returned from Auth | 
+| email | string | YES | email as used in client's website (either email or username is required) | 
+| username | string | YES | username as used in client's website (either email or username is required) | 
+| password | string | YES | password of the player | 
+| device_token | string | YES | device token to verify with SMS verification process | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Request OTP
 Request One time password.
 #### HTTPMethod
@@ -656,23 +656,23 @@ POST
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| token | string | YES | access token returned from Auth |
-| id | string | YES | player id as used in client's website |
-| device_token | string | YES | access token returned from Device |
-| device_description | string | YES | Device model description |
-| device_name | string | YES | Device model name |
-| os_type | enumerated | YES | Choose os type |
+| --- | --- | --- |--- |
+| token | string | YES | access token returned from Auth | 
+| id | string | YES | player id as used in client's website | 
+| device_token | string | YES | access token returned from Device | 
+| device_description | string | YES | Device model description | 
+| device_name | string | YES | Device model name | 
+| os_type | enumerated | YES | Choose os type | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Request OTP for setup phone
 Request One time password for setup phone.
 #### HTTPMethod
@@ -683,24 +683,24 @@ POST
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| token | string | YES | access token returned from Auth |
-| id | string | YES | player id as used in client's website |
-| phone_number | string | YES | +66xxyyyzzzz |
-| device_token | string | YES | access token returned from Device |
-| device_description | string | YES | Device model description |
-| device_name | string | YES | Device model name |
-| os_type | enumerated | YES | Choose os type |
+| --- | --- | --- |--- |
+| token | string | YES | access token returned from Auth | 
+| id | string | YES | player id as used in client's website | 
+| phone_number | string | YES | +66xxyyyzzzz | 
+| device_token | string | YES | access token returned from Device | 
+| device_description | string | YES | Device model description | 
+| device_name | string | YES | Device model name | 
+| os_type | enumerated | YES | Choose os type | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Perform OTP verification
 Perform OTP verification from code that has sent to player SMS.
 #### HTTPMethod
@@ -711,20 +711,20 @@ POST
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| token | string | YES | access token returned from Auth |
-| id | string | YES | player id as use in client's site |
-| code | string | YES | OTP code as sent to player |
+| --- | --- | --- |--- |
+| token | string | YES | access token returned from Auth | 
+| id | string | YES | player id as use in client's site | 
+| code | string | YES | OTP code as sent to player | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Logout
 Tell Playbasis system that a player has logged out.
 #### HTTPMethod
@@ -735,20 +735,20 @@ POST
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| token | string | YES | access token returned from Auth |
-| id | string | YES | player id as used in client's website |
-| session_id | string | YES | session id of the player |
+| --- | --- | --- |--- |
+| token | string | YES | access token returned from Auth | 
+| id | string | YES | player id as used in client's website | 
+| session_id | string | YES | session id of the player | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## List Active Player Sessions
 List active sessions of a player in Playbasis system.
 #### HTTPMethod
@@ -759,18 +759,18 @@ GET
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| id | string | YES | player id as used in client's website |
+| --- | --- | --- |--- |
+| id | string | YES | player id as used in client's website | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Find a Player by Session
 Find a player given session ID.
 #### HTTPMethod
@@ -781,18 +781,18 @@ GET
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| session_id | string | YES | session id |
+| --- | --- | --- |--- |
+| session_id | string | YES | session id | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Points
 Returns information about all point-based rewards that a player currently have.
 #### HTTPMethod
@@ -803,18 +803,18 @@ GET
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| id | string | YES | player id as used in client's website |
+| --- | --- | --- |--- |
+| id | string | YES | player id as used in client's website | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Point
 Returns how much of specified the point-based reward a player currently have.
 #### HTTPMethod
@@ -825,19 +825,19 @@ GET
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| id | string | YES | player id as used in client's website |
-| point_name | string | YES | name of the point-based reward to query |
+| --- | --- | --- |--- |
+| id | string | YES | player id as used in client's website | 
+| point_name | string | YES | name of the point-based reward to query | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Point History
 Returns history points of player
 #### HTTPMethod
@@ -848,22 +848,22 @@ GET
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| id | string | YES | player id as used in client's website |
-| point_name | string | YES | name of the point-based reward to query |
-| offset | integer | YES | number of records starting |
-| limit | integer | YES | number of results to return |
-| order | string | YES | Specify sorted direction [desc, *asc*] |
+| --- | --- | --- |--- |
+| id | string | YES | player id as used in client's website | 
+| point_name | string | YES | name of the point-based reward to query | 
+| offset | integer | YES | number of records starting | 
+| limit | integer | YES | number of results to return | 
+| order | string | YES | Specify sorted direction [desc, *asc*] | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Action Time
 Returns the last time that player performed the specified action.
 #### HTTPMethod
@@ -874,19 +874,19 @@ GET
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| id | string | YES | player id as used in client's website |
-| action_name | string | YES | name of the action to query |
+| --- | --- | --- |--- |
+| id | string | YES | player id as used in client's website | 
+| action_name | string | YES | name of the action to query | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Last Action
 Returns the time and action that a player last performed.
 #### HTTPMethod
@@ -897,18 +897,18 @@ GET
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| id | string | YES | player id as used in client's website |
+| --- | --- | --- |--- |
+| id | string | YES | player id as used in client's website | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Action Count
 Returns the number of times that a player has performed the specified action.
 #### HTTPMethod
@@ -919,19 +919,19 @@ GET
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| id | string | YES | player id as used in client's website |
-| action_name | string | YES | name of the action to query |
+| --- | --- | --- |--- |
+| id | string | YES | player id as used in client's website | 
+| action_name | string | YES | name of the action to query | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Level
 Returns detail of level.
 #### HTTPMethod
@@ -942,18 +942,18 @@ GET
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| level | integer | YES | number of  level |
+| --- | --- | --- |--- |
+| level | integer | YES | number of  level | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Levels
 Returns all detail of level.
 #### HTTPMethod
@@ -964,17 +964,17 @@ GET
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
+| --- | --- | --- |--- |
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Badge
 Returns information about all the badges that a player has earned.
 #### HTTPMethod
@@ -985,19 +985,19 @@ GET
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| id | string | YES | player id as used in client's website |
-| tags | string | YES | Specific tag(s) to find (e.g. foo,bar) |
+| --- | --- | --- |--- |
+| id | string | YES | player id as used in client's website | 
+| tags | string | YES | Specific tag(s) to find (e.g. foo,bar) | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## All Badges
 Returns information about all the badges of the client as well as the amount that a player may earn.
 #### HTTPMethod
@@ -1008,19 +1008,19 @@ GET
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| id | string | YES | player id as used in client's website |
-| tags | string | YES | Specific tag(s) to find (e.g. foo,bar) |
+| --- | --- | --- |--- |
+| id | string | YES | player id as used in client's website | 
+| tags | string | YES | Specific tag(s) to find (e.g. foo,bar) | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Rank
 Returns list of players sorted by the specified point type.
 #### HTTPMethod
@@ -1031,20 +1031,20 @@ GET
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| rank_by | string | YES | name of point-based reward to rank players by |
-| limit | integer | YES | number of results to return |
-| mode | string | YES | weekly, monthly (default is all-time) |
+| --- | --- | --- |--- |
+| rank_by | string | YES | name of point-based reward to rank players by | 
+| limit | integer | YES | number of results to return | 
+| mode | string | YES | weekly, monthly (default is all-time) | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## DEPRECATED - Level
 Returns detail of level.
 #### HTTPMethod
@@ -1055,19 +1055,19 @@ POST
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| token | string | YES | access token returned from Auth |
-| level | integer | YES | number of level |
+| --- | --- | --- |--- |
+| token | string | YES | access token returned from Auth | 
+| level | integer | YES | number of level | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## DEPRECATED - Levels
 Returns all detail of level.
 #### HTTPMethod
@@ -1078,18 +1078,18 @@ POST
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| token | string | YES | access token returned from Auth |
+| --- | --- | --- |--- |
+| token | string | YES | access token returned from Auth | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Ranks
 Returns list of players sorted by each point type.
 #### HTTPMethod
@@ -1100,19 +1100,19 @@ GET
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| limit | integer | YES | number of results to return for each point type |
-| mode | string | YES | weekly, monthly (default is all-time) |
+| --- | --- | --- |--- |
+| limit | integer | YES | number of results to return for each point type | 
+| mode | string | YES | weekly, monthly (default is all-time) | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## DEPRECATED - Ranks
 Returns list of players sorted by each point type.
 #### HTTPMethod
@@ -1123,19 +1123,19 @@ POST
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| token | string | YES | access token returned from Auth |
-| limit | integer | YES | number of results to return for each point type |
+| --- | --- | --- |--- |
+| token | string | YES | access token returned from Auth | 
+| limit | integer | YES | number of results to return for each point type | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Goods
 Returns information about all the goods list that a player has redeem.
 #### HTTPMethod
@@ -1146,18 +1146,18 @@ GET
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| id | string | YES | player id as used in client's website |
+| --- | --- | --- |--- |
+| id | string | YES | player id as used in client's website | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Quest of Player
 Quest that the player has joined.
 #### HTTPMethod
@@ -1168,20 +1168,20 @@ GET
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| id | string | YES | quest id as player need to join |
-| player_id | string | YES | player id as used in client's website |
-| filter | string | YES | fields to be included (comma ',' as delimiter) |
+| --- | --- | --- |--- |
+| id | string | YES | quest id as player need to join | 
+| player_id | string | YES | player id as used in client's website | 
+| filter | string | YES | fields to be included (comma ',' as delimiter) | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Quest List of Player
 List of quests that the player has joined.
 #### HTTPMethod
@@ -1192,20 +1192,20 @@ GET
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| player_id | string | YES | player id as used in client's website |
-| tags | string | YES | Specific tag(s) to find (e.g. foo,bar) |
-| filter | string | YES | fields to be included (comma ',' as delimiter) |
+| --- | --- | --- |--- |
+| player_id | string | YES | player id as used in client's website | 
+| tags | string | YES | Specific tag(s) to find (e.g. foo,bar) | 
+| filter | string | YES | fields to be included (comma ',' as delimiter) | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## All Quests of Player
 List of all available quests of the client as well as the status of the player if joined.
 #### HTTPMethod
@@ -1216,18 +1216,18 @@ GET
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| id | string | YES | player id as used in client's website |
+| --- | --- | --- |--- |
+| id | string | YES | player id as used in client's website | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Quest Reward History
 Returns quest reward history of player
 #### HTTPMethod
@@ -1238,20 +1238,20 @@ GET
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| id | string | YES | player id as used in client's website |
-| offset | integer | YES | number of records starting |
-| limit | integer | YES | number of results to return |
+| --- | --- | --- |--- |
+| id | string | YES | player id as used in client's website | 
+| offset | integer | YES | number of records starting | 
+| limit | integer | YES | number of results to return | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Deduct Reward
 Deduct a reward from a given player.
 #### HTTPMethod
@@ -1262,22 +1262,22 @@ POST
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| token | string | YES | access token returned from Auth |
-| id | string | YES | player id as used in client's website |
-| reward | string | YES | the name of the reward |
-| amount | number | YES | amount |
-| force | number | YES | 0 = not force if player has not enough reward to deduct, 1 = force to do the deduct (and player's reward becomes zero) |
+| --- | --- | --- |--- |
+| token | string | YES | access token returned from Auth | 
+| id | string | YES | player id as used in client's website | 
+| reward | string | YES | the name of the reward | 
+| amount | number | YES | amount | 
+| force | number | YES | 0 = not force if player has not enough reward to deduct, 1 = force to do the deduct (and player's reward becomes zero) | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Player Referral Code
 Returns generated referral code of player
 #### HTTPMethod
@@ -1288,18 +1288,18 @@ GET
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| id | string | YES | player id as used in client's website |
+| --- | --- | --- |--- |
+| id | string | YES | player id as used in client's website | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Rank by Custom parameter
 Returns list of players sorted by rising custom parameter
 #### HTTPMethod
@@ -1310,22 +1310,22 @@ GET
 NO
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| action | string | YES | action of parameter to rank players by |
-| parameter | string | YES | name of parameter to rank players by |
-| limit | integer | YES | number of results to return |
-| month | string | YES | month to rank players by (01, 02, 03,..., 12) |
-| year | string | YES | year to rank players by (2015, 2016 , ...) |
+| --- | --- | --- |--- |
+| action | string | YES | action of parameter to rank players by | 
+| parameter | string | YES | name of parameter to rank players by | 
+| limit | integer | YES | number of results to return | 
+| month | string | YES | month to rank players by (01, 02, 03,..., 12) | 
+| year | string | YES | year to rank players by (2015, 2016 , ...) | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Get Associated Node
 Get associated node of player
 #### HTTPMethod
@@ -1336,18 +1336,18 @@ GET
 YES
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| id | string | YES | player id as used in client's website |
+| --- | --- | --- |--- |
+| id | string | YES | player id as used in client's website | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Get Role
 Get role of player in specific node
 #### HTTPMethod
@@ -1358,19 +1358,19 @@ GET
 YES
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| id | string | YES | player id as used in client's website |
-| node_id | string | YES | Node Id to add player |
+| --- | --- | --- |--- |
+| id | string | YES | player id as used in client's website | 
+| node_id | string | YES | Node Id to add player | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Sale report
 Sale report of any node that associated with the player
 #### HTTPMethod
@@ -1381,22 +1381,22 @@ GET
 YES
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| id | string | YES | player id as used in client's website |
-| month | string | YES | Select month to get sale report(ex. 1,2,..,12)[default = current month] |
-| year | string | YES | Select year to get sale report(ex. 2015)[default = current year] |
-| action | string | YES | Select action name to query from action log [default = "sell"] |
-| parameter | string | YES | Select parameter to report from action log [default = "amount"] |
+| --- | --- | --- |--- |
+| id | string | YES | player id as used in client's website | 
+| month | string | YES | Select month to get sale report(ex. 1,2,..,12)[default = current month] | 
+| year | string | YES | Select year to get sale report(ex. 2015)[default = current year] | 
+| action | string | YES | Select action name to query from action log [default = "sell"] | 
+| parameter | string | YES | Select parameter to report from action log [default = "amount"] | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |
 ## Unlock
 Unlock player for authentication
 #### HTTPMethod
@@ -1407,16 +1407,16 @@ POST
 YES
 #### Parameters
 | Name | Type | Required | Description |
- | --- | --- | --- |--- |
-| token | string | YES | access token returned from Auth |
-| id | string | YES | player id as used in client's website |
+| --- | --- | --- |--- |
+| token | string | YES | access token returned from Auth | 
+| id | string | YES | player id as used in client's website | 
 #### Response
 | Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
-```json
+```json 
 
  ```
 #### Error Response
 | Name | Error Code | Message |
- | --- | --- | --- |
+| --- | --- | --- |

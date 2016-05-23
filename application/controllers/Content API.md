@@ -8,8 +8,8 @@ GET
 #### RequiresOAuth
 NO
 #### Parameters
-| Name | Type | Required | Description | 
- | --- | --- | --- |--- |
+| Name | Type | Required | Description |
+| --- | --- | --- |--- |
 | id | string | YES | Specific id of content | 
 | title | string | YES | Specific title of content | 
 | category | string | YES | Specific category name of content | 
@@ -24,15 +24,15 @@ NO
 | player_id | string | YES | display content with given player id | 
 | only_new_content | enumerated | YES | true = display new content with [player_id] | 
 #### Response
-| Name | Type | Nullable | Description | Format| 
+| Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
 ```json 
 
  ```
 #### Error Response
-| Name | Error Code | Message | 
- | --- | --- | --- |
+| Name | Error Code | Message |
+| --- | --- | --- |
 ## Count Content
 Count content(s) by specified filter fields
 #### HTTPMethod
@@ -42,20 +42,20 @@ GET
 #### RequiresOAuth
 NO
 #### Parameters
-| Name | Type | Required | Description | 
- | --- | --- | --- |--- |
+| Name | Type | Required | Description |
+| --- | --- | --- |--- |
 | category | string | YES | Specific category name of content | 
 | player_exclude | string | YES | Find content which no activity with player | 
 #### Response
-| Name | Type | Nullable | Description | Format| 
+| Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
 ```json 
 
  ```
 #### Error Response
-| Name | Error Code | Message | 
- | --- | --- | --- |
+| Name | Error Code | Message |
+| --- | --- | --- |
 ## Create content
 Create content
 #### HTTPMethod
@@ -65,8 +65,8 @@ POST
 #### RequiresOAuth
 NO
 #### Parameters
-| Name | Type | Required | Description | 
- | --- | --- | --- |--- |
+| Name | Type | Required | Description |
+| --- | --- | --- |--- |
 | token | string | YES | access token returned from Auth | 
 | title | string | YES | Specific title of content | 
 | summary | string | YES | Specific summary of content | 
@@ -82,15 +82,15 @@ NO
 | key | string | YES | custom field keys separated by comma | 
 | value | string | YES | custom field values separated by comma | 
 #### Response
-| Name | Type | Nullable | Description | Format| 
+| Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
 ```json 
 
  ```
 #### Error Response
-| Name | Error Code | Message | 
- | --- | --- | --- |
+| Name | Error Code | Message |
+| --- | --- | --- |
 ## Update content
 Update content by content ID
 #### HTTPMethod
@@ -100,8 +100,8 @@ POST
 #### RequiresOAuth
 NO
 #### Parameters
-| Name | Type | Required | Description | 
- | --- | --- | --- |--- |
+| Name | Type | Required | Description |
+| --- | --- | --- |--- |
 | token | string | YES | access token returned from Auth | 
 | content_id | string | YES | content id as used in client's content | 
 | title | string | YES | Specific title of content | 
@@ -117,15 +117,15 @@ NO
 | key | string | YES | custom field keys separated by comma | 
 | value | string | YES | custom field values separated by comma | 
 #### Response
-| Name | Type | Nullable | Description | Format| 
+| Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
 ```json 
 
  ```
 #### Error Response
-| Name | Error Code | Message | 
- | --- | --- | --- |
+| Name | Error Code | Message |
+| --- | --- | --- |
 ## Delete content
 Delete existing content
 #### HTTPMethod
@@ -135,20 +135,20 @@ POST
 #### RequiresOAuth
 NO
 #### Parameters
-| Name | Type | Required | Description | 
- | --- | --- | --- |--- |
+| Name | Type | Required | Description |
+| --- | --- | --- |--- |
 | token | string | YES | access token returned from Auth | 
 | content_id | string | YES | content id as used in client's content | 
 #### Response
-| Name | Type | Nullable | Description | Format| 
+| Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
 ```json 
 
  ```
 #### Error Response
-| Name | Error Code | Message | 
- | --- | --- | --- |
+| Name | Error Code | Message |
+| --- | --- | --- |
 ## Retrieve Category
 Retrieve category by specified filter fields
 #### HTTPMethod
@@ -158,8 +158,8 @@ GET
 #### RequiresOAuth
 NO
 #### Parameters
-| Name | Type | Required | Description | 
- | --- | --- | --- |--- |
+| Name | Type | Required | Description |
+| --- | --- | --- |--- |
 | id | string | YES | Specific id of category | 
 | name | string | YES | Specific name of category | 
 | sort | string | YES | Specific field to sort ('_id', 'name', 'date_added', 'date_modified') | 
@@ -167,15 +167,15 @@ NO
 | offset | integer | YES | number of records starting | 
 | limit | integer | YES | number of results to return | 
 #### Response
-| Name | Type | Nullable | Description | Format| 
+| Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
 ```json 
 
  ```
 #### Error Response
-| Name | Error Code | Message | 
- | --- | --- | --- |
+| Name | Error Code | Message |
+| --- | --- | --- |
 ## Create Category
 Create content category
 #### HTTPMethod
@@ -185,20 +185,20 @@ POST
 #### RequiresOAuth
 NO
 #### Parameters
-| Name | Type | Required | Description | 
- | --- | --- | --- |--- |
+| Name | Type | Required | Description |
+| --- | --- | --- |--- |
 | token | string | YES | access token returned from Auth | 
 | name | string | YES | Specific name of category | 
 #### Response
-| Name | Type | Nullable | Description | Format| 
+| Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
 ```json 
 
  ```
 #### Error Response
-| Name | Error Code | Message | 
- | --- | --- | --- |
+| Name | Error Code | Message |
+| --- | --- | --- |
 ## Update Category
 Update content category
 #### HTTPMethod
@@ -208,21 +208,21 @@ POST
 #### RequiresOAuth
 NO
 #### Parameters
-| Name | Type | Required | Description | 
- | --- | --- | --- |--- |
+| Name | Type | Required | Description |
+| --- | --- | --- |--- |
 | token | string | YES | access token returned from Auth | 
 | id | string | YES | Specific id of category | 
 | name | string | YES | Specific new name of category | 
 #### Response
-| Name | Type | Nullable | Description | Format| 
+| Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
 ```json 
 
  ```
 #### Error Response
-| Name | Error Code | Message | 
- | --- | --- | --- |
+| Name | Error Code | Message |
+| --- | --- | --- |
 ## Delete Category
 Delete content category
 #### HTTPMethod
@@ -232,20 +232,20 @@ POST
 #### RequiresOAuth
 NO
 #### Parameters
-| Name | Type | Required | Description | 
- | --- | --- | --- |--- |
+| Name | Type | Required | Description |
+| --- | --- | --- |--- |
 | token | string | YES | access token returned from Auth | 
 | id | string | YES | Specific id of category | 
 #### Response
-| Name | Type | Nullable | Description | Format| 
+| Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
 ```json 
 
  ```
 #### Error Response
-| Name | Error Code | Message | 
- | --- | --- | --- |
+| Name | Error Code | Message |
+| --- | --- | --- |
 ## Action Like
 Player send Like action to content
 #### HTTPMethod
@@ -255,23 +255,23 @@ POST
 #### RequiresOAuth
 NO
 #### Parameters
-| Name | Type | Required | Description | 
- | --- | --- | --- |--- |
+| Name | Type | Required | Description |
+| --- | --- | --- |--- |
 | token | string | YES | access token returned from Auth | 
 | content_id | string | YES | content id as used in client's content | 
 | player_id | string | YES | player id as used in client's website | 
 | key | string | YES | custom field keys separated by comma | 
 | value | string | YES | custom field values separated by comma | 
 #### Response
-| Name | Type | Nullable | Description | Format| 
+| Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
 ```json 
 
  ```
 #### Error Response
-| Name | Error Code | Message | 
- | --- | --- | --- |
+| Name | Error Code | Message |
+| --- | --- | --- |
 ## Action Dislike
 Player send Dislike action to content
 #### HTTPMethod
@@ -281,23 +281,23 @@ POST
 #### RequiresOAuth
 NO
 #### Parameters
-| Name | Type | Required | Description | 
- | --- | --- | --- |--- |
+| Name | Type | Required | Description |
+| --- | --- | --- |--- |
 | token | string | YES | access token returned from Auth | 
 | content_id | string | YES | content id as used in client's content | 
 | player_id | string | YES | player id as used in client's website | 
 | key | string | YES | custom field keys separated by comma | 
 | value | string | YES | custom field values separated by comma | 
 #### Response
-| Name | Type | Nullable | Description | Format| 
+| Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
 ```json 
 
  ```
 #### Error Response
-| Name | Error Code | Message | 
- | --- | --- | --- |
+| Name | Error Code | Message |
+| --- | --- | --- |
 ## Give feedback
 Player give any feedback(s) to content
 #### HTTPMethod
@@ -307,8 +307,8 @@ POST
 #### RequiresOAuth
 NO
 #### Parameters
-| Name | Type | Required | Description | 
- | --- | --- | --- |--- |
+| Name | Type | Required | Description |
+| --- | --- | --- |--- |
 | token | string | YES | access token returned from Auth | 
 | content_id | string | YES | content id as used in client's content | 
 | player_id | string | YES | player id as used in client's website | 
@@ -316,12 +316,12 @@ NO
 | key | string | YES | custom field keys separated by comma | 
 | value | string | YES | custom field values separated by comma | 
 #### Response
-| Name | Type | Nullable | Description | Format| 
+| Name | Type | Nullable | Description | Format|
 | --- | --- | --- | --- | --- |
 #### Response Example
 ```json 
 
  ```
 #### Error Response
-| Name | Error Code | Message | 
- | --- | --- | --- |
+| Name | Error Code | Message |
+| --- | --- | --- |
