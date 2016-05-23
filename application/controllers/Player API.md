@@ -17,7 +17,7 @@ NO
 | --- | --- | --- | --- |  --- |
 | player | [player](#playerObject) | NO | JSON object of player |
 
-### <a name="playerObject"></a>Response: player
+#### <a name="playerObject"></a>Response: player
 | Name | Type | Nullable | Description | Format |
 | --- | --- | --- | --- | --- |
 | username | `string` | NO | player username as used in client's website |
@@ -75,7 +75,7 @@ Name | Type | Required | Description
 | --- | --- | ---| --- | --- |
 | player | [player](#playerObjectPrivate) | NO | JSON object of player |
 
-### <a name="playerObjectPrivate"></a>Response: player
+#### <a name="playerObjectPrivate"></a>Response: player
 | Name | Type | Nullable | Description | Format |
 | --- | --- | --- | --- | --- |
 | username | `string` | NO | player username as used in client's website |
@@ -136,7 +136,7 @@ NO
 | --- | --- | --- | --- |  --- |
 | player | [\[player\]](#playerArrayObjectPrivate) | NO | JSON array of player |
 
-### <a name="playerObjectPrivate"></a>Response: player
+#### <a name="playerObjectPrivate"></a>Response: player
 | Name | Type | Nullable | Description | Format |
 | --- | --- | --- | --- |  --- |
 | username | `string` | NO | player username as used in client's website |
@@ -231,7 +231,7 @@ NO
 | points | [\[points\]](#pointObject)| | NO | list of points(point, gold, exp) that player possess |
 
 
-### <a name="badgeObject"></a>Response: badge
+#### <a name="badgeObject"></a>Response: badge
 | Name | Type | Nullable | Description | Format
 | --- | --- | --- | --- | --- |
 | badge_id | `string` | NO | Badge id |
@@ -242,7 +242,7 @@ NO
 | hint | `string` | NO | Badge hint |
 | tags | `string` | YES | Badge tags |
 
-### <a name="goodsObject"></a>Response: goods
+#### <a name="goodsObject"></a>Response: goods
 Name | Type | Nullable | Description | Format
 | --- | --- | --- | --- | --- |
 | goods_id | `string` | NO | Goods id |
@@ -252,7 +252,7 @@ Name | Type | Nullable | Description | Format
 | code | `string` | NO | Goods redeem code |
 | amount | `int` | NO | Goods amount |
 
-### <a name="pointObject"></a>Response: point
+#### <a name="pointObject"></a>Response: point
 | Name | Type | Nullable | Description | Format
 | --- | --- | --- | --- | --- |
 | reward_id | `string` | NO | Reward id |
