@@ -11,10 +11,10 @@ from pprint import pprint
 HEAD_TAG = "# "
 API_TAG  = "## "
 TITILE_TAG = "#### "
-PARAM_HEADER = "| Name | Type | Required | Description | \n | --- | --- | --- |--- |\n"
-RESPONSE_TEMPLATE = "| Name | Type | Nullable | Description | Format| \n| --- | --- | --- | --- | --- |\n"
+PARAM_HEADER = "| Name | Type | Required | Description |\n| --- | --- | --- |--- |\n"
+RESPONSE_TEMPLATE = "| Name | Type | Nullable | Description | Format|\n| --- | --- | --- | --- | --- |\n"
 RESPONSE_SAMPLE_TEMPLATE = "```json \n\n ```\n"
-ERROR_RESPONSE_TEMPLATE = "| Name | Error Code | Message | \n | --- | --- | --- |\n"
+ERROR_RESPONSE_TEMPLATE = "| Name | Error Code | Message |\n| --- | --- | --- |\n"
 
 ''' Sample
 "endpoints": [
