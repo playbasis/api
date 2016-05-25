@@ -24,6 +24,36 @@
               "Type": "string",
               "Description": "api secret issued by Playbasis"
             }
+          ],
+          "response": [
+            {
+              "Name": "token",
+              "Nullable": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "access token",
+              "Format": ""
+            },
+            {
+              "Name": "date_expire",
+              "Nullable": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "token's expire date and time",
+              "Format": "YYYY-MM-DDThh:mm:ssTZD"
+            }
+          ],
+          "errorResponse": [
+            {
+              "Name" : "Invalid parameter",
+              "Code" : "0903",
+              "Message" : "Invalid parameter , [ api_key , api_secret ] require , must not be blank or special character"
+            },
+            {
+              "Name" : "Invalid API-KEY OR API-SECRET",
+              "Code" : "0001",
+              "Message" : "Invalid API-KEY OR API-SECRET"
+            }
           ]
         },
         {
@@ -47,6 +77,36 @@
               "Type": "string",
               "Description": "api secret issued by Playbasis"
             }
+          ],
+          "response": [
+            {
+              "Name": "token",
+              "Nullable": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "access token",
+              "Format": ""
+            },
+            {
+              "Name": "date_expire",
+              "Nullable": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "token's expire date and time",
+              "Format": "YYYY-MM-DDThh:mm:ssTZD"
+            }
+          ],
+          "errorResponse": [
+            {
+              "Name" : "Invalid parameter",
+              "Code" : "0903",
+              "Message" : "Invalid parameter , [ api_key , api_secret ] require , must not be blank or special character"
+            },
+            {
+              "Name" : "Invalid API-KEY OR API-SECRET",
+              "Code" : "0001",
+              "Message" : "Invalid API-KEY OR API-SECRET"
+            }
           ]
         }
       ]
@@ -68,7 +128,113 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "response" : [
+            {
+              "Name": "player",
+              "Nullable" : "N",
+              "Defaulte" : "",
+              "Type" : "jsonObject",
+              "Description" : "JSON object of player",
+              "Format" : "",
+              "Object" : [
+                {
+                  "Name": "username",
+                  "Nullable" : "N",
+                  "Defaulte" : "",
+                  "Type" : "string",
+                  "Description" : "player username as used in client's website",
+                  "Format" : "",
+                },
+                {
+                  "Name": "first_name",
+                  "Nullable" : "Y",
+                  "Defaulte" : "",
+                  "Type" : "string",
+                  "Description" : "player's first name",
+                  "Format" : "",
+                },
+                {
+                  "Name": "last_name",
+                  "Nullable" : "Y",
+                  "Defaulte" : "",
+                  "Type" : "string",
+                  "Description" : "player's last name",
+                  "Format" : "",
+                },
+                {
+                  "Name": "gender",
+                  "Nullable" : "N",
+                  "Defaulte" : "",
+                  "Type" : "int",
+                  "Description" : "0 = undefined, 1 = male, 2 = female",
+                  "Format" : "",
+                },
+                {
+                  "Name": "image",
+                  "Nullable" : "N",
+                  "Defaulte" : "",
+                  "Type" : "url",
+                  "Description" : "player image, return as url",
+                  "Format" : "",
+                },
+                {
+                  "Name": "exp",
+                  "Nullable" : "N",
+                  "Defaulte" : "",
+                  "Type" : "int",
+                  "Description" : "player experience point",
+                  "Format" : "",
+                },
+                {
+                  "Name": "level",
+                  "Nullable" : "N",
+                  "Defaulte" : "",
+                  "Type" : "url",
+                  "Description" : "player id as used in client's website",
+                  "Format" : "",
+                },
+                {
+                  "Name": "date_added",
+                  "Nullable" : "N",
+                  "Defaulte" : "",
+                  "Type" : "DateTime",
+                  "Description" : "Date that player was added",
+                  "Format" : "YYYY-MM-DDThh:mm:ssTZD",
+                },
+                {
+                  "Name": "birth_date",
+                  "Nullable" : "Y",
+                  "Defaulte" : "",
+                  "Type" : "DateTime",
+                  "Description" : "player's birth date ",
+                  "Format" : "YYYY-MM-DDThh:mm:ssTZD",
+                },
+                {
+                  "Name": "last_login",
+                  "Nullable" : "N",
+                  "Defaulte" : "",
+                  "Type" : "DateTime",
+                  "Description" : "Date that player last login",
+                  "Format" : "YYYY-MM-DDThh:mm:ssTZD",
+                },
+                {
+                  "Name": "last_logout",
+                  "Nullable" : "N",
+                  "Defaulte" : "",
+                  "Type" : "DateTime",
+                  "Description" : "Date that player last logout",
+                  "Format" : "YYYY-MM-DDThh:mm:ssTZD",
+                },
+                {
+                  "Name": "cl_player_id",
+                  "Nullable" : "N",
+                  "Defaulte" : "",
+                  "Type" : "string",
+                  "Description" : "player id as used in client's website",
+                  "Format" : "",
+                }
+              ]
         },
         {
           "MethodName": "Player Info (include private data)",
