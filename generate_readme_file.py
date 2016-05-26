@@ -71,6 +71,33 @@ ERROR_RESPONSE_TEMPLATE = "| Name | Error Code | Message |\n| --- | --- | --- |\
     },
 ]
 '''
+def processResponse(response):
+    result = ""
+    is_array = False if "IsArray" not in response or response["IsArray"] == "N" else True
+    is_object = True if response["Type"] == "object" else False
+
+    reference_object = []
+
+    result += "| "
+    result += (response["Name"] + " | ")
+    if is_array:
+        result += ("[" + response["Type"] + "]" + " | ")
+    elif is_object:
+        reference_object = response["ObjectParam"]
+        result += (response["Type"] + " | ")
+    else:
+        result += (response["Type"] + " | ")
+
+    if response["Nullable"] == 'N' or response["Nullable"] == 'n':
+        result += ("NO | ")
+    else:
+        result += ("YES | ")
+    result += (response["Description"] + " | ")
+    result += (response["Format"] + " | \n")
+
+    return result, reference_object, response["Name"]
+
+
 def process(in_json):
     with codecs.open(in_json, encoding='utf-8', errors="ignore") as data_file:
         data = json.load(data_file)
@@ -111,15 +138,43 @@ def process(in_json):
                     md_file.write("| ")
                     md_file.write(parameter["Name"] + " | ")
                     md_file.write(parameter["Type"] + " | ")
-                    md_file.write(("NO | ") if parameter["Type"] == 'N' or parameter["Type"] == 'n' else "YES | ")
+                    md_file.write(("NO | ") if parameter["Required"] == 'N' or parameter["Required"] == 'n' else "YES | ")
                     md_file.write(parameter["Description"] + " | \n")
 
+                responses = []
+
+                if "response" in method:
+                    responses = method["response"]
+
+                objects = []
                 md_file.write(TITILE_TAG + "Response" + "\n")
                 md_file.write(RESPONSE_TEMPLATE)
-                md_file.write(TITILE_TAG + "Response Example" + "\n")
+                while True:
+                    for response in responses:
+                        result, reference_object, reference_name = processResponse(response)
+                        md_file.write(result)
+                        if len(reference_object) > 0:
+                            objects.append(reference_object)
+
+                    if len(objects) > 0:
+                        responses = objects.pop()
+                        md_file.write("\n" + TITILE_TAG + "Response:" + reference_name + "\n")
+                        md_file.write(RESPONSE_TEMPLATE)
+                    else:
+                        break
+
+                md_file.write("\n" + TITILE_TAG + "Response Example" + "\n")
                 md_file.write(RESPONSE_SAMPLE_TEMPLATE)
-                md_file.write(TITILE_TAG + "Error Response" + "\n")
+
+                md_file.write("\n" + TITILE_TAG + "Error Response" + "\n")
                 md_file.write(ERROR_RESPONSE_TEMPLATE)
+
+                if "errorResponse" in method:
+                    errorResponse = method["errorResponse"]
+                    for error in errorResponse:
+                        md_file.write("| " + error["Name"] + " | ")
+                        md_file.write(error["Code"] + " | ")
+                        md_file.write(error["Message"] + " |\n")
 
             md_file.close()
 
