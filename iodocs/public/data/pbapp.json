@@ -9,6 +9,7 @@
           "HTTPMethod": "POST",
           "URI": "/Auth",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "api_key",
@@ -32,6 +33,7 @@
           "HTTPMethod": "POST",
           "URI": "/Auth/renew",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "api_key",
@@ -60,6 +62,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/:id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -76,6 +79,7 @@
           "HTTPMethod": "POST",
           "URI": "/Player/:id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -99,6 +103,7 @@
           "HTTPMethod": "POST",
           "URI": "/Player/list",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -122,6 +127,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/:id/data/all",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -138,6 +144,7 @@
           "HTTPMethod": "POST",
           "URI": "/Player/:id/data/all",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -161,6 +168,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/:id/custom",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -177,6 +185,7 @@
           "HTTPMethod": "POST",
           "URI": "/Player/:id/custom",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -214,6 +223,7 @@
           "HTTPMethod": "POST",
           "URI": "/Player/:id/register",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -355,6 +365,7 @@
           "HTTPMethod": "POST",
           "URI": "/Player/:id/update",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -492,6 +503,7 @@
           "HTTPMethod": "POST",
           "URI": "/Player/password/email",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -515,6 +527,7 @@
           "HTTPMethod": "POST",
           "URI": "/Player/:id/email/verify",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -538,6 +551,7 @@
           "HTTPMethod": "POST",
           "URI": "/Player/:id/delete",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -561,6 +575,7 @@
           "HTTPMethod": "POST",
           "URI": "/Player/:id/login",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -598,6 +613,7 @@
           "HTTPMethod": "POST",
           "URI": "/Player/auth",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -642,6 +658,7 @@
           "HTTPMethod": "POST",
           "URI": "/Player/auth/:id/requestOTPCode",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -697,6 +714,7 @@
           "HTTPMethod": "POST",
           "URI": "/Player/auth/:id/setupPhone",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -759,6 +777,7 @@
           "HTTPMethod": "POST",
           "URI": "/Player/auth/:id/verifyOTPCode",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -789,6 +808,7 @@
           "HTTPMethod": "POST",
           "URI": "/Player/:id/logout",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -819,6 +839,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/:id/sessions",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -835,6 +856,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/session/:session_id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "session_id",
@@ -851,6 +873,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/:id/points",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -867,6 +890,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/:id/point/:point_name",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -890,6 +914,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/:id/point_history",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -934,6 +959,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/:id/action/:action_name/time",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -957,6 +983,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/:id/action/time",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -973,6 +1000,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/:id/action/:action_name/count",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -996,6 +1024,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/level/:level",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "level",
@@ -1012,6 +1041,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/levels",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
           ]
         },
@@ -1021,6 +1051,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/:id/badge",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -1044,6 +1075,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/:id/badgeAll",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -1067,6 +1099,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/rank/:rank_by/:limit",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "rank_by",
@@ -1097,6 +1130,7 @@
           "HTTPMethod": "POST",
           "URI": "/Player/level/:level",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -1120,6 +1154,7 @@
           "HTTPMethod": "POST",
           "URI": "/Player/levels",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -1136,6 +1171,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/ranks/:limit",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "limit",
@@ -1159,6 +1195,7 @@
           "HTTPMethod": "POST",
           "URI": "/Player/ranks/:limit",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -1182,6 +1219,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/:id/goods",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -1198,6 +1236,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/quest/:id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -1228,6 +1267,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/quest",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -1258,6 +1298,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/questAll/:id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -1274,6 +1315,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/:id/quest_reward_history",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -1304,6 +1346,7 @@
           "HTTPMethod": "POST",
           "URI": "/Player/:id/deduct",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -1348,6 +1391,7 @@
           "HTTPMethod": "POST",
           "URI": "/Player/:sent_player_id/giveGift/:type",
           "RequiresOAuth": "Y",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -1404,6 +1448,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/:id/code",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -1420,6 +1465,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/rankParam/:action/:parameter",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "action",
@@ -1464,6 +1510,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/:id/getAssociatedNode",
           "RequiresOAuth": "Y",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -1480,6 +1527,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/:id/getRole/:node_id",
           "RequiresOAuth": "Y",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -1503,6 +1551,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/:id/saleReport",
           "RequiresOAuth": "Y",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -1547,6 +1596,7 @@
           "HTTPMethod": "GET",
           "URI": "/Player/:player_id/actionReport",
           "RequiresOAuth": "Y",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -1598,6 +1648,7 @@
           "HTTPMethod": "POST",
           "URI": "/Player/:id/unlock",
           "RequiresOAuth": "Y",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -1626,6 +1677,7 @@
           "HTTPMethod": "GET",
           "URI": "/Badges",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "tags",
@@ -1642,6 +1694,7 @@
           "HTTPMethod": "GET",
           "URI": "/Badge/:id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -1663,6 +1716,7 @@
           "HTTPMethod": "GET",
           "URI": "/Goods",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -1686,6 +1740,7 @@
           "HTTPMethod": "GET",
           "URI": "/Goods/:id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -1709,6 +1764,7 @@
           "HTTPMethod": "GET",
           "URI": "/Redeem/goodsGroup",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -1739,6 +1795,7 @@
           "HTTPMethod": "GET",
           "URI": "/Goods/sponsor",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": []
         },
         {
@@ -1747,6 +1804,7 @@
           "HTTPMethod": "GET",
           "URI": "/Goods/sponsor/:id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -1763,6 +1821,7 @@
           "HTTPMethod": "GET",
           "URI": "/Redeem/sponsorGroup",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -1793,6 +1852,7 @@
           "HTTPMethod": "GET",
           "URI": "/Goods/couponVerify",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "goods_id",
@@ -1823,6 +1883,7 @@
           "HTTPMethod": "POST",
           "URI": "/Goods/couponVerify",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -1885,6 +1946,7 @@
           "HTTPMethod": "GET",
           "URI": "/Engine/rules",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "action",
@@ -1908,6 +1970,7 @@
           "HTTPMethod": "GET",
           "URI": "/Engine/rule/:id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -1931,6 +1994,7 @@
           "HTTPMethod": "POST",
           "URI": "/Engine/rule",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -2008,6 +2072,7 @@
           "HTTPMethod": "GET",
           "URI": "/Quest",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "tags",
@@ -2024,6 +2089,7 @@
           "HTTPMethod": "GET",
           "URI": "/Quest/:id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -2040,6 +2106,7 @@
           "HTTPMethod": "GET",
           "URI": "/Quest/:id/mission/:mission_id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -2063,6 +2130,7 @@
           "HTTPMethod": "GET",
           "URI": "/Quest/available",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -2079,6 +2147,7 @@
           "HTTPMethod": "GET",
           "URI": "/Quest/:id/available",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -2102,6 +2171,7 @@
           "HTTPMethod": "POST",
           "URI": "/Quest/:id/join",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -2132,6 +2202,7 @@
           "HTTPMethod": "POST",
           "URI": "/Quest/joinAll",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -2155,6 +2226,7 @@
           "HTTPMethod": "POST",
           "URI": "/Quest/:id/cancel",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -2185,6 +2257,7 @@
           "HTTPMethod": "POST",
           "URI": "/Quest/reset",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -2215,6 +2288,7 @@
           "HTTPMethod": "GET",
           "URI": "/Quest/leader",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "quest_id",
@@ -2275,6 +2349,7 @@
           "HTTPMethod": "GET",
           "URI": "/Quiz/list",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -2305,6 +2380,7 @@
           "HTTPMethod": "GET",
           "URI": "/Quiz/:id/detail",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -2328,6 +2404,7 @@
           "HTTPMethod": "GET",
           "URI": "/Quiz/random/",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -2358,6 +2435,7 @@
           "HTTPMethod": "GET",
           "URI": "/Quiz/player/:player_id/:limit",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -2381,6 +2459,7 @@
           "HTTPMethod": "GET",
           "URI": "/Quiz/player/:player_id/pending/:limit",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -2404,6 +2483,7 @@
           "HTTPMethod": "GET",
           "URI": "/Quiz/:id/question",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -2445,6 +2525,7 @@
           "HTTPMethod": "POST",
           "URI": "/Quiz/:id/question",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -2493,6 +2574,7 @@
           "HTTPMethod": "POST",
           "URI": "/Quiz/:id/answer",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -2537,6 +2619,7 @@
           "HTTPMethod": "GET",
           "URI": "/Quiz/:id/rank/:limit",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -2560,6 +2643,7 @@
           "HTTPMethod": "GET",
           "URI": "/Quiz/:id/stat",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -2576,6 +2660,7 @@
           "HTTPMethod": "POST",
           "URI": "/Quiz/reset",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -2611,6 +2696,7 @@
           "HTTPMethod": "POST",
           "URI": "/Redeem/goods",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -2648,6 +2734,7 @@
           "HTTPMethod": "POST",
           "URI": "/Redeem/goodsGroup",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -2685,6 +2772,7 @@
           "HTTPMethod": "POST",
           "URI": "/Redeem/goodsGroup/verify",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -2722,6 +2810,7 @@
           "HTTPMethod": "POST",
           "URI": "/Redeem/sponsor",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -2759,6 +2848,7 @@
           "HTTPMethod": "POST",
           "URI": "/Redeem/sponsorGroup",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -2801,6 +2891,7 @@
           "HTTPMethod": "POST",
           "URI": "/Email/send",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -2845,6 +2936,7 @@
           "HTTPMethod": "POST",
           "URI": "/Email/goods",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -2896,6 +2988,7 @@
           "HTTPMethod": "GET",
           "URI": "/Email/recent",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -2919,6 +3012,7 @@
           "HTTPMethod": "GET",
           "URI": "/Email/template",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
           ]
         },
@@ -2928,6 +3022,7 @@
           "HTTPMethod": "GET",
           "URI": "/Email/template/:template_id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "template_id",
@@ -2951,6 +3046,7 @@
           "HTTPMethod": "POST",
           "URI": "/Sms/send",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -2988,6 +3084,7 @@
           "HTTPMethod": "POST",
           "URI": "/Sms/goods",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -3032,6 +3129,7 @@
           "HTTPMethod": "GET",
           "URI": "/Sms/recent",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -3055,6 +3153,7 @@
           "HTTPMethod": "GET",
           "URI": "/Sms/template",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
           ]
         },
@@ -3064,6 +3163,7 @@
           "HTTPMethod": "GET",
           "URI": "/Sms/template/:template_id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "template_id",
@@ -3087,6 +3187,7 @@
           "HTTPMethod": "POST",
           "URI": "/Push/deviceRegistration",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -3142,6 +3243,7 @@
           "HTTPMethod": "POST",
           "URI": "/Push/send",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -3179,6 +3281,7 @@
           "HTTPMethod": "POST",
           "URI": "/Push/goods",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -3223,6 +3326,7 @@
           "HTTPMethod": "GET",
           "URI": "/Push/recent",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -3246,6 +3350,7 @@
           "HTTPMethod": "GET",
           "URI": "/Push/template",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
           ]
         },
@@ -3255,6 +3360,7 @@
           "HTTPMethod": "GET",
           "URI": "/Push/template/:template_id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "template_id",
@@ -3283,6 +3389,7 @@
           "HTTPMethod": "GET",
           "URI": "/Service/recentActivities",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -3327,6 +3434,7 @@
           "HTTPMethod": "GET",
           "URI": "/Service/detailActivityFeed/:activity_id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "activity_id",
@@ -3343,6 +3451,7 @@
           "HTTPMethod": "POST",
           "URI": "/Service/likeActivityFeed/:activity_id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -3373,6 +3482,7 @@
           "HTTPMethod": "POST",
           "URI": "/Service/commentActivityFeed/:activity_id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -3415,6 +3525,7 @@
           "HTTPMethod": "GET",
           "URI": "/Service/recent_point",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "point_name",
@@ -3445,6 +3556,7 @@
           "HTTPMethod": "POST",
           "URI": "/Service/reset_point",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -3473,6 +3585,7 @@
           "HTTPMethod": "get",
           "URI": "/StoreOrg/organizes",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -3524,6 +3637,7 @@
           "HTTPMethod": "get",
           "URI": "/StoreOrg/nodes",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -3589,6 +3703,7 @@
           "HTTPMethod": "POST",
           "URI": "/StoreOrg/nodes/:node_id/addPlayer/:player_id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -3619,6 +3734,7 @@
           "HTTPMethod": "POST",
           "URI": "/StoreOrg/nodes/:node_id/removePlayer/:player_id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -3649,6 +3765,7 @@
           "HTTPMethod": "POST",
           "URI": "/StoreOrg/nodes/:node_id/setPlayerRole/:player_id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -3686,6 +3803,7 @@
           "HTTPMethod": "POST",
           "URI": "/StoreOrg/nodes/:node_id/unsetPlayerRole/:player_id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -3723,6 +3841,7 @@
           "HTTPMethod": "GET",
           "URI": "/StoreOrg/players/:node_id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
@@ -3746,6 +3865,7 @@
           "HTTPMethod": "GET",
           "URI": "/StoreOrg/rankPeer/:node_id/:rank_by",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
@@ -3818,6 +3938,7 @@
           "HTTPMethod": "GET",
           "URI": "/StoreOrg/rankPeerByAccAction/:node_id/:action/:parameter",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
@@ -3890,6 +4011,7 @@
           "HTTPMethod": "GET",
           "URI": "/StoreOrg/nodes/:node_id/getChildNode/:layer",
           "RequiresOAuth": "Y",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
@@ -3913,6 +4035,7 @@
           "HTTPMethod": "GET",
           "URI": "/StoreOrg/nodes/:node_id/saleReport",
           "RequiresOAuth": "Y",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
@@ -3957,6 +4080,7 @@
           "HTTPMethod": "GET",
           "URI": "/StoreOrg/nodes/:node_id/saleHistory/:count",
           "RequiresOAuth": "Y",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
@@ -4008,6 +4132,7 @@
           "HTTPMethod": "GET",
           "URI": "/StoreOrg/nodes/:node_id/saleBoard/:layer",
           "RequiresOAuth": "Y",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
@@ -4073,6 +4198,7 @@
           "HTTPMethod": "POST",
           "URI": "/StoreOrg/nodes/:node_id/addContent/:content_node_id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4103,6 +4229,7 @@
           "HTTPMethod": "POST",
           "URI": "/StoreOrg/nodes/:node_id/removeContent/:content_node_id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4133,6 +4260,7 @@
           "HTTPMethod": "POST",
           "URI": "/StoreOrg/nodes/:node_id/setContentRole/:content_node_id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4170,6 +4298,7 @@
           "HTTPMethod": "POST",
           "URI": "/StoreOrg/nodes/:node_id/unsetContentRole/:content_node_id",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4212,6 +4341,7 @@
           "HTTPMethod": "GET",
           "URI": "/Content",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
@@ -4326,6 +4456,7 @@
           "HTTPMethod": "GET",
           "URI": "/Content/count",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "title",
@@ -4398,6 +4529,7 @@
           "HTTPMethod": "POST",
           "URI": "/Content/addContent",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4512,6 +4644,7 @@
           "HTTPMethod": "POST",
           "URI": "/Content/:node_id/update",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4619,6 +4752,7 @@
           "HTTPMethod": "POST",
           "URI": "/Content/:node_id/delete",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4642,6 +4776,7 @@
           "HTTPMethod": "GET",
           "URI": "/Content/category",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -4693,6 +4828,7 @@
           "HTTPMethod": "POST",
           "URI": "/Content/category/create",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4716,6 +4852,7 @@
           "HTTPMethod": "POST",
           "URI": "/Content/category/update",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4746,6 +4883,7 @@
           "HTTPMethod": "POST",
           "URI": "/Content/category/delete",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4769,6 +4907,7 @@
           "HTTPMethod": "POST",
           "URI": "/Content/:node_id/player/:player_id/like",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4813,6 +4952,7 @@
           "HTTPMethod": "POST",
           "URI": "/Content/:node_id/player/:player_id/dislike",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4857,6 +4997,7 @@
           "HTTPMethod": "POST",
           "URI": "/Content/:node_id/player/:player_id/feedback",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4913,6 +5054,7 @@
           "HTTPMethod": "GET",
           "URI": "/Link/",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "link",
@@ -4929,6 +5071,7 @@
           "HTTPMethod": "POST",
           "URI": "/Link/generate",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4950,6 +5093,7 @@
           "HTTPMethod": "GET",
           "URI": "/File/list",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -4987,6 +5131,7 @@
           "HTTPMethod": "POST",
           "URI": "/File/delete",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -5015,6 +5160,7 @@
           "HTTPMethod": "GET",
           "URI": "/Fitbit",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -5031,6 +5177,7 @@
           "HTTPMethod": "POST",
           "URI": "/Fitbit/add",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -5068,6 +5215,7 @@
           "HTTPMethod": "POST",
           "URI": "/Fitbit/:player_id/update",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -5105,6 +5253,7 @@
           "HTTPMethod": "POST",
           "URI": "/Fitbit/:player_id/delete",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -5128,6 +5277,7 @@
           "HTTPMethod": "GET",
           "URI": "/Fitbit/:player_id/data",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -5180,6 +5330,7 @@
           "HTTPMethod": "GET",
           "URI": "/Trip",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -5215,6 +5366,7 @@
           "HTTPMethod": "POST",
           "URI": "/Trip/startTrip",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -5238,6 +5390,7 @@
           "HTTPMethod": "POST",
           "URI": "/Trip/finishTrip",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -5272,6 +5425,7 @@
           "HTTPMethod": "GET",
           "URI": "/Trip/getTripLog",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -5295,6 +5449,7 @@
           "HTTPMethod": "POST",
           "URI": "/Trip/addTripLog",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -5379,6 +5534,7 @@
           "HTTPMethod": "GET",
           "URI": "/Game",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "game_name",
@@ -5451,6 +5607,7 @@
           "HTTPMethod": "GET",
           "URI": "/Game/playerItemStatus",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "game_name",
@@ -5489,6 +5646,7 @@
           "HTTPMethod": "POST",
           "URI": "/Game/setCurrentStage",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "token",
