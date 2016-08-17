@@ -2,6 +2,7 @@
   "endpoints": [
     {
       "name": "Auth API",
+      "endpoint": "Auth",
       "methods": [
         {
           "MethodName": "Auth",
@@ -55,6 +56,7 @@
     },
     {
       "name": "Player API",
+      "endpoint": "Player",
       "methods": [
         {
           "MethodName": "Player Info (public data only)",
@@ -1670,6 +1672,7 @@
     },
     {
       "name": "Badge API",
+      "endpoint": "Badge",
       "methods": [
         {
           "MethodName": "Badges Info",
@@ -1709,6 +1712,7 @@
     },
     {
       "name": "Goods API",
+      "endpoint": "Goods",
       "methods": [
         {
           "MethodName": "Goods List Info",
@@ -1919,6 +1923,7 @@
     },
     {
       "name": "Merchant API",
+      "endpoint": "Merchant",
       "methods": [
         {
           "MethodName": "Available Branch for Goods Group",
@@ -1939,6 +1944,7 @@
     },
     {
       "name": "Engine API",
+      "endpoint": "Engine",
       "methods": [
         {
           "MethodName": "List Rules",
@@ -2065,6 +2071,7 @@
     },
     {
       "name": "Quest API",
+      "endpoint": "Quest",
       "methods": [
         {
           "MethodName": "Quest List Info",
@@ -2342,6 +2349,7 @@
     },
     {
       "name": "Quiz API",
+      "endpoint": "Quiz",
       "methods": [
         {
           "MethodName": "A List of Active Quizzes",
@@ -2689,6 +2697,7 @@
     },
     {
       "name": "Redeem API",
+      "endpoint": "Redeem",
       "methods": [
         {
           "MethodName": "Redeem",
@@ -2884,6 +2893,7 @@
     },
     {
       "name": "Communication API",
+      "endpoint": "Communication",
       "methods": [
         {
           "MethodName": "Send Email",
@@ -3382,6 +3392,7 @@
     },
     {
       "name": "Live Feed API",
+      "endpoint": "LiveFeed",
       "methods": [
         {
           "MethodName": "Recent Activities",
@@ -3518,6 +3529,7 @@
     },
     {
       "name": "Service API",
+      "endpoint": "Service",
       "methods": [
         {
           "MethodName": "Recent Point",
@@ -3578,6 +3590,7 @@
     },
     {
       "name": "Store Organize API",
+      "endpoint": "StoreOrg",
       "methods": [
         {
           "MethodName": "List organizations",
@@ -4334,6 +4347,7 @@
     },
     {
       "name": "Content API",
+      "endpoint": "Content",
       "methods": [
         {
           "MethodName": "Retrieve Content",
@@ -5047,6 +5061,7 @@
     },
     {
       "name": "Link API",
+      "endpoint": "Link",
       "methods": [
         {
           "MethodName": "Find info of a link",
@@ -5086,6 +5101,7 @@
     },
     {
       "name": "File API",
+      "endpoint": "File",
       "methods": [
         {
           "MethodName": "Retrieve file data",
@@ -5153,6 +5169,7 @@
     },
     {
       "name": "Health API",
+      "endpoint": "Health",
       "methods": [
         {
           "MethodName": "Retrieve FitBit Player",
@@ -5323,6 +5340,7 @@
     },
     {
       "name": "Trip API",
+      "endpoint": "Trip",
       "methods": [
         {
           "MethodName": "Retrieve Trip Data",
@@ -5527,6 +5545,7 @@
     },
     {
       "name": "Game API",
+      "endpoint": "Game",
       "methods": [
         {
           "MethodName": "Retrieve Game setting",
