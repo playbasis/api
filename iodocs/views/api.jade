@@ -102,11 +102,11 @@ div.readable_area_wrapper
                                       div.title
                                           span.http-method #{method.HTTPMethod}
                                           span.name #{method.MethodName}
-                                          span.uri #{method.URI}
+                                          span.uri #{'/'+method.URI}
                                       form.hidden
                                           input(type='hidden', name='httpMethod', value=method.HTTPMethod)
                                           input(type='hidden', name='oauth', value=secure)
-                                          input(type='hidden', name='methodUri', value=method.URI)
+                                          input(type='hidden', name='methodUri', value='/'+method.URI)
 
                                           span.description #{method.Synopsis}
                                           br
@@ -125,7 +125,7 @@ div.readable_area_wrapper
                                                       - each parameter in method.parameters
                                                           - paramCount++
                                                           div(id='param' + paramCount)
-                                                            - if (parameter.Required =='Y')
+                                                            - if (parameter.Required !='N')
                                                                 - var required =true
                                                                 - var className ='required'
                                                             - else

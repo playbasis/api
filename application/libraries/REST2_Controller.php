@@ -184,40 +184,40 @@ abstract class REST2_Controller extends REST_Controller
 						break;
 				}
 
-				$json = file_get_contents(getcwd()."/iodocs/public/data/pbapp.json");
-				$pbapp_data = json_decode($json, true);
-				$missing_parameter = array();
-				$exception_param = array();
-				foreach ($pbapp_data['endpoints'] as $endpoint){
-					if($method[0]->uri->segments[1] == $endpoint['endpoint']){
-						foreach ($endpoint['methods'] as $end_method){
-							//$new_url = str_replace(':any', '.+', str_replace(':num', '[0-9]+', $end_method['URI']));
-							$strs = explode('/', $end_method['URI']);
-							foreach ($strs as $index => $str){
-								if(empty($str)){
-									unset($strs[0]);
-								}
-								if(substr($str, 0, 1) == ':'){
-									array_push($exception_param, substr($str, 1, utf8_strlen($str)));
-									$strs[$index] = '([a-zA-Z0-9-%_:\.]+)';
-								}
-							}
-							$new_url = implode('/', $strs);
-							if(preg_match('#^'.$new_url.'$#', $method[0]->uri->uri_string)){
-								foreach ($end_method['parameters'] as $parameter){
-									if(strtoupper($parameter['Required']) == 'Y' && !isset($this->_args[$parameter['Name']]) && !in_array($parameter['Name'], $exception_param)){
-										array_push($missing_parameter,$parameter['Name']);
+				// Check required parameter from pbapp.json
+				if(isset($this->uri->router)) {
+					$json = file_get_contents(getcwd() . "/iodocs/public/data/pbapp.json");
+					$pbapp_data = json_decode($json, true);
+					$missing_parameter = array();
+					$exception_param = array();
+					foreach ($pbapp_data['endpoints'] as $endpoint) {
+						if ($method[0]->uri->segments[1] == $endpoint['endpoint']) {
+							foreach ($endpoint['methods'] as $end_method) {
+								//$new_url = str_replace(':any', '.+', str_replace(':num', '[0-9]+', $end_method['URI']));
+								//$strs = explode('/', $end_method['URI']);
+								//foreach ($strs as $index => $str){
+								//	if(substr($str, 0, 1) == ':'){
+								//		array_push($exception_param, substr($str, 1, utf8_strlen($str)));
+								//		$strs[$index] = '([a-zA-Z0-9-%_:\.]+)';
+								//	}
+								//}
+								//$new_url = implode('/', $strs);
+								if (preg_match('#^' . $this->uri->router . '$#', $end_method['URI'])) {
+									foreach ($end_method['parameters'] as $parameter) {
+										if (strtoupper($parameter['Required']) == 'Y' && !isset($this->_args[$parameter['Name']]) && !in_array($parameter['Name'], $exception_param)) {
+											array_push($missing_parameter, $parameter['Name']);
+										}
 									}
+									break;
 								}
-								break;
+								//$exception_param = array();
 							}
-							$exception_param = array();
+							break;
 						}
-						break;
 					}
-				}
-				if(!empty($missing_parameter)){
-					$this->response($this->error->setError('PARAMETER_MISSING', $missing_parameter), 200);
+					if (!empty($missing_parameter)) {
+						$this->response($this->error->setError('PARAMETER_MISSING', $missing_parameter), 200);
+					}
 				}
 			}
 			/* 2.2 Process request */

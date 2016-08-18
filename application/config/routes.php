@@ -44,87 +44,102 @@ define('ANY_NUMBER','([0-9]+)');
 $route['default_controller'] = "welcome/playbasis";
 
 //auth API
-$route['Auth'] = 'auth';
-$route['Auth/renew'] = 'auth/renew';
+$route['Auth'] = 'auth';  //public
+$route['Auth/renew'] = 'auth/renew'; //public
 
 //player API
-$route['Player/'.ANY_STRING] = 'player/index/$1';
-$route['Player/'.ANY_STRING.'/data/all'] = 'player/details/$1';
-$route['Player'] = 'player/index/';
-$route['Player/list'] = 'player/list';
-$route['Player/'.ANY_STRING.'/status'] = 'player/status/$1';
-$route['Player/'.ANY_STRING.'/custom'] = 'player/custom/$1';
+$route['Player/'.ANY_STRING] = 'player/index/$1'; //public p/g
+$route['Player/list'] = 'player/list'; //public
+$route['Player/'.ANY_STRING.'/data/all'] = 'player/details/$1'; //public p/g
+$route['Player/'.ANY_STRING.'/custom'] = 'player/custom/$1'; //public p/g
+$route['Player/'.ANY_STRING.'/register'] = 'player/register/$1'; //public
+$route['Player/'.ANY_STRING.'/update'] = 'player/update/$1'; //public
+$route['Player/password/email'] = 'player/forgotPasswordEmail'; //public
+$route['Player/'.ANY_STRING.'/email/verify'] = 'player/emailVerify/$1'; //public
+$route['Player/'.ANY_STRING.'/delete'] = 'player/delete/$1'; //public
+$route['Player/'.ANY_STRING.'/login'] = 'player/login/$1';
+$route['Player/auth'] = 'player/auth';
+$route['Player/auth/' . ANY_STRING . '/requestOTPCode'] = 'player/requestOTPCode/$1';
+$route['Player/auth/' . ANY_STRING . '/setupPhone'] = 'player/setupPhone/$1';
+$route['Player/auth/' . ANY_STRING . '/verifyOTPCode'] = 'player/verifyOTPCode/$1';
+$route['Player/'.ANY_STRING.'/logout'] = 'player/logout/$1';
+$route['Player/'.ANY_STRING.'/sessions'] = 'player/sessions/$1';
+$route['Player/session/'.ANY_STRING] = 'player/session/$1';
+$route['Player/'.ANY_STRING.'/points'] = 'player/points/$1';
+$route['Player/'.ANY_STRING.'/point/'.ANY_STRING] = 'player/point/$1/$2';
+$route['Player/'.ANY_STRING.'/point_history'] = 'player/point_history/$1';
+$route['Player/'.ANY_STRING.'/action/'.ANY_STRING.'/(time|count)'] = 'player/action/$1/$2/$3'; //action time
+$route['Player/'.ANY_STRING.'/action/(time|count)'] = 'player/action/$1/0/$2';
+//$route['Player/'.ANY_STRING.'/action/'.ANY_STRING.'/(time|count)'] = 'player/action/$1/$2/$3'; //action count
+$route['Player/level/'.ANY_NUMBER] = 'player/level/$1';
+$route['Player/levels'] = 'player/levels';
+$route['Player/'.ANY_STRING.'/badge'] = 'player/badge/$1';
+$route['Player/'.ANY_STRING.'/badgeAll'] = 'player/badgeAll/$1';
+$route['Player/rank/'.ANY_STRING.'/'.ANY_NUMBER] = 'player/rank/$1/$2';
+$route['Player/ranks/'.ANY_NUMBER] = 'player/ranks/$1';
+$route['Player/'.ANY_STRING.'/goods'] = 'player/goods/$1';
+$route['Player/quest/'.ANY_STRING] = 'quest/questOfPlayer/$1';
+$route['Player/quest'] = 'quest/questOfPlayer';
+$route['Player/questAll/'.ANY_STRING] = 'quest/questAll/$1';
+$route['Player/'.ANY_STRING.'/quest_reward_history'] = 'player/quest_reward_history/$1';
+$route['Player/'.ANY_STRING.'/deduct'] = 'player/deduct_reward/$1';
+$route['Player/'.ANY_STRING.'/giveGift/'.ANY_STRING] = 'player/giveGift/$1/$2';          // ANY_STRING = sent_player_id/gift_type
+$route['Player/'.ANY_STRING.'/code'] = 'player/code/$1';
+$route['Player/rankParam/'.ANY_STRING.'/'.ANY_STRING] = 'player/rankParam/$1/$2';
+$route['Player/'.ANY_STRING.'/getAssociatedNode'] = 'player/getAssociatedNode/$1';  // ANY_STRING = player_id
+$route['Player/'.ANY_STRING.'/getRole/'.ANY_STRING] = 'player/getRole/$1/$2';       // ANY_STRING = player_id/node_id
+$route['Player/'.ANY_STRING.'/saleReport'] = 'player/saleReport/$1';                // ANY_STRING = player_id
+$route['Player/'.ANY_STRING.'/actionReport'] = 'player/actionReport/$1';              // ANY_STRING = player_id
+$route['Player/'.ANY_STRING.'/unlock'] = 'player/unlock/$1';                        // ANY_STRING = player_id
 
-$route['Player/'.ANY_STRING.'/register'] = 'player/register/$1';
+////////////////////////////////////////////////////
+$route['Player'] = 'player/index/';
+
+$route['Player/'.ANY_STRING.'/status'] = 'player/status/$1';
+
 $route['Player/register'] = 'player/register';
 $route['Player/registerBatch'] = 'player/registerBatch';
 
-$route['Player/'.ANY_STRING.'/update'] = 'player/update/$1';
 $route['Player/update'] = 'player/update';
 
-$route['Player/'.ANY_STRING.'/delete'] = 'player/delete/$1';
 $route['Player/delete'] = 'player/delete';
 
-$route['Player/'.ANY_STRING.'/login'] = 'player/login/$1';
 $route['Player/login'] = 'player/login';
-$route['Player/'.ANY_STRING.'/logout'] = 'player/logout/$1';
-$route['Player/logout'] = 'player/logout';
-$route['Player/'.ANY_STRING.'/sessions'] = 'player/sessions/$1';
-$route['Player/sessions'] = 'player/sessions';
-$route['Player/session/'.ANY_STRING] = 'player/session/$1';
-$route['Player/session'] = 'player/session';
-$route['Player/auth'] = 'player/auth';
-$route['Player/auth/' . ANY_STRING . '/requestOTPCode'] = 'player/requestOTPCode/$1';
-$route['Player/auth/requestOTPCode'] = 'player/requestOTPCode';
-$route['Player/auth/' . ANY_STRING . '/setupPhone'] = 'player/setupPhone/$1';
-$route['Player/auth/' . ANY_STRING . '/verifyOTPCode'] = 'player/verifyOTPCode/$1';
-$route['Player/auth/verifyOTPCode'] = 'player/verifyOTPCode';
-$route['Player/password/email'] = 'player/forgotPasswordEmail';
-$route['Player/'.ANY_STRING.'/email/verify'] = 'player/emailVerify/$1';
 
-$route['Player/rank/'.ANY_STRING.'/'.ANY_NUMBER] = 'player/rank/$1/$2';
+$route['Player/logout'] = 'player/logout';
+
+$route['Player/sessions'] = 'player/sessions';
+
+$route['Player/session'] = 'player/session';
+
+$route['Player/auth/requestOTPCode'] = 'player/requestOTPCode';
+
+$route['Player/auth/verifyOTPCode'] = 'player/verifyOTPCode';
+
 $route['Player/rank/'.ANY_STRING] = 'player/rank/$1/20';
 $route['Player/rank'] = 'player/rank/0/0';
 
-$route['Player/ranks/'.ANY_NUMBER] = 'player/ranks/$1';
 $route['Player/ranks'] = 'player/ranks/20';
 
-$route['Player/level/'.ANY_NUMBER] = 'player/level/$1';
 $route['Player/level'] = 'player/level/0';
-$route['Player/levels'] = 'player/levels';
 
-$route['Player/'.ANY_STRING.'/points'] = 'player/points/$1';
 $route['Player/points'] = 'player/points';
-$route['Player/'.ANY_STRING.'/point/'.ANY_STRING] = 'player/point/$1/$2';
+
 $route['Player/'.ANY_STRING.'/point/'.ANY_STRING.'/lastUsed'] = 'player/pointLastUsed/$1/$2';
 $route['Player/'.ANY_STRING.'/point/'.ANY_STRING.'/lastFilled'] = 'player/pointLastCronModified/$1/$2';
 $route['Player/point/'.ANY_STRING] = 'player/point/0/$1';
 $route['Player/'.ANY_STRING.'/point'] = 'player/points/$1';
 $route['Player/point'] = 'player/point/';
-$route['Player/'.ANY_STRING.'/point_history'] = 'player/point_history/$1';
-$route['Player/'.ANY_STRING.'/quest_reward_history'] = 'player/quest_reward_history/$1';
 
-$route['Player/'.ANY_STRING.'/action/'.ANY_STRING.'/(time|count)'] = 'player/action/$1/$2/$3';
 $route['Player/action/'.ANY_STRING.'/(time|count)'] = 'player/action/0/$1/$2';
-$route['Player/'.ANY_STRING.'/action/(time|count)'] = 'player/action/$1/0/$2';
+
 $route['Player/action'] = 'player/action/';
 
-$route['Player/'.ANY_STRING.'/badge'] = 'player/badge/$1';
 $route['Player/badge'] = 'player/badge/0';
-$route['Player/'.ANY_STRING.'/badgeAll'] = 'player/badgeAll/$1';
+
 $route['Player/badgeAll'] = 'player/badgeAll';
 
-$route['Player/'.ANY_STRING.'/goods'] = 'player/goods/$1';
-
-$route['Player/quest'] = 'quest/questOfPlayer';
-$route['Player/quest/'.ANY_STRING] = 'quest/questOfPlayer/$1';
-
 $route['Player/questAll'] = 'quest/questAll';
-$route['Player/questAll/'.ANY_STRING] = 'quest/questAll/$1';
-
-$route['Player/'.ANY_STRING.'/deduct'] = 'player/deduct_reward/$1';
-
-$route['Player/'.ANY_STRING.'/giveGift/'.ANY_STRING] = 'player/giveGift/$1/$2';          // ANY_STRING = sent_player_id/gift_type
 
 $route['Player/rankuser/'.ANY_STRING.'/'.ANY_STRING] = 'player/rankuser/$1/$2';
 
@@ -133,18 +148,11 @@ $route['Player/'.ANY_STRING.'/contact/'.ANY_NUMBER] = 'player/contact/$1/$2';
 $route['Player/contact'] = 'player/contact/0/10';
 $route['Player/contact/'.ANY_NUMBER] = 'player/contact/0/$1';
 
-$route['Player/'.ANY_STRING.'/code'] = 'player/code/$1';
 $route['Player/code'] = 'player/code';
 
-$route['Player/rankParam/'.ANY_STRING.'/'.ANY_STRING] = 'player/rankParam/$1/$2';
 $route['Player/rankParam/'.ANY_STRING] = 'player/rankParam/$1/20';
 $route['Player/rankParam'] = 'player/rankParam/0/0';
 
-$route['Player/'.ANY_STRING.'/getAssociatedNode'] = 'player/getAssociatedNode/$1';  // ANY_STRING = player_id
-$route['Player/'.ANY_STRING.'/getRole/'.ANY_STRING] = 'player/getRole/$1/$2';       // ANY_STRING = player_id/node_id
-$route['Player/'.ANY_STRING.'/saleReport'] = 'player/saleReport/$1';                // ANY_STRING = player_id
-$route['Player/'.ANY_STRING.'/unlock'] = 'player/unlock/$1';                        // ANY_STRING = player_id
-$route['Player/'.ANY_STRING.'/actionReport'] = 'player/actionReport/$1';              // ANY_STRING = player_id
 
 //badge API
 $route['Badge/'.ANY_STRING] = 'badge/index/$1';

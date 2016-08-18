@@ -8,7 +8,7 @@
           "MethodName": "Auth",
           "Synopsis": "Request access token from playbasis server.",
           "HTTPMethod": "POST",
-          "URI": "/Auth",
+          "URI": "Auth",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -32,7 +32,7 @@
           "MethodName": "Renew",
           "Synopsis": "Create a new token and discard the current token",
           "HTTPMethod": "POST",
-          "URI": "/Auth/renew",
+          "URI": "Auth/renew",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -62,13 +62,13 @@
           "MethodName": "Player Info (public data only)",
           "Synopsis": "Get public information about a player.",
           "HTTPMethod": "GET",
-          "URI": "/Player/:id",
+          "URI": "Player/:id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -79,7 +79,7 @@
           "MethodName": "Player Info (include private data)",
           "Synopsis": "Get public and private information about a player.",
           "HTTPMethod": "POST",
-          "URI": "/Player/:id",
+          "URI": "Player/:id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -92,7 +92,7 @@
             },
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -103,7 +103,7 @@
           "MethodName": "List Player (Basic information)",
           "Synopsis": "Get basic information of players.",
           "HTTPMethod": "POST",
-          "URI": "/Player/list",
+          "URI": "Player/list",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -127,13 +127,13 @@
           "MethodName": "Detailed Player Info (public data only)",
           "Synopsis": "Get detailed public information about a player, including points and badges.",
           "HTTPMethod": "GET",
-          "URI": "/Player/:id/data/all",
+          "URI": "Player/:id/data/all",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -144,7 +144,7 @@
           "MethodName": "Detailed Player Info (include private data)",
           "Synopsis": "Get detailed public and private information about a player, including points and badges",
           "HTTPMethod": "POST",
-          "URI": "/Player/:id/data/all",
+          "URI": "Player/:id/data/all",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -157,7 +157,7 @@
             },
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -168,13 +168,13 @@
           "MethodName": "List Custom Fields of Player",
           "Synopsis": "Get custom fields information about a player",
           "HTTPMethod": "GET",
-          "URI": "/Player/:id/custom",
+          "URI": "Player/:id/custom",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -185,7 +185,7 @@
           "MethodName": "Set Custom Field of Player",
           "Synopsis": "Set custom field of a player",
           "HTTPMethod": "POST",
-          "URI": "/Player/:id/custom",
+          "URI": "Player/:id/custom",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -198,7 +198,7 @@
             },
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -223,7 +223,7 @@
           "MethodName": "Register",
           "Synopsis": "Register a user from client's website as a Playbasis player.",
           "HTTPMethod": "POST",
-          "URI": "/Player/:id/register",
+          "URI": "Player/:id/register",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -236,7 +236,7 @@
             },
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website *** It's available only [A-Za-z0-9_-]"
@@ -365,7 +365,7 @@
           "MethodName": "Update",
           "Synopsis": "Update player information.",
           "HTTPMethod": "POST",
-          "URI": "/Player/:id/update",
+          "URI": "Player/:id/update",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -378,7 +378,7 @@
             },
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -503,7 +503,7 @@
           "MethodName": "Reset player password",
           "Synopsis": "Reset player password that store in Playbasis system.",
           "HTTPMethod": "POST",
-          "URI": "/Player/password/email",
+          "URI": "Player/password/email",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -527,7 +527,7 @@
           "MethodName": "Verify player email",
           "Synopsis": "Verify player email that store in Playbasis system.",
           "HTTPMethod": "POST",
-          "URI": "/Player/:id/email/verify",
+          "URI": "Player/:id/email/verify",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -540,7 +540,7 @@
             },
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -551,7 +551,7 @@
           "MethodName": "Delete",
           "Synopsis": "Permenently delete a player from Playbasis database.",
           "HTTPMethod": "POST",
-          "URI": "/Player/:id/delete",
+          "URI": "Player/:id/delete",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -564,7 +564,7 @@
             },
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -575,7 +575,7 @@
           "MethodName": "Login",
           "Synopsis": "Tell Playbasis system that a player has logged in.",
           "HTTPMethod": "POST",
-          "URI": "/Player/:id/login",
+          "URI": "Player/:id/login",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -588,7 +588,7 @@
             },
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -613,7 +613,7 @@
           "MethodName": "Player Auth",
           "Synopsis": "Authenticate player with data in Playbasis system then login and also create session.",
           "HTTPMethod": "POST",
-          "URI": "/Player/auth",
+          "URI": "Player/auth",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -658,7 +658,7 @@
           "MethodName": "Request OTP",
           "Synopsis": "Request One time password.",
           "HTTPMethod": "POST",
-          "URI": "/Player/auth/:id/requestOTPCode",
+          "URI": "Player/auth/:id/requestOTPCode",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -671,7 +671,7 @@
             },
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -714,7 +714,7 @@
           "MethodName": "Request OTP for setup phone",
           "Synopsis": "Request One time password for setup phone.",
           "HTTPMethod": "POST",
-          "URI": "/Player/auth/:id/setupPhone",
+          "URI": "Player/auth/:id/setupPhone",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -727,7 +727,7 @@
             },
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -777,7 +777,7 @@
           "MethodName": "Perform OTP verification",
           "Synopsis": "Perform OTP verification from code that has sent to player SMS.",
           "HTTPMethod": "POST",
-          "URI": "/Player/auth/:id/verifyOTPCode",
+          "URI": "Player/auth/:id/verifyOTPCode",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -790,7 +790,7 @@
             },
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as use in client's site"
@@ -808,7 +808,7 @@
           "MethodName": "Logout",
           "Synopsis": "Tell Playbasis system that a player has logged out.",
           "HTTPMethod": "POST",
-          "URI": "/Player/:id/logout",
+          "URI": "Player/:id/logout",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -821,7 +821,7 @@
             },
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -839,13 +839,13 @@
           "MethodName": "List Active Player Sessions",
           "Synopsis": "List active sessions of a player in Playbasis system.",
           "HTTPMethod": "GET",
-          "URI": "/Player/:id/sessions",
+          "URI": "Player/:id/sessions",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -856,13 +856,13 @@
           "MethodName": "Find a Player by Session",
           "Synopsis": "Find a player given session ID.",
           "HTTPMethod": "GET",
-          "URI": "/Player/session/:session_id",
+          "URI": "Player/session/:session_id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "session_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "session id"
@@ -873,13 +873,13 @@
           "MethodName": "Points",
           "Synopsis": "Returns information about all point-based rewards that a player currently have.",
           "HTTPMethod": "GET",
-          "URI": "/Player/:id/points",
+          "URI": "Player/:id/points",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -890,20 +890,20 @@
           "MethodName": "Point",
           "Synopsis": "Returns how much of specified the point-based reward a player currently have.",
           "HTTPMethod": "GET",
-          "URI": "/Player/:id/point/:point_name",
+          "URI": "Player/:id/point/:point_name",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
             },
             {
               "Name": "point_name",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "name of the point-based reward to query"
@@ -914,13 +914,13 @@
           "MethodName": "Point History",
           "Synopsis": "Returns history points of player",
           "HTTPMethod": "GET",
-          "URI": "/Player/:id/point_history",
+          "URI": "Player/:id/point_history",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -959,20 +959,20 @@
           "MethodName": "Action Time",
           "Synopsis": "Returns the last time that player performed the specified action.",
           "HTTPMethod": "GET",
-          "URI": "/Player/:id/action/:action_name/time",
+          "URI": "Player/:id/action/:action_name/time",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
             },
             {
               "Name": "action_name",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "name of the action to query"
@@ -983,13 +983,13 @@
           "MethodName": "Last Action",
           "Synopsis": "Returns the time and action that a player last performed.",
           "HTTPMethod": "GET",
-          "URI": "/Player/:id/action/time",
+          "URI": "Player/:id/action/time",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -1000,20 +1000,20 @@
           "MethodName": "Action Count",
           "Synopsis": "Returns the number of times that a player has performed the specified action.",
           "HTTPMethod": "GET",
-          "URI": "/Player/:id/action/:action_name/count",
+          "URI": "Player/:id/action/:action_name/count",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
             },
             {
               "Name": "action_name",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "name of the action to query"
@@ -1024,13 +1024,13 @@
           "MethodName": "Level",
           "Synopsis": "Returns detail of level.",
           "HTTPMethod": "GET",
-          "URI": "/Player/level/:level",
+          "URI": "Player/level/:level",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "level",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "integer",
               "Description": "number of  level"
@@ -1041,7 +1041,7 @@
           "MethodName": "Levels",
           "Synopsis": "Returns all detail of level.",
           "HTTPMethod": "GET",
-          "URI": "/Player/levels",
+          "URI": "Player/levels",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -1051,13 +1051,13 @@
           "MethodName": "Badge",
           "Synopsis": "Returns information about all the badges that a player has earned.",
           "HTTPMethod": "GET",
-          "URI": "/Player/:id/badge",
+          "URI": "Player/:id/badge",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -1075,13 +1075,13 @@
           "MethodName": "All Badges",
           "Synopsis": "Returns information about all the badges of the client as well as the amount that a player may earn.",
           "HTTPMethod": "GET",
-          "URI": "/Player/:id/badgeAll",
+          "URI": "Player/:id/badgeAll",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -1099,20 +1099,20 @@
           "MethodName": "Rank",
           "Synopsis": "Returns list of players sorted by the specified point type.",
           "HTTPMethod": "GET",
-          "URI": "/Player/rank/:rank_by/:limit",
+          "URI": "Player/rank/:rank_by/:limit",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "rank_by",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "name of point-based reward to rank players by"
             },
             {
               "Name": "limit",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "20",
               "Type": "integer",
               "Description": "number of results to return"
@@ -1130,7 +1130,7 @@
           "MethodName": "DEPRECATED - Level",
           "Synopsis": "Returns detail of level.",
           "HTTPMethod": "POST",
-          "URI": "/Player/level/:level",
+          "URI": "Player/level/:level",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -1143,7 +1143,7 @@
             },
             {
               "Name": "level",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "integer",
               "Description": "number of level"
@@ -1154,7 +1154,7 @@
           "MethodName": "DEPRECATED - Levels",
           "Synopsis": "Returns all detail of level.",
           "HTTPMethod": "POST",
-          "URI": "/Player/levels",
+          "URI": "Player/levels",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -1171,13 +1171,13 @@
           "MethodName": "Ranks",
           "Synopsis": "Returns list of players sorted by each point type.",
           "HTTPMethod": "GET",
-          "URI": "/Player/ranks/:limit",
+          "URI": "Player/ranks/:limit",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "limit",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "20",
               "Type": "integer",
               "Description": "number of results to return for each point type"
@@ -1195,7 +1195,7 @@
           "MethodName": "DEPRECATED - Ranks",
           "Synopsis": "Returns list of players sorted by each point type.",
           "HTTPMethod": "POST",
-          "URI": "/Player/ranks/:limit",
+          "URI": "Player/ranks/:limit",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -1208,7 +1208,7 @@
             },
             {
               "Name": "limit",
-              "Required": "N",
+              "Required": "URI",
               "Default": "20",
               "Type": "integer",
               "Description": "number of results to return for each point type"
@@ -1219,13 +1219,13 @@
           "MethodName": "Goods",
           "Synopsis": "Returns information about all the goods list that a player has redeem.",
           "HTTPMethod": "GET",
-          "URI": "/Player/:id/goods",
+          "URI": "Player/:id/goods",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -1236,13 +1236,13 @@
           "MethodName": "Quest of Player",
           "Synopsis": "Quest that the player has joined.",
           "HTTPMethod": "GET",
-          "URI": "/Player/quest/:id",
+          "URI": "Player/quest/:id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "quest id as player need to join"
@@ -1267,7 +1267,7 @@
           "MethodName": "Quest List of Player",
           "Synopsis": "List of quests that the player has joined.",
           "HTTPMethod": "GET",
-          "URI": "/Player/quest",
+          "URI": "Player/quest",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -1298,13 +1298,13 @@
           "MethodName": "All Quests of Player",
           "Synopsis": "List of all available quests of the client as well as the status of the player if joined.",
           "HTTPMethod": "GET",
-          "URI": "/Player/questAll/:id",
+          "URI": "Player/questAll/:id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -1315,13 +1315,13 @@
           "MethodName": "Quest Reward History",
           "Synopsis": "Returns quest reward history of player",
           "HTTPMethod": "GET",
-          "URI": "/Player/:id/quest_reward_history",
+          "URI": "Player/:id/quest_reward_history",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -1346,7 +1346,7 @@
           "MethodName": "Deduct Reward",
           "Synopsis": "Deduct a reward from a given player.",
           "HTTPMethod": "POST",
-          "URI": "/Player/:id/deduct",
+          "URI": "Player/:id/deduct",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -1359,7 +1359,7 @@
             },
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -1391,7 +1391,7 @@
           "MethodName": "Gift",
           "Synopsis": "Unlock player for authentication",
           "HTTPMethod": "POST",
-          "URI": "/Player/:sent_player_id/giveGift/:type",
+          "URI": "Player/:sent_player_id/giveGift/:type",
           "RequiresOAuth": "Y",
 		  "Public": "Y",
           "parameters": [
@@ -1404,7 +1404,7 @@
             },
             {
               "Name": "sent_player_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -1425,7 +1425,7 @@
             },
             {
               "Name": "type",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "BADGE",
               "Type": "enumerated",
               "Description": "type of gift",
@@ -1448,13 +1448,13 @@
           "MethodName": "Player Referral Code",
           "Synopsis": "Returns generated referral code of player",
           "HTTPMethod": "GET",
-          "URI": "/Player/:id/code",
+          "URI": "Player/:id/code",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -1465,20 +1465,20 @@
           "MethodName": "Rank by Custom parameter",
           "Synopsis": "Returns list of players sorted by rising custom parameter",
           "HTTPMethod": "GET",
-          "URI": "/Player/rankParam/:action/:parameter",
+          "URI": "Player/rankParam/:action/:parameter",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "action",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "action of parameter to rank players by"
             },
             {
               "Name": "parameter",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "name of parameter to rank players by"
@@ -1510,13 +1510,13 @@
           "MethodName": "Get Associated Node",
           "Synopsis": "Get associated node of player",
           "HTTPMethod": "GET",
-          "URI": "/Player/:id/getAssociatedNode",
+          "URI": "Player/:id/getAssociatedNode",
           "RequiresOAuth": "Y",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -1527,20 +1527,20 @@
           "MethodName": "Get Role",
           "Synopsis": "Get role of player in specific node",
           "HTTPMethod": "GET",
-          "URI": "/Player/:id/getRole/:node_id",
+          "URI": "Player/:id/getRole/:node_id",
           "RequiresOAuth": "Y",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
             },
             {
               "Name": "node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "Node Id to add player"
@@ -1551,13 +1551,13 @@
           "MethodName": "Sale report",
           "Synopsis": "Sale report of any node that associated with the player",
           "HTTPMethod": "GET",
-          "URI": "/Player/:id/saleReport",
+          "URI": "Player/:id/saleReport",
           "RequiresOAuth": "Y",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -1596,13 +1596,13 @@
           "MethodName": "Action report",
           "Synopsis": "Action report of specific Player",
           "HTTPMethod": "GET",
-          "URI": "/Player/:player_id/actionReport",
+          "URI": "Player/:id/actionReport",
           "RequiresOAuth": "Y",
 		  "Public": "Y",
           "parameters": [
             {
-              "Name": "player_id",
-              "Required": "Y",
+              "Name": "id",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -1648,7 +1648,7 @@
           "MethodName": "Unlock",
           "Synopsis": "Unlock player for authentication",
           "HTTPMethod": "POST",
-          "URI": "/Player/:id/unlock",
+          "URI": "Player/:id/unlock",
           "RequiresOAuth": "Y",
 		  "Public": "Y",
           "parameters": [
@@ -1661,7 +1661,7 @@
             },
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -1678,7 +1678,7 @@
           "MethodName": "Badges Info",
           "Synopsis": "Returns information about all available badges for the current site.",
           "HTTPMethod": "GET",
-          "URI": "/Badges",
+          "URI": "Badges",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -1695,13 +1695,13 @@
           "MethodName": "Badge Info",
           "Synopsis": "Returns information about the badge with the specified id.",
           "HTTPMethod": "GET",
-          "URI": "/Badge/:id",
+          "URI": "Badge/:id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "integer",
               "Description": "badge id to query"
@@ -1718,7 +1718,7 @@
           "MethodName": "Goods List Info",
           "Synopsis": "Returns information about all available goods for the current site.",
           "HTTPMethod": "GET",
-          "URI": "/Goods",
+          "URI": "Goods",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -1742,13 +1742,13 @@
           "MethodName": "Goods Info",
           "Synopsis": "Returns information about the goods with the specified id.",
           "HTTPMethod": "GET",
-          "URI": "/Goods/:id",
+          "URI": "Goods/:id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "goods id to query"
@@ -1766,7 +1766,7 @@
           "MethodName": "Goods Group Available",
           "Synopsis": "Find number of available Goods given group.",
           "HTTPMethod": "GET",
-          "URI": "/Redeem/goodsGroup",
+          "URI": "Redeem/goodsGroup",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -1797,7 +1797,7 @@
           "MethodName": "Sponsored Goods List Info",
           "Synopsis": "Returns information about all available sponsored goods.",
           "HTTPMethod": "GET",
-          "URI": "/Goods/sponsor",
+          "URI": "Goods/sponsor",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": []
@@ -1806,13 +1806,13 @@
           "MethodName": "Sponsored Goods Info",
           "Synopsis": "Returns information about the sponsored goods with the specified id.",
           "HTTPMethod": "GET",
-          "URI": "/Goods/sponsor/:id",
+          "URI": "Goods/sponsor/:id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "goods id to query"
@@ -1823,7 +1823,7 @@
           "MethodName": "Sponsored Goods Group Available",
           "Synopsis": "Find number of available sponsored Goods given group.",
           "HTTPMethod": "GET",
-          "URI": "/Redeem/sponsorGroup",
+          "URI": "Redeem/sponsorGroup",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -1854,7 +1854,7 @@
           "MethodName": "Coupon code verification",
           "Synopsis": "verify coupon code available.",
           "HTTPMethod": "GET",
-          "URI": "/Goods/couponVerify",
+          "URI": "Goods/couponVerify",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -1885,7 +1885,7 @@
           "MethodName": "Coupon code verification with redeem",
           "Synopsis": "verify coupon code available and redeem.",
           "HTTPMethod": "POST",
-          "URI": "/Goods/couponVerify",
+          "URI": "Goods/couponVerify",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -1929,8 +1929,9 @@
           "MethodName": "Available Branch for Goods Group",
           "Synopsis": "Returns list of available branch for goods group.",
           "HTTPMethod": "GET",
-          "URI": "/Merchant/availableBranchGoodsGroup",
+          "URI": "Merchant/availableBranchGoodsGroup",
           "RequiresOAuth": "N",
+		  "Public": "Y",
           "parameters": [
             {
               "Name": "goods_group",
@@ -1950,7 +1951,7 @@
           "MethodName": "List Rules",
           "Synopsis": "Returns list of active game rules defined for a client’s website.",
           "HTTPMethod": "GET",
-          "URI": "/Engine/rules",
+          "URI": "Engine/rules",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -1974,13 +1975,13 @@
           "MethodName": "Rule Detail",
           "Synopsis": "Get the detail of the rule.",
           "HTTPMethod": "GET",
-          "URI": "/Engine/rule/:id",
+          "URI": "Engine/rule/:id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "rule id"
@@ -1998,7 +1999,7 @@
           "MethodName": "Rule",
           "Synopsis": "Process an action through all the game rules defined for a client’s website.",
           "HTTPMethod": "POST",
-          "URI": "/Engine/rule",
+          "URI": "Engine/rule",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -2077,7 +2078,7 @@
           "MethodName": "Quest List Info",
           "Synopsis": "Returns information about all quest for the current site.",
           "HTTPMethod": "GET",
-          "URI": "/Quest",
+          "URI": "Quest",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -2094,13 +2095,13 @@
           "MethodName": "Quest Info",
           "Synopsis": "Returns information about the quest with the specified id.",
           "HTTPMethod": "GET",
-          "URI": "/Quest/:id",
+          "URI": "Quest/:id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "quest id to query"
@@ -2111,20 +2112,20 @@
           "MethodName": "Mission Info",
           "Synopsis": "Returns information about the mission with the specified id.",
           "HTTPMethod": "GET",
-          "URI": "/Quest/:id/mission/:mission_id",
+          "URI": "Quest/:id/mission/:mission_id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "quest id to query"
             },
             {
               "Name": "mission_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "mission id to query"
@@ -2135,7 +2136,7 @@
           "MethodName": "Quest List Available For Player",
           "Synopsis": "Returns information about list of quest is available for player.",
           "HTTPMethod": "GET",
-          "URI": "/Quest/available",
+          "URI": "Quest/available",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -2152,13 +2153,13 @@
           "MethodName": "Quest Available For Player",
           "Synopsis": "Returns information about the quest is available for player.",
           "HTTPMethod": "GET",
-          "URI": "/Quest/:id/available",
+          "URI": "Quest/:id/available",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "quest id to query"
@@ -2176,7 +2177,7 @@
           "MethodName": "Join Quest",
           "Synopsis": "Player join quest.",
           "HTTPMethod": "POST",
-          "URI": "/Quest/:id/join",
+          "URI": "Quest/:id/join",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -2189,7 +2190,7 @@
             },
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "quest id as player need to join"
@@ -2207,7 +2208,7 @@
           "MethodName": "Join All Quests",
           "Synopsis": "Player join all available quests.",
           "HTTPMethod": "POST",
-          "URI": "/Quest/joinAll",
+          "URI": "Quest/joinAll",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -2231,7 +2232,7 @@
           "MethodName": "Cancel Quest",
           "Synopsis": "Player cancel quest.",
           "HTTPMethod": "POST",
-          "URI": "/Quest/:id/cancel",
+          "URI": "Quest/:id/cancel",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -2244,7 +2245,7 @@
             },
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "quest id as player need to join"
@@ -2262,7 +2263,7 @@
           "MethodName": "Reset a Player's Quest",
           "Synopsis": "Reset a quest done by a player.",
           "HTTPMethod": "POST",
-          "URI": "/Quest/reset",
+          "URI": "Quest/reset",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -2293,7 +2294,7 @@
           "MethodName": "Quest Leader Board",
           "Synopsis": "Quest Leader Board",
           "HTTPMethod": "GET",
-          "URI": "/Quest/leader",
+          "URI": "Quest/leader",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -2355,7 +2356,7 @@
           "MethodName": "A List of Active Quizzes",
           "Synopsis": "Returns a list of active quizzes.",
           "HTTPMethod": "GET",
-          "URI": "/Quiz/list",
+          "URI": "Quiz/list",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -2386,13 +2387,13 @@
           "MethodName": "Get Detail of a Quiz",
           "Synopsis": "Get detail of a quiz.",
           "HTTPMethod": "GET",
-          "URI": "/Quiz/:id/detail",
+          "URI": "Quiz/:id/detail",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "quiz id"
@@ -2410,7 +2411,7 @@
           "MethodName": "Random Get a Quiz for a Player",
           "Synopsis": "Randomly get one quiz of a list of active quizzes for a given player.",
           "HTTPMethod": "GET",
-          "URI": "/Quiz/random/",
+          "URI": "Quiz/random/",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -2441,20 +2442,20 @@
           "MethodName": "List Recent Quizzes Done by the Player",
           "Synopsis": "List recent quizzes done by the player.",
           "HTTPMethod": "GET",
-          "URI": "/Quiz/player/:player_id/:limit",
+          "URI": "Quiz/player/:player_id/:limit",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
             },
             {
               "Name": "limit",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "5",
               "Type": "string",
               "Description": "limit number of quizzes"
@@ -2465,20 +2466,20 @@
           "MethodName": "List Pending Quizzes by the Player",
           "Synopsis": "List pending quizzes by the player.",
           "HTTPMethod": "GET",
-          "URI": "/Quiz/player/:player_id/pending/:limit",
+          "URI": "Quiz/player/:player_id/pending/:limit",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
             },
             {
               "Name": "limit",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "5",
               "Type": "string",
               "Description": "limit number of quizzes"
@@ -2489,13 +2490,13 @@
           "MethodName": "Get a Question from a Quiz",
           "Synopsis": "Get a question with a list of options for a given quiz.",
           "HTTPMethod": "GET",
-          "URI": "/Quiz/:id/question",
+          "URI": "Quiz/:id/question",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "quiz id"
@@ -2531,7 +2532,7 @@
           "MethodName": "Get a Question from a Quiz with reset timestamp",
           "Synopsis": "Get a question with a list of options for a given quiz and reset timestamp.",
           "HTTPMethod": "POST",
-          "URI": "/Quiz/:id/question",
+          "URI": "Quiz/:id/question",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -2544,7 +2545,7 @@
             },
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "quiz id"
@@ -2580,7 +2581,7 @@
           "MethodName": "Answer a Question from a Quiz",
           "Synopsis": "Submit a player's answer for a question for a given quiz.",
           "HTTPMethod": "POST",
-          "URI": "/Quiz/:id/answer",
+          "URI": "Quiz/:id/answer",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -2593,7 +2594,7 @@
             },
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "quiz id"
@@ -2625,20 +2626,20 @@
           "MethodName": "Rank Players by Their Scores for a Quiz",
           "Synopsis": "Rank players by their scores for a give quiz.",
           "HTTPMethod": "GET",
-          "URI": "/Quiz/:id/rank/:limit",
+          "URI": "Quiz/:id/rank/:limit",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "quiz id"
             },
             {
               "Name": "limit",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "5",
               "Type": "string",
               "Description": "limit number of players"
@@ -2649,13 +2650,13 @@
           "MethodName": "Query for Quiz's Statistics",
           "Synopsis": "Query a statistics of a quiz done by all players.",
           "HTTPMethod": "GET",
-          "URI": "/Quiz/:id/stat",
+          "URI": "Quiz/:id/stat",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "quiz id"
@@ -2666,7 +2667,7 @@
           "MethodName": "Reset a Player's Quiz",
           "Synopsis": "Reset a quiz done by a player.",
           "HTTPMethod": "POST",
-          "URI": "/Quiz/reset",
+          "URI": "Quiz/reset",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -2703,7 +2704,7 @@
           "MethodName": "Redeem",
           "Synopsis": "Redeem Goods for a client’s website.",
           "HTTPMethod": "POST",
-          "URI": "/Redeem/goods",
+          "URI": "Redeem/goods",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -2741,7 +2742,7 @@
           "MethodName": "Redeem Goods Group",
           "Synopsis": "Redeem Goods given group.",
           "HTTPMethod": "POST",
-          "URI": "/Redeem/goodsGroup",
+          "URI": "Redeem/goodsGroup",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -2779,7 +2780,7 @@
           "MethodName": "Redeem Verification",
           "Synopsis": "Redeem verification for merchant using PIN code",
           "HTTPMethod": "POST",
-          "URI": "/Redeem/goodsGroup/verify",
+          "URI": "Redeem/goodsGroup/verify",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -2817,7 +2818,7 @@
           "MethodName": "Redeem Sponsor",
           "Synopsis": "Redeem Sponsor Goods for a client’s website.",
           "HTTPMethod": "POST",
-          "URI": "/Redeem/sponsor",
+          "URI": "Redeem/sponsor",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -2855,7 +2856,7 @@
           "MethodName": "Redeem Sponsored Goods Group",
           "Synopsis": "Redeem Sponsored Goods given group.",
           "HTTPMethod": "POST",
-          "URI": "/Redeem/sponsorGroup",
+          "URI": "Redeem/sponsorGroup",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -2899,7 +2900,7 @@
           "MethodName": "Send Email",
           "Synopsis": "Send email to a player.",
           "HTTPMethod": "POST",
-          "URI": "/Email/send",
+          "URI": "Email/send",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -2944,7 +2945,7 @@
           "MethodName": "Send Email Coupon",
           "Synopsis": "Send coupon to a player via email.",
           "HTTPMethod": "POST",
-          "URI": "/Email/goods",
+          "URI": "Email/goods",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -2996,7 +2997,7 @@
           "MethodName": "List Recent Email Sent to a Player",
           "Synopsis": "List recent email sent to a player.",
           "HTTPMethod": "GET",
-          "URI": "/Email/recent",
+          "URI": "Email/recent",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -3020,7 +3021,7 @@
           "MethodName": "List Email Template",
           "Synopsis": "List email template.",
           "HTTPMethod": "GET",
-          "URI": "/Email/template",
+          "URI": "Email/template",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -3030,13 +3031,13 @@
           "MethodName": "Get Processed Email Template",
           "Synopsis": "Get processed email template.",
           "HTTPMethod": "GET",
-          "URI": "/Email/template/:template_id",
+          "URI": "Email/template/:template_id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "template_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "template message"
@@ -3054,7 +3055,7 @@
           "MethodName": "Send SMS",
           "Synopsis": "Send SMS to a player.",
           "HTTPMethod": "POST",
-          "URI": "/Sms/send",
+          "URI": "Sms/send",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -3092,7 +3093,7 @@
           "MethodName": "Send SMS Coupon",
           "Synopsis": "Send coupon to a player via SMS.",
           "HTTPMethod": "POST",
-          "URI": "/Sms/goods",
+          "URI": "Sms/goods",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -3137,7 +3138,7 @@
           "MethodName": "List Recent SMS Sent to a Player",
           "Synopsis": "List recent SMS sent to a player.",
           "HTTPMethod": "GET",
-          "URI": "/Sms/recent",
+          "URI": "Sms/recent",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -3161,7 +3162,7 @@
           "MethodName": "List SMS Template",
           "Synopsis": "List SMS template.",
           "HTTPMethod": "GET",
-          "URI": "/Sms/template",
+          "URI": "Sms/template",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -3171,13 +3172,13 @@
           "MethodName": "Get Processed SMS Template",
           "Synopsis": "Get processed SMS template.",
           "HTTPMethod": "GET",
-          "URI": "/Sms/template/:template_id",
+          "URI": "Sms/template/:template_id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "template_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "template message"
@@ -3195,7 +3196,7 @@
           "MethodName": "Device Registration",
           "Synopsis": "Register for your device ",
           "HTTPMethod": "POST",
-          "URI": "/Push/deviceRegistration",
+          "URI": "Push/deviceRegistration",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -3251,7 +3252,7 @@
           "MethodName": "Send Push-Notification",
           "Synopsis": "Send push notification to a player.",
           "HTTPMethod": "POST",
-          "URI": "/Push/send",
+          "URI": "Push/send",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -3289,7 +3290,7 @@
           "MethodName": "Send Push-Notification Coupon",
           "Synopsis": "Send coupon to a player via push notification.",
           "HTTPMethod": "POST",
-          "URI": "/Push/goods",
+          "URI": "Push/goods",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -3334,7 +3335,7 @@
           "MethodName": "List Recent Push Notification to a Player",
           "Synopsis": "List recent Push Notification to a player.",
           "HTTPMethod": "GET",
-          "URI": "/Push/recent",
+          "URI": "Push/recent",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -3358,7 +3359,7 @@
           "MethodName": "List Push Notification Template",
           "Synopsis": "List Push template.",
           "HTTPMethod": "GET",
-          "URI": "/Push/template",
+          "URI": "Push/template",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -3368,13 +3369,13 @@
           "MethodName": "Get Processed Push Notification Template",
           "Synopsis": "Get processed Push Notification template.",
           "HTTPMethod": "GET",
-          "URI": "/Push/template/:template_id",
+          "URI": "Push/template/:template_id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "template_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "template message"
@@ -3398,7 +3399,7 @@
           "MethodName": "Recent Activities",
           "Synopsis": "Returns recent activities",
           "HTTPMethod": "GET",
-          "URI": "/Service/recentActivities",
+          "URI": "Service/recentActivities",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -3443,13 +3444,13 @@
           "MethodName": "Detail Activity",
           "Synopsis": "Get detail activity",
           "HTTPMethod": "GET",
-          "URI": "/Service/detailActivityFeed/:activity_id",
+          "URI": "Service/detailActivityFeed/:activity_id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "activity_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "id of the activity"
@@ -3460,7 +3461,7 @@
           "MethodName": "Like Activity",
           "Synopsis": "Like activity",
           "HTTPMethod": "POST",
-          "URI": "/Service/likeActivityFeed/:activity_id",
+          "URI": "Service/likeActivityFeed/:activity_id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -3473,7 +3474,7 @@
             },
             {
               "Name": "activity_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "id of the activity"
@@ -3491,7 +3492,7 @@
           "MethodName": "Comment Activity",
           "Synopsis": "Comment activity",
           "HTTPMethod": "POST",
-          "URI": "/Service/commentActivityFeed/:activity_id",
+          "URI": "Service/commentActivityFeed/:activity_id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -3504,7 +3505,7 @@
             },
             {
               "Name": "activity_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "id of the activity"
@@ -3535,7 +3536,7 @@
           "MethodName": "Recent Point",
           "Synopsis": "Returns recent points",
           "HTTPMethod": "GET",
-          "URI": "/Service/recent_point",
+          "URI": "Service/recent_point",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -3566,7 +3567,7 @@
           "MethodName": "Reset Point",
           "Synopsis": "Reset point of all players",
           "HTTPMethod": "POST",
-          "URI": "/Service/reset_point",
+          "URI": "Service/reset_point",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -3596,7 +3597,7 @@
           "MethodName": "List organizations",
           "Synopsis": "List organizations as set from admin dashboard",
           "HTTPMethod": "get",
-          "URI": "/StoreOrg/organizes",
+          "URI": "StoreOrg/organizes",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -3648,7 +3649,7 @@
           "MethodName": "List nodes",
           "Synopsis": "List nodes as set from admin dashboard",
           "HTTPMethod": "get",
-          "URI": "/StoreOrg/nodes",
+          "URI": "StoreOrg/nodes",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -3714,7 +3715,7 @@
           "MethodName": "Add player to Node",
           "Synopsis": "Add player to specific Node",
           "HTTPMethod": "POST",
-          "URI": "/StoreOrg/nodes/:node_id/addPlayer/:player_id",
+          "URI": "StoreOrg/nodes/:node_id/addPlayer/:player_id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -3727,14 +3728,14 @@
             },
             {
               "Name": "node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "Node Id to add player"
             },
             {
               "Name": "player_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "Player Id to add to Node"
@@ -3745,7 +3746,7 @@
           "MethodName": "Remove player from Node",
           "Synopsis": "Remove Player from specific Node",
           "HTTPMethod": "POST",
-          "URI": "/StoreOrg/nodes/:node_id/removePlayer/:player_id",
+          "URI": "StoreOrg/nodes/:node_id/removePlayer/:player_id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -3758,14 +3759,14 @@
             },
             {
               "Name": "node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "Node Id to add player"
             },
             {
               "Name": "player_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "Player Id to add to Node"
@@ -3776,7 +3777,7 @@
           "MethodName": "Set player role",
           "Synopsis": "Set player's organization role to specific Node",
           "HTTPMethod": "POST",
-          "URI": "/StoreOrg/nodes/:node_id/setPlayerRole/:player_id",
+          "URI": "StoreOrg/nodes/:node_id/setPlayerRole/:player_id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -3789,14 +3790,14 @@
             },
             {
               "Name": "node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "Node Id to set player's role"
             },
             {
               "Name": "player_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "Player Id to set player's role"
@@ -3814,7 +3815,7 @@
           "MethodName": "Unset player role",
           "Synopsis": "Unset player's organization role from specific Node",
           "HTTPMethod": "POST",
-          "URI": "/StoreOrg/nodes/:node_id/unsetPlayerRole/:player_id",
+          "URI": "StoreOrg/nodes/:node_id/unsetPlayerRole/:player_id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -3827,14 +3828,14 @@
             },
             {
               "Name": "node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "Node Id to unset player's role"
             },
             {
               "Name": "player_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "Player Id to unset player's role"
@@ -3852,13 +3853,13 @@
           "MethodName": "Get Players list from node id",
           "Synopsis": "get player's list from specific Node",
           "HTTPMethod": "GET",
-          "URI": "/StoreOrg/players/:node_id",
+          "URI": "StoreOrg/players/:node_id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "Node Id to unset player's role"
@@ -3876,20 +3877,20 @@
           "MethodName": "Peer Leader board",
           "Synopsis": "Returns leader board list for organization under given node_id",
           "HTTPMethod": "GET",
-          "URI": "/StoreOrg/rankPeer/:node_id/:rank_by",
+          "URI": "StoreOrg/rankPeer/:node_id/:rank_by",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "organization id to be ranked"
             },
             {
               "Name": "rank_by",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "name of point-based reward to rank players by"
@@ -3949,27 +3950,27 @@
           "MethodName": "Peer Leader board By Action",
           "Synopsis": "Returns leader board list for organization under given node_id",
           "HTTPMethod": "GET",
-          "URI": "/StoreOrg/rankPeerByAccAction/:node_id/:action/:parameter",
+          "URI": "StoreOrg/rankPeerByAccAction/:node_id/:action/:parameter",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "organization id to be ranked"
             },
             {
               "Name": "action",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "name of action to rank players by"
             },
             {
               "Name": "parameter",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "name of parameter of action to rank players by"
@@ -4022,20 +4023,20 @@
           "MethodName": "Find child nodes",
           "Synopsis": "Find all child nodes under specific Node",
           "HTTPMethod": "GET",
-          "URI": "/StoreOrg/nodes/:node_id/getChildNode/:layer",
+          "URI": "StoreOrg/nodes/:node_id/getChildNode/:layer",
           "RequiresOAuth": "Y",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "Node Id that you want to find the child node"
             },
             {
               "Name": "layer",
-              "Required": "N",
+              "Required": "URI",
               "Default": "",
               "Type": "number",
               "Description": "Layer of nodes under specific node to find [default = 0 (for finding all layer)]"
@@ -4046,13 +4047,13 @@
           "MethodName": "Sale report",
           "Synopsis": "Sale report of specific Node in a month",
           "HTTPMethod": "GET",
-          "URI": "/StoreOrg/nodes/:node_id/saleReport",
+          "URI": "StoreOrg/nodes/:node_id/saleReport",
           "RequiresOAuth": "Y",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "Node Id that you want to find the child node"
@@ -4091,20 +4092,20 @@
           "MethodName": "Sale history",
           "Synopsis": "Sale history of specific Node",
           "HTTPMethod": "GET",
-          "URI": "/StoreOrg/nodes/:node_id/saleHistory/:count",
+          "URI": "StoreOrg/nodes/:node_id/saleHistory/:count",
           "RequiresOAuth": "Y",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "Node Id that you want to find the child node"
             },
             {
               "Name": "count",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "number",
               "Description": "Number of months to get the report"
@@ -4143,20 +4144,20 @@
           "MethodName": "Sale board",
           "Synopsis": "Leader board by sale amount of all nodes under specific node",
           "HTTPMethod": "GET",
-          "URI": "/StoreOrg/nodes/:node_id/saleBoard/:layer",
+          "URI": "StoreOrg/nodes/:node_id/saleBoard/:layer",
           "RequiresOAuth": "Y",
 		  "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "Node Id that you want to find the child node"
             },
             {
               "Name": "layer",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "number",
               "Description": "Layer of nodes under specific node to find [default = 0 (for finding all layer)]"
@@ -4209,7 +4210,7 @@
           "MethodName": "Add Content to Node",
           "Synopsis": "Add Content to specific Node",
           "HTTPMethod": "POST",
-          "URI": "/StoreOrg/nodes/:node_id/addContent/:content_node_id",
+          "URI": "StoreOrg/nodes/:node_id/addContent/:content_node_id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -4222,14 +4223,14 @@
             },
             {
               "Name": "node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "Node Id of store org to add player"
             },
             {
               "Name": "content_node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "node id of content"
@@ -4240,7 +4241,7 @@
           "MethodName": "Remove Content from Node",
           "Synopsis": "Remove Content from specific Node",
           "HTTPMethod": "POST",
-          "URI": "/StoreOrg/nodes/:node_id/removeContent/:content_node_id",
+          "URI": "StoreOrg/nodes/:node_id/removeContent/:content_node_id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -4253,14 +4254,14 @@
             },
             {
               "Name": "node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "Node Id of store org to add player"
             },
             {
               "Name": "content_node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "node id of content"
@@ -4271,7 +4272,7 @@
           "MethodName": "Set Content role",
           "Synopsis": "Set Content's organization role to specific Node",
           "HTTPMethod": "POST",
-          "URI": "/StoreOrg/nodes/:node_id/setContentRole/:content_node_id",
+          "URI": "StoreOrg/nodes/:node_id/setContentRole/:content_node_id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -4284,14 +4285,14 @@
             },
             {
               "Name": "node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "Node Id of store org to set player's role"
             },
             {
               "Name": "content_node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "node id of content"
@@ -4309,7 +4310,7 @@
           "MethodName": "Unset Content role",
           "Synopsis": "Unset Content's organization role from specific Node",
           "HTTPMethod": "POST",
-          "URI": "/StoreOrg/nodes/:node_id/unsetContentRole/:content_node_id",
+          "URI": "StoreOrg/nodes/:node_id/unsetContentRole/:content_node_id",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -4322,14 +4323,14 @@
             },
             {
               "Name": "node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "Node Id to unset player's role"
             },
             {
               "Name": "content_node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "node id of content to unset content's role"
@@ -4353,7 +4354,7 @@
           "MethodName": "Retrieve Content",
           "Synopsis": "Retrieve content(s) by specified filter fields",
           "HTTPMethod": "GET",
-          "URI": "/Content",
+          "URI": "Content",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -4468,7 +4469,7 @@
           "MethodName": "Count Content",
           "Synopsis": "Count content(s) by specified filter fields",
           "HTTPMethod": "GET",
-          "URI": "/Content/count",
+          "URI": "Content/count",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -4541,7 +4542,7 @@
           "MethodName": "Create content",
           "Synopsis": "Create content",
           "HTTPMethod": "POST",
-          "URI": "/Content/addContent",
+          "URI": "Content/addContent",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -4656,7 +4657,7 @@
           "MethodName": "Update content",
           "Synopsis": "Update content by content ID",
           "HTTPMethod": "POST",
-          "URI": "/Content/:node_id/update",
+          "URI": "Content/:node_id/update",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -4669,7 +4670,7 @@
             },
             {
               "Name": "node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "Specific node_id of content"
@@ -4764,7 +4765,7 @@
           "MethodName": "Delete content",
           "Synopsis": "Delete existing content",
           "HTTPMethod": "POST",
-          "URI": "/Content/:node_id/delete",
+          "URI": "Content/:node_id/delete",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -4777,7 +4778,7 @@
             },
             {
               "Name": "node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "node id as used in client's content"
@@ -4788,7 +4789,7 @@
           "MethodName": "Retrieve Category",
           "Synopsis": "Retrieve category by specified filter fields",
           "HTTPMethod": "GET",
-          "URI": "/Content/category",
+          "URI": "Content/category",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -4840,7 +4841,7 @@
           "MethodName": "Create Category",
           "Synopsis": "Create content category",
           "HTTPMethod": "POST",
-          "URI": "/Content/category/create",
+          "URI": "Content/category/create",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -4864,7 +4865,7 @@
           "MethodName": "Update Category",
           "Synopsis": "Update content category",
           "HTTPMethod": "POST",
-          "URI": "/Content/category/update",
+          "URI": "Content/category/update",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -4895,7 +4896,7 @@
           "MethodName": "Delete Category",
           "Synopsis": "Delete content category",
           "HTTPMethod": "POST",
-          "URI": "/Content/category/delete",
+          "URI": "Content/category/delete",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -4919,7 +4920,7 @@
           "MethodName": "Action Like",
           "Synopsis": "Player send Like action to content",
           "HTTPMethod": "POST",
-          "URI": "/Content/:node_id/player/:player_id/like",
+          "URI": "Content/:node_id/player/:player_id/like",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -4932,14 +4933,14 @@
             },
             {
               "Name": "node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "node id as used in client's content"
             },
             {
               "Name": "player_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -4964,7 +4965,7 @@
           "MethodName": "Action Dislike",
           "Synopsis": "Player send Dislike action to content",
           "HTTPMethod": "POST",
-          "URI": "/Content/:node_id/player/:player_id/dislike",
+          "URI": "Content/:node_id/player/:player_id/dislike",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -4977,14 +4978,14 @@
             },
             {
               "Name": "node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "node id as used in client's content"
             },
             {
               "Name": "player_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -5009,7 +5010,7 @@
           "MethodName": "Give feedback",
           "Synopsis": "Player give any feedback(s) to content",
           "HTTPMethod": "POST",
-          "URI": "/Content/:node_id/player/:player_id/feedback",
+          "URI": "Content/:node_id/player/:player_id/feedback",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -5022,14 +5023,14 @@
             },
             {
               "Name": "node_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "node id as used in client's content"
             },
             {
               "Name": "player_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -5067,7 +5068,7 @@
           "MethodName": "Find info of a link",
           "Synopsis": "Find detail of the data associated with a given link",
           "HTTPMethod": "GET",
-          "URI": "/Link/",
+          "URI": "Link/",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -5084,7 +5085,7 @@
           "MethodName": "Generate a link",
           "Synopsis": "Generate a unique link given data",
           "HTTPMethod": "POST",
-          "URI": "/Link/generate",
+          "URI": "Link/generate",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -5107,7 +5108,7 @@
           "MethodName": "Retrieve file data",
           "Synopsis": "Retrieve image(s) content by specified filter fields",
           "HTTPMethod": "GET",
-          "URI": "/File/list",
+          "URI": "File/list",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -5145,7 +5146,7 @@
           "MethodName": "Delete",
           "Synopsis": "Permenently delete a Image File from Playbasis database.",
           "HTTPMethod": "POST",
-          "URI": "/File/delete",
+          "URI": "File/delete",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -5175,7 +5176,7 @@
           "MethodName": "Retrieve FitBit Player",
           "Synopsis": "Retrieve FitBit Player",
           "HTTPMethod": "GET",
-          "URI": "/Fitbit",
+          "URI": "Fitbit",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -5192,7 +5193,7 @@
           "MethodName": "Add FitBit Player",
           "Synopsis": "Add new FitBit Player",
           "HTTPMethod": "POST",
-          "URI": "/Fitbit/add",
+          "URI": "Fitbit/add",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -5230,7 +5231,7 @@
           "MethodName": "Update FitBit Player",
           "Synopsis": "Update FitBit Player",
           "HTTPMethod": "POST",
-          "URI": "/Fitbit/:player_id/update",
+          "URI": "Fitbit/:player_id/update",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -5243,7 +5244,7 @@
             },
             {
               "Name": "player_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -5268,7 +5269,7 @@
           "MethodName": "Delete FitBit Player",
           "Synopsis": "Delete FitBit Player",
           "HTTPMethod": "POST",
-          "URI": "/Fitbit/:player_id/delete",
+          "URI": "Fitbit/:player_id/delete",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -5281,7 +5282,7 @@
             },
             {
               "Name": "player_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -5292,7 +5293,7 @@
           "MethodName": "Retrieve FitBit Player Data",
           "Synopsis": "Retrieve FitBit Player Data",
           "HTTPMethod": "GET",
-          "URI": "/Fitbit/:player_id/data",
+          "URI": "Fitbit/:player_id/data",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -5305,7 +5306,7 @@
             },
             {
               "Name": "player_id",
-              "Required": "Y",
+              "Required": "URI",
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
@@ -5346,7 +5347,7 @@
           "MethodName": "Retrieve Trip Data",
           "Synopsis": "List of Trips that the player has started.",
           "HTTPMethod": "GET",
-          "URI": "/Trip",
+          "URI": "Trip",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -5382,7 +5383,7 @@
           "MethodName": "Start Trip",
           "Synopsis": "Start Trip",
           "HTTPMethod": "POST",
-          "URI": "/Trip/startTrip",
+          "URI": "Trip/startTrip",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -5406,7 +5407,7 @@
           "MethodName": "Finish Trip",
           "Synopsis": "Finish Trip",
           "HTTPMethod": "POST",
-          "URI": "/Trip/finishTrip",
+          "URI": "Trip/finishTrip",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -5441,7 +5442,7 @@
           "MethodName": "Retrieve Trip Log",
           "Synopsis": "Retrieve driving status log of specific trip_id",
           "HTTPMethod": "GET",
-          "URI": "/Trip/getTripLog",
+          "URI": "Trip/getTripLog",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -5465,7 +5466,7 @@
           "MethodName": "Add Trip Log",
           "Synopsis": "Log driving status of the trip that player has started or specify by trip_id",
           "HTTPMethod": "POST",
-          "URI": "/Trip/addTripLog",
+          "URI": "Trip/addTripLog",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -5551,7 +5552,7 @@
           "MethodName": "Retrieve Game setting",
           "Synopsis": "Retrieve game(s) setting by specified filter fields",
           "HTTPMethod": "GET",
-          "URI": "/Game",
+          "URI": "Game",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -5624,7 +5625,7 @@
           "MethodName": "Retrieve Game Item status",
           "Synopsis": "Retrieve player's item(s) status in game",
           "HTTPMethod": "GET",
-          "URI": "/Game/playerItemStatus",
+          "URI": "Game/playerItemStatus",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
@@ -5663,7 +5664,7 @@
           "MethodName": "Set Game Current Stage",
           "Synopsis": "Set current stage for player to play the game",
           "HTTPMethod": "POST",
-          "URI": "/Game/setCurrentStage",
+          "URI": "Game/setCurrentStage",
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
