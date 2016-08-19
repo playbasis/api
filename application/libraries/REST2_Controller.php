@@ -163,57 +163,53 @@ abstract class REST2_Controller extends REST_Controller
 		try {
 			/* 2.1 Validate request (basic common validation for all controllers) */
 			if (!in_array($class_name, array('Auth', 'Facebook', 'Geditor', 'Instagram', 'Janrain', 'Mobile', 'Notification', 'Pipedrive', 'Playbasis'))) { // list of modules that don't require auth info
-				switch ($this->request->method) {
-					case 'get': // every GET call requires 'api_key'
-						$required = $this->input->checkParam(array(
-							'api_key'
-						));
-						if ($required)
-							$this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
-						if (!$this->validToken)
-							$this->response($this->error->setError('INVALID_API_KEY_OR_SECRET'), 200);
-						break;
-					case 'post': // every POST call requires 'token'
-						$required = $this->input->checkParam(array(
-							'token'
-						));
-						if ($required)
-							$this->response($this->error->setError('TOKEN_REQUIRED', $required), 200);
-						if (!$this->validToken)
-							$this->response($this->error->setError('INVALID_TOKEN'), 200);
-						break;
-				}
-
 				// Check required parameter from pbapp.json
 				if(isset($this->uri->router)) {
 					$json = file_get_contents(getcwd() . "/iodocs/public/data/pbapp.json");
 					$pbapp_data = json_decode($json, true);
+					$found_endpoint = false;
 					$missing_parameter = array();
 					$exception_param = array();
 					foreach ($pbapp_data['endpoints'] as $endpoint) {
 						if ($method[0]->uri->segments[1] == $endpoint['endpoint']) {
 							foreach ($endpoint['methods'] as $end_method) {
-								//$new_url = str_replace(':any', '.+', str_replace(':num', '[0-9]+', $end_method['URI']));
-								//$strs = explode('/', $end_method['URI']);
-								//foreach ($strs as $index => $str){
-								//	if(substr($str, 0, 1) == ':'){
-								//		array_push($exception_param, substr($str, 1, utf8_strlen($str)));
-								//		$strs[$index] = '([a-zA-Z0-9-%_:\.]+)';
-								//	}
-								//}
-								//$new_url = implode('/', $strs);
 								if (preg_match('#^' . $this->uri->router . '$#', $end_method['URI'])) {
+									$found_endpoint = true;
 									foreach ($end_method['parameters'] as $parameter) {
+										// validate each parameter here
 										if (strtoupper($parameter['Required']) == 'Y' && !isset($this->_args[$parameter['Name']]) && !in_array($parameter['Name'], $exception_param)) {
 											array_push($missing_parameter, $parameter['Name']);
 										}
 									}
 									break;
 								}
-								//$exception_param = array();
 							}
 							break;
 						}
+					}
+					if(!$found_endpoint){
+						$this->response(array('status' => false, 'error' => 'Unknown method.'), 404);
+					}
+
+					switch ($this->request->method) {
+						case 'get': // every GET call requires 'api_key'
+							$required = $this->input->checkParam(array(
+								'api_key'
+							));
+							if ($required)
+								$this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
+							if (!$this->validToken)
+								$this->response($this->error->setError('INVALID_API_KEY_OR_SECRET'), 200);
+							break;
+						case 'post': // every POST call requires 'token'
+							$required = $this->input->checkParam(array(
+								'token'
+							));
+							if ($required)
+								$this->response($this->error->setError('TOKEN_REQUIRED', $required), 200);
+							if (!$this->validToken)
+								$this->response($this->error->setError('INVALID_TOKEN'), 200);
+							break;
 					}
 					if (!empty($missing_parameter)) {
 						$this->response($this->error->setError('PARAMETER_MISSING', $missing_parameter), 200);
