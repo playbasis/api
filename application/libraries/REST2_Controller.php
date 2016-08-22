@@ -21,6 +21,7 @@ abstract class REST2_Controller extends REST_Controller
 	protected $client_date;
 	protected $client_usage;
 	protected $client_plan;
+	protected $method_data;
 	private $log_id;
 
 	/**
@@ -170,11 +171,12 @@ abstract class REST2_Controller extends REST_Controller
 					$found_endpoint = false;
 					$missing_parameter = array();
 					$exception_param = array();
-					foreach ($pbapp_data['endpoints'] as $endpoint) {
-						if ($method[0]->uri->segments[1] == $endpoint['endpoint']) {
+					foreach ($pbapp_data['endpoints'] as $endpoint ) {
+						if (in_array($method[0]->uri->segments[1],$endpoint['endpoint'])) {
 							foreach ($endpoint['methods'] as $end_method) {
-								if (preg_match('#^' . $this->uri->router . '$#', $end_method['URI'])) {
+								if (preg_match('#^' . $this->uri->router . '$#', $end_method['URI']) && ($this->request->method == strtolower($end_method['HTTPMethod']))) {
 									$found_endpoint = true;
+									$this->method_data = $end_method;
 									foreach ($end_method['parameters'] as $parameter) {
 										// validate each parameter here
 										if (strtoupper($parameter['Required']) == 'Y' && !isset($this->_args[$parameter['Name']]) && !in_array($parameter['Name'], $exception_param)) {
@@ -184,7 +186,7 @@ abstract class REST2_Controller extends REST_Controller
 									break;
 								}
 							}
-							break;
+							if($found_endpoint)break;
 						}
 					}
 					if(!$found_endpoint){
@@ -296,6 +298,10 @@ abstract class REST2_Controller extends REST_Controller
 			}
 
 			is_numeric($http_code) OR $http_code = 200;
+
+			if($this->method_data && isset($this->method_data["response"])){
+				$testtt = "ers";
+			}
 
 			$output = $this->format_data($data, $this->response->format);
 		}
