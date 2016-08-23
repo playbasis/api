@@ -181,12 +181,12 @@ $route['Engine/json/'.ANY_STRING] = 'engine/json/$1';
 $route['Engine/json']	= 'engine/json/0';
 
 //redeem API
-$route['Redeem/goods/'.ANY_STRING] = 'redeem/goods/$1';
-$route['Redeem/goods'] = 'redeem/goods/0';
+//$route['Redeem/goods/'.ANY_STRING] = 'redeem/goods/$1';
+$route['Redeem/goods'] = 'redeem/goods';
 $route['Redeem/goodsGroup'] = 'redeem/goodsGroup';
 $route['Redeem/goodsGroup/verify'] = 'redeem/merchantGoodsGroup';
-$route['Redeem/sponsor/'.ANY_STRING] = 'redeem/sponsor/$1';
-$route['Redeem/sponsor'] = 'redeem/sponsor/0';
+//$route['Redeem/sponsor/'.ANY_STRING] = 'redeem/sponsor/$1';
+$route['Redeem/sponsor'] = 'redeem/sponsor';
 $route['Redeem/sponsorGroup'] = 'redeem/sponsorGroup';
 
 // api-carlos
@@ -210,11 +210,11 @@ $route['Service/recent_point/'.ANY_STRING] = 'service/recent_point/$1';
 $route['Service/recent_point'] = 'service/recent_point';
 $route['Service/recentActivities'] = 'service/recent_activities';
 $route['Service/detailActivityFeed/'.ANY_STRING] = 'service/detail_activity/$1';
-$route['Service/detailActivityFeed'] = 'service/detail_activity';
+//$route['Service/detailActivityFeed'] = 'service/detail_activity';
 $route['Service/likeActivityFeed/'.ANY_STRING] = 'service/like_activity/$1';
-$route['Service/likeActivityFeed'] = 'service/like_activity';
+//$route['Service/likeActivityFeed'] = 'service/like_activity';
 $route['Service/commentActivityFeed/'.ANY_STRING] = 'service/comment_activity/$1';
-$route['Service/commentActivityFeed'] = 'service/comment_activity';
+//$route['Service/commentActivityFeed'] = 'service/comment_activity';
 $route['Service/reset_point'] = 'service/reset_point';
 
 //Internal API
@@ -274,10 +274,10 @@ $route['notification/'.ANY_STRING] = 'notification/index/$1';
 $route['notification'] = 'notification/index';
 
 //push notification
-$route['Push/'.ANY_STRING.'/deviceRegistration'] = 'push/deviceRegistration/$1';
+//$route['Push/'.ANY_STRING.'/deviceRegistration'] = 'push/deviceRegistration/$1';
 $route['Push/deviceRegistration'] = 'push/deviceRegistration';
 
-$route['Push/'.ANY_STRING.'/send'] = 'push/send/$1';
+//$route['Push/'.ANY_STRING.'/send'] = 'push/send/$1';
 $route['Push/send'] = 'push/send';
 $route['Push/goods'] = 'push/send_goods';
 $route['Push/recent'] = 'push/recent';
@@ -293,7 +293,7 @@ $route['StoreOrg/nodes/'.ANY_STRING.'/unsetPlayerRole/'.ANY_STRING] = 'store_org
 $route['StoreOrg/organizes'] = 'store_org/listOrganizes';
 $route['StoreOrg/nodes'] = 'store_org/listNodes';
 
-$route['StoreOrg/players/'.ANY_STRING] = 'store_org/players/$1';
+$route['StoreOrg/players/'.ANY_STRING] = 'store_org/players/$1';                                       // ANY_STRING = node_id
 
 $route['StoreOrg/nodes/'.ANY_STRING.'/getChildNode/'.ANY_STRING] = 'store_org/getChildNode/$1/$2';     // ANY_STRING = node_id/layer
 $route['StoreOrg/nodes/'.ANY_STRING.'/saleReport'] = 'store_org/saleReport/$1';                        // ANY_STRING = node_id
@@ -302,12 +302,12 @@ $route['StoreOrg/nodes/'.ANY_STRING.'/saleBoard/'.ANY_STRING] = 'store_org/saleB
 
 $route['StoreOrg/rankPeer/'.ANY_STRING.'/'.ANY_STRING] = 'store_org/rankPeer/$1/$2';
 $route['StoreOrg/rankPeer/'.ANY_STRING] = 'store_org/rankPeer/$1/point';
-$route['StoreOrg/rankPeer'] = 'store_org/rankParam/0/point';
+//$route['StoreOrg/rankPeer'] = 'store_org/rankParam/0/point';  no function rankParam
 
 $route['StoreOrg/rankPeerByAccAction/'.ANY_STRING.'/'.ANY_STRING.'/'.ANY_STRING] = 'store_org/rankPeerByAccumulateAction/$1/$2/$3';
-$route['StoreOrg/rankPeerByAccAction/'.ANY_STRING.'/'.ANY_STRING] = 'store_org/rankPeerByAccumulateAction/$1/$2/0';
-$route['StoreOrg/rankPeerByAccAction/'.ANY_STRING] = 'store_org/rankPeerByAccumulateAction/$1/0/0';
-$route['StoreOrg/rankPeerByAccAction'] = 'store_org/rankPeerByAccumulateAction/0/0/0';
+//$route['StoreOrg/rankPeerByAccAction/'.ANY_STRING.'/'.ANY_STRING] = 'store_org/rankPeerByAccumulateAction/$1/$2/0';
+//$route['StoreOrg/rankPeerByAccAction/'.ANY_STRING] = 'store_org/rankPeerByAccumulateAction/$1/0/0';
+//$route['StoreOrg/rankPeerByAccAction'] = 'store_org/rankPeerByAccumulateAction/0/0/0';
 
 $route['StoreOrg/nodes/'.ANY_STRING.'/addContent/'.ANY_STRING] = 'store_org/contentRegister/$1/$2'; // ANY_STRING = node_id/node_id
 $route['StoreOrg/nodes/'.ANY_STRING.'/removeContent/'.ANY_STRING] = 'store_org/contentRemove/$1/$2'; // ANY_STRING = node_id/node_id
@@ -366,10 +366,10 @@ $route['Game/setCurrentStage'] = 'game/setCurrentStage';
 
 //misc
 //$route['test']	= 'playbasis/test';
-$route['test']	= 'notification/index';
+//$route['test']	= 'notification/index';
 $route['fb'] = 'playbasis/fb';
 $route['login'] = 'playbasis/login';
-$route['memtest'] = 'playbasis/memtest';
+//$route['memtest'] = 'playbasis/memtest';
 
 //dummy
 //$route['dummy/dummyPlayer/'.ANY_NUMBER.'/'.ANY_NUMBER]	= 'dummy/dummyPlayer/$1/$2/$3';

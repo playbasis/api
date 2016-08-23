@@ -1714,6 +1714,23 @@
           ]
         },
         {
+          "MethodName": "Badges Info",
+          "Synopsis": "Returns information about all available badges for the current site.",
+          "HTTPMethod": "GET",
+          "URI": "Badge",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": [
+            {
+              "Name": "tags",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "Specific tag(s) to find (e.g. foo,bar)"
+            }
+          ]
+        },
+        {
           "MethodName": "Badge Info",
           "Synopsis": "Returns information about the badge with the specified id.",
           "HTTPMethod": "GET",
@@ -1734,7 +1751,7 @@
     },
     {
       "name": "Goods API",
-      "endpoint": ["Goods"],
+      "endpoint": ["Goods", "Redeem"],
       "methods": [
         {
           "MethodName": "Goods List Info",
@@ -1940,6 +1957,23 @@
               "Description": "player id as used in client's website"
             }
           ]
+        },
+        {
+          "MethodName": "Return sponsor goods for player",
+          "Synopsis": "Return sponsor goods for player.",
+          "HTTPMethod": "GET",
+          "URI": "Goods/ad",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": [
+            {
+              "Name": "player_id",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            }
+          ]
         }
       ]
     },
@@ -2089,12 +2123,120 @@
               "Description": "you can specify a session id to extend expire session time for that player"
             }
           ]
+        },
+        {
+          "MethodName": "Action Config",
+          "Synopsis": "Get action config.",
+          "HTTPMethod": "GET",
+          "URI": "Engine/actionConfig",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": []
+        },
+        {
+          "MethodName": "Process Quest Rule",
+          "Synopsis": "Process quest in client-site.",
+          "HTTPMethod": "POST",
+          "URI": "Engine/quest",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": [
+            {
+              "Name": "token",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "access token returned from Auth"
+            }
+          ]
+        },
+        {
+          "MethodName": "Action reward Player",
+          "Synopsis": "Get player reward from the action",
+          "HTTPMethod": "GET",
+          "URI": "Engine/json",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": [
+            {
+              "Name": "pb_player_id",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "internal id of player"
+            },
+            {
+              "Name": "action",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "action of player"
+            }
+          ]
+        },
+        {
+          "MethodName": "Action Reward Player",
+          "Synopsis": "Get player reward from the action",
+          "HTTPMethod": "GET",
+          "URI": "Engine/json",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": [
+            {
+              "Name": "pb_player_id",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "internal id of player"
+            },
+            {
+              "Name": "action",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "action of player"
+            }
+          ]
+        },
+        {
+          "MethodName": "Action Reward Player By Json",
+          "Synopsis": "Get player reward from the action by json this function for internal using",
+          "HTTPMethod": "GET",
+          "URI": "Engine/json/:json_data",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": [
+            {
+              "Name": "json_data",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "json data"
+            }
+          ]
+        },
+        {
+          "MethodName": "Process Rule Facebook",
+          "Synopsis": "Process rule facebook.",
+          "HTTPMethod": "POST",
+          "URI": "Engine/facebook",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": [
+            {
+              "Name": "token",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "access token returned from Auth"
+            }
+          ]
         }
       ]
     },
     {
       "name": "Quest API",
-      "endpoint": ["Quest"],
+      "endpoint": ["Quest", "Quests"],
       "methods": [
         {
           "MethodName": "Quest List Info",
@@ -2103,6 +2245,23 @@
           "URI": "Quest",
           "RequiresOAuth": "N",
 		  "Public": "Y",
+          "parameters": [
+            {
+              "Name": "tags",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "Specific tag(s) to find (e.g. foo,bar)"
+            }
+          ]
+        },
+        {
+          "MethodName": "Quest List Info",
+          "Synopsis": "Returns information about all quest for the current site.",
+          "HTTPMethod": "GET",
+          "URI": "Quests",
+          "RequiresOAuth": "N",
+          "Public": "N",
           "parameters": [
             {
               "Name": "tags",
@@ -2485,6 +2644,23 @@
           ]
         },
         {
+          "MethodName": "List Recent Quizzes Done by the Player",
+          "Synopsis": "List recent quizzes done by the player.",
+          "HTTPMethod": "GET",
+          "URI": "Quiz/player/:player_id/",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": [
+            {
+              "Name": "player_id",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            }
+          ]
+        },
+        {
           "MethodName": "List Pending Quizzes by the Player",
           "Synopsis": "List pending quizzes by the player.",
           "HTTPMethod": "GET",
@@ -2505,6 +2681,23 @@
               "Default": "5",
               "Type": "string",
               "Description": "limit number of quizzes"
+            }
+          ]
+        },
+        {
+          "MethodName": "List Pending Quizzes by the Player",
+          "Synopsis": "List pending quizzes by the player.",
+          "HTTPMethod": "GET",
+          "URI": "Quiz/player/:player_id/pending",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": [
+            {
+              "Name": "player_id",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "player id as used in client's website"
             }
           ]
         },
@@ -2665,6 +2858,23 @@
               "Default": "5",
               "Type": "string",
               "Description": "limit number of players"
+            }
+          ]
+        },
+        {
+          "MethodName": "Rank Players by Their Scores for a Quiz",
+          "Synopsis": "Rank players by their scores for a give quiz.",
+          "HTTPMethod": "GET",
+          "URI": "Quiz/:id/rank",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": [
+            {
+              "Name": "id",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "quiz id"
             }
           ]
         },
@@ -2916,7 +3126,7 @@
     },
     {
       "name": "Communication API",
-      "endpoint": ["Communication"],
+      "endpoint": ["Email", "Sms", "Push"],
       "methods": [
         {
           "MethodName": "Send Email",
@@ -2960,6 +3170,59 @@
               "Default": "",
               "Type": "string",
               "Description": "template message (either message or template_id is required)"
+            }
+          ]
+        },
+        {
+          "MethodName": "Send Email",
+          "Synopsis": "Send email to a player.",
+          "HTTPMethod": "POST",
+          "URI": "Email/sendTo",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters_or" : [["to","bcc"]],
+          "parameters": [
+            {
+              "Name": "token",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "access token returned from Auth"
+            },
+            {
+              "Name": "from",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "email of sender"
+            },
+            {
+              "Name": "subject",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "email subject"
+            },
+            {
+              "Name": "to",
+              "Required": "OR",
+              "Default": "",
+              "Type": "string",
+              "Description": "email receiver"
+            },
+            {
+              "Name": "bcc",
+              "Required": "OR",
+              "Default": "",
+              "Type": "string",
+              "Description": "bbc email receiver"
+            },
+            {
+              "Name": "message",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "email message (either message or template_id is required)"
             }
           ]
         },
@@ -3012,6 +3275,78 @@
               "Default": "",
               "Type": "string",
               "Description": "template message (either message or template_id is required)"
+            }
+          ]
+        },
+        {
+          "MethodName": "Check Email black list",
+          "Synopsis": "Check email in black list",
+          "HTTPMethod": "POST",
+          "URI": "Email/isBlackList",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": [
+            {
+              "Name": "token",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "access token returned from Auth"
+            },
+            {
+              "Name": "email",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "email to check blacklist"
+            }
+          ]
+        },
+        {
+          "MethodName": "Add Email black list",
+          "Synopsis": "Add email to black list",
+          "HTTPMethod": "POST",
+          "URI": "Email/addBlackList",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": [
+            {
+              "Name": "token",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "access token returned from Auth"
+            },
+            {
+              "Name": "email",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "email to check blacklist"
+            }
+          ]
+        },
+        {
+          "MethodName": "Remove Email black list",
+          "Synopsis": "Remove email from black list",
+          "HTTPMethod": "POST",
+          "URI": "Email/removeBlackList",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": [
+            {
+              "Name": "token",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "access token returned from Auth"
+            },
+            {
+              "Name": "email",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "email to check blacklist"
             }
           ]
         },
@@ -3070,6 +3405,37 @@
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
+            }
+          ]
+        },
+        {
+          "MethodName": "Send SMS By Phone Number",
+          "Synopsis": "Send SMS to someone by phone number.",
+          "HTTPMethod": "POST",
+          "URI": "Sms/sendTo",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": [
+            {
+              "Name": "token",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "access token returned from Auth"
+            },
+            {
+              "Name": "phone_number",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "phone number of receiver"
+            },
+            {
+              "Name": "message",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "SMS message (either message or template_id is required)"
             }
           ]
         },
@@ -3415,7 +3781,7 @@
     },
     {
       "name": "Live Feed API",
-      "endpoint": ["LiveFeed"],
+      "endpoint": ["Service"],
       "methods": [
         {
           "MethodName": "Recent Activities",
@@ -3582,6 +3948,23 @@
               "Default": "20",
               "Type": "integer",
               "Description": "number of results to return"
+            }
+          ]
+        },
+        {
+          "MethodName": "Recent Point By Player",
+          "Synopsis": "Returns recent points by player",
+          "HTTPMethod": "GET",
+          "URI": "Service/recent_point/:player_id",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": [
+            {
+              "Name": "player_id",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "player id as used in client's website"
             }
           ]
         },
@@ -3754,6 +4137,44 @@
               "Default": "",
               "Type": "string",
               "Description": "Node Id to add player"
+            },
+            {
+              "Name": "player_id",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "Player Id to add to Node"
+            }
+          ]
+        },
+        {
+          "MethodName": "Add player to Node",
+          "Synopsis": "Add player to specific Node",
+          "HTTPMethod": "POST",
+          "URI": "StoreOrg/nodes/name/:node_name/type/:organize_type/addPlayer/:player_id",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": [
+            {
+              "Name": "token",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "access token returned from Auth"
+            },
+            {
+              "Name": "node_name",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "Node Id to add player"
+            },
+            {
+              "Name": "organize",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "Organize name"
             },
             {
               "Name": "player_id",
@@ -3965,6 +4386,23 @@
               "Default": "",
               "Type": "string",
               "Description": "year to rank players by (2015, 2016 , ...)"
+            }
+          ]
+        },
+        {
+          "MethodName": "Peer Leader board",
+          "Synopsis": "Returns leader board list for organization under given node_id",
+          "HTTPMethod": "GET",
+          "URI": "StoreOrg/rankPeer/:node_id",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": [
+            {
+              "Name": "node_id",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "organization id to be ranked"
             }
           ]
         },
@@ -5191,8 +5629,268 @@
       ]
     },
     {
+      "name": "Insights API",
+      "endpoint": ["Action,Reward,Player"],
+      "methods": [
+        {
+          "MethodName": "Get Action List",
+          "Synopsis": "Get client action ",
+          "HTTPMethod": "GET",
+          "URI": "Action",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": []
+        },
+        {
+          "MethodName": "Action Log",
+          "Synopsis": "Get action log",
+          "HTTPMethod": "GET",
+          "URI": "Action/log",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": []
+        },
+        {
+          "MethodName": "Action Log Player Used Only",
+          "Synopsis": "Get action log used only",
+          "HTTPMethod": "GET",
+          "URI": "Action/usedonly",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": []
+        },
+        {
+          "MethodName": "Get Reward",
+          "Synopsis": "Get reward",
+          "HTTPMethod": "GET",
+          "URI": "Reward",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": []
+        },
+        {
+          "MethodName": "Get Reward badge",
+          "Synopsis": "Get reward badge",
+          "HTTPMethod": "GET",
+          "URI": "Reward/badge",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": []
+        },
+        {
+          "MethodName": "Get Reward log",
+          "Synopsis": "Get reward log",
+          "HTTPMethod": "GET",
+          "URI": "Reward/:reward_type/log",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": [
+            {
+              "Name": "reward_type",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "reward type"
+            }
+          ]
+        },
+        {
+          "MethodName": "Count Player",
+          "Synopsis": "Count player",
+          "HTTPMethod": "GET",
+          "URI": "Player/total",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": []
+        },
+        {
+          "MethodName": "Count New Player",
+          "Synopsis": "Count new player",
+          "HTTPMethod": "GET",
+          "URI": "Player/new",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": []
+        },
+        {
+          "MethodName": "Get Player DAU",
+          "Synopsis": "Get Player dau",
+          "HTTPMethod": "GET",
+          "URI": "Player/dau",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": []
+        },
+        {
+          "MethodName": "Get Player MAU",
+          "Synopsis": "Get Player mau",
+          "HTTPMethod": "GET",
+          "URI": "Player/mau",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": []
+        },
+        {
+          "MethodName": "Get Player DAU",
+          "Synopsis": "Get Player dau per day",
+          "HTTPMethod": "GET",
+          "URI": "Player/dau_per_day",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": []
+        },
+        {
+          "MethodName": "Get Player MAU",
+          "Synopsis": "Get player mau per day",
+          "HTTPMethod": "GET",
+          "URI": "Player/mau_per_day",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": []
+        },
+        {
+          "MethodName": "Get Player MAU",
+          "Synopsis": "Get player mau per week",
+          "HTTPMethod": "GET",
+          "URI": "Player/mau_per_week",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": []
+        },
+        {
+          "MethodName": "Get Player MAU",
+          "Synopsis": "Get player mau per month",
+          "HTTPMethod": "GET",
+          "URI": "Player/mau_per_month",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": []
+        }
+      ]
+    },
+    {
+      "name": "Internal API",
+      "endpoint": ["Internal"],
+      "methods": [
+        {
+          "MethodName": "Check Feature Limit",
+          "Synopsis": "Check feature limit for client",
+          "HTTPMethod": "GET",
+          "URI": "Internal/listLimitFeature",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": [
+            {
+              "Name": "client_id",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "Client id"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Notification API",
+      "endpoint": ["notification"],
+      "methods": [
+        {
+          "MethodName": "Get Notification List",
+          "Synopsis": "Get Notification List",
+          "HTTPMethod": "GET",
+          "URI": "notification",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": []
+        },
+        {
+          "MethodName": "Get Notification List",
+          "Synopsis": "Get Notification List",
+          "HTTPMethod": "POST",
+          "URI": "notification",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": []
+        },
+        {
+          "MethodName": "Get Notification List",
+          "Synopsis": "Get Notification List",
+          "HTTPMethod": "POST",
+          "URI": "notification/:arg",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": [
+            {
+              "Name": "arg",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CMS API",
+      "endpoint": ["CMS"],
+      "methods": [
+        {
+          "MethodName": "Get Article List",
+          "Synopsis": "Get Article List",
+          "HTTPMethod": "GET",
+          "URI": "cms/getArticles",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": []
+        },
+        {
+          "MethodName": "Get Article List",
+          "Synopsis": "Get Article List",
+          "HTTPMethod": "GET",
+          "URI": "cms/getArticle",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": []
+        },
+        {
+          "MethodName": "Get Article By Id",
+          "Synopsis": "Get Article by id",
+          "HTTPMethod": "GET",
+          "URI": "cms/getArticle/:article_id",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": [
+            {
+              "Name": "article_id",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Import API",
+      "endpoint": ["Import"],
+      "methods": [
+        {
+          "MethodName": "Get Import Setting",
+          "Synopsis": "Get import setting",
+          "HTTPMethod": "GET",
+          "URI": "Import/importSetting",
+          "RequiresOAuth": "N",
+          "Public": "N",
+          "parameters": []
+        }
+      ]
+    },
+    {
       "name": "Health API",
-      "endpoint": ["Health"],
+      "endpoint": ["Fitbit"],
       "methods": [
         {
           "MethodName": "Retrieve FitBit Player",

@@ -186,7 +186,7 @@ abstract class REST2_Controller extends REST_Controller
 									break;
 								}
 							}
-							if($found_endpoint)break;
+							if($found_endpoint) break;
 						}
 					}
 					if(!$found_endpoint){
