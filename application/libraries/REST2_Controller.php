@@ -299,8 +299,32 @@ abstract class REST2_Controller extends REST_Controller
 
 			is_numeric($http_code) OR $http_code = 200;
 
-			if($this->method_data && isset($this->method_data["response"])){
-				$testtt = "ers";
+			if($this->method_data && isset($this->method_data["response"]) && $data['success'] == true){
+				$class_name = get_class($this);
+				$pointer_data = &$data;
+				$pointer_response = null;
+				$response_result = array();
+				if($class_name == "Player"){
+					$pointer_response = &$data["response"]["player"];
+				}else{
+					$pointer_response = &$data["response"];
+				}
+				foreach($this->method_data["response"] as $response){
+					if(($response["Required"] == "Y") && !array_key_exists($response["Name"],$pointer_response)){
+							$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response result(s) missing");
+							break;
+					}else{
+						if(array_key_exists($response["Name"],$pointer_response)){
+							if( $pointer_response[$response["Name"]] != null && gettype($pointer_response[$response["Name"]]) != $response["Type"]){
+								$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid");
+								break;
+							}
+
+							$response_result[$response["Name"]] = $pointer_response[$response["Name"]];
+						}
+					}
+				}
+				$pointer_response = $response_result;
 			}
 
 			$output = $this->format_data($data, $this->response->format);

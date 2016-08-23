@@ -29,8 +29,16 @@
           ],
           "response" : [
             {
-              "token" : "access token",
-              "date_expire" : "expire date of the token"
+              "Name": "token",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "access token"
+            },
+            {
+              "Name": "date_expire",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "expire date of the token"
             }
           ]
         },
@@ -56,6 +64,20 @@
               "Type": "string",
               "Description": "api secret issued by Playbasis"
             }
+          ],
+          "response" : [
+            {
+              "Name": "token",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "access token"
+            },
+            {
+              "Name": "date_expire",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "expire date of the token"
+            }
           ]
         }
       ]
@@ -80,22 +102,80 @@
               "Description": "player id as used in client's website"
             }
           ],
-          "response": {
-            "player": {
-              "image": "https://www.pbapp.net/images/default_profile.jpg",
-              "username": "balm1",
-              "exp": 0,
-              "level": 1,
-              "first_name": "balm1",
-              "last_name": null,
-              "gender": 0,
-              "birth_date": null,
-              "registered": "2016-05-18T19:31:31+0700",
-              "last_login": "0000-00-00 00:00:00",
-              "last_logout": "0000-00-00 00:00:00",
-              "cl_player_id": "balm1"
+          "response": [
+            {
+              "Name": "cl_player_id",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "image",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "username",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "exp",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "level",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "first_name",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "last_name",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "gender",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "birth_date",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "registered",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "last_login",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "last_logout",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "player id as used in client's website"
             }
-          }
+          ]
         },
         {
           "MethodName": "Player Info (include private data)",
