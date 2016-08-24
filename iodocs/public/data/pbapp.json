@@ -27,7 +27,7 @@
               "Description": "api secret issued by Playbasis"
             }
           ],
-          "response" : [
+          "response": [
             {
               "Name": "token",
               "Required": "Y",
@@ -65,7 +65,7 @@
               "Description": "api secret issued by Playbasis"
             }
           ],
-          "response" : [
+          "response": [
             {
               "Name": "token",
               "Required": "Y",
@@ -413,6 +413,110 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
+          ],
+          "response": [
+            {
+              "Name": "image",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "url to the player profile image"
+            },
+            {
+              "Name": "username",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "username of the player"
+            },
+            {
+              "Name": "exp",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "exp of the player"
+            },
+            {
+              "Name": "level",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "level of the player"
+            },
+            {
+              "Name": "first_name",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "first name of the player"
+            },
+            {
+              "Name": "last_name",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "last name of the player"
+            },
+            {
+              "Name": "gender",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "1=Male, 2=Female"
+            },
+            {
+              "Name": "birth_date",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "date of birth in the format YYYY-MM-DD (ex.1982-09-29)"
+            },
+            {
+              "Name": "registered",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "registered date/time"
+            },
+            {
+              "Name": "percent_of_level",
+              "Required": "Y",
+              "Type": "double",
+              "Description": "percent of level"
+            },
+            {
+              "Name": "level_title",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "level title"
+            },
+            {
+              "Name": "level_image",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "level image"
+            },
+            {
+              "Name": "badges",
+              "Required": "Y",
+              "Type": "array",
+              "Description": "badges that player has received"
+            },
+            {
+              "Name": "goods",
+              "Required": "Y",
+              "Type": "array",
+              "Description": "goods that player has received"
+            },
+            {
+              "Name": "points",
+              "Required": "Y",
+              "Type": "array",
+              "Description": "points that player has received"
+            },
+            {
+              "Name": "last_login",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "latest date/time that the player has login"
+            },
+            {
+              "Name": "last_logout",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "latest date/time that the player has logout"
+            }
           ]
         },
         {
@@ -437,6 +541,128 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
+          ],
+          "response": [
+            {
+              "Name": "image",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "url to the player profile image"
+            },
+            {
+              "Name": "username",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "username of the player"
+            },
+			{
+              "Name": "email",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "email address of the player"
+            },
+			{
+              "Name": "phone_number",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "phone number of the player (+66xxyyyzzzz)"
+            },
+            {
+              "Name": "exp",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "exp of the player"
+            },
+            {
+              "Name": "level",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "level of the player"
+            },
+            {
+              "Name": "first_name",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "first name of the player"
+            },
+            {
+              "Name": "last_name",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "last name of the player"
+            },
+            {
+              "Name": "gender",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "1=Male, 2=Female"
+            },
+            {
+              "Name": "birth_date",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "date of birth in the format YYYY-MM-DD (ex.1982-09-29)"
+            },
+            {
+              "Name": "registered",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "registered date/time"
+            },
+            {
+              "Name": "percent_of_level",
+              "Required": "Y",
+              "Type": "double",
+              "Description": "percent of level"
+            },
+            {
+              "Name": "level_title",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "level title"
+            },
+            {
+              "Name": "level_image",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "level image"
+            },
+            {
+              "Name": "badges",
+              "Required": "Y",
+              "Type": "array",
+              "Description": "badges that player has received"
+            },
+            {
+              "Name": "goods",
+              "Required": "Y",
+              "Type": "array",
+              "Description": "goods that player has received"
+            },
+            {
+              "Name": "points",
+              "Required": "Y",
+              "Type": "array",
+              "Description": "points that player has received"
+            },
+			{
+              "Name": "organization",
+              "Required": "N",
+              "Type": "array",
+              "Description": "organization"
+            },
+            {
+              "Name": "last_login",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "latest date/time that the player has login"
+            },
+            {
+              "Name": "last_logout",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "latest date/time that the player has logout"
+            }
           ]
         },
         {
@@ -453,6 +679,14 @@
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
+            }
+          ],
+          "response": [
+            {
+              "Name": "custom",
+              "Required": "N",
+              "Type": "array",
+              "Description": "custom field of a player"
             }
           ]
         },
@@ -492,7 +726,8 @@
               "Type": "string",
               "Description": "custom field values separated by comma"
             }
-          ]
+          ],
+          "response": []
         },
         {
           "MethodName": "Register",
@@ -634,7 +869,8 @@
                 "pending"
               ]
             }
-          ]
+          ],
+          "response": []
         },
         {
           "MethodName": "Update",
@@ -772,7 +1008,8 @@
                 "pending"
               ]
             }
-          ]
+          ],
+          "response": []
         },
         {
           "MethodName": "Reset player password",
@@ -796,7 +1033,15 @@
               "Type": "string",
               "Description": "email as used in client's website"
             }
-          ]
+          ],
+		  "response": [
+			{
+              "Name": "success",
+              "Required": "N",
+              "Type": "boolean",
+              "Description": "result status"
+            }
+		  ]
         },
         {
           "MethodName": "Verify player email",
@@ -819,6 +1064,20 @@
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
+            }
+          ],
+          "response": [
+            {
+              "Name": "success",
+              "Required": "N",
+              "Type": "boolean",
+              "Description": "result status"
+            },
+            {
+              "Name": "message",
+              "Required": "N",
+              "Type": "string",
+              "Description": "result message"
             }
           ]
         },
@@ -844,7 +1103,8 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "response": []
         },
         {
           "MethodName": "Login",
@@ -882,7 +1142,8 @@
               "Type": "string",
               "Description": "session expires in seconds"
             }
-          ]
+          ],
+          "response": []
         },
         {
           "MethodName": "Player Auth",
@@ -891,6 +1152,7 @@
           "URI": "Player/auth",
           "RequiresOAuth": "N",
 		  "Public": "Y",
+          "parameters_or" : [["email","username"]],
           "parameters": [
             {
               "Name": "token",
@@ -901,14 +1163,14 @@
             },
             {
               "Name": "email",
-              "Required": "N",
+              "Required": "OR",
               "Default": "",
               "Type": "string",
               "Description": "email as used in client's website (either email or username is required)"
             },
             {
               "Name": "username",
-              "Required": "N",
+              "Required": "OR",
               "Default": "",
               "Type": "string",
               "Description": "username as used in client's website (either email or username is required)"
@@ -926,6 +1188,20 @@
               "Default": "",
               "Type": "string",
               "Description": "device token to verify with SMS verification process"
+            }
+          ],
+          "response": [
+            {
+              "Name": "cl_player_id",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "session_id",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "session id"
             }
           ]
         },
@@ -982,6 +1258,32 @@
                 "IOS",
                 "Android"
               ]
+            }
+          ],
+          "response": [
+            {
+              "Name": "to",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "phone number of player that receive the message"
+            },
+            {
+              "Name": "from",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "phone number that sent the message"
+            },
+            {
+              "Name": "message",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "message sent to player"
+            },
+            {
+              "Name": "processing_time",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "processing time"
             }
           ]
         },
@@ -1046,6 +1348,32 @@
                 "Android"
               ]
             }
+          ],
+          "response": [
+            {
+              "Name": "to",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "phone number of player that receive the message"
+            },
+            {
+              "Name": "from",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "phone number that sent the message"
+            },
+            {
+              "Name": "message",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "message sent to player"
+            },
+            {
+              "Name": "processing_time",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "processing time"
+            }
           ]
         },
         {
@@ -1077,7 +1405,8 @@
               "Type": "string",
               "Description": "OTP code as sent to player"
             }
-          ]
+          ],
+          "response": []
         },
         {
           "MethodName": "Logout",
@@ -1108,7 +1437,8 @@
               "Type": "string",
               "Description": "session id of the player"
             }
-          ]
+          ],
+          "response": []
         },
         {
           "MethodName": "List Active Player Sessions",
@@ -1124,6 +1454,21 @@
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
+            }
+          ],
+          "response_list" : "Y",
+          "response": [
+            {
+              "Name": "session_id",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "session id"
+            },
+            {
+              "Name": "date_expire",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "date/time that the session will be expire"
             }
           ]
         },
@@ -1141,6 +1486,68 @@
               "Default": "",
               "Type": "string",
               "Description": "session id"
+            }
+          ],
+          "response": [
+            {
+              "Name": "cl_player_id",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "image",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "url to the player profile image"
+            },
+            {
+              "Name": "username",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "username of the player"
+            },
+            {
+              "Name": "exp",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "exp of the player"
+            },
+            {
+              "Name": "level",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "level of the player"
+            },
+            {
+              "Name": "first_name",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "first name of the player"
+            },
+            {
+              "Name": "last_name",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "last name of the player"
+            },
+            {
+              "Name": "gender",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "1=Male, 2=Female"
+            },
+            {
+              "Name": "birth_date",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "date of birth in the format YYYY-MM-DD (ex.1982-09-29)"
+            },
+            {
+              "Name": "registered",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "registered date/time"
             }
           ]
         },
@@ -1972,7 +2379,7 @@
           "HTTPMethod": "GET",
           "URI": "Badge",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "tags",
@@ -2217,7 +2624,7 @@
           "HTTPMethod": "GET",
           "URI": "Goods/ad",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -2383,7 +2790,7 @@
           "HTTPMethod": "GET",
           "URI": "Engine/actionConfig",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": []
         },
         {
@@ -2392,7 +2799,7 @@
           "HTTPMethod": "POST",
           "URI": "Engine/quest",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -2409,7 +2816,7 @@
           "HTTPMethod": "GET",
           "URI": "Engine/json",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "pb_player_id",
@@ -2433,7 +2840,7 @@
           "HTTPMethod": "GET",
           "URI": "Engine/json",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "pb_player_id",
@@ -2457,7 +2864,7 @@
           "HTTPMethod": "GET",
           "URI": "Engine/json/:json_data",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "json_data",
@@ -2474,7 +2881,7 @@
           "HTTPMethod": "POST",
           "URI": "Engine/facebook",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -2514,7 +2921,7 @@
           "HTTPMethod": "GET",
           "URI": "Quests",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "tags",
@@ -2902,7 +3309,7 @@
           "HTTPMethod": "GET",
           "URI": "Quiz/player/:player_id/",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -2943,7 +3350,7 @@
           "HTTPMethod": "GET",
           "URI": "Quiz/player/:player_id/pending",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -3120,7 +3527,7 @@
           "HTTPMethod": "GET",
           "URI": "Quiz/:id/rank",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -3432,7 +3839,7 @@
           "HTTPMethod": "POST",
           "URI": "Email/sendTo",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters_or" : [["to","bcc"]],
           "parameters": [
             {
@@ -3537,7 +3944,7 @@
           "HTTPMethod": "POST",
           "URI": "Email/isBlackList",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -3561,7 +3968,7 @@
           "HTTPMethod": "POST",
           "URI": "Email/addBlackList",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -3585,7 +3992,7 @@
           "HTTPMethod": "POST",
           "URI": "Email/removeBlackList",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -3667,7 +4074,7 @@
           "HTTPMethod": "POST",
           "URI": "Sms/sendTo",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4210,7 +4617,7 @@
           "HTTPMethod": "GET",
           "URI": "Service/recent_point/:player_id",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -4406,7 +4813,7 @@
           "HTTPMethod": "POST",
           "URI": "StoreOrg/nodes/name/:node_name/type/:organize_type/addPlayer/:player_id",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4648,7 +5055,7 @@
           "HTTPMethod": "GET",
           "URI": "StoreOrg/rankPeer/:node_id",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
@@ -5891,7 +6298,7 @@
           "HTTPMethod": "GET",
           "URI": "Action",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": []
         },
         {
@@ -5900,7 +6307,7 @@
           "HTTPMethod": "GET",
           "URI": "Action/log",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": []
         },
         {
@@ -5909,7 +6316,7 @@
           "HTTPMethod": "GET",
           "URI": "Action/usedonly",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": []
         },
         {
@@ -5918,7 +6325,7 @@
           "HTTPMethod": "GET",
           "URI": "Reward",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": []
         },
         {
@@ -5927,7 +6334,7 @@
           "HTTPMethod": "GET",
           "URI": "Reward/badge",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": []
         },
         {
@@ -5936,7 +6343,7 @@
           "HTTPMethod": "GET",
           "URI": "Reward/:reward_type/log",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "reward_type",
@@ -5953,7 +6360,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/total",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": []
         },
         {
@@ -5962,7 +6369,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/new",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": []
         },
         {
@@ -5971,7 +6378,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/dau",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": []
         },
         {
@@ -5980,7 +6387,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/mau",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": []
         },
         {
@@ -5989,7 +6396,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/dau_per_day",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": []
         },
         {
@@ -5998,7 +6405,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/mau_per_day",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": []
         },
         {
@@ -6007,7 +6414,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/mau_per_week",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": []
         },
         {
@@ -6016,7 +6423,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/mau_per_month",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": []
         }
       ]
@@ -6031,7 +6438,7 @@
           "HTTPMethod": "GET",
           "URI": "Internal/listLimitFeature",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "client_id",
@@ -6054,7 +6461,7 @@
           "HTTPMethod": "GET",
           "URI": "notification",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": []
         },
         {
@@ -6063,7 +6470,7 @@
           "HTTPMethod": "POST",
           "URI": "notification",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": []
         },
         {
@@ -6072,7 +6479,7 @@
           "HTTPMethod": "POST",
           "URI": "notification/:arg",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "arg",
@@ -6095,7 +6502,7 @@
           "HTTPMethod": "GET",
           "URI": "cms/getArticles",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": []
         },
         {
@@ -6104,7 +6511,7 @@
           "HTTPMethod": "GET",
           "URI": "cms/getArticle",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": []
         },
         {
@@ -6113,7 +6520,7 @@
           "HTTPMethod": "GET",
           "URI": "cms/getArticle/:article_id",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "article_id",
@@ -6136,7 +6543,7 @@
           "HTTPMethod": "GET",
           "URI": "Import/importSetting",
           "RequiresOAuth": "N",
-          "Public": "N",
+          "Public": "Y",
           "parameters": []
         }
       ]

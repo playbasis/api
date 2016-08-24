@@ -283,7 +283,7 @@ abstract class REST2_Controller extends REST_Controller
 	 * @param null|int $http_code
 	 */
 
-	private function check_respoonse(&$pointer_data, &$pointer_response) {
+	private function check_response(&$pointer_data, &$pointer_response) {
 		$response_result = array();
 		$is_error = false;
 		foreach($this->method_data["response"] as $response){
@@ -295,6 +295,7 @@ abstract class REST2_Controller extends REST_Controller
 				if(array_key_exists($response["Name"],$pointer_response)){
 					if( !is_null($pointer_response[$response["Name"]]) && (gettype($pointer_response[$response["Name"]]) != $response["Type"])){
 						$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid");
+						$is_error = true;
 						break;
 					}
 					$response_result[$response["Name"]] = $pointer_response[$response["Name"]];
@@ -336,7 +337,7 @@ abstract class REST2_Controller extends REST_Controller
 
 			if($this->method_data && isset($this->method_data["response"]) && $data['success'] == true){
 				$class_name = get_class($this);
-				if($class_name == "Player"){
+				if($class_name == "Player" && isset($data["response"]["player"])){
 					$pointer_response = &$data["response"]["player"];
 				}else{
 					$pointer_response = &$data["response"];
@@ -347,10 +348,10 @@ abstract class REST2_Controller extends REST_Controller
 						if(array_key_exists("message",$list)){
 							continue;
 						}
-						$this->check_respoonse($data, $list);
+						$this->check_response($data, $list);
 					}
 				}else{
-					$this->check_respoonse($data, $pointer_response);
+					$this->check_response($data, $pointer_response);
 				}
 			}
 
