@@ -113,67 +113,67 @@
               "Name": "image",
               "Required": "Y",
               "Type": "string",
-              "Description": "player id as used in client's website"
+              "Description": "url to the player profile image"
             },
             {
               "Name": "username",
               "Required": "Y",
               "Type": "string",
-              "Description": "player id as used in client's website"
+              "Description": "username of the player"
             },
             {
               "Name": "exp",
               "Required": "Y",
               "Type": "integer",
-              "Description": "player id as used in client's website"
+              "Description": "exp of the player"
             },
             {
               "Name": "level",
               "Required": "Y",
               "Type": "integer",
-              "Description": "player id as used in client's website"
+              "Description": "level of the player"
             },
             {
               "Name": "first_name",
               "Required": "Y",
               "Type": "string",
-              "Description": "player id as used in client's website"
+              "Description": "first name of the player"
             },
             {
               "Name": "last_name",
               "Required": "Y",
               "Type": "string",
-              "Description": "player id as used in client's website"
+              "Description": "last name of the player"
             },
             {
               "Name": "gender",
               "Required": "Y",
               "Type": "integer",
-              "Description": "player id as used in client's website"
+              "Description": "1=Male, 2=Female"
             },
             {
               "Name": "birth_date",
               "Required": "Y",
               "Type": "string",
-              "Description": "player id as used in client's website"
+              "Description": "date of birth in the format YYYY-MM-DD (ex.1982-09-29)"
             },
             {
               "Name": "registered",
               "Required": "Y",
               "Type": "string",
-              "Description": "player id as used in client's website"
+              "Description": "registered date/time"
             },
             {
               "Name": "last_login",
               "Required": "Y",
               "Type": "string",
-              "Description": "player id as used in client's website"
+              "Description": "latest date/time that the player has login"
             },
             {
               "Name": "last_logout",
               "Required": "Y",
               "Type": "string",
-              "Description": "player id as used in client's website"
+              "Description": "latest date/time that the player has logout"
             }
           ]
         },
@@ -199,6 +199,92 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
+          ],
+          "response": [
+            {
+              "Name": "cl_player_id",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "image",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "url to the player profile image"
+            },
+            {
+              "Name": "username",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "username of the player"
+            },
+			{
+              "Name": "email",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "email address of the player"
+            },
+			{
+              "Name": "phone_number",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "phone number of the player (+66xxyyyzzzz)"
+            },
+            {
+              "Name": "exp",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "exp of the player"
+            },
+            {
+              "Name": "level",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "level of the player"
+            },
+            {
+              "Name": "first_name",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "first name of the player"
+            },
+            {
+              "Name": "last_name",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "last name of the player"
+            },
+            {
+              "Name": "gender",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "1=Male, 2=Female"
+            },
+            {
+              "Name": "birth_date",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "date of birth in the format YYYY-MM-DD (ex.1982-09-29)"
+            },
+            {
+              "Name": "registered",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "registered date/time"
+            },
+            {
+              "Name": "last_login",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "latest date/time that the player has login"
+            },
+            {
+              "Name": "last_logout",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "latest date/time that the player has logout"
+            }
           ]
         },
         {
@@ -222,6 +308,93 @@
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website separate with ',' example '1,2,3'"
+            }
+          ],
+		  "response_list" : "Y",
+		  "response": [
+            {
+              "Name": "cl_player_id",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "image",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "url to the player profile image"
+            },
+            {
+              "Name": "username",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "username of the player"
+            },
+			{
+              "Name": "email",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "email address of the player"
+            },
+			{
+              "Name": "phone_number",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "phone number of the player (+66xxyyyzzzz)"
+            },
+            {
+              "Name": "exp",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "exp of the player"
+            },
+            {
+              "Name": "level",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "level of the player"
+            },
+            {
+              "Name": "first_name",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "first name of the player"
+            },
+            {
+              "Name": "last_name",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "last name of the player"
+            },
+            {
+              "Name": "gender",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "1=Male, 2=Female"
+            },
+            {
+              "Name": "birth_date",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "date of birth in the format YYYY-MM-DD (ex.1982-09-29)"
+            },
+            {
+              "Name": "registered",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "registered date/time"
+            },
+            {
+              "Name": "last_login",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "latest date/time that the player has login"
+            },
+            {
+              "Name": "last_logout",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "latest date/time that the player has logout"
             }
           ]
         },

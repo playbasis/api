@@ -309,22 +309,49 @@ abstract class REST2_Controller extends REST_Controller
 				}else{
 					$pointer_response = &$data["response"];
 				}
-				foreach($this->method_data["response"] as $response){
-					if(($response["Required"] == "Y") && !array_key_exists($response["Name"],$pointer_response)){
+
+				if(isset($this->method_data["response_list"]) && $this->method_data["response_list"] == "Y"){
+
+					foreach( $pointer_response as &$list){
+						if(array_key_exists("message",$list)){
+							continue;
+						}
+						foreach($this->method_data["response"] as $response){
+							if(($response["Required"] == "Y") && !array_key_exists($response["Name"],$list)){
+								$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response result(s) missing");
+								break;
+							}else{
+								if(array_key_exists($response["Name"],$list)){
+									if( $list[$response["Name"]] != null && gettype($list[$response["Name"]]) != $response["Type"]){
+										$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid");
+										break;
+									}
+									$response_result[$response["Name"]] = $list[$response["Name"]];
+								}
+							}
+						}
+						$list = $response_result;
+						$response_result = array();
+					}
+				}else{
+					foreach($this->method_data["response"] as $response){
+						if(($response["Required"] == "Y") && !array_key_exists($response["Name"],$pointer_response)){
 							$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response result(s) missing");
 							break;
-					}else{
-						if(array_key_exists($response["Name"],$pointer_response)){
-							if( $pointer_response[$response["Name"]] != null && gettype($pointer_response[$response["Name"]]) != $response["Type"]){
-								$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid");
-								break;
+						}else{
+							if(array_key_exists($response["Name"],$pointer_response)){
+								if( $pointer_response[$response["Name"]] != null && gettype($pointer_response[$response["Name"]]) != $response["Type"]){
+									$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid");
+									break;
+								}
+								$response_result[$response["Name"]] = $pointer_response[$response["Name"]];
 							}
-
-							$response_result[$response["Name"]] = $pointer_response[$response["Name"]];
 						}
 					}
+					$pointer_response = $response_result;
 				}
-				$pointer_response = $response_result;
+
+
 			}
 
 			$output = $this->format_data($data, $this->response->format);
