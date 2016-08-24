@@ -183,6 +183,19 @@ abstract class REST2_Controller extends REST_Controller
 											array_push($missing_parameter, $parameter['Name']);
 										}
 									}
+									if(isset($end_method['parameters_or'])) foreach($end_method['parameters_or'] as $parameter_or){
+										$check_parameter_or = false;
+										foreach ($parameter_or as $param_or){
+											if(array_key_exists($param_or, $this->_args))
+											{
+												$check_parameter_or = true;
+											}
+										}
+										if(!$check_parameter_or){
+											$param = implode(" or ", $parameter_or);
+											array_push($missing_parameter, $param);
+										}
+									}
 									break;
 								}
 							}
