@@ -282,6 +282,28 @@ abstract class REST2_Controller extends REST_Controller
 	 * @param array $data
 	 * @param null|int $http_code
 	 */
+
+	private function check_respoonse(&$pointer_data, &$pointer_response) {
+		$response_result = array();
+		$is_error = false;
+		foreach($this->method_data["response"] as $response){
+			if(($response["Required"] == "Y") && !array_key_exists($response["Name"],$pointer_response)){
+				$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response result(s) missing");
+				$is_error = true;
+				break;
+			}else{
+				if(array_key_exists($response["Name"],$pointer_response)){
+					if( !is_null($pointer_response[$response["Name"]]) && (gettype($pointer_response[$response["Name"]]) != $response["Type"])){
+						$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid");
+						break;
+					}
+					$response_result[$response["Name"]] = $pointer_response[$response["Name"]];
+				}
+			}
+		}
+		if(!$is_error) $pointer_response = $response_result;
+	}
+
 	public function response($data = array(), $http_code = null)
 	{
 		global $CFG;
@@ -314,9 +336,6 @@ abstract class REST2_Controller extends REST_Controller
 
 			if($this->method_data && isset($this->method_data["response"]) && $data['success'] == true){
 				$class_name = get_class($this);
-				$pointer_data = &$data;
-				$pointer_response = null;
-				$response_result = array();
 				if($class_name == "Player"){
 					$pointer_response = &$data["response"]["player"];
 				}else{
@@ -324,47 +343,15 @@ abstract class REST2_Controller extends REST_Controller
 				}
 
 				if(isset($this->method_data["response_list"]) && $this->method_data["response_list"] == "Y"){
-
 					foreach( $pointer_response as &$list){
 						if(array_key_exists("message",$list)){
 							continue;
 						}
-						foreach($this->method_data["response"] as $response){
-							if(($response["Required"] == "Y") && !array_key_exists($response["Name"],$list)){
-								$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response result(s) missing");
-								break;
-							}else{
-								if(array_key_exists($response["Name"],$list)){
-									if( $list[$response["Name"]] != null && gettype($list[$response["Name"]]) != $response["Type"]){
-										$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid");
-										break;
-									}
-									$response_result[$response["Name"]] = $list[$response["Name"]];
-								}
-							}
-						}
-						$list = $response_result;
-						$response_result = array();
+						$this->check_respoonse($data, $list);
 					}
 				}else{
-					foreach($this->method_data["response"] as $response){
-						if(($response["Required"] == "Y") && !array_key_exists($response["Name"],$pointer_response)){
-							$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response result(s) missing");
-							break;
-						}else{
-							if(array_key_exists($response["Name"],$pointer_response)){
-								if( $pointer_response[$response["Name"]] != null && gettype($pointer_response[$response["Name"]]) != $response["Type"]){
-									$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid");
-									break;
-								}
-								$response_result[$response["Name"]] = $pointer_response[$response["Name"]];
-							}
-						}
-					}
-					$pointer_response = $response_result;
+					$this->check_respoonse($data, $pointer_response);
 				}
-
-
 			}
 
 			$output = $this->format_data($data, $this->response->format);
@@ -392,6 +379,5 @@ abstract class REST2_Controller extends REST_Controller
 
 		exit($output);
 	}
-
 }
 ?>
