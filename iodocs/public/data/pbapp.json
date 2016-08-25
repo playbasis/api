@@ -880,9 +880,8 @@
 				{
 				  "Name": "custom",
 				  "Required": "N",
-				  "Type": "array",
-				  "Description": "custom field of a player",
-				  "Array_data" : []
+				  "Type": "array_dynamic",
+				  "Description": "custom field of a player"
 				}
 		      ]
 			}
@@ -1816,6 +1815,34 @@
               "Type": "string",
               "Description": "name of the point-based reward to query"
             }
+          ],
+          "response": [
+			{
+              "Name": "point",
+              "Required": "Y",
+              "Type": "array_list",
+              "Description": "points",
+              "Array_data" : [
+				{
+				  "Name": "reward_id",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "reward id"
+				},
+				{
+				  "Name": "reward_name",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "reward name"
+				},
+				{
+				  "Name": "value",
+				  "Required": "N",
+				  "Type": "integer",
+				  "Description": "amount of reward(s) that player has received"
+				}
+			  ]
+			}
           ]
         },
         {
@@ -1861,6 +1888,70 @@
               "Type": "string",
               "Description": "Specify sorted direction [desc, *asc*]"
             }
+          ],
+          "response": [
+		    {
+			  "Name": "points",
+              "Required": "Y",
+              "Type": "array_list",
+              "Description": "player info",
+              "Array_data" : [
+				{
+				  "Name": "message",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "message"
+				},
+				{
+				  "Name": "reward_id",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "reward id"
+				},
+				{
+				  "Name": "reward_name",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "reward name"
+				},
+				{
+				  "Name": "value",
+				  "Required": "Y",
+				  "Type": "integer",
+				  "Description": "amount of reward(s) that player has received"
+				},
+				{
+				  "Name": "date_added",
+				  "Required": "N",
+				  "Type": "string",
+				  "Description": "date/time that player has received the reward"
+				},
+				{
+				  "Name": "action_name",
+				  "Required": "N",
+				  "Type": "string",
+				  "Description": "action name"
+				},
+				{
+				  "Name": "action_parameters",
+				  "Required": "N",
+				  "Type": "array_dynamic",
+				  "Description": "parameter sent with the action"
+				},
+				{
+				  "Name": "action_time",
+				  "Required": "N",
+				  "Type": "string",
+				  "Description": "date/time that player has performed the action"
+				},
+				{
+				  "Name": "string_filter",
+				  "Required": "N",
+				  "Type": "string",
+				  "Description": "filter string"
+				}
+		      ]
+			}
           ]
         },
         {
@@ -1885,6 +1976,34 @@
               "Type": "string",
               "Description": "name of the action to query"
             }
+          ],
+          "response": [
+		    {
+			  "Name": "action",
+              "Required": "Y",
+              "Type": "array",
+              "Description": "action detail",
+              "Array_data" : [
+				{
+				  "Name": "action_id",
+				  "Required": "N",
+				  "Type": "string",
+				  "Description": "action id"
+				},
+				{
+				  "Name": "action_name",
+				  "Required": "N",
+				  "Type": "string",
+				  "Description": "action name"
+				},
+				{
+				  "Name": "time",
+				  "Required": "N",
+				  "Type": "string",
+				  "Description": "latest date/time that player has performd the action"
+				}
+		      ]
+			}
           ]
         },
         {
@@ -1902,6 +2021,34 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
+          ],
+          "response": [
+		    {
+			  "Name": "action",
+              "Required": "Y",
+              "Type": "array",
+              "Description": "action detail",
+              "Array_data" : [
+				{
+				  "Name": "action_id",
+				  "Required": "N",
+				  "Type": "string",
+				  "Description": "action id"
+				},
+				{
+				  "Name": "action_name",
+				  "Required": "N",
+				  "Type": "string",
+				  "Description": "action name"
+				},
+				{
+				  "Name": "time",
+				  "Required": "N",
+				  "Type": "string",
+				  "Description": "latest date/time that player has performd the action"
+				}
+		      ]
+			}
           ]
         },
         {
