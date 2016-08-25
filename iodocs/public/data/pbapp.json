@@ -2073,6 +2073,34 @@
               "Type": "string",
               "Description": "name of the action to query"
             }
+          ],
+          "response": [
+		    {
+			  "Name": "action",
+              "Required": "Y",
+              "Type": "array",
+              "Description": "action detail",
+              "Array_data" : [
+				{
+				  "Name": "action_id",
+				  "Required": "N",
+				  "Type": "string",
+				  "Description": "action id"
+				},
+				{
+				  "Name": "action_name",
+				  "Required": "N",
+				  "Type": "string",
+				  "Description": "action name"
+				},
+				{
+				  "Name": "count",
+				  "Required": "N",
+				  "Type": "integer",
+				  "Description": "number of times that player has performed the action"
+				}
+		      ]
+			}
           ]
         },
         {
