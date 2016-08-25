@@ -3,6 +3,7 @@
     {
       "name": "Auth API",
       "endpoint": ["Auth"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "Auth",
@@ -85,6 +86,7 @@
     {
       "name": "Player API",
       "endpoint": ["Player"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "Player Info (public data only)",
@@ -2355,6 +2357,7 @@
     {
       "name": "Badge API",
       "endpoint": ["Badge","Badges"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "Badges Info",
@@ -2412,6 +2415,7 @@
     {
       "name": "Goods API",
       "endpoint": ["Goods", "Redeem"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "Goods List Info",
@@ -2640,6 +2644,7 @@
     {
       "name": "Merchant API",
       "endpoint": ["Merchant"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "Available Branch for Goods Group",
@@ -2662,6 +2667,7 @@
     {
       "name": "Engine API",
       "endpoint": ["Engine"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "List Rules",
@@ -2897,6 +2903,7 @@
     {
       "name": "Quest API",
       "endpoint": ["Quest", "Quests"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "Quest List Info",
@@ -3192,6 +3199,7 @@
     {
       "name": "Quiz API",
       "endpoint": ["Quiz"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "A List of Active Quizzes",
@@ -3591,6 +3599,7 @@
     {
       "name": "Redeem API",
       "endpoint": ["Redeem"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "Redeem",
@@ -3787,6 +3796,7 @@
     {
       "name": "Communication API",
       "endpoint": ["Email", "Sms", "Push"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "Send Email",
@@ -4442,6 +4452,7 @@
     {
       "name": "Live Feed API",
       "endpoint": ["Service"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "Recent Activities",
@@ -4579,6 +4590,7 @@
     {
       "name": "Service API",
       "endpoint": ["Service"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "Recent Point",
@@ -4657,6 +4669,7 @@
     {
       "name": "Store Organize API",
       "endpoint": ["StoreOrg"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "List organizations",
@@ -5469,6 +5482,7 @@
     {
       "name": "Content API",
       "endpoint": ["Content"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "Retrieve Content",
@@ -6183,6 +6197,7 @@
     {
       "name": "Link API",
       "endpoint": ["Link"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "Find info of a link",
@@ -6223,6 +6238,7 @@
     {
       "name": "File API",
       "endpoint": ["File"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "Retrieve file data",
@@ -6291,6 +6307,7 @@
     {
       "name": "Insights API",
       "endpoint": ["Action,Reward,Player"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "Get Action List",
@@ -6431,6 +6448,7 @@
     {
       "name": "Internal API",
       "endpoint": ["Internal"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "Check Feature Limit",
@@ -6454,6 +6472,7 @@
     {
       "name": "Notification API",
       "endpoint": ["notification"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "Get Notification List",
@@ -6495,6 +6514,7 @@
     {
       "name": "CMS API",
       "endpoint": ["CMS"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "Get Article List",
@@ -6536,6 +6556,7 @@
     {
       "name": "Import API",
       "endpoint": ["Import"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "Get Import Setting",
@@ -6551,6 +6572,7 @@
     {
       "name": "Health API",
       "endpoint": ["Fitbit"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "Retrieve FitBit Player",
@@ -6722,6 +6744,7 @@
     {
       "name": "Trip API",
       "endpoint": ["Trip"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "Retrieve Trip Data",
@@ -6927,6 +6950,7 @@
     {
       "name": "Game API",
       "endpoint": ["Game"],
+      "Public": "Y",
       "methods": [
         {
           "MethodName": "Retrieve Game setting",
