@@ -189,7 +189,7 @@ abstract class REST2_Controller extends REST_Controller
 					$missing_parameter = array();
 					$exception_param = array();
 					foreach ($pbapp_data['endpoints'] as $endpoint ) {
-						if (in_array($class_name,$endpoint['endpoint'])) {
+						if (in_array($method[0]->uri->segments[1],$endpoint['endpoint'])) {
 							foreach ($endpoint['methods'] as $end_method) {
 								if (($this->uri->router == $this->find_method_uri($end_method)) && ($this->request->method == strtolower($end_method['HTTPMethod']))) {
 									$found_endpoint = true;

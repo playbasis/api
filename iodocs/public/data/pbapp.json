@@ -2325,7 +2325,52 @@
               "Type": "string",
               "Description": "Specific tag(s) to find (e.g. foo,bar)"
             }
-          ]
+          ],
+		  "response_list": "Y",
+		  "response": [
+			{
+			  "Name": "badge_id",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "badges id"
+			},
+			{
+			  "Name": "image",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "url to the badge image"
+			},
+			{
+			  "Name": "name",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "badges name"
+			},
+			{
+			  "Name": "description",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "description of badge"
+			},
+			{
+			  "Name": "amount",
+			  "Required": "Y",
+			  "Type": "integer",
+			  "Description": "amount of badge(s) that play has received"
+			},
+			{
+			  "Name": "hint",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "hint"
+			},
+			{
+			  "Name": "tags",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "tags"
+			}
+		  ]
         },
         {
           "MethodName": "All Badges",
@@ -2349,7 +2394,64 @@
               "Type": "string",
               "Description": "Specific tag(s) to find (e.g. foo,bar)"
             }
-          ]
+          ],
+		  "response_list": "Y",
+		  "response": [
+			{
+			  "Name": "badge_id",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "badges id"
+			},
+			{
+			  "Name": "image",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "url to the badge image"
+			},
+			{
+			  "Name": "sort_order",
+			  "Required": "Y",
+			  "Type": "integer",
+			  "Description": "sort order"
+			},
+			{
+			  "Name": "name",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "badges name"
+			},
+			{
+			  "Name": "description",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "description of badge"
+			},
+			{
+			  "Name": "amount",
+			  "Required": "Y",
+			  "Type": "integer",
+			  "Description": "amount of badge(s) that play has received"
+			},
+			{
+			  "Name": "hint",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "hint"
+			},
+			{
+			  "Name": "tags",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "tags"
+			},
+			{
+			  "Name": "sponsor",
+			  "Required": "Y",
+			  "Type": "boolean",
+			  "Description": "sponsor"
+			}
+		  ]
         },
         {
           "MethodName": "Rank",
@@ -2380,7 +2482,40 @@
               "Type": "string",
               "Description": "weekly, monthly (default is all-time)"
             }
-          ]
+          ],
+		  "response_list": "Y",
+		  "response": [
+			{
+			  "Name": "player_id",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "player id as used in client's website"
+			},
+			{
+			  "Name": "first_name",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "first name"
+			},
+			{
+			  "Name": "last_name",
+			  "Required": "Y",
+			  "Type": "integer",
+			  "Description": "last name"
+			},
+			{
+			  "Name": "image",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "url to the player profile image"
+			},
+			{
+			  "Name": "rank_by",
+			  "Required": "INPUT",
+			  "Type": "integer",
+			  "Description": "name of point-based reward to rank players by"
+			}
+		  ]
         },
         {
           "MethodName": "DEPRECATED - Level",
