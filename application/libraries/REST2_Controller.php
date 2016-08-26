@@ -299,27 +299,48 @@ abstract class REST2_Controller extends REST_Controller
 	 * @param array $data
 	 * @param null|int $http_code
 	 */
-
-	private function check_response(&$pointer_data, &$pointer_response) {
+	private function check_response(&$pointer_data, &$pointer_response ,&$check_response , $is_array_list=false) {
 		$response_result = array();
 		$is_error = false;
-		foreach($this->method_data["response"] as $response){
+		foreach($check_response as $response){
 			if(($response["Required"] == "Y") && !array_key_exists($response["Name"],$pointer_response)){
 				$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response result(s) missing");
 				$is_error = true;
 				break;
 			}else{
 				if(array_key_exists($response["Name"],$pointer_response)){
-					if( !is_null($pointer_response[$response["Name"]]) && (gettype($pointer_response[$response["Name"]]) != $response["Type"])){
+					if( !is_null($pointer_response[$response["Name"]]) && ((gettype($pointer_response[$response["Name"]]) != $response["Type"]) && ($response["Type"] != "array_list"))){
 						$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid");
 						$is_error = true;
 						break;
 					}
-					$response_result[$response["Name"]] = $pointer_response[$response["Name"]];
+
+					if ($response["Type"] == "array_list") {
+						if(is_array($pointer_response[$response["Name"]])) {
+							$response_result[$response["Name"]] = array();
+							//$response_result[$response["Name"]] = $pointer_response[$response["Name"]];
+							foreach ($pointer_response[$response["Name"]] as $index => &$list) {
+								if (array_key_exists("message", $list)) {
+									continue;
+								}
+								$list = $this->check_response($pointer_data, $list,$response['Array_data'] , true);
+								array_push($response_result[$response["Name"]], $list);
+							}
+						} else {
+							$response_result[$response["Name"]] = $pointer_response[$response["Name"]];
+						}
+					} elseif($response["Type"] == "array") {
+						$response_result[$response["Name"]] =  $this->check_response($pointer_data, $pointer_response[$response["Name"]],$response['Array_data']);
+					} else {
+							$response_result[$response["Name"]] = $pointer_response[$response["Name"]];
+					}
+				} else {
+					log_message('error', print_r($response["Name"],true));
 				}
 			}
 		}
 		if(!$is_error) $pointer_response = $response_result;
+		return $response_result;
 	}
 
 	public function response($data = array(), $http_code = null)
@@ -353,25 +374,25 @@ abstract class REST2_Controller extends REST_Controller
 			is_numeric($http_code) OR $http_code = 200;
 
 			if($this->method_data && isset($this->method_data["response"]) && $data['success'] == true){
-				$class_name = get_class($this);
-				if($class_name == "Player" && isset($data["response"]["player"])){
-					$pointer_response = &$data["response"]["player"];
-				}else{
-					$pointer_response = &$data["response"];
-				}
-
-				if(isset($this->method_data["response_list"]) && $this->method_data["response_list"] == "Y"){
-					foreach( $pointer_response as &$list){
-						if(array_key_exists("message",$list)){
-							continue;
+				foreach($this->method_data["response"] as $index => &$check_response){
+					foreach($data["response"] as $key => &$pointer_response) {
+						if ($check_response['Name'] == $key) {
+							if ($check_response["Type"] == "array_list") {
+								foreach ($pointer_response as &$list) {
+									if (array_key_exists("message", $list)) {
+										continue;
+									}
+									$this->check_response($data, $list,$check_response['Array_data']);
+								}
+							} elseif($check_response["Type"] == "array") {
+								$this->check_response($data, $pointer_response,$check_response['Array_data']);
+							} else {
+								$this->check_response($data, $pointer_response,$check_response);
+							}
 						}
-						$this->check_response($data, $list);
 					}
-				}else{
-					$this->check_response($data, $pointer_response);
 				}
 			}
-
 			$output = $this->format_data($data, $this->response->format);
 		}
 
