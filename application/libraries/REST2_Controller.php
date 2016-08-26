@@ -291,6 +291,18 @@ abstract class REST2_Controller extends REST_Controller
 		return $output;
 	}
 
+	private function is_type_match($expected_type, $parameter_type){
+		$result = false;
+		if($expected_type == $parameter_type){
+			$result = true;
+		}elseif($parameter_type == "array_list" || $parameter_type == "array_dynamic"){
+			$result = ($expected_type == "array");
+		}
+		return $result;
+	}
+
+
+
 	/**
 	 * Response
 	 *
@@ -309,8 +321,7 @@ abstract class REST2_Controller extends REST_Controller
 				break;
 			}else{
 				if(array_key_exists($response["Name"],$pointer_response)){
-					if( !is_null($pointer_response[$response["Name"]]) && ((gettype($pointer_response[$response["Name"]]) != $response["Type"]) &&
-							!((gettype($pointer_response[$response["Name"]]) == "array") && (($response["Type"] == "array_list"|"array_dynamic"|"array"))))){
+					if( !is_null($pointer_response[$response["Name"]]) && !$this->is_type_match(gettype($pointer_response[$response["Name"]]),$response["Type"])){
 						$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid");
 						$is_error = true;
 						break;

@@ -521,20 +521,128 @@
 				{
 				  "Name": "badges",
 				  "Required": "Y",
-				  "Type": "array",
-				  "Description": "badges that player has received"
+				  "Type": "array_list",
+				  "Description": "badges that player has received",
+                  "Array_data" : [
+                    {
+                      "Name": "badge_id",
+                      "Required": "Y",
+                      "Type": "string",
+                      "Description": "badges id"
+                    },
+                    {
+                      "Name": "image",
+                      "Required": "Y",
+                      "Type": "string",
+                      "Description": "url to the badge image"
+                    },
+                    {
+                      "Name": "name",
+                      "Required": "Y",
+                      "Type": "string",
+                      "Description": "badges name"
+                    },
+                    {
+                      "Name": "description",
+                      "Required": "Y",
+                      "Type": "string",
+                      "Description": "description of badge"
+                    },
+                    {
+                      "Name": "amount",
+                      "Required": "Y",
+                      "Type": "integer",
+                      "Description": "amount of badge(s) that play has received"
+                    },
+                    {
+                      "Name": "hint",
+                      "Required": "Y",
+                      "Type": "string",
+                      "Description": "hint"
+                    },
+                    {
+                      "Name": "tags",
+                      "Required": "Y",
+                      "Type": "string",
+                      "Description": "tags"
+                    }
+                  ]
 				},
 				{
 				  "Name": "goods",
 				  "Required": "Y",
-				  "Type": "array",
-				  "Description": "goods that player has received"
+				  "Type": "array_list",
+				  "Description": "goods that player has received",
+                  "Array_data" : [
+                    {
+                      "Name": "goods_id",
+                      "Required": "Y",
+                      "Type": "string",
+                      "Description": "goods id"
+                    },
+                    {
+                      "Name": "image",
+                      "Required": "Y",
+                      "Type": "string",
+                      "Description": "url to the goods image"
+                    },
+                    {
+                      "Name": "name",
+                      "Required": "Y",
+                      "Type": "string",
+                      "Description": "goods name"
+                    },
+                    {
+                      "Name": "description",
+                      "Required": "Y",
+                      "Type": "string",
+                      "Description": "description of goods"
+                    },
+                    {
+                      "Name": "code",
+                      "Required": "Y",
+                      "Type": "string",
+                      "Description": "goods code"
+                    },
+                    {
+                      "Name": "amount",
+                      "Required": "Y",
+                      "Type": "integer",
+                      "Description": "amount of goods(s) that play has received"
+                    },
+                    {
+                      "Name": "group",
+                      "Required": "N",
+                      "Type": "string",
+                      "Description": "group of goods"
+                    }
+                  ]
 				},
 				{
 				  "Name": "points",
 				  "Required": "Y",
-				  "Type": "array",
-				  "Description": "points that player has received"
+				  "Type": "array_list",
+				  "Description": "points that player has received",
+                  "Array_data" : [
+                    {
+                      "Name": "reward_id",
+                      "Required": "Y",
+                      "Type": "string",
+                      "Description": "reward id"
+                    },
+                    {
+                      "Name": "reward_name",
+                      "Required": "Y",
+                      "Type": "string",
+                      "Description": "reward name"
+                    },
+                    {
+                      "Name": "value",
+                      "Required": "Y",
+                      "Type": "integer",
+                      "Description": "amount of reward(s) that player has received"
+                    }
+                  ]
 				},
 				{
 				  "Name": "last_login",

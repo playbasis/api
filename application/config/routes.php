@@ -68,9 +68,10 @@ $route['Player/session/'.ANY_STRING] = 'player/session/$1';
 $route['Player/'.ANY_STRING.'/points'] = 'player/points/$1';
 $route['Player/'.ANY_STRING.'/point/'.ANY_STRING] = 'player/point/$1/$2';
 $route['Player/'.ANY_STRING.'/point_history'] = 'player/point_history/$1';
-$route['Player/'.ANY_STRING.'/action/'.ANY_STRING.'/(time|count)'] = 'player/action/$1/$2/$3'; //action time
-$route['Player/'.ANY_STRING.'/action/(time|count)'] = 'player/action/$1/0/$2';
-//$route['Player/'.ANY_STRING.'/action/'.ANY_STRING.'/(time|count)'] = 'player/action/$1/$2/$3'; //action count
+$route['Player/'.ANY_STRING.'/action/'.ANY_STRING.'/time'] = 'player/action/$1/$2/time'; //action time
+$route['Player/'.ANY_STRING.'/action/'.ANY_STRING.'/count'] = 'player/action/$1/$2/count'; //action count
+$route['Player/'.ANY_STRING.'/action/time'] = 'player/action/$1/0/time';
+$route['Player/'.ANY_STRING.'/action/count'] = 'player/action/$1/0/count';
 $route['Player/level/'.ANY_NUMBER] = 'player/level/$1';
 $route['Player/levels'] = 'player/levels';
 $route['Player/'.ANY_STRING.'/badge'] = 'player/badge/$1';
@@ -131,9 +132,9 @@ $route['Player/point/'.ANY_STRING] = 'player/point/0/$1';
 $route['Player/'.ANY_STRING.'/point'] = 'player/points/$1';
 $route['Player/point'] = 'player/point/';
 
-$route['Player/action/'.ANY_STRING.'/(time|count)'] = 'player/action/0/$1/$2';
+//$route['Player/action/'.ANY_STRING.'/(time|count)'] = 'player/action/0/$1/$2';
 
-$route['Player/action'] = 'player/action/';
+//$route['Player/action'] = 'player/action/';
 
 $route['Player/badge'] = 'player/badge/0';
 
