@@ -383,23 +383,15 @@ abstract class REST2_Controller extends REST_Controller
 			is_numeric($http_code) OR $http_code = 200;
 
 			if($this->method_data && isset($this->method_data["response"]) && $data['success'] == true){
-				foreach($this->method_data["response"] as $index => &$check_response){
-					foreach($data["response"] as $key => &$pointer_response) {
-						if ($check_response['Name'] == $key) {
-							if ($check_response["Type"] == "array_list") {
-								foreach ($pointer_response as &$list) {
-									if (array_key_exists("message", $list)) {
-										continue;
-									}
-									$this->check_response($data, $list,$check_response['Array_data']);
-								}
-							} elseif($check_response["Type"] == "array") {
-								$this->check_response($data, $pointer_response,$check_response['Array_data']);
-							} else {
-								$this->check_response($data, $pointer_response,$check_response);
-							}
+				if (isset($this->method_data["response_list"]) && $this->method_data["response_list"] == "Y") {
+					foreach ($data["response"] as &$list) {
+						if (array_key_exists("message", $list)) {
+							continue;
 						}
+						$this->check_response($data, $list, $this->method_data["response"]);
 					}
+				} else {
+					$this->check_response($data, $data["response"],$this->method_data["response"]);
 				}
 			}
 			$output = $this->format_data($data, $this->response->format);
