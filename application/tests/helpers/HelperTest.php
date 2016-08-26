@@ -15,15 +15,5 @@ class EmailHelperTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(valid_email('test@test.com'));
         $this->assertFalse(valid_email('test#test.com'));
     }
-
-    public function testAuth()
-    {
-        $auth = new Auth_model();
-        $res = $auth->getApiInfo(array(
-            'key' => 'abc',
-            'secret' => 'abcde'
-        ));
-        print_r($res);
-    }
 }
 ?>

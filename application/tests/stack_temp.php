@@ -1,6 +1,6 @@
 <?php
 
-class StackTest extends PHPUnit_Framework_TestCase
+class StackTest2 extends PHPUnit_Framework_TestCase
 {
     public function testPushAndPop()
     {
@@ -45,13 +45,5 @@ class StackTest extends PHPUnit_Framework_TestCase
         $this->assertEmpty($stack);
     }
 
-    public function test_auth()
-    {
-        require_once '../models/auth_model.php';
-        $auth = new Auth_model();
-        print_r('pass_load_class');
-        $res = $auth->getApiInfo();
-        print_r($res);
-    }
 }
 ?>
