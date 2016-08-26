@@ -311,6 +311,25 @@ abstract class REST2_Controller extends REST_Controller
 	 * @param array $data
 	 * @param null|int $http_code
 	 */
+    private function check_input_uri ($require, $pb_app_uri, $uri, &$pb_app_key, $response){
+        $index = array_search(":".$pb_app_key, $pb_app_uri,true);
+        $key = $uri[$index+1];
+        $status = false;
+        if($require == "INPUT_URI" && array_key_exists($key, $response)){
+            $pb_app_key = $key;
+            $status = true;
+        }
+        return $status;
+    }
+    private function check_input($require, &$pb_app_key, $arg){
+        $status = false;
+        if($require == "INPUT" && array_key_exists($pb_app_key, $arg)){
+            $pb_app_key = $arg[$pb_app_key];
+            $status = true;
+        }
+        return $status;
+    }
+
 	private function check_response(&$pointer_data, &$pointer_response ,&$check_response) {
 		$response_result = array();
 		$is_error = false;
@@ -319,9 +338,11 @@ abstract class REST2_Controller extends REST_Controller
 				$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response result(s) missing");
 				$is_error = true;
 				break;
-			}else{
-				if(array_key_exists($response["Name"],$pointer_response)){
-					if( !is_null($pointer_response[$response["Name"]]) && !$this->is_type_match(gettype($pointer_response[$response["Name"]]),$response["Type"])){
+			}else {
+				if (array_key_exists($response["Name"], $pointer_response) || 
+                    (($response["Required"] == "INPUT") && $this->check_input($response["Required"], $response["Name"], $this->_args)) ||
+                    (($response["Required"] == "INPUT_URI") && $this->check_input_uri($response["Required"], explode("/", $this->method_data['URI']),$this->uri->segments, $response["Name"], $pointer_response))) {
+					if (!is_null($pointer_response[$response["Name"]]) && !$this->is_type_match(gettype($pointer_response[$response["Name"]]), $response["Type"])) {
 						$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid");
 						$is_error = true;
 						break;
