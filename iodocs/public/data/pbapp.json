@@ -2500,7 +2500,7 @@
 			{
 			  "Name": "last_name",
 			  "Required": "Y",
-			  "Type": "integer",
+			  "Type": "string",
 			  "Description": "last name"
 			},
 			{
@@ -2511,7 +2511,7 @@
 			},
 			{
 			  "Name": "rank_by",
-			  "Required": "INPUT",
+			  "Required": "INPUT_URI",
 			  "Type": "integer",
 			  "Description": "name of point-based reward to rank players by"
 			}
@@ -2580,7 +2580,86 @@
               "Type": "string",
               "Description": "weekly, monthly (default is all-time)"
             }
-          ]
+          ],
+		  "response_dynamic": "Y",
+		  "response": [
+			{
+			  "Name": "point",
+			  "Required": "Y",
+			  "Type": "array_list",
+			  "Description": "ranking by point",
+			  "Array_data" : [
+				{
+				  "Name": "player_id",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "player id as used in client's website"
+				},
+				{
+				  "Name": "first_name",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "first name"
+				},
+				{
+				  "Name": "last_name",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "last name"
+				},
+				{
+				  "Name": "image",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "url to the player profile image"
+				},
+				{
+				  "Name": "point",
+				  "Required": "Y",
+				  "Type": "integer",
+				  "Description": "amount of point"
+				}
+			  ]
+			},
+			{
+			  "Name": "exp",
+			  "Required": "Y",
+			  "Type": "array_list",
+			  "Description": "ranking by exp",
+			  "Array_data" : [
+				{
+				  "Name": "player_id",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "player id as used in client's website"
+				},
+				{
+				  "Name": "first_name",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "first name"
+				},
+				{
+				  "Name": "last_name",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "last name"
+				},
+				{
+				  "Name": "image",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "url to the player profile image"
+				},
+				{
+				  "Name": "exp",
+				  "Required": "Y",
+				  "Type": "integer",
+				  "Description": "amount of exp"
+				}
+			  ]
+			}
+		  ]
         },
         {
           "MethodName": "DEPRECATED - Ranks",
