@@ -299,7 +299,7 @@ abstract class REST2_Controller extends REST_Controller
 	 * @param array $data
 	 * @param null|int $http_code
 	 */
-	private function check_response(&$pointer_data, &$pointer_response ,&$check_response , $is_array_list=false) {
+	private function check_response(&$pointer_data, &$pointer_response ,&$check_response) {
 		$response_result = array();
 		$is_error = false;
 		foreach($check_response as $response){
@@ -309,7 +309,7 @@ abstract class REST2_Controller extends REST_Controller
 				break;
 			}else{
 				if(array_key_exists($response["Name"],$pointer_response)){
-					if( !is_null($pointer_response[$response["Name"]]) && ((gettype($pointer_response[$response["Name"]]) != $response["Type"]) && ($response["Type"] != "array_list"))){
+					if( !is_null($pointer_response[$response["Name"]]) && ((gettype($pointer_response[$response["Name"]]) != $response["Type"]) && (($response["Type"] != "array_list") || ($response["Type"] != "array_dynamic")))){
 						$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid");
 						$is_error = true;
 						break;
@@ -318,7 +318,6 @@ abstract class REST2_Controller extends REST_Controller
 					if ($response["Type"] == "array_list") {
 						if(is_array($pointer_response[$response["Name"]])) {
 							$response_result[$response["Name"]] = array();
-							//$response_result[$response["Name"]] = $pointer_response[$response["Name"]];
 							foreach ($pointer_response[$response["Name"]] as $index => &$list) {
 								if (array_key_exists("message", $list)) {
 									continue;
@@ -332,10 +331,8 @@ abstract class REST2_Controller extends REST_Controller
 					} elseif($response["Type"] == "array") {
 						$response_result[$response["Name"]] =  $this->check_response($pointer_data, $pointer_response[$response["Name"]],$response['Array_data']);
 					} else {
-							$response_result[$response["Name"]] = $pointer_response[$response["Name"]];
+						$response_result[$response["Name"]] = $pointer_response[$response["Name"]];
 					}
-				} else {
-					log_message('error', print_r($response["Name"],true));
 				}
 			}
 		}
