@@ -145,6 +145,23 @@ abstract class REST2_Controller extends REST_Controller
         }
 	}
 
+	protected function find_method_uri($method){
+		$method_uri = "";
+		if(is_array($method) && isset($method["parameters"]) && isset($method["URI"])){
+			$method_uri = $method["URI"];
+			foreach($method["parameters"] as $parameter){
+				if($parameter["Required"] == "URI"){
+					if($parameter["Type"] == "integer" || $parameter["Type"] == "number"){
+						$method_uri = str_replace(":".$parameter["Name"], ANY_NUMBER, $method_uri);
+					}else{
+						$method_uri = str_replace(":".$parameter["Name"], ANY_STRING, $method_uri);
+					}
+				}
+			}
+		}
+		return $method_uri;
+	}
+
 	/**
 	 * Fire Method
 	 *
@@ -172,9 +189,9 @@ abstract class REST2_Controller extends REST_Controller
 					$missing_parameter = array();
 					$exception_param = array();
 					foreach ($pbapp_data['endpoints'] as $endpoint ) {
-						if (in_array($method[0]->uri->segments[1],$endpoint['endpoint'])) {
+						if (in_array($class_name,$endpoint['endpoint'])) {
 							foreach ($endpoint['methods'] as $end_method) {
-								if (preg_match('#^' . $this->uri->router . '$#', $end_method['URI']) && ($this->request->method == strtolower($end_method['HTTPMethod']))) {
+								if (($this->uri->router == $this->find_method_uri($end_method)) && ($this->request->method == strtolower($end_method['HTTPMethod']))) {
 									$found_endpoint = true;
 									$this->method_data = $end_method;
 									foreach ($end_method['parameters'] as $parameter) {
