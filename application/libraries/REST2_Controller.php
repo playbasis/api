@@ -309,7 +309,9 @@ abstract class REST2_Controller extends REST_Controller
 				break;
 			}else{
 				if(array_key_exists($response["Name"],$pointer_response)){
-					if( !is_null($pointer_response[$response["Name"]]) && ((gettype($pointer_response[$response["Name"]]) != $response["Type"]) && (($response["Type"] != "array_list") || ($response["Type"] != "array_dynamic")))){
+					if( !is_null($pointer_response[$response["Name"]]) && ((gettype($pointer_response[$response["Name"]]) != $response["Type"]) &&
+							!((gettype($pointer_response[$response["Name"]]) == "array") &&
+								(($response["Type"] == "array_list") || ($response["Type"] == "array_dynamic") || ($response["Type"] == "array"))))){
 						$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid");
 						$is_error = true;
 						break;
