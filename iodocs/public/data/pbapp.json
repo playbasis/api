@@ -2226,7 +2226,39 @@
               "Type": "integer",
               "Description": "number of  level"
             }
-          ]
+          ],
+		  "response": [
+			{
+			  "Name": "level_title",
+			  "Required": "N",
+			  "Type": "string",
+			  "Description": "level title"
+			},
+			{
+			  "Name": "level",
+			  "Required": "N",
+			  "Type": "integer",
+			  "Description": "level"
+			},
+			{
+			  "Name": "min_exp",
+			  "Required": "N",
+			  "Type": "double",
+			  "Description": "minimal exp of this level range"
+			},
+			{
+			  "Name": "max_exp",
+			  "Required": "N",
+			  "Type": "integer",
+			  "Description": "maximum exp of this level range"
+			},
+			{
+			  "Name": "level_image",
+			  "Required": "N",
+			  "Type": "string",
+			  "Description": "url to image of the level"
+			}
+		  ]
         },
         {
           "MethodName": "Levels",
@@ -2236,7 +2268,40 @@
           "RequiresOAuth": "N",
 		  "Public": "Y",
           "parameters": [
-          ]
+          ],
+		  "response_list": "Y",
+		  "response": [
+			{
+			  "Name": "level_title",
+			  "Required": "N",
+			  "Type": "string",
+			  "Description": "level title"
+			},
+			{
+			  "Name": "level",
+			  "Required": "N",
+			  "Type": "integer",
+			  "Description": "level"
+			},
+			{
+			  "Name": "min_exp",
+			  "Required": "N",
+			  "Type": "double",
+			  "Description": "minimal exp of this level range"
+			},
+			{
+			  "Name": "max_exp",
+			  "Required": "N",
+			  "Type": "integer",
+			  "Description": "maximum exp of this level range"
+			},
+			{
+			  "Name": "level_image",
+			  "Required": "N",
+			  "Type": "string",
+			  "Description": "url to image of the level"
+			}
+		  ]
         },
         {
           "MethodName": "Badge",
