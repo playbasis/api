@@ -332,6 +332,7 @@ abstract class REST2_Controller extends REST_Controller
 							$response_result[$response["Name"]] = array();
 							foreach ($pointer_response[$response["Name"]] as $index => &$list) {
 								if (array_key_exists("message", $list)) {
+									array_push($response_result[$response["Name"]], $list);
 									continue;
 								}
 								$list = $this->check_response($pointer_data, $list,$response['Array_data'] , true);
