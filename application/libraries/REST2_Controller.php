@@ -405,6 +405,7 @@ abstract class REST2_Controller extends REST_Controller
 			is_numeric($http_code) OR $http_code = 200;
 
 			if($this->method_data && isset($this->method_data["response"]) && $data['success'] == true){
+                $temp_res = $data["response"];
 				if (isset($this->method_data["response_list"]) && $this->method_data["response_list"] == "Y") {
 					foreach ($data["response"] as &$list) {
 						if (array_key_exists("message", $list)) {
@@ -416,6 +417,13 @@ abstract class REST2_Controller extends REST_Controller
 					$this->check_response($data, $data["response"],$this->method_data["response"]);
 				}
 			}
+            if(isset($this->method_data['response_dynamic']) && $this->method_data['response_dynamic'] == "Y" && $data['success'] == true){
+                $check_response_key = array_column($this->method_data['response'], 'Name');
+                foreach($check_response_key as $key){
+                    unset($temp_res[$key]);
+                }
+                $data["response"] += $temp_res;
+            }
 			$output = $this->format_data($data, $this->response->format);
 		}
 
