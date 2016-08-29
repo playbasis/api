@@ -416,14 +416,27 @@ abstract class REST2_Controller extends REST_Controller
 				} else {
 					$this->check_response($data, $data["response"],$this->method_data["response"]);
 				}
+				if(isset($this->method_data['response_dynamic']) && $this->method_data['response_dynamic'] == "Y"){
+					$check_response_key = array_column($this->method_data['response'], 'Name');
+					foreach($check_response_key as $key){
+						if(isset($this->method_data['response_list']) && $this->method_data['response_list'] == "Y"){
+							foreach ($temp_res as &$temp) {
+								unset($temp[$key]);
+							}
+						} else {
+							unset($temp_res[$key]);
+						}
+					}
+					if(isset($this->method_data['response_list']) && $this->method_data['response_list'] == "Y"){
+						foreach ($data["response"] as $index => &$data_response){
+							$data_response +=  $temp_res[$index];
+						}
+					} else {
+						$data["response"] += $temp_res;
+					}
+				}
 			}
-            if(isset($this->method_data['response_dynamic']) && $this->method_data['response_dynamic'] == "Y" && $data['success'] == true){
-                $check_response_key = array_column($this->method_data['response'], 'Name');
-                foreach($check_response_key as $key){
-                    unset($temp_res[$key]);
-                }
-                $data["response"] += $temp_res;
-            }
+            
 			$output = $this->format_data($data, $this->response->format);
 		}
 

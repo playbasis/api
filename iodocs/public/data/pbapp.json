@@ -2539,7 +2539,8 @@
               "Type": "integer",
               "Description": "number of level"
             }
-          ]
+          ],
+          "response": []
         },
         {
           "MethodName": "DEPRECATED - Levels",
@@ -2556,7 +2557,8 @@
               "Type": "string",
               "Description": "access token returned from Auth"
             }
-          ]
+          ],
+          "response": []
         },
         {
           "MethodName": "Ranks",
@@ -2683,7 +2685,8 @@
               "Type": "integer",
               "Description": "number of results to return for each point type"
             }
-          ]
+          ],
+          "response": []
         },
         {
           "MethodName": "Goods",
@@ -2700,7 +2703,59 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+		  "response": [
+			{
+			  "Name": "goods",
+			  "Required": "Y",
+			  "Type": "array_list",
+			  "Description": "goods that player has received",
+			  "Array_data" : [
+				{
+				  "Name": "goods_id",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "goods id"
+				},
+				{
+				  "Name": "image",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "url to the goods image"
+				},
+				{
+				  "Name": "name",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "goods name"
+				},
+				{
+				  "Name": "description",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "description of goods"
+				},
+				{
+				  "Name": "code",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "goods code"
+				},
+				{
+				  "Name": "amount",
+				  "Required": "Y",
+				  "Type": "integer",
+				  "Description": "amount of goods(s) that play has received"
+				},
+				{
+				  "Name": "group",
+				  "Required": "N",
+				  "Type": "string",
+				  "Description": "group of goods"
+				}			  
+			  ]
+			}
+		  ]
         },
         {
           "MethodName": "Quest of Player",
@@ -2779,7 +2834,59 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "response": [
+			{
+              "Name": "quests",
+              "Required": "Y",
+              "Type": "array",
+              "Description": "player info",
+              "Array_data" : [
+                {
+                  "Name": "quest_name",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "quest name"
+                },
+				{
+                  "Name": "description",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "description of quest"
+                },
+				{
+                  "Name": "hint",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "hint"
+                },
+				{
+                  "Name": "image",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "url to the quest image"
+                },
+				{
+                  "Name": "tag",
+                  "Required": "Y",
+                  "Type": "array",
+                  "Description": "tag"
+                },
+				{
+                  "Name": "sort_order",
+                  "Required": "Y",
+                  "Type": "integer",
+                  "Description": "sort order"
+                },
+				{
+                  "Name": "global_quest",
+                  "Required": "Y",
+                  "Type": "boolean",
+                  "Description": "global quest flag"
+                }
+              ]
+			}
+	      ]
         },
         {
           "MethodName": "Quest Reward History",
@@ -2855,7 +2962,27 @@
               "Type": "number",
               "Description": "0 = not force if player has not enough reward to deduct, 1 = force to do the deduct (and player's reward becomes zero)"
             }
-          ]
+          ],
+          "response": [
+			{
+			  "Name": "old_value",
+			  "Required": "Y",
+			  "Type": "integer",
+			  "Description": "amount of the reward before deduct"
+			},
+			{
+			  "Name": "new_value",
+			  "Required": "Y",
+			  "Type": "integer",
+			  "Description": "amount of the reward after deduct"
+			},
+			{
+			  "Name": "value_deducted",
+			  "Required": "Y",
+			  "Type": "integer",
+			  "Description": "amount of the deducted reward"
+			}
+		  ]
         },
         {
           "MethodName": "Gift",
@@ -2912,7 +3039,27 @@
               "Type": "integer",
               "Description": "gift amount"
             }
-          ]
+          ],
+          "response": [
+			{
+			  "Name": "gift_name",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "gift name"
+			},
+			{
+			  "Name": "type",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "type of gift"
+			},
+			{
+			  "Name": "remaining",
+			  "Required": "Y",
+			  "Type": "integer",
+			  "Description": "remaining gift after sent"
+			}
+		  ]
         },
         {
           "MethodName": "Player Referral Code",
@@ -2929,7 +3076,15 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "response": [
+			{
+			  "Name": "code",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "referral code of the player"
+			}
+		  ]
         },
         {
           "MethodName": "Rank by Custom parameter",
@@ -2974,7 +3129,22 @@
               "Type": "string",
               "Description": "year to rank players by (2015, 2016 , ...)"
             }
-          ]
+          ],
+		  "response_list": "Y",
+          "response": [
+			{
+			  "Name": "cl_player_id",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "player id as used in client's website"
+			},
+			{
+			  "Name": "amount",
+			  "Required": "Y",
+			  "Type": "integer",
+			  "Description": "amount"
+			}
+		  ]
         },
         {
           "MethodName": "Get Associated Node",
@@ -2991,7 +3161,22 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+		  "response_list": "Y",
+          "response": [
+			{
+			  "Name": "node_id",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "node id"
+			},
+			{
+			  "Name": "name",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "name of nade"
+			}
+		  ]
         },
         {
           "MethodName": "Get Role",
@@ -3015,7 +3200,35 @@
               "Type": "string",
               "Description": "Node Id to add player"
             }
-          ]
+          ],
+		  "response": [
+			{
+			  "Name": "organize_type",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "type of specific node"
+			},
+			{
+			  "Name": "roles",
+			  "Required": "Y",
+			  "Type": "array_list",
+			  "Description": "roles",
+			  "Array_data" : [
+				{
+				  "Name": "role",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "role of player in the specific node"
+				},
+				{
+				  "Name": "join_date",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "date/time that the player has joined"
+				}
+			  ]
+			}
+		  ]
         },
         {
           "MethodName": "Sale report",
@@ -3060,7 +3273,23 @@
               "Type": "string",
               "Description": "Select parameter to report from action log [default = \"amount\"]"
             }
-          ]
+          ],
+		  "response_list": "Y",
+		  "response_dynamic": "Y",
+          "response": [
+			{
+			  "Name": "node_id",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "node id"
+			},
+			{
+			  "Name": "name",
+			  "Required": "Y",
+			  "Type": "string",
+			  "Description": "name of nade"
+			}
+		  ]
         },
         {
           "MethodName": "Action report",
@@ -3112,7 +3341,9 @@
               "Type": "string",
               "Description": "Select parameter to report from action log [default = \"amount\"]"
             }
-          ]
+          ],
+		  "response_dynamic": "Y",
+          "response": []
         },
         {
           "MethodName": "Unlock",
@@ -3136,7 +3367,8 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+		  "response": []
         }
       ]
     },
@@ -3160,7 +3392,65 @@
               "Type": "string",
               "Description": "Specific tag(s) to find (e.g. foo,bar)"
             }
-          ]
+          ],
+		  "response": [
+			{
+			  "Name": "badges",
+			  "Required": "Y",
+			  "Type": "array_list",
+			  "Description": "badges that player has received",
+			  "Array_data" : [
+				{
+				  "Name": "badge_id",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "badges id"
+				},
+				{
+				  "Name": "image",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "url to the badge image"
+				},
+				{
+				  "Name": "name",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "badges name"
+				},
+				{
+				  "Name": "description",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "description of badge"
+				},
+				{
+				  "Name": "sort_order",
+				  "Required": "Y",
+				  "Type": "integer",
+				  "Description": "sort order"
+				},
+				{
+				  "Name": "hint",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "hint"
+				},
+				{
+				  "Name": "tags",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "tags"
+				},
+				{
+				  "Name": "sponsor",
+				  "Required": "Y",
+				  "Type": "boolean",
+				  "Description": "sponsor"
+				}
+			  ]
+			}
+		  ]
         },
         {
           "MethodName": "Badges Info",
@@ -3177,7 +3467,65 @@
               "Type": "string",
               "Description": "Specific tag(s) to find (e.g. foo,bar)"
             }
-          ]
+          ],
+		  "response": [
+			{
+			  "Name": "badges",
+			  "Required": "Y",
+			  "Type": "array_list",
+			  "Description": "badges that player has received",
+			  "Array_data" : [
+				{
+				  "Name": "badge_id",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "badges id"
+				},
+				{
+				  "Name": "image",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "url to the badge image"
+				},
+				{
+				  "Name": "name",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "badges name"
+				},
+				{
+				  "Name": "description",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "description of badge"
+				},
+				{
+				  "Name": "sort_order",
+				  "Required": "Y",
+				  "Type": "integer",
+				  "Description": "sort order"
+				},
+				{
+				  "Name": "hint",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "hint"
+				},
+				{
+				  "Name": "tags",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "tags"
+				},
+				{
+				  "Name": "sponsor",
+				  "Required": "Y",
+				  "Type": "boolean",
+				  "Description": "sponsor"
+				}
+			  ]
+			}
+		  ]
         },
         {
           "MethodName": "Badge Info",
@@ -3191,10 +3539,68 @@
               "Name": "id",
               "Required": "URI",
               "Default": "",
-              "Type": "integer",
+              "Type": "string",
               "Description": "badge id to query"
             }
-          ]
+          ],
+		  "response": [
+			{
+			  "Name": "badge",
+			  "Required": "Y",
+			  "Type": "array",
+			  "Description": "badges that player has received",
+			  "Array_data" : [
+				{
+				  "Name": "badge_id",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "badges id"
+				},
+				{
+				  "Name": "image",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "url to the badge image"
+				},
+				{
+				  "Name": "name",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "badges name"
+				},
+				{
+				  "Name": "description",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "description of badge"
+				},
+				{
+				  "Name": "sort_order",
+				  "Required": "Y",
+				  "Type": "integer",
+				  "Description": "sort order"
+				},
+				{
+				  "Name": "hint",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "hint"
+				},
+				{
+				  "Name": "tags",
+				  "Required": "Y",
+				  "Type": "string",
+				  "Description": "tags"
+				},
+				{
+				  "Name": "sponsor",
+				  "Required": "Y",
+				  "Type": "boolean",
+				  "Description": "sponsor"
+				}
+			  ]
+			}
+		  ]
         }
       ]
     },
