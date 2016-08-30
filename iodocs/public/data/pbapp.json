@@ -11,7 +11,7 @@
           "HTTPMethod": "POST",
           "URI": "Auth",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "api_key",
@@ -49,7 +49,7 @@
           "HTTPMethod": "POST",
           "URI": "Auth/renew",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "api_key",
@@ -94,7 +94,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/:id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -104,88 +104,22 @@
               "Description": "player id as used in client's website"
             }
           ],
-          "response": [
-			{
-              "Name": "player",
-              "Required": "Y",
-              "Type": "array",
-              "Description": "player info",
-              "Array_data" : [
-				{
-				  "Name": "cl_player_id",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "player id as used in client's website"
-				},
-				{
-				  "Name": "image",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "url to the player profile image"
-				},
-				{
-				  "Name": "username",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "username of the player"
-				},
-				{
-				  "Name": "exp",
-				  "Required": "Y",
-				  "Type": "integer",
-				  "Description": "exp of the player"
-				},
-				{
-				  "Name": "level",
-				  "Required": "Y",
-				  "Type": "integer",
-				  "Description": "level of the player"
-				},
-				{
-				  "Name": "first_name",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "first name of the player"
-				},
-				{
-				  "Name": "last_name",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "last name of the player"
-				},
-				{
-				  "Name": "gender",
-				  "Required": "Y",
-				  "Type": "integer",
-				  "Description": "1=Male, 2=Female"
-				},
-				{
-				  "Name": "birth_date",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "date of birth in the format YYYY-MM-DD (ex.1982-09-29)"
-				},
-				{
-				  "Name": "registered",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "registered date/time"
-				},
-				{
-				  "Name": "last_login",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "latest date/time that the player has login"
-				},
-				{
-				  "Name": "last_logout",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "latest date/time that the player has logout"
-				}
-			  ]
-			}
-		  ]
+          "response": {
+            "player": {
+              "cl_player_id": { "-type": "string"},
+              "image":        { "-type": "string"},
+              "username":     { "-type": "string"},
+              "exp":          { "-type": "integer"},
+              "level":        { "-type": "integer"},
+              "first_name":   { "-type": "string"},
+              "last_name":    { "-type": "string"},
+              "gender":       { "-type": "integer"},
+              "birth_date":   { "-type": "string"},
+              "registered":   { "-type": "string"},
+              "last_login":   { "-type": "string"},
+              "last_logout":  { "-type": "string"}
+            }
+          }
         },
         {
           "MethodName": "Player Info (include private data)",
@@ -193,7 +127,7 @@
           "HTTPMethod": "POST",
           "URI": "Player/:id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -210,100 +144,24 @@
               "Description": "player id as used in client's website"
             }
           ],
-          "response": [
-			{
-              "Name": "player",
-              "Required": "Y",
-              "Type": "array",
-              "Description": "player info",
-              "Array_data" : [
-				{
-				  "Name": "cl_player_id",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "player id as used in client's website"
-				},
-				{
-				  "Name": "image",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "url to the player profile image"
-				},
-				{
-				  "Name": "username",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "username of the player"
-				},
-				{
-				  "Name": "email",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "email address of the player"
-				},
-				{
-				  "Name": "phone_number",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "phone number of the player (+66xxyyyzzzz)"
-				},
-				{
-				  "Name": "exp",
-				  "Required": "Y",
-				  "Type": "integer",
-				  "Description": "exp of the player"
-				},
-				{
-				  "Name": "level",
-				  "Required": "Y",
-				  "Type": "integer",
-				  "Description": "level of the player"
-				},
-				{
-				  "Name": "first_name",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "first name of the player"
-				},
-				{
-				  "Name": "last_name",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "last name of the player"
-				},
-				{
-				  "Name": "gender",
-				  "Required": "Y",
-				  "Type": "integer",
-				  "Description": "1=Male, 2=Female"
-				},
-				{
-				  "Name": "birth_date",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "date of birth in the format YYYY-MM-DD (ex.1982-09-29)"
-				},
-				{
-				  "Name": "registered",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "registered date/time"
-				},
-				{
-				  "Name": "last_login",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "latest date/time that the player has login"
-				},
-				{
-				  "Name": "last_logout",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "latest date/time that the player has logout"
-				}
-			  ]	
-			} 
-          ]
+          "responses": {
+            "player": { 
+              "image":        { "-type": "string"},
+              "email":        { "-type": "string"},
+              "username":     { "-type": "string"},
+              "exp":          { "-type": "integer"},
+              "level":        { "-type": "integer"},
+              "phone_number": { "-type": "string"},
+              "first_name":   { "-type": "string"},
+              "last_name":    { "-type": "string"},
+              "gender":       { "-type": "integer"},
+              "birth_date":   { "-type": "string"},
+              "registered":   { "-type": "string"},
+              "last_login":   { "-type": "string"},
+              "last_logout":  { "-type": "string"},
+              "cl_player_id": { "-type": "string"}
+            }
+          }
         },
         {
           "MethodName": "List Player (Basic information)",
@@ -311,7 +169,7 @@
           "HTTPMethod": "POST",
           "URI": "Player/list",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -328,99 +186,25 @@
               "Description": "player id as used in client's website separate with ',' example '1,2,3'"
             }
           ],
-		  "response": [
-			{
-              "Name": "player",
-              "Required": "Y",
-              "Type": "array_list",
-              "Description": "player info",
-              "Array_data" : [
-				{
-				  "Name": "cl_player_id",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "player id as used in client's website"
-				},
-				{
-				  "Name": "image",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "url to the player profile image"
-				},
-				{
-				  "Name": "username",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "username of the player"
-				},
-				{
-				  "Name": "email",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "email address of the player"
-				},
-				{
-				  "Name": "phone_number",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "phone number of the player (+66xxyyyzzzz)"
-				},
-				{
-				  "Name": "exp",
-				  "Required": "Y",
-				  "Type": "integer",
-				  "Description": "exp of the player"
-				},
-				{
-				  "Name": "level",
-				  "Required": "Y",
-				  "Type": "integer",
-				  "Description": "level of the player"
-				},
-				{
-				  "Name": "first_name",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "first name of the player"
-				},
-				{
-				  "Name": "last_name",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "last name of the player"
-				},
-				{
-				  "Name": "gender",
-				  "Required": "Y",
-				  "Type": "integer",
-				  "Description": "1=Male, 2=Female"
-				},
-				{
-				  "Name": "birth_date",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "date of birth in the format YYYY-MM-DD (ex.1982-09-29)"
-				},
-				{
-				  "Name": "registered",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "registered date/time"
-				},
-				{
-				  "Name": "last_login",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "latest date/time that the player has login"
-				},
-				{
-				  "Name": "last_logout",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "latest date/time that the player has logout"
-				}
-			  ]
-			}
+          "responses": [
+            {
+              "player": {
+                "image":        { "-type": "string"},
+                "email":        { "-type": "string"},
+                "username":     { "-type": "string"},
+                "exp":          { "-type": "integer"},
+                "level":        { "-type": "integer"},
+                "phone_number": { "-type": "string"},
+                "first_name":   { "-type": "string"},
+                "last_name":    { "-type": "string"},
+                "gender":       { "-type": "integer"},
+                "birth_date":   { "-type": "string"},
+                "registered":   { "-type": "string"},
+                "last_login":   { "-type": "string"},
+                "last_logout":  { "-type": "string"},
+                "cl_player_id": { "-type": "string"}
+              }
+            }
           ]
         },
         {
@@ -429,7 +213,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/:id/data/all",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -439,226 +223,52 @@
               "Description": "player id as used in client's website"
             }
           ],
-          "response": [
-			{
-              "Name": "player",
-              "Required": "Y",
-              "Type": "array",
-              "Description": "player info",
-              "Array_data" : [
-				{
-				  "Name": "image",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "url to the player profile image"
-				},
-				{
-				  "Name": "username",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "username of the player"
-				},
-				{
-				  "Name": "exp",
-				  "Required": "Y",
-				  "Type": "integer",
-				  "Description": "exp of the player"
-				},
-				{
-				  "Name": "level",
-				  "Required": "Y",
-				  "Type": "integer",
-				  "Description": "level of the player"
-				},
-				{
-				  "Name": "first_name",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "first name of the player"
-				},
-				{
-				  "Name": "last_name",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "last name of the player"
-				},
-				{
-				  "Name": "gender",
-				  "Required": "Y",
-				  "Type": "integer",
-				  "Description": "1=Male, 2=Female"
-				},
-				{
-				  "Name": "birth_date",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "date of birth in the format YYYY-MM-DD (ex.1982-09-29)"
-				},
-				{
-				  "Name": "registered",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "registered date/time"
-				},
-				{
-				  "Name": "percent_of_level",
-				  "Required": "Y",
-				  "Type": "double",
-				  "Description": "percent of level"
-				},
-				{
-				  "Name": "level_title",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "level title"
-				},
-				{
-				  "Name": "level_image",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "level image"
-				},
-				{
-				  "Name": "badges",
-				  "Required": "Y",
-				  "Type": "array_list",
-				  "Description": "badges that player has received",
-                  "Array_data" : [
-                    {
-                      "Name": "badge_id",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "badges id"
-                    },
-                    {
-                      "Name": "image",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "url to the badge image"
-                    },
-                    {
-                      "Name": "name",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "badges name"
-                    },
-                    {
-                      "Name": "description",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "description of badge"
-                    },
-                    {
-                      "Name": "amount",
-                      "Required": "Y",
-                      "Type": "integer",
-                      "Description": "amount of badge(s) that play has received"
-                    },
-                    {
-                      "Name": "hint",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "hint"
-                    },
-                    {
-                      "Name": "tags",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "tags"
-                    }
-                  ]
-				},
-				{
-				  "Name": "goods",
-				  "Required": "Y",
-				  "Type": "array_list",
-				  "Description": "goods that player has received",
-                  "Array_data" : [
-                    {
-                      "Name": "goods_id",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "goods id"
-                    },
-                    {
-                      "Name": "image",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "url to the goods image"
-                    },
-                    {
-                      "Name": "name",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "goods name"
-                    },
-                    {
-                      "Name": "description",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "description of goods"
-                    },
-                    {
-                      "Name": "code",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "goods code"
-                    },
-                    {
-                      "Name": "amount",
-                      "Required": "Y",
-                      "Type": "integer",
-                      "Description": "amount of goods(s) that play has received"
-                    },
-                    {
-                      "Name": "group",
-                      "Required": "N",
-                      "Type": "string",
-                      "Description": "group of goods"
-                    }
-                  ]
-				},
-				{
-				  "Name": "points",
-				  "Required": "Y",
-				  "Type": "array_list",
-				  "Description": "points that player has received",
-                  "Array_data" : [
-                    {
-                      "Name": "reward_id",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "reward id"
-                    },
-                    {
-                      "Name": "reward_name",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "reward name"
-                    },
-                    {
-                      "Name": "value",
-                      "Required": "Y",
-                      "Type": "integer",
-                      "Description": "amount of reward(s) that player has received"
-                    }
-                  ]
-				},
-				{
-				  "Name": "last_login",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "latest date/time that the player has login"
-				},
-				{
-				  "Name": "last_logout",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "latest date/time that the player has logout"
-				}
-			  ]
-			}
-          ]
+          "response": {
+            "player": {
+              "image":            { "-type": "string"},
+              "username":         { "-type": "string"},
+              "exp":              { "-type": "string"},
+              "level":            { "-type": "string"},
+              "first_name":       { "-type": "string"},
+              "last_name":        { "-type": "string"},
+              "gender":           { "-type": "string"},
+              "birth_date":       { "-type": "string"},
+              "registered":       { "-type": "string"},
+              "percent_of_level": { "-type": "string"},
+              "level_title":      { "-type": "string"},
+              "level_image":      { "-type": "string"},
+              "badges": [
+                {
+                  "badge_id":     { "-type": "string"},
+                  "image":        { "-type": "string"},
+                  "name":         { "-type": "string"},
+                  "description":  { "-type": "string"},
+                  "amount":       { "-type": "string"},
+                  "hint":         { "-type": "string"},
+                  "tags":         { "-type": "string"}
+                }
+              ],
+              "goods": [
+                {
+                  "goods_id":     { "-type": "string"},
+                  "image":        { "-type": "string"},
+                  "name":         { "-type": "string"},
+                  "description":  { "-type": "string"},
+                  "code":         { "-type": "string"},
+                  "amount":       { "-type": "string"}
+                }
+              ],
+              "points": [
+                {
+                  "reward_id":    { "-type": "string"},
+                  "reward_name":  { "-type": "string"},
+                  "value":        { "-type": "string"}
+                }
+              ],
+              "last_login":       { "-type": "string"},
+              "last_logout":      { "-type": "string"}
+            }
+          }
         },
         {
           "MethodName": "Detailed Player Info (include private data)",
@@ -666,7 +276,7 @@
           "HTTPMethod": "POST",
           "URI": "Player/:id/data/all",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -684,7 +294,7 @@
             }
           ],
           "response": [
-			{
+            {
               "Name": "player",
               "Required": "Y",
               "Type": "array",
@@ -905,7 +515,7 @@
                   "Required": "N",
                   "Type": "array_list",
                   "Description": "organization",
-				  "Array_data" : [
+                  "Array_data" : [
                     {
                       "Name": "name",
                       "Required": "Y",
@@ -929,20 +539,20 @@
                       "Required": "Y",
                       "Type": "array_list",
                       "Description": "role of player",
-					  "Array_data" : [
-						{
-						  "Name": "role",
-						  "Required": "Y",
-						  "Type": "string",
-						  "Description": "role type"
-						},
-						{
-						  "Name": "join_date",
-						  "Required": "Y",
-						  "Type": "string",
-						  "Description": "date/time when the player was set the role"
-						}
-					  ]
+                      "Array_data" : [
+                        {
+                          "Name": "role",
+                          "Required": "Y",
+                          "Type": "string",
+                          "Description": "role type"
+                        },
+                        {
+                          "Name": "join_date",
+                          "Required": "Y",
+                          "Type": "string",
+                          "Description": "date/time when the player was set the role"
+                        }
+                      ]
                     }
                   ]
                 },
@@ -959,8 +569,8 @@
                   "Description": "latest date/time that the player has logout"
                 }
               ]
-			}
-		  ]
+            }
+          ]
         },
         {
           "MethodName": "List Custom Fields of Player",
@@ -968,7 +578,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/:id/custom",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -979,20 +589,20 @@
             }
           ],
           "response": [
-		    {
-			  "Name": "player",
+            {
+              "Name": "player",
               "Required": "Y",
               "Type": "array",
               "Description": "player info",
               "Array_data" : [
-				{
-				  "Name": "custom",
-				  "Required": "N",
-				  "Type": "array_dynamic",
-				  "Description": "custom field of a player"
-				}
-		      ]
-			}
+                {
+                  "Name": "custom",
+                  "Required": "N",
+                  "Type": "array_dynamic",
+                  "Description": "custom field of a player"
+                }
+              ]
+            }
           ]
         },
         {
@@ -1001,7 +611,7 @@
           "HTTPMethod": "POST",
           "URI": "Player/:id/custom",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -1040,7 +650,7 @@
           "HTTPMethod": "POST",
           "URI": "Player/:id/register",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -1183,7 +793,7 @@
           "HTTPMethod": "POST",
           "URI": "Player/:id/update",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -1322,7 +932,7 @@
           "HTTPMethod": "POST",
           "URI": "Player/password/email",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -1339,14 +949,14 @@
               "Description": "email as used in client's website"
             }
           ],
-		  "response": [
-			{
+          "response": [
+            {
               "Name": "success",
               "Required": "N",
               "Type": "boolean",
               "Description": "result status"
             }
-		  ]
+          ]
         },
         {
           "MethodName": "Verify player email",
@@ -1354,7 +964,7 @@
           "HTTPMethod": "POST",
           "URI": "Player/:id/email/verify",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -1392,7 +1002,7 @@
           "HTTPMethod": "POST",
           "URI": "Player/:id/delete",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -1417,7 +1027,7 @@
           "HTTPMethod": "POST",
           "URI": "Player/:id/login",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -1456,7 +1066,7 @@
           "HTTPMethod": "POST",
           "URI": "Player/auth",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters_or" : [["email","username"]],
           "parameters": [
             {
@@ -1516,7 +1126,7 @@
           "HTTPMethod": "POST",
           "URI": "Player/auth/:id/requestOTPCode",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -1598,7 +1208,7 @@
           "HTTPMethod": "POST",
           "URI": "Player/auth/:id/setupPhone",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -1687,7 +1297,7 @@
           "HTTPMethod": "POST",
           "URI": "Player/auth/:id/verifyOTPCode",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -1719,7 +1329,7 @@
           "HTTPMethod": "POST",
           "URI": "Player/:id/logout",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -1751,7 +1361,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/:id/sessions",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -1761,7 +1371,7 @@
               "Description": "player id as used in client's website"
             }
           ],
-		  "response_list": "Y",
+          "response_list": "Y",
           "response": [
             {
               "Name": "session_id",
@@ -1783,7 +1393,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/session/:session_id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "session_id",
@@ -1862,7 +1472,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/:id/points",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -1873,32 +1483,32 @@
             }
           ],
           "response": [
-			{
+            {
               "Name": "points",
               "Required": "Y",
               "Type": "array_list",
               "Description": "points",
               "Array_data" : [
-				{
-				  "Name": "reward_id",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "reward id"
-				},
-				{
-				  "Name": "reward_name",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "reward name"
-				},
-				{
-				  "Name": "value",
-				  "Required": "Y",
-				  "Type": "integer",
-				  "Description": "amount of reward(s) that player has received"
-				}
-			  ]
-			}
+                {
+                  "Name": "reward_id",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "reward id"
+                },
+                {
+                  "Name": "reward_name",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "reward name"
+                },
+                {
+                  "Name": "value",
+                  "Required": "Y",
+                  "Type": "integer",
+                  "Description": "amount of reward(s) that player has received"
+                }
+              ]
+            }
           ]
         },
         {
@@ -1907,7 +1517,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/:id/point/:point_name",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -1925,32 +1535,32 @@
             }
           ],
           "response": [
-			{
+            {
               "Name": "point",
               "Required": "Y",
               "Type": "array_list",
               "Description": "points",
               "Array_data" : [
-				{
-				  "Name": "reward_id",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "reward id"
-				},
-				{
-				  "Name": "reward_name",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "reward name"
-				},
-				{
-				  "Name": "value",
-				  "Required": "N",
-				  "Type": "integer",
-				  "Description": "amount of reward(s) that player has received"
-				}
-			  ]
-			}
+                {
+                  "Name": "reward_id",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "reward id"
+                },
+                {
+                  "Name": "reward_name",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "reward name"
+                },
+                {
+                  "Name": "value",
+                  "Required": "N",
+                  "Type": "integer",
+                  "Description": "amount of reward(s) that player has received"
+                }
+              ]
+            }
           ]
         },
         {
@@ -1959,7 +1569,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/:id/point_history",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -1998,68 +1608,68 @@
             }
           ],
           "response": [
-		    {
-			  "Name": "points",
+            {
+              "Name": "points",
               "Required": "Y",
               "Type": "array_list",
               "Description": "player info",
               "Array_data" : [
-				{
-				  "Name": "message",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "message"
-				},
-				{
-				  "Name": "reward_id",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "reward id"
-				},
-				{
-				  "Name": "reward_name",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "reward name"
-				},
-				{
-				  "Name": "value",
-				  "Required": "Y",
-				  "Type": "integer",
-				  "Description": "amount of reward(s) that player has received"
-				},
-				{
-				  "Name": "date_added",
-				  "Required": "N",
-				  "Type": "string",
-				  "Description": "date/time that player has received the reward"
-				},
-				{
-				  "Name": "action_name",
-				  "Required": "N",
-				  "Type": "string",
-				  "Description": "action name"
-				},
-				{
-				  "Name": "action_parameters",
-				  "Required": "N",
-				  "Type": "array_dynamic",
-				  "Description": "parameter sent with the action"
-				},
-				{
-				  "Name": "action_time",
-				  "Required": "N",
-				  "Type": "string",
-				  "Description": "date/time that player has performed the action"
-				},
-				{
-				  "Name": "string_filter",
-				  "Required": "N",
-				  "Type": "string",
-				  "Description": "filter string"
-				}
-		      ]
-			}
+                {
+                  "Name": "message",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "message"
+                },
+                {
+                  "Name": "reward_id",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "reward id"
+                },
+                {
+                  "Name": "reward_name",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "reward name"
+                },
+                {
+                  "Name": "value",
+                  "Required": "Y",
+                  "Type": "integer",
+                  "Description": "amount of reward(s) that player has received"
+                },
+                {
+                  "Name": "date_added",
+                  "Required": "N",
+                  "Type": "string",
+                  "Description": "date/time that player has received the reward"
+                },
+                {
+                  "Name": "action_name",
+                  "Required": "N",
+                  "Type": "string",
+                  "Description": "action name"
+                },
+                {
+                  "Name": "action_parameters",
+                  "Required": "N",
+                  "Type": "array_dynamic",
+                  "Description": "parameter sent with the action"
+                },
+                {
+                  "Name": "action_time",
+                  "Required": "N",
+                  "Type": "string",
+                  "Description": "date/time that player has performed the action"
+                },
+                {
+                  "Name": "string_filter",
+                  "Required": "N",
+                  "Type": "string",
+                  "Description": "filter string"
+                }
+              ]
+            }
           ]
         },
         {
@@ -2068,7 +1678,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/:id/action/:action_name/time",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -2086,32 +1696,32 @@
             }
           ],
           "response": [
-		    {
-			  "Name": "action",
+            {
+              "Name": "action",
               "Required": "Y",
               "Type": "array",
               "Description": "action detail",
               "Array_data" : [
-				{
-				  "Name": "action_id",
-				  "Required": "N",
-				  "Type": "string",
-				  "Description": "action id"
-				},
-				{
-				  "Name": "action_name",
-				  "Required": "N",
-				  "Type": "string",
-				  "Description": "action name"
-				},
-				{
-				  "Name": "time",
-				  "Required": "N",
-				  "Type": "string",
-				  "Description": "latest date/time that player has performd the action"
-				}
-		      ]
-			}
+                {
+                  "Name": "action_id",
+                  "Required": "N",
+                  "Type": "string",
+                  "Description": "action id"
+                },
+                {
+                  "Name": "action_name",
+                  "Required": "N",
+                  "Type": "string",
+                  "Description": "action name"
+                },
+                {
+                  "Name": "time",
+                  "Required": "N",
+                  "Type": "string",
+                  "Description": "latest date/time that player has performd the action"
+                }
+              ]
+            }
           ]
         },
         {
@@ -2120,7 +1730,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/:id/action/time",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -2131,32 +1741,32 @@
             }
           ],
           "response": [
-		    {
-			  "Name": "action",
+            {
+              "Name": "action",
               "Required": "Y",
               "Type": "array",
               "Description": "action detail",
               "Array_data" : [
-				{
-				  "Name": "action_id",
-				  "Required": "N",
-				  "Type": "string",
-				  "Description": "action id"
-				},
-				{
-				  "Name": "action_name",
-				  "Required": "N",
-				  "Type": "string",
-				  "Description": "action name"
-				},
-				{
-				  "Name": "time",
-				  "Required": "N",
-				  "Type": "string",
-				  "Description": "latest date/time that player has performd the action"
-				}
-		      ]
-			}
+                {
+                  "Name": "action_id",
+                  "Required": "N",
+                  "Type": "string",
+                  "Description": "action id"
+                },
+                {
+                  "Name": "action_name",
+                  "Required": "N",
+                  "Type": "string",
+                  "Description": "action name"
+                },
+                {
+                  "Name": "time",
+                  "Required": "N",
+                  "Type": "string",
+                  "Description": "latest date/time that player has performd the action"
+                }
+              ]
+            }
           ]
         },
         {
@@ -2165,7 +1775,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/:id/action/:action_name/count",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -2183,32 +1793,32 @@
             }
           ],
           "response": [
-		    {
-			  "Name": "action",
+            {
+              "Name": "action",
               "Required": "Y",
               "Type": "array",
               "Description": "action detail",
               "Array_data" : [
-				{
-				  "Name": "action_id",
-				  "Required": "N",
-				  "Type": "string",
-				  "Description": "action id"
-				},
-				{
-				  "Name": "action_name",
-				  "Required": "N",
-				  "Type": "string",
-				  "Description": "action name"
-				},
-				{
-				  "Name": "count",
-				  "Required": "N",
-				  "Type": "integer",
-				  "Description": "number of times that player has performed the action"
-				}
-		      ]
-			}
+                {
+                  "Name": "action_id",
+                  "Required": "N",
+                  "Type": "string",
+                  "Description": "action id"
+                },
+                {
+                  "Name": "action_name",
+                  "Required": "N",
+                  "Type": "string",
+                  "Description": "action name"
+                },
+                {
+                  "Name": "count",
+                  "Required": "N",
+                  "Type": "integer",
+                  "Description": "number of times that player has performed the action"
+                }
+              ]
+            }
           ]
         },
         {
@@ -2217,7 +1827,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/level/:level",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "level",
@@ -2227,38 +1837,38 @@
               "Description": "number of  level"
             }
           ],
-		  "response": [
-			{
-			  "Name": "level_title",
-			  "Required": "N",
-			  "Type": "string",
-			  "Description": "level title"
-			},
-			{
-			  "Name": "level",
-			  "Required": "N",
-			  "Type": "integer",
-			  "Description": "level"
-			},
-			{
-			  "Name": "min_exp",
-			  "Required": "N",
-			  "Type": "double",
-			  "Description": "minimal exp of this level range"
-			},
-			{
-			  "Name": "max_exp",
-			  "Required": "N",
-			  "Type": "integer",
-			  "Description": "maximum exp of this level range"
-			},
-			{
-			  "Name": "level_image",
-			  "Required": "N",
-			  "Type": "string",
-			  "Description": "url to image of the level"
-			}
-		  ]
+          "response": [
+            {
+              "Name": "level_title",
+              "Required": "N",
+              "Type": "string",
+              "Description": "level title"
+            },
+            {
+              "Name": "level",
+              "Required": "N",
+              "Type": "integer",
+              "Description": "level"
+            },
+            {
+              "Name": "min_exp",
+              "Required": "N",
+              "Type": "double",
+              "Description": "minimal exp of this level range"
+            },
+            {
+              "Name": "max_exp",
+              "Required": "N",
+              "Type": "integer",
+              "Description": "maximum exp of this level range"
+            },
+            {
+              "Name": "level_image",
+              "Required": "N",
+              "Type": "string",
+              "Description": "url to image of the level"
+            }
+          ]
         },
         {
           "MethodName": "Levels",
@@ -2266,42 +1876,42 @@
           "HTTPMethod": "GET",
           "URI": "Player/levels",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
           ],
-		  "response_list": "Y",
-		  "response": [
-			{
-			  "Name": "level_title",
-			  "Required": "N",
-			  "Type": "string",
-			  "Description": "level title"
-			},
-			{
-			  "Name": "level",
-			  "Required": "N",
-			  "Type": "integer",
-			  "Description": "level"
-			},
-			{
-			  "Name": "min_exp",
-			  "Required": "N",
-			  "Type": "double",
-			  "Description": "minimal exp of this level range"
-			},
-			{
-			  "Name": "max_exp",
-			  "Required": "N",
-			  "Type": "integer",
-			  "Description": "maximum exp of this level range"
-			},
-			{
-			  "Name": "level_image",
-			  "Required": "N",
-			  "Type": "string",
-			  "Description": "url to image of the level"
-			}
-		  ]
+          "response_list": "Y",
+          "response": [
+            {
+              "Name": "level_title",
+              "Required": "N",
+              "Type": "string",
+              "Description": "level title"
+            },
+            {
+              "Name": "level",
+              "Required": "N",
+              "Type": "integer",
+              "Description": "level"
+            },
+            {
+              "Name": "min_exp",
+              "Required": "N",
+              "Type": "double",
+              "Description": "minimal exp of this level range"
+            },
+            {
+              "Name": "max_exp",
+              "Required": "N",
+              "Type": "integer",
+              "Description": "maximum exp of this level range"
+            },
+            {
+              "Name": "level_image",
+              "Required": "N",
+              "Type": "string",
+              "Description": "url to image of the level"
+            }
+          ]
         },
         {
           "MethodName": "Badge",
@@ -2309,7 +1919,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/:id/badge",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -2326,51 +1936,51 @@
               "Description": "Specific tag(s) to find (e.g. foo,bar)"
             }
           ],
-		  "response_list": "Y",
-		  "response": [
-			{
-			  "Name": "badge_id",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "badges id"
-			},
-			{
-			  "Name": "image",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "url to the badge image"
-			},
-			{
-			  "Name": "name",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "badges name"
-			},
-			{
-			  "Name": "description",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "description of badge"
-			},
-			{
-			  "Name": "amount",
-			  "Required": "Y",
-			  "Type": "integer",
-			  "Description": "amount of badge(s) that play has received"
-			},
-			{
-			  "Name": "hint",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "hint"
-			},
-			{
-			  "Name": "tags",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "tags"
-			}
-		  ]
+          "response_list": "Y",
+          "response": [
+            {
+              "Name": "badge_id",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "badges id"
+            },
+            {
+              "Name": "image",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "url to the badge image"
+            },
+            {
+              "Name": "name",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "badges name"
+            },
+            {
+              "Name": "description",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "description of badge"
+            },
+            {
+              "Name": "amount",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "amount of badge(s) that play has received"
+            },
+            {
+              "Name": "hint",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "hint"
+            },
+            {
+              "Name": "tags",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "tags"
+            }
+          ]
         },
         {
           "MethodName": "All Badges",
@@ -2378,7 +1988,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/:id/badgeAll",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -2395,63 +2005,63 @@
               "Description": "Specific tag(s) to find (e.g. foo,bar)"
             }
           ],
-		  "response_list": "Y",
-		  "response": [
-			{
-			  "Name": "badge_id",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "badges id"
-			},
-			{
-			  "Name": "image",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "url to the badge image"
-			},
-			{
-			  "Name": "sort_order",
-			  "Required": "Y",
-			  "Type": "integer",
-			  "Description": "sort order"
-			},
-			{
-			  "Name": "name",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "badges name"
-			},
-			{
-			  "Name": "description",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "description of badge"
-			},
-			{
-			  "Name": "amount",
-			  "Required": "Y",
-			  "Type": "integer",
-			  "Description": "amount of badge(s) that play has received"
-			},
-			{
-			  "Name": "hint",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "hint"
-			},
-			{
-			  "Name": "tags",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "tags"
-			},
-			{
-			  "Name": "sponsor",
-			  "Required": "Y",
-			  "Type": "boolean",
-			  "Description": "sponsor"
-			}
-		  ]
+          "response_list": "Y",
+          "response": [
+            {
+              "Name": "badge_id",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "badges id"
+            },
+            {
+              "Name": "image",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "url to the badge image"
+            },
+            {
+              "Name": "sort_order",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "sort order"
+            },
+            {
+              "Name": "name",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "badges name"
+            },
+            {
+              "Name": "description",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "description of badge"
+            },
+            {
+              "Name": "amount",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "amount of badge(s) that play has received"
+            },
+            {
+              "Name": "hint",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "hint"
+            },
+            {
+              "Name": "tags",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "tags"
+            },
+            {
+              "Name": "sponsor",
+              "Required": "Y",
+              "Type": "boolean",
+              "Description": "sponsor"
+            }
+          ]
         },
         {
           "MethodName": "Rank",
@@ -2459,7 +2069,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/rank/:rank_by/:limit",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "rank_by",
@@ -2483,39 +2093,39 @@
               "Description": "weekly, monthly (default is all-time)"
             }
           ],
-		  "response_list": "Y",
-		  "response": [
-			{
-			  "Name": "player_id",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "player id as used in client's website"
-			},
-			{
-			  "Name": "first_name",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "first name"
-			},
-			{
-			  "Name": "last_name",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "last name"
-			},
-			{
-			  "Name": "image",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "url to the player profile image"
-			},
-			{
-			  "Name": "rank_by",
-			  "Required": "INPUT_URI",
-			  "Type": "integer",
-			  "Description": "name of point-based reward to rank players by"
-			}
-		  ]
+          "response_list": "Y",
+          "response": [
+            {
+              "Name": "player_id",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "first_name",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "first name"
+            },
+            {
+              "Name": "last_name",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "last name"
+            },
+            {
+              "Name": "image",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "url to the player profile image"
+            },
+            {
+              "Name": "rank_by",
+              "Required": "INPUT_URI",
+              "Type": "integer",
+              "Description": "name of point-based reward to rank players by"
+            }
+          ]
         },
         {
           "MethodName": "DEPRECATED - Level",
@@ -2523,7 +2133,7 @@
           "HTTPMethod": "POST",
           "URI": "Player/level/:level",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -2548,7 +2158,7 @@
           "HTTPMethod": "POST",
           "URI": "Player/levels",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -2566,7 +2176,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/ranks/:limit",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "limit",
@@ -2583,85 +2193,85 @@
               "Description": "weekly, monthly (default is all-time)"
             }
           ],
-		  "response_dynamic": "Y",
-		  "response": [
-			{
-			  "Name": "point",
-			  "Required": "Y",
-			  "Type": "array_list",
-			  "Description": "ranking by point",
-			  "Array_data" : [
-				{
-				  "Name": "player_id",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "player id as used in client's website"
-				},
-				{
-				  "Name": "first_name",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "first name"
-				},
-				{
-				  "Name": "last_name",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "last name"
-				},
-				{
-				  "Name": "image",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "url to the player profile image"
-				},
-				{
-				  "Name": "point",
-				  "Required": "Y",
-				  "Type": "integer",
-				  "Description": "amount of point"
-				}
-			  ]
-			},
-			{
-			  "Name": "exp",
-			  "Required": "Y",
-			  "Type": "array_list",
-			  "Description": "ranking by exp",
-			  "Array_data" : [
-				{
-				  "Name": "player_id",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "player id as used in client's website"
-				},
-				{
-				  "Name": "first_name",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "first name"
-				},
-				{
-				  "Name": "last_name",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "last name"
-				},
-				{
-				  "Name": "image",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "url to the player profile image"
-				},
-				{
-				  "Name": "exp",
-				  "Required": "Y",
-				  "Type": "integer",
-				  "Description": "amount of exp"
-				}
-			  ]
-			}
-		  ]
+          "response_dynamic": "Y",
+          "response": [
+            {
+              "Name": "point",
+              "Required": "Y",
+              "Type": "array_list",
+              "Description": "ranking by point",
+              "Array_data" : [
+                {
+                  "Name": "player_id",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "player id as used in client's website"
+                },
+                {
+                  "Name": "first_name",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "first name"
+                },
+                {
+                  "Name": "last_name",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "last name"
+                },
+                {
+                  "Name": "image",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "url to the player profile image"
+                },
+                {
+                  "Name": "point",
+                  "Required": "Y",
+                  "Type": "integer",
+                  "Description": "amount of point"
+                }
+              ]
+            },
+            {
+              "Name": "exp",
+              "Required": "Y",
+              "Type": "array_list",
+              "Description": "ranking by exp",
+              "Array_data" : [
+                {
+                  "Name": "player_id",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "player id as used in client's website"
+                },
+                {
+                  "Name": "first_name",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "first name"
+                },
+                {
+                  "Name": "last_name",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "last name"
+                },
+                {
+                  "Name": "image",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "url to the player profile image"
+                },
+                {
+                  "Name": "exp",
+                  "Required": "Y",
+                  "Type": "integer",
+                  "Description": "amount of exp"
+                }
+              ]
+            }
+          ]
         },
         {
           "MethodName": "DEPRECATED - Ranks",
@@ -2669,7 +2279,7 @@
           "HTTPMethod": "POST",
           "URI": "Player/ranks/:limit",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -2694,7 +2304,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/:id/goods",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -2704,58 +2314,58 @@
               "Description": "player id as used in client's website"
             }
           ],
-		  "response": [
-			{
-			  "Name": "goods",
-			  "Required": "Y",
-			  "Type": "array_list",
-			  "Description": "goods that player has received",
-			  "Array_data" : [
-				{
-				  "Name": "goods_id",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "goods id"
-				},
-				{
-				  "Name": "image",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "url to the goods image"
-				},
-				{
-				  "Name": "name",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "goods name"
-				},
-				{
-				  "Name": "description",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "description of goods"
-				},
-				{
-				  "Name": "code",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "goods code"
-				},
-				{
-				  "Name": "amount",
-				  "Required": "Y",
-				  "Type": "integer",
-				  "Description": "amount of goods(s) that play has received"
-				},
-				{
-				  "Name": "group",
-				  "Required": "N",
-				  "Type": "string",
-				  "Description": "group of goods"
-				}			  
-			  ]
-			}
-		  ]
+          "response": [
+            {
+              "Name": "goods",
+              "Required": "Y",
+              "Type": "array_list",
+              "Description": "goods that player has received",
+              "Array_data" : [
+                {
+                  "Name": "goods_id",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "goods id"
+                },
+                {
+                  "Name": "image",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "url to the goods image"
+                },
+                {
+                  "Name": "name",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "goods name"
+                },
+                {
+                  "Name": "description",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "description of goods"
+                },
+                {
+                  "Name": "code",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "goods code"
+                },
+                {
+                  "Name": "amount",
+                  "Required": "Y",
+                  "Type": "integer",
+                  "Description": "amount of goods(s) that play has received"
+                },
+                {
+                  "Name": "group",
+                  "Required": "N",
+                  "Type": "string",
+                  "Description": "group of goods"
+                }              
+              ]
+            }
+          ]
         },
         {
           "MethodName": "Quest of Player",
@@ -2763,7 +2373,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/quest/:id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -2794,7 +2404,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/quest",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -2825,7 +2435,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/questAll/:id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -2836,7 +2446,7 @@
             }
           ],
           "response": [
-			{
+            {
               "Name": "quests",
               "Required": "Y",
               "Type": "array",
@@ -2848,45 +2458,45 @@
                   "Type": "string",
                   "Description": "quest name"
                 },
-				{
+                {
                   "Name": "description",
                   "Required": "Y",
                   "Type": "string",
                   "Description": "description of quest"
                 },
-				{
+                {
                   "Name": "hint",
                   "Required": "Y",
                   "Type": "string",
                   "Description": "hint"
                 },
-				{
+                {
                   "Name": "image",
                   "Required": "Y",
                   "Type": "string",
                   "Description": "url to the quest image"
                 },
-				{
+                {
                   "Name": "tag",
                   "Required": "Y",
                   "Type": "array",
                   "Description": "tag"
                 },
-				{
+                {
                   "Name": "sort_order",
                   "Required": "Y",
                   "Type": "integer",
                   "Description": "sort order"
                 },
-				{
+                {
                   "Name": "global_quest",
                   "Required": "Y",
                   "Type": "boolean",
                   "Description": "global quest flag"
                 }
               ]
-			}
-	      ]
+            }
+          ]
         },
         {
           "MethodName": "Quest Reward History",
@@ -2894,7 +2504,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/:id/quest_reward_history",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -2925,7 +2535,7 @@
           "HTTPMethod": "POST",
           "URI": "Player/:id/deduct",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -2964,25 +2574,25 @@
             }
           ],
           "response": [
-			{
-			  "Name": "old_value",
-			  "Required": "Y",
-			  "Type": "integer",
-			  "Description": "amount of the reward before deduct"
-			},
-			{
-			  "Name": "new_value",
-			  "Required": "Y",
-			  "Type": "integer",
-			  "Description": "amount of the reward after deduct"
-			},
-			{
-			  "Name": "value_deducted",
-			  "Required": "Y",
-			  "Type": "integer",
-			  "Description": "amount of the deducted reward"
-			}
-		  ]
+            {
+              "Name": "old_value",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "amount of the reward before deduct"
+            },
+            {
+              "Name": "new_value",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "amount of the reward after deduct"
+            },
+            {
+              "Name": "value_deducted",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "amount of the deducted reward"
+            }
+          ]
         },
         {
           "MethodName": "Gift",
@@ -2990,7 +2600,7 @@
           "HTTPMethod": "POST",
           "URI": "Player/:sent_player_id/giveGift/:type",
           "RequiresOAuth": "Y",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -3041,25 +2651,25 @@
             }
           ],
           "response": [
-			{
-			  "Name": "gift_name",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "gift name"
-			},
-			{
-			  "Name": "type",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "type of gift"
-			},
-			{
-			  "Name": "remaining",
-			  "Required": "Y",
-			  "Type": "integer",
-			  "Description": "remaining gift after sent"
-			}
-		  ]
+            {
+              "Name": "gift_name",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "gift name"
+            },
+            {
+              "Name": "type",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "type of gift"
+            },
+            {
+              "Name": "remaining",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "remaining gift after sent"
+            }
+          ]
         },
         {
           "MethodName": "Player Referral Code",
@@ -3067,7 +2677,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/:id/code",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -3078,13 +2688,13 @@
             }
           ],
           "response": [
-			{
-			  "Name": "code",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "referral code of the player"
-			}
-		  ]
+            {
+              "Name": "code",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "referral code of the player"
+            }
+          ]
         },
         {
           "MethodName": "Rank by Custom parameter",
@@ -3092,7 +2702,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/rankParam/:action/:parameter",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "action",
@@ -3130,21 +2740,21 @@
               "Description": "year to rank players by (2015, 2016 , ...)"
             }
           ],
-		  "response_list": "Y",
+          "response_list": "Y",
           "response": [
-			{
-			  "Name": "cl_player_id",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "player id as used in client's website"
-			},
-			{
-			  "Name": "amount",
-			  "Required": "Y",
-			  "Type": "integer",
-			  "Description": "amount"
-			}
-		  ]
+            {
+              "Name": "cl_player_id",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "amount",
+              "Required": "Y",
+              "Type": "integer",
+              "Description": "amount"
+            }
+          ]
         },
         {
           "MethodName": "Get Associated Node",
@@ -3152,7 +2762,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/:id/getAssociatedNode",
           "RequiresOAuth": "Y",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -3162,21 +2772,21 @@
               "Description": "player id as used in client's website"
             }
           ],
-		  "response_list": "Y",
+          "response_list": "Y",
           "response": [
-			{
-			  "Name": "node_id",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "node id"
-			},
-			{
-			  "Name": "name",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "name of nade"
-			}
-		  ]
+            {
+              "Name": "node_id",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "node id"
+            },
+            {
+              "Name": "name",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "name of nade"
+            }
+          ]
         },
         {
           "MethodName": "Get Role",
@@ -3184,7 +2794,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/:id/getRole/:node_id",
           "RequiresOAuth": "Y",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -3201,34 +2811,34 @@
               "Description": "Node Id to add player"
             }
           ],
-		  "response": [
-			{
-			  "Name": "organize_type",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "type of specific node"
-			},
-			{
-			  "Name": "roles",
-			  "Required": "Y",
-			  "Type": "array_list",
-			  "Description": "roles",
-			  "Array_data" : [
-				{
-				  "Name": "role",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "role of player in the specific node"
-				},
-				{
-				  "Name": "join_date",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "date/time that the player has joined"
-				}
-			  ]
-			}
-		  ]
+          "response": [
+            {
+              "Name": "organize_type",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "type of specific node"
+            },
+            {
+              "Name": "roles",
+              "Required": "Y",
+              "Type": "array_list",
+              "Description": "roles",
+              "Array_data" : [
+                {
+                  "Name": "role",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "role of player in the specific node"
+                },
+                {
+                  "Name": "join_date",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "date/time that the player has joined"
+                }
+              ]
+            }
+          ]
         },
         {
           "MethodName": "Sale report",
@@ -3236,7 +2846,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/:id/saleReport",
           "RequiresOAuth": "Y",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -3274,22 +2884,22 @@
               "Description": "Select parameter to report from action log [default = \"amount\"]"
             }
           ],
-		  "response_list": "Y",
-		  "response_dynamic": "Y",
+          "response_list": "Y",
+          "response_dynamic": "Y",
           "response": [
-			{
-			  "Name": "node_id",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "node id"
-			},
-			{
-			  "Name": "name",
-			  "Required": "Y",
-			  "Type": "string",
-			  "Description": "name of nade"
-			}
-		  ]
+            {
+              "Name": "node_id",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "node id"
+            },
+            {
+              "Name": "name",
+              "Required": "Y",
+              "Type": "string",
+              "Description": "name of nade"
+            }
+          ]
         },
         {
           "MethodName": "Action report",
@@ -3297,7 +2907,7 @@
           "HTTPMethod": "GET",
           "URI": "Player/:id/actionReport",
           "RequiresOAuth": "Y",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -3342,7 +2952,7 @@
               "Description": "Select parameter to report from action log [default = \"amount\"]"
             }
           ],
-		  "response_dynamic": "Y",
+          "response_dynamic": "Y",
           "response": []
         },
         {
@@ -3351,7 +2961,7 @@
           "HTTPMethod": "POST",
           "URI": "Player/:id/unlock",
           "RequiresOAuth": "Y",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -3368,7 +2978,7 @@
               "Description": "player id as used in client's website"
             }
           ],
-		  "response": []
+          "response": []
         }
       ]
     },
@@ -3383,7 +2993,7 @@
           "HTTPMethod": "GET",
           "URI": "Badges",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "tags",
@@ -3393,64 +3003,64 @@
               "Description": "Specific tag(s) to find (e.g. foo,bar)"
             }
           ],
-		  "response": [
-			{
-			  "Name": "badges",
-			  "Required": "Y",
-			  "Type": "array_list",
-			  "Description": "badges that player has received",
-			  "Array_data" : [
-				{
-				  "Name": "badge_id",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "badges id"
-				},
-				{
-				  "Name": "image",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "url to the badge image"
-				},
-				{
-				  "Name": "name",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "badges name"
-				},
-				{
-				  "Name": "description",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "description of badge"
-				},
-				{
-				  "Name": "sort_order",
-				  "Required": "Y",
-				  "Type": "integer",
-				  "Description": "sort order"
-				},
-				{
-				  "Name": "hint",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "hint"
-				},
-				{
-				  "Name": "tags",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "tags"
-				},
-				{
-				  "Name": "sponsor",
-				  "Required": "Y",
-				  "Type": "boolean",
-				  "Description": "sponsor"
-				}
-			  ]
-			}
-		  ]
+          "response": [
+            {
+              "Name": "badges",
+              "Required": "Y",
+              "Type": "array_list",
+              "Description": "badges that player has received",
+              "Array_data" : [
+                {
+                  "Name": "badge_id",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "badges id"
+                },
+                {
+                  "Name": "image",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "url to the badge image"
+                },
+                {
+                  "Name": "name",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "badges name"
+                },
+                {
+                  "Name": "description",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "description of badge"
+                },
+                {
+                  "Name": "sort_order",
+                  "Required": "Y",
+                  "Type": "integer",
+                  "Description": "sort order"
+                },
+                {
+                  "Name": "hint",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "hint"
+                },
+                {
+                  "Name": "tags",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "tags"
+                },
+                {
+                  "Name": "sponsor",
+                  "Required": "Y",
+                  "Type": "boolean",
+                  "Description": "sponsor"
+                }
+              ]
+            }
+          ]
         },
         {
           "MethodName": "Badges Info",
@@ -3468,64 +3078,64 @@
               "Description": "Specific tag(s) to find (e.g. foo,bar)"
             }
           ],
-		  "response": [
-			{
-			  "Name": "badges",
-			  "Required": "Y",
-			  "Type": "array_list",
-			  "Description": "badges that player has received",
-			  "Array_data" : [
-				{
-				  "Name": "badge_id",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "badges id"
-				},
-				{
-				  "Name": "image",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "url to the badge image"
-				},
-				{
-				  "Name": "name",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "badges name"
-				},
-				{
-				  "Name": "description",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "description of badge"
-				},
-				{
-				  "Name": "sort_order",
-				  "Required": "Y",
-				  "Type": "integer",
-				  "Description": "sort order"
-				},
-				{
-				  "Name": "hint",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "hint"
-				},
-				{
-				  "Name": "tags",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "tags"
-				},
-				{
-				  "Name": "sponsor",
-				  "Required": "Y",
-				  "Type": "boolean",
-				  "Description": "sponsor"
-				}
-			  ]
-			}
-		  ]
+          "response": [
+            {
+              "Name": "badges",
+              "Required": "Y",
+              "Type": "array_list",
+              "Description": "badges that player has received",
+              "Array_data" : [
+                {
+                  "Name": "badge_id",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "badges id"
+                },
+                {
+                  "Name": "image",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "url to the badge image"
+                },
+                {
+                  "Name": "name",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "badges name"
+                },
+                {
+                  "Name": "description",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "description of badge"
+                },
+                {
+                  "Name": "sort_order",
+                  "Required": "Y",
+                  "Type": "integer",
+                  "Description": "sort order"
+                },
+                {
+                  "Name": "hint",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "hint"
+                },
+                {
+                  "Name": "tags",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "tags"
+                },
+                {
+                  "Name": "sponsor",
+                  "Required": "Y",
+                  "Type": "boolean",
+                  "Description": "sponsor"
+                }
+              ]
+            }
+          ]
         },
         {
           "MethodName": "Badge Info",
@@ -3533,7 +3143,7 @@
           "HTTPMethod": "GET",
           "URI": "Badge/:id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -3543,64 +3153,64 @@
               "Description": "badge id to query"
             }
           ],
-		  "response": [
-			{
-			  "Name": "badge",
-			  "Required": "Y",
-			  "Type": "array",
-			  "Description": "badges that player has received",
-			  "Array_data" : [
-				{
-				  "Name": "badge_id",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "badges id"
-				},
-				{
-				  "Name": "image",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "url to the badge image"
-				},
-				{
-				  "Name": "name",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "badges name"
-				},
-				{
-				  "Name": "description",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "description of badge"
-				},
-				{
-				  "Name": "sort_order",
-				  "Required": "Y",
-				  "Type": "integer",
-				  "Description": "sort order"
-				},
-				{
-				  "Name": "hint",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "hint"
-				},
-				{
-				  "Name": "tags",
-				  "Required": "Y",
-				  "Type": "string",
-				  "Description": "tags"
-				},
-				{
-				  "Name": "sponsor",
-				  "Required": "Y",
-				  "Type": "boolean",
-				  "Description": "sponsor"
-				}
-			  ]
-			}
-		  ]
+          "response": [
+            {
+              "Name": "badge",
+              "Required": "Y",
+              "Type": "array",
+              "Description": "badges that player has received",
+              "Array_data" : [
+                {
+                  "Name": "badge_id",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "badges id"
+                },
+                {
+                  "Name": "image",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "url to the badge image"
+                },
+                {
+                  "Name": "name",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "badges name"
+                },
+                {
+                  "Name": "description",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "description of badge"
+                },
+                {
+                  "Name": "sort_order",
+                  "Required": "Y",
+                  "Type": "integer",
+                  "Description": "sort order"
+                },
+                {
+                  "Name": "hint",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "hint"
+                },
+                {
+                  "Name": "tags",
+                  "Required": "Y",
+                  "Type": "string",
+                  "Description": "tags"
+                },
+                {
+                  "Name": "sponsor",
+                  "Required": "Y",
+                  "Type": "boolean",
+                  "Description": "sponsor"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -3930,7 +3540,7 @@
           "HTTPMethod": "GET",
           "URI": "Goods/sponsor",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": []
         },
         {
@@ -3939,7 +3549,7 @@
           "HTTPMethod": "GET",
           "URI": "Goods/sponsor/:id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -3956,7 +3566,7 @@
           "HTTPMethod": "GET",
           "URI": "Redeem/sponsorGroup",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -3987,7 +3597,7 @@
           "HTTPMethod": "GET",
           "URI": "Goods/couponVerify",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "goods_id",
@@ -4018,7 +3628,7 @@
           "HTTPMethod": "POST",
           "URI": "Goods/couponVerify",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4080,7 +3690,7 @@
           "HTTPMethod": "GET",
           "URI": "Merchant/availableBranchGoodsGroup",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "goods_group",
@@ -4103,7 +3713,7 @@
           "HTTPMethod": "GET",
           "URI": "Engine/rules",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "action",
@@ -4127,7 +3737,7 @@
           "HTTPMethod": "GET",
           "URI": "Engine/rule/:id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -4151,7 +3761,7 @@
           "HTTPMethod": "POST",
           "URI": "Engine/rule",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4339,7 +3949,7 @@
           "HTTPMethod": "GET",
           "URI": "Quest",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "tags",
@@ -4373,7 +3983,7 @@
           "HTTPMethod": "GET",
           "URI": "Quest/:id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -4390,7 +4000,7 @@
           "HTTPMethod": "GET",
           "URI": "Quest/:id/mission/:mission_id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -4414,7 +4024,7 @@
           "HTTPMethod": "GET",
           "URI": "Quest/available",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -4431,7 +4041,7 @@
           "HTTPMethod": "GET",
           "URI": "Quest/:id/available",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -4455,7 +4065,7 @@
           "HTTPMethod": "POST",
           "URI": "Quest/:id/join",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4486,7 +4096,7 @@
           "HTTPMethod": "POST",
           "URI": "Quest/joinAll",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4510,7 +4120,7 @@
           "HTTPMethod": "POST",
           "URI": "Quest/:id/cancel",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4541,7 +4151,7 @@
           "HTTPMethod": "POST",
           "URI": "Quest/reset",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4572,7 +4182,7 @@
           "HTTPMethod": "GET",
           "URI": "Quest/leader",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "quest_id",
@@ -4635,7 +4245,7 @@
           "HTTPMethod": "GET",
           "URI": "Quiz/list",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -4666,7 +4276,7 @@
           "HTTPMethod": "GET",
           "URI": "Quiz/:id/detail",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -4690,7 +4300,7 @@
           "HTTPMethod": "GET",
           "URI": "Quiz/random/",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -4721,7 +4331,7 @@
           "HTTPMethod": "GET",
           "URI": "Quiz/player/:player_id/:limit",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -4762,7 +4372,7 @@
           "HTTPMethod": "GET",
           "URI": "Quiz/player/:player_id/pending/:limit",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -4803,7 +4413,7 @@
           "HTTPMethod": "GET",
           "URI": "Quiz/:id/question",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -4845,7 +4455,7 @@
           "HTTPMethod": "POST",
           "URI": "Quiz/:id/question",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4894,7 +4504,7 @@
           "HTTPMethod": "POST",
           "URI": "Quiz/:id/answer",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -4939,7 +4549,7 @@
           "HTTPMethod": "GET",
           "URI": "Quiz/:id/rank/:limit",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -4980,7 +4590,7 @@
           "HTTPMethod": "GET",
           "URI": "Quiz/:id/stat",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -4997,7 +4607,7 @@
           "HTTPMethod": "POST",
           "URI": "Quiz/reset",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -5035,7 +4645,7 @@
           "HTTPMethod": "POST",
           "URI": "Redeem/goods",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -5073,7 +4683,7 @@
           "HTTPMethod": "POST",
           "URI": "Redeem/goodsGroup",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -5111,7 +4721,7 @@
           "HTTPMethod": "POST",
           "URI": "Redeem/goodsGroup/verify",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -5149,7 +4759,7 @@
           "HTTPMethod": "POST",
           "URI": "Redeem/sponsor",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -5187,7 +4797,7 @@
           "HTTPMethod": "POST",
           "URI": "Redeem/sponsorGroup",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -5232,7 +4842,7 @@
           "HTTPMethod": "POST",
           "URI": "Email/send",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -5330,7 +4940,7 @@
           "HTTPMethod": "POST",
           "URI": "Email/goods",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -5454,7 +5064,7 @@
           "HTTPMethod": "GET",
           "URI": "Email/recent",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -5478,7 +5088,7 @@
           "HTTPMethod": "GET",
           "URI": "Email/template",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
           ]
         },
@@ -5488,7 +5098,7 @@
           "HTTPMethod": "GET",
           "URI": "Email/template/:template_id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "template_id",
@@ -5543,7 +5153,7 @@
           "HTTPMethod": "POST",
           "URI": "Sms/send",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -5581,7 +5191,7 @@
           "HTTPMethod": "POST",
           "URI": "Sms/goods",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -5626,7 +5236,7 @@
           "HTTPMethod": "GET",
           "URI": "Sms/recent",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -5650,7 +5260,7 @@
           "HTTPMethod": "GET",
           "URI": "Sms/template",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
           ]
         },
@@ -5660,7 +5270,7 @@
           "HTTPMethod": "GET",
           "URI": "Sms/template/:template_id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "template_id",
@@ -5684,7 +5294,7 @@
           "HTTPMethod": "POST",
           "URI": "Push/deviceRegistration",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -5740,7 +5350,7 @@
           "HTTPMethod": "POST",
           "URI": "Push/send",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -5778,7 +5388,7 @@
           "HTTPMethod": "POST",
           "URI": "Push/goods",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -5823,7 +5433,7 @@
           "HTTPMethod": "GET",
           "URI": "Push/recent",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -5847,7 +5457,7 @@
           "HTTPMethod": "GET",
           "URI": "Push/template",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
           ]
         },
@@ -5857,7 +5467,7 @@
           "HTTPMethod": "GET",
           "URI": "Push/template/:template_id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "template_id",
@@ -5888,7 +5498,7 @@
           "HTTPMethod": "GET",
           "URI": "Service/recentActivities",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -5933,7 +5543,7 @@
           "HTTPMethod": "GET",
           "URI": "Service/detailActivityFeed/:activity_id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "activity_id",
@@ -5950,7 +5560,7 @@
           "HTTPMethod": "POST",
           "URI": "Service/likeActivityFeed/:activity_id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -5981,7 +5591,7 @@
           "HTTPMethod": "POST",
           "URI": "Service/commentActivityFeed/:activity_id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -6026,7 +5636,7 @@
           "HTTPMethod": "GET",
           "URI": "Service/recent_point",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "point_name",
@@ -6074,7 +5684,7 @@
           "HTTPMethod": "POST",
           "URI": "Service/reset_point",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -6105,7 +5715,7 @@
           "HTTPMethod": "get",
           "URI": "StoreOrg/organizes",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -6157,7 +5767,7 @@
           "HTTPMethod": "get",
           "URI": "StoreOrg/nodes",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -6223,7 +5833,7 @@
           "HTTPMethod": "POST",
           "URI": "StoreOrg/nodes/:node_id/addPlayer/:player_id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -6292,7 +5902,7 @@
           "HTTPMethod": "POST",
           "URI": "StoreOrg/nodes/:node_id/removePlayer/:player_id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -6323,7 +5933,7 @@
           "HTTPMethod": "POST",
           "URI": "StoreOrg/nodes/:node_id/setPlayerRole/:player_id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -6361,7 +5971,7 @@
           "HTTPMethod": "POST",
           "URI": "StoreOrg/nodes/:node_id/unsetPlayerRole/:player_id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -6399,7 +6009,7 @@
           "HTTPMethod": "GET",
           "URI": "StoreOrg/players/:node_id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
@@ -6423,7 +6033,7 @@
           "HTTPMethod": "GET",
           "URI": "StoreOrg/rankPeer/:node_id/:rank_by",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
@@ -6513,7 +6123,7 @@
           "HTTPMethod": "GET",
           "URI": "StoreOrg/rankPeerByAccAction/:node_id/:action/:parameter",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
@@ -6586,7 +6196,7 @@
           "HTTPMethod": "GET",
           "URI": "StoreOrg/nodes/:node_id/getChildNode/:layer",
           "RequiresOAuth": "Y",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
@@ -6610,7 +6220,7 @@
           "HTTPMethod": "GET",
           "URI": "StoreOrg/nodes/:node_id/saleReport",
           "RequiresOAuth": "Y",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
@@ -6655,7 +6265,7 @@
           "HTTPMethod": "GET",
           "URI": "StoreOrg/nodes/:node_id/saleHistory/:count",
           "RequiresOAuth": "Y",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
@@ -6707,7 +6317,7 @@
           "HTTPMethod": "GET",
           "URI": "StoreOrg/nodes/:node_id/saleBoard/:layer",
           "RequiresOAuth": "Y",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
@@ -6773,7 +6383,7 @@
           "HTTPMethod": "POST",
           "URI": "StoreOrg/nodes/:node_id/addContent/:content_node_id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -6804,7 +6414,7 @@
           "HTTPMethod": "POST",
           "URI": "StoreOrg/nodes/:node_id/removeContent/:content_node_id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -6835,7 +6445,7 @@
           "HTTPMethod": "POST",
           "URI": "StoreOrg/nodes/:node_id/setContentRole/:content_node_id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -6873,7 +6483,7 @@
           "HTTPMethod": "POST",
           "URI": "StoreOrg/nodes/:node_id/unsetContentRole/:content_node_id",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -6918,7 +6528,7 @@
           "HTTPMethod": "GET",
           "URI": "Content",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "node_id",
@@ -7033,7 +6643,7 @@
           "HTTPMethod": "GET",
           "URI": "Content/count",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "title",
@@ -7106,7 +6716,7 @@
           "HTTPMethod": "POST",
           "URI": "Content/addContent",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -7221,7 +6831,7 @@
           "HTTPMethod": "POST",
           "URI": "Content/:node_id/update",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -7329,7 +6939,7 @@
           "HTTPMethod": "POST",
           "URI": "Content/:node_id/delete",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -7353,7 +6963,7 @@
           "HTTPMethod": "GET",
           "URI": "Content/category",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -7405,7 +7015,7 @@
           "HTTPMethod": "POST",
           "URI": "Content/category/create",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -7429,7 +7039,7 @@
           "HTTPMethod": "POST",
           "URI": "Content/category/update",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -7460,7 +7070,7 @@
           "HTTPMethod": "POST",
           "URI": "Content/category/delete",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -7484,7 +7094,7 @@
           "HTTPMethod": "POST",
           "URI": "Content/:node_id/player/:player_id/like",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -7529,7 +7139,7 @@
           "HTTPMethod": "POST",
           "URI": "Content/:node_id/player/:player_id/dislike",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -7574,7 +7184,7 @@
           "HTTPMethod": "POST",
           "URI": "Content/:node_id/player/:player_id/feedback",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -7633,7 +7243,7 @@
           "HTTPMethod": "GET",
           "URI": "Link/",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "link",
@@ -7650,7 +7260,7 @@
           "HTTPMethod": "POST",
           "URI": "Link/generate",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -7674,7 +7284,7 @@
           "HTTPMethod": "GET",
           "URI": "File/list",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "id",
@@ -7712,7 +7322,7 @@
           "HTTPMethod": "POST",
           "URI": "File/delete",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -8008,7 +7618,7 @@
           "HTTPMethod": "GET",
           "URI": "Fitbit",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -8025,7 +7635,7 @@
           "HTTPMethod": "POST",
           "URI": "Fitbit/add",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -8063,7 +7673,7 @@
           "HTTPMethod": "POST",
           "URI": "Fitbit/:player_id/update",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -8101,7 +7711,7 @@
           "HTTPMethod": "POST",
           "URI": "Fitbit/:player_id/delete",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -8125,7 +7735,7 @@
           "HTTPMethod": "GET",
           "URI": "Fitbit/:player_id/data",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -8180,7 +7790,7 @@
           "HTTPMethod": "GET",
           "URI": "Trip",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -8216,7 +7826,7 @@
           "HTTPMethod": "POST",
           "URI": "Trip/startTrip",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -8240,7 +7850,7 @@
           "HTTPMethod": "POST",
           "URI": "Trip/finishTrip",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -8275,7 +7885,7 @@
           "HTTPMethod": "GET",
           "URI": "Trip/getTripLog",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "player_id",
@@ -8299,7 +7909,7 @@
           "HTTPMethod": "POST",
           "URI": "Trip/addTripLog",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
@@ -8386,7 +7996,7 @@
           "HTTPMethod": "GET",
           "URI": "Game",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "game_name",
@@ -8459,7 +8069,7 @@
           "HTTPMethod": "GET",
           "URI": "Game/playerItemStatus",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "game_name",
@@ -8498,7 +8108,7 @@
           "HTTPMethod": "POST",
           "URI": "Game/setCurrentStage",
           "RequiresOAuth": "N",
-		  "Public": "Y",
+          "Public": "Y",
           "parameters": [
             {
               "Name": "token",
