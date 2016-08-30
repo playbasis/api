@@ -25,4 +25,3 @@ class AuthTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('site_name', $res);
     }
 }
-?>

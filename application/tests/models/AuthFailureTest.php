@@ -20,4 +20,3 @@ class AuthFailureTest extends PHPUnit_Framework_TestCase
 
     }
 }
-?>
