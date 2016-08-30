@@ -227,14 +227,14 @@
             "player": {
               "image":            { "-type": "string"},
               "username":         { "-type": "string"},
-              "exp":              { "-type": "string"},
-              "level":            { "-type": "string"},
+              "exp":              { "-type": "integer"},
+              "level":            { "-type": "integer"},
               "first_name":       { "-type": "string"},
               "last_name":        { "-type": "string"},
-              "gender":           { "-type": "string"},
+              "gender":           { "-type": "integer"},
               "birth_date":       { "-type": "string"},
               "registered":       { "-type": "string"},
-              "percent_of_level": { "-type": "string"},
+              "percent_of_level": { "-type": "integer"},
               "level_title":      { "-type": "string"},
               "level_image":      { "-type": "string"},
               "badges": [
@@ -243,7 +243,7 @@
                   "image":        { "-type": "string"},
                   "name":         { "-type": "string"},
                   "description":  { "-type": "string"},
-                  "amount":       { "-type": "string"},
+                  "amount":       { "-type": "integer"},
                   "hint":         { "-type": "string"},
                   "tags":         { "-type": "string"}
                 }
@@ -255,14 +255,14 @@
                   "name":         { "-type": "string"},
                   "description":  { "-type": "string"},
                   "code":         { "-type": "string"},
-                  "amount":       { "-type": "string"}
+                  "amount":       { "-type": "integer"}
                 }
               ],
               "points": [
                 {
                   "reward_id":    { "-type": "string"},
                   "reward_name":  { "-type": "string"},
-                  "value":        { "-type": "string"}
+                  "value":        { "-type": "integer"}
                 }
               ],
               "last_login":       { "-type": "string"},
