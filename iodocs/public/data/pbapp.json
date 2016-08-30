@@ -2193,47 +2193,35 @@
               "Description": "weekly, monthly (default is all-time)"
             }
           ],
-          "response_dynamic": "Y",
-          "response": [
-            {
-              "Name": "point",
-              "Required": "Y",
-              "Type": "array_list",
-              "Description": "ranking by point",
-              "Array_data" : [
-                {
-                  "Name": "player_id",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "player id as used in client's website"
-                },
-                {
-                  "Name": "first_name",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "first name"
-                },
-                {
-                  "Name": "last_name",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "last name"
-                },
-                {
-                  "Name": "image",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "url to the player profile image"
-                },
-                {
-                  "Name": "point",
-                  "Required": "Y",
-                  "Type": "integer",
-                  "Description": "amount of point"
-                }
-              ]
-            },
-            {
+          "response": {
+            "point": [
+              {
+                "player_id":  { "-type": "string"  , "-optional": "true"},
+                "first_name": { "-type": "string"  , "-optional": "true"},
+                "last_name":  { "-type": "string"  , "-optional": "true"},
+                "image":      { "-type": "string"  , "-optional": "true"},
+                "point":      { "-type": "integer" , "-optional": "true"}
+              }
+            ],
+            "exp": [
+              {
+                "player_id":  { "-type": "string"  , "-optional": "true"},
+                "first_name": { "-type": "string"  , "-optional": "true"},
+                "last_name":  { "-type": "string"  , "-optional": "true"},
+                "image":      { "-type": "string"  , "-optional": "true"},
+                "exp":        { "-type": "integer" , "-optional": "true"}
+              }
+            ],
+            "[a-zA-Z0-9-%_:\.]+": [
+              {
+                "player_id":          { "-type": "string" , "-optional": "true"},
+                "first_name":         { "-type": "string" , "-optional": "true"},
+                "last_name":          { "-type": "string" , "-optional": "true"},
+                "image":              { "-type": "string" , "-optional": "true"},
+                "[a-zA-Z0-9-%_:\.]+": { "-type": "any"    , "-optional": "true"}
+              }
+            ]
+          }
               "Name": "exp",
               "Required": "Y",
               "Type": "array_list",
@@ -2270,8 +2258,7 @@
                   "Description": "amount of exp"
                 }
               ]
-            }
-          ]
+         
         },
         {
           "MethodName": "DEPRECATED - Ranks",
@@ -3532,7 +3519,8 @@
               "Type": "integer",
               "Description": "amount of the goods to redeem"
             }
-          ]
+          ],
+          "response": {"-type": "integer"}
         },
         {
           "MethodName": "Sponsored Goods List Info",
