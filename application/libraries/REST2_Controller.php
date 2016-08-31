@@ -353,9 +353,9 @@ abstract class REST2_Controller extends REST_Controller
                             } else {
                                 $response_result[$match_key] = $pointer_response[$match_key];
                             }
-                        } elseif (isset($pointer_response[$match_key]) && !isset($response['-type'])) {
+                        } elseif (array_key_exists($match_key,$pointer_response) && !isset($response['-type'])) {
                             $response_result[$match_key] = $this->check_response($pointer_data, $pointer_response[$match_key], $response);
-                        } elseif (isset($pointer_response[$match_key]) && isset($response['-type'])) {
+                        } elseif (array_key_exists($match_key,$pointer_response) && isset($response['-type'])) {
                             $response_result[$match_key] = $pointer_response[$match_key];
                         }
                     }
