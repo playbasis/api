@@ -353,9 +353,9 @@ abstract class REST2_Controller extends REST_Controller
                             } else {
                                 $response_result[$match_key] = $pointer_response[$match_key];
                             }
-                        } elseif (array_key_exists($match_key,$pointer_response) && !isset($response['-type'])) {
+                        } elseif (!isset($response['-type'])) {
                             $response_result[$match_key] = $this->check_response($pointer_data, $pointer_response[$match_key], $response);
-                        } elseif (array_key_exists($match_key,$pointer_response) && isset($response['-type'])) {
+                        } else {
                             $response_result[$match_key] = $pointer_response[$match_key];
                         }
                     }
@@ -397,16 +397,7 @@ abstract class REST2_Controller extends REST_Controller
             is_numeric($http_code) OR $http_code = 200;
 
             if($this->method_data && isset($this->method_data["response"]) && $data['success'] == true){
-                if (isset($this->method_data["response"][0])) {
-                    foreach ($data["response"] as &$list) {
-                        if (array_key_exists("message", $list)) {
-                            continue;
-                        }
-                        $this->check_response($data, $list, $this->method_data["response"]);
-                    }
-                } else {
-                    $this->check_response($data, $data["response"], $this->method_data["response"]);
-                }
+                $this->check_response($data, $data["response"], $this->method_data["response"]);
             }
             
             $output = $this->format_data($data, $this->response->format);
