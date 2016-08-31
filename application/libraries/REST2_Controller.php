@@ -334,7 +334,7 @@ abstract class REST2_Controller extends REST_Controller
                 foreach ($match as $match_key) {
                     unset($pointer_response_temp[$match_key]);
                     if (array_key_exists($match_key, $pointer_response)) {
-                        if (!is_null($pointer_response[$match_key]) && isset($response["-type"]) && !$this->is_type_match(gettype($pointer_response[$match_key]), $response["-type"])) {
+                        if (!is_null($pointer_response[$match_key]) && isset($response["-type"]) && !$this->is_type_match(gettype($pointer_response[$match_key]), $response["-type"]) && $response["-type"] != "any") {
                             $pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid");
                             $is_error = true;
                             break;
@@ -342,7 +342,7 @@ abstract class REST2_Controller extends REST_Controller
 
                         if (is_array($pointer_response[$match_key]) && isset($pointer_response[$match_key][0])) {
                             if (is_array($pointer_response[$match_key])) {
-                                $response_result[$key] = array();
+                                $response_result[$match_key] = array();
                                 foreach ($pointer_response[$match_key] as $index => &$list) {
                                     if (array_key_exists("message", $list)) {
                                         array_push($response_result[$match_key], $list);
