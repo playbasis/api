@@ -323,10 +323,10 @@ abstract class REST2_Controller extends REST_Controller
                 return;
             }
         }
-
         if(is_array($check_response)) foreach($check_response as $key => &$response){
             if(!(array_key_exists('-optional',$response) && $response['-optional'] == "true") &&
-              (!array_key_exists($key,$pointer_response) && ($key != "[a-zA-Z0-9-%_:\.]+"))){
+              (!array_key_exists($key,$pointer_response) && ($key != "[a-zA-Z0-9-%_:\.]+")) &&
+              $response['-type'] != "continue"){
                 $pointer_data = $this->error->setError('INTERNAL_ERROR', "Response result(s) missing");
                 $is_error = true;
                 break;
@@ -342,16 +342,20 @@ abstract class REST2_Controller extends REST_Controller
                         }
 
                         if (is_array($pointer_response[$match_key]) && isset($pointer_response[$match_key][0])) {
-                            if (is_array($pointer_response[$match_key])) {
-                                foreach ($pointer_response[$match_key] as $index => &$list) {
-                                    if (array_key_exists("message", $list)) {
-                                        array_push($response_result[$match_key], $list);
-                                        continue;
+                            foreach ($pointer_response[$match_key] as $index => &$list) {
+                                $continue = false;
+                                foreach (array_keys($list) as $l_key){
+                                    if (array_key_exists($l_key, $response[0]) && array_key_exists('-type', $response[0][$l_key]) && $response[0][$l_key]['-type'] == "continue"){
+                                        $continue = true;
+                                        break;
                                     }
-                                    $response_result[$match_key][$index] = $this->check_response($pointer_data, $list, $response[0]);
                                 }
-                            } else {
-                                $response_result[$match_key] = $pointer_response[$match_key];
+                                if($continue){
+                                    $response_result[$match_key][$index] = $list;
+                                    continue;
+                                }
+                                
+                                $response_result[$match_key][$index] = $this->check_response($pointer_data, $list, $response[0]);
                             }
                         } elseif (!isset($response['-type'])) {
                             $response_result[$match_key] = $this->check_response($pointer_data, $pointer_response[$match_key], $response);
@@ -397,7 +401,16 @@ abstract class REST2_Controller extends REST_Controller
             is_numeric($http_code) OR $http_code = 200;
 
             if($this->method_data && isset($this->method_data["response"]) && $data['success'] == true){
-                $this->check_response($data, $data["response"], $this->method_data["response"]);
+                if (isset($this->method_data["response"][0])) {
+                    foreach ($data["response"] as &$list) {
+                        if (array_key_exists("message", $list)) {
+                            continue;
+                        }
+                        $this->check_response($data, $list, $this->method_data["response"][0]);
+                    }
+                } else {
+                    $this->check_response($data, $data["response"], $this->method_data["response"]);
+                }
             }
             
             $output = $this->format_data($data, $this->response->format);
