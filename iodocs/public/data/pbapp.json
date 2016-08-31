@@ -124,7 +124,7 @@
               "Description": "player id as used in client's website"
             }
           ],
-          "responses": {
+          "response": {
             "player": { 
               "image":        { "-type": "string"},
               "email":        { "-type": "string"},
@@ -166,9 +166,9 @@
               "Description": "player id as used in client's website separate with ',' example '1,2,3'"
             }
           ],
-          "responses": [
-            {
-              "player": {
+          "response": {
+            "player": [
+              {
                 "image":        { "-type": "string"},
                 "email":        { "-type": "string"},
                 "username":     { "-type": "string"},
@@ -182,10 +182,11 @@
                 "registered":   { "-type": "string"},
                 "last_login":   { "-type": "string"},
                 "last_logout":  { "-type": "string"},
-                "cl_player_id": { "-type": "string"}
+                "cl_player_id": { "-type": "string"},
+                "message":      { "-type": "continue"}
               }
-            }
-          ]
+            ]
+          }
         },
         {
           "MethodName": "Detailed Player Info (public data only)",
@@ -844,20 +845,10 @@
               "Description": "device token to verify with SMS verification process"
             }
           ],
-          "response": [
-            {
-              "Name": "cl_player_id",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "player id as used in client's website"
-            },
-            {
-              "Name": "session_id",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "session id"
-            }
-          ]
+          "response": {
+            "cl_player_id": { "-type": "string"},
+            "session_id":   { "-type": "string"}
+          }
         },
         {
           "MethodName": "Request OTP",
@@ -914,32 +905,12 @@
               ]
             }
           ],
-          "response": [
-            {
-              "Name": "to",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "phone number of player that receive the message"
-            },
-            {
-              "Name": "from",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "phone number that sent the message"
-            },
-            {
-              "Name": "message",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "message sent to player"
-            },
-            {
-              "Name": "processing_time",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "processing time"
-            }
-          ]
+          "response": {
+            "to":              { "-type": "string"},
+            "from":            { "-type": "string"},
+            "message":         { "-type": "string"},
+            "processing_time": { "-type": "string"}
+          }
         },
         {
           "MethodName": "Request OTP for setup phone",
@@ -1003,32 +974,12 @@
               ]
             }
           ],
-          "response": [
-            {
-              "Name": "to",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "phone number of player that receive the message"
-            },
-            {
-              "Name": "from",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "phone number that sent the message"
-            },
-            {
-              "Name": "message",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "message sent to player"
-            },
-            {
-              "Name": "processing_time",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "processing time"
-            }
-          ]
+          "response": {
+            "to":              { "-type": "string"},
+            "from":            { "-type": "string"},
+            "message":         { "-type": "string"},
+            "processing_time": { "-type": "string"}
+          }
         },
         {
           "MethodName": "Perform OTP verification",
@@ -1110,19 +1061,10 @@
               "Description": "player id as used in client's website"
             }
           ],
-          "response_list": "Y",
           "response": [
             {
-              "Name": "session_id",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "session id"
-            },
-            {
-              "Name": "date_expire",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "date/time that the session will be expire"
+              "session_id":  { "-type": "string"},
+              "date_expire": { "-type": "string"}
             }
           ]
         },
@@ -1142,68 +1084,18 @@
               "Description": "session id"
             }
           ],
-          "response": [
-            {
-              "Name": "cl_player_id",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "player id as used in client's website"
-            },
-            {
-              "Name": "image",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "url to the player profile image"
-            },
-            {
-              "Name": "username",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "username of the player"
-            },
-            {
-              "Name": "exp",
-              "Required": "Y",
-              "Type": "integer",
-              "Description": "exp of the player"
-            },
-            {
-              "Name": "level",
-              "Required": "Y",
-              "Type": "integer",
-              "Description": "level of the player"
-            },
-            {
-              "Name": "first_name",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "first name of the player"
-            },
-            {
-              "Name": "last_name",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "last name of the player"
-            },
-            {
-              "Name": "gender",
-              "Required": "Y",
-              "Type": "integer",
-              "Description": "1=Male, 2=Female"
-            },
-            {
-              "Name": "birth_date",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "date of birth in the format YYYY-MM-DD (ex.1982-09-29)"
-            },
-            {
-              "Name": "registered",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "registered date/time"
-            }
-          ]
+          "response": {
+            "cl_player_id": { "-type": "string"},
+            "image":        { "-type": "string"},
+            "username":     { "-type": "string"},
+            "exp":          { "-type": "integer"},
+            "level":        { "-type": "integer"},
+            "first_name":   { "-type": "string"},
+            "last_name":    { "-type": "string"},
+            "gender":       { "-type": "integer"},
+            "birth_date":   { "-type": "string"},
+            "registered":   { "-type": "string"}
+          }
         },
         {
           "MethodName": "Points",
@@ -1221,34 +1113,15 @@
               "Description": "player id as used in client's website"
             }
           ],
-          "response": [
-            {
-              "Name": "points",
-              "Required": "Y",
-              "Type": "array_list",
-              "Description": "points",
-              "Array_data" : [
-                {
-                  "Name": "reward_id",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "reward id"
-                },
-                {
-                  "Name": "reward_name",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "reward name"
-                },
-                {
-                  "Name": "value",
-                  "Required": "Y",
-                  "Type": "integer",
-                  "Description": "amount of reward(s) that player has received"
-                }
-              ]
-            }
-          ]
+          "response": {
+            "points": [
+              {
+                "reward_id":    { "-type": "string"},
+                "reward_name":  { "-type": "string"},
+                "value":        { "-type": "integer"}
+              }
+            ]
+          }
         },
         {
           "MethodName": "Point",
@@ -1273,34 +1146,15 @@
               "Description": "name of the point-based reward to query"
             }
           ],
-          "response": [
-            {
-              "Name": "point",
-              "Required": "Y",
-              "Type": "array_list",
-              "Description": "points",
-              "Array_data" : [
-                {
-                  "Name": "reward_id",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "reward id"
-                },
-                {
-                  "Name": "reward_name",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "reward name"
-                },
-                {
-                  "Name": "value",
-                  "Required": "N",
-                  "Type": "integer",
-                  "Description": "amount of reward(s) that player has received"
-                }
-              ]
-            }
-          ]
+          "response": {
+            "point": [
+              {
+                "reward_id":    { "-type": "string"},
+                "reward_name":  { "-type": "string"},
+                "value":        { "-type": "integer"}
+              }
+            ]
+          }
         },
         {
           "MethodName": "Point History",
@@ -1346,70 +1200,23 @@
               "Description": "Specify sorted direction [desc, *asc*]"
             }
           ],
-          "response": [
-            {
-              "Name": "points",
-              "Required": "Y",
-              "Type": "array_list",
-              "Description": "player info",
-              "Array_data" : [
-                {
-                  "Name": "message",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "message"
+          "response": {
+            "points": [
+              {
+                "message":                  { "-type": "string"},
+                "reward_id":                { "-type": "string"},
+                "reward_name":              { "-type": "string"},
+                "value":                    { "-type": "integer"},
+                "date_added":               { "-type": "string"},
+                "action_name":              { "-type": "string"},
+                "action_parameters": {  
+                    "[a-zA-Z0-9-%_:\\.]+":  { "-type": "any"}
                 },
-                {
-                  "Name": "reward_id",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "reward id"
-                },
-                {
-                  "Name": "reward_name",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "reward name"
-                },
-                {
-                  "Name": "value",
-                  "Required": "Y",
-                  "Type": "integer",
-                  "Description": "amount of reward(s) that player has received"
-                },
-                {
-                  "Name": "date_added",
-                  "Required": "N",
-                  "Type": "string",
-                  "Description": "date/time that player has received the reward"
-                },
-                {
-                  "Name": "action_name",
-                  "Required": "N",
-                  "Type": "string",
-                  "Description": "action name"
-                },
-                {
-                  "Name": "action_parameters",
-                  "Required": "N",
-                  "Type": "array_dynamic",
-                  "Description": "parameter sent with the action"
-                },
-                {
-                  "Name": "action_time",
-                  "Required": "N",
-                  "Type": "string",
-                  "Description": "date/time that player has performed the action"
-                },
-                {
-                  "Name": "string_filter",
-                  "Required": "N",
-                  "Type": "string",
-                  "Description": "filter string"
-                }
-              ]
-            }
-          ]
+                "action_time":              { "-type": "string"},
+                "string_filter":            { "-type": "string"}
+              }
+            ]
+          }
         },
         {
           "MethodName": "Action Time",
@@ -1434,34 +1241,13 @@
               "Description": "name of the action to query"
             }
           ],
-          "response": [
-            {
-              "Name": "action",
-              "Required": "Y",
-              "Type": "array",
-              "Description": "action detail",
-              "Array_data" : [
-                {
-                  "Name": "action_id",
-                  "Required": "N",
-                  "Type": "string",
-                  "Description": "action id"
-                },
-                {
-                  "Name": "action_name",
-                  "Required": "N",
-                  "Type": "string",
-                  "Description": "action name"
-                },
-                {
-                  "Name": "time",
-                  "Required": "N",
-                  "Type": "string",
-                  "Description": "latest date/time that player has performd the action"
-                }
-              ]
+          "response": {
+            "action": {
+              "action_id":    { "-type": "string", "-optional": "true"},
+              "action_name":  { "-type": "string", "-optional": "true"},
+              "time":         { "-type": "string", "-optional": "true"}
             }
-          ]
+          }
         },
         {
           "MethodName": "Last Action",
@@ -1479,34 +1265,13 @@
               "Description": "player id as used in client's website"
             }
           ],
-          "response": [
-            {
-              "Name": "action",
-              "Required": "Y",
-              "Type": "array",
-              "Description": "action detail",
-              "Array_data" : [
-                {
-                  "Name": "action_id",
-                  "Required": "N",
-                  "Type": "string",
-                  "Description": "action id"
-                },
-                {
-                  "Name": "action_name",
-                  "Required": "N",
-                  "Type": "string",
-                  "Description": "action name"
-                },
-                {
-                  "Name": "time",
-                  "Required": "N",
-                  "Type": "string",
-                  "Description": "latest date/time that player has performd the action"
-                }
-              ]
+          "response": {
+            "action": {
+              "action_id":    { "-type": "string", "-optional": "true"},
+              "action_name":  { "-type": "string", "-optional": "true"},
+              "time":         { "-type": "string", "-optional": "true"}
             }
-          ]
+          }
         },
         {
           "MethodName": "Action Count",
@@ -1531,34 +1296,13 @@
               "Description": "name of the action to query"
             }
           ],
-          "response": [
-            {
-              "Name": "action",
-              "Required": "Y",
-              "Type": "array",
-              "Description": "action detail",
-              "Array_data" : [
-                {
-                  "Name": "action_id",
-                  "Required": "N",
-                  "Type": "string",
-                  "Description": "action id"
-                },
-                {
-                  "Name": "action_name",
-                  "Required": "N",
-                  "Type": "string",
-                  "Description": "action name"
-                },
-                {
-                  "Name": "count",
-                  "Required": "N",
-                  "Type": "integer",
-                  "Description": "number of times that player has performed the action"
-                }
-              ]
+          "response": {
+            "action": {
+              "action_id":    { "-type": "string",  "-optional": "true"},
+              "action_name":  { "-type": "string",  "-optional": "true"},
+              "count":        { "-type": "integer", "-optional": "true"}
             }
-          ]
+          }
         },
         {
           "MethodName": "Level",
@@ -1593,8 +1337,7 @@
           "Public": "Y",
           "parameters": [
           ],
-          "response_list": "Y",
-          "responses": [
+          "response": [
             {
               "level_title": { "-type": "string"},
               "level":       { "-type": "integer"},
@@ -1627,49 +1370,15 @@
               "Description": "Specific tag(s) to find (e.g. foo,bar)"
             }
           ],
-          "response_list": "Y",
           "response": [
             {
-              "Name": "badge_id",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "badges id"
-            },
-            {
-              "Name": "image",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "url to the badge image"
-            },
-            {
-              "Name": "name",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "badges name"
-            },
-            {
-              "Name": "description",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "description of badge"
-            },
-            {
-              "Name": "amount",
-              "Required": "Y",
-              "Type": "integer",
-              "Description": "amount of badge(s) that play has received"
-            },
-            {
-              "Name": "hint",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "hint"
-            },
-            {
-              "Name": "tags",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "tags"
+              "badge_id":     { "-type": "string"},
+              "image":        { "-type": "string"},
+              "name":         { "-type": "string"},
+              "description":  { "-type": "string"},
+              "amount":       { "-type": "integer"},
+              "hint":         { "-type": "string"},
+              "tags":         { "-type": "string"}
             }
           ]
         },
@@ -1696,61 +1405,17 @@
               "Description": "Specific tag(s) to find (e.g. foo,bar)"
             }
           ],
-          "response_list": "Y",
           "response": [
             {
-              "Name": "badge_id",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "badges id"
-            },
-            {
-              "Name": "image",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "url to the badge image"
-            },
-            {
-              "Name": "sort_order",
-              "Required": "Y",
-              "Type": "integer",
-              "Description": "sort order"
-            },
-            {
-              "Name": "name",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "badges name"
-            },
-            {
-              "Name": "description",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "description of badge"
-            },
-            {
-              "Name": "amount",
-              "Required": "Y",
-              "Type": "integer",
-              "Description": "amount of badge(s) that play has received"
-            },
-            {
-              "Name": "hint",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "hint"
-            },
-            {
-              "Name": "tags",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "tags"
-            },
-            {
-              "Name": "sponsor",
-              "Required": "Y",
-              "Type": "boolean",
-              "Description": "sponsor"
+              "badge_id":     { "-type": "string"},
+              "image":        { "-type": "string"},
+              "sort_order":   { "-type": "integer"},
+              "name":         { "-type": "string"},
+              "description":  { "-type": "string"},
+              "hint":         { "-type": "string"},
+              "sponsor":      { "-type": "boolean"},
+              "tags":         { "-type": "string"},
+              "amount":       { "-type": "integer"}
             }
           ]
         },
@@ -1784,37 +1449,13 @@
               "Description": "weekly, monthly (default is all-time)"
             }
           ],
-          "response_list": "Y",
           "response": [
             {
-              "Name": "player_id",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "player id as used in client's website"
-            },
-            {
-              "Name": "first_name",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "first name"
-            },
-            {
-              "Name": "last_name",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "last name"
-            },
-            {
-              "Name": "image",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "url to the player profile image"
-            },
-            {
-              "Name": "rank_by",
-              "Required": "INPUT_URI",
-              "Type": "integer",
-              "Description": "name of point-based reward to rank players by"
+              "player_id":            { "-type": "string"},
+              "first_name":           { "-type": "string"},
+              "last_name":            { "-type": "string"},
+              "image":                { "-type": "string"},
+              "[a-zA-Z0-9-%_:\\.]+":  { "-type": "integer"}
             }
           ]
         },
@@ -1955,58 +1596,19 @@
               "Description": "player id as used in client's website"
             }
           ],
-          "response": [
-            {
-              "Name": "goods",
-              "Required": "Y",
-              "Type": "array_list",
-              "Description": "goods that player has received",
-              "Array_data" : [
-                {
-                  "Name": "goods_id",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "goods id"
-                },
-                {
-                  "Name": "image",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "url to the goods image"
-                },
-                {
-                  "Name": "name",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "goods name"
-                },
-                {
-                  "Name": "description",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "description of goods"
-                },
-                {
-                  "Name": "code",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "goods code"
-                },
-                {
-                  "Name": "amount",
-                  "Required": "Y",
-                  "Type": "integer",
-                  "Description": "amount of goods(s) that play has received"
-                },
-                {
-                  "Name": "group",
-                  "Required": "N",
-                  "Type": "string",
-                  "Description": "group of goods"
-                }
-              ]
-            }
-          ]
+          "response": {
+            "goods": [
+              {
+                "goods_id":     { "-type": "string"},
+                "image":        { "-type": "string"},
+                "name":         { "-type": "string"},
+                "description":  { "-type": "string"},
+                "code":         { "-type": "string"},
+                "group":        { "-type": "string" , "-optional": "true"},
+                "amount":       { "-type": "integer"}
+              }
+            ]
+          }
         },
         {
           "MethodName": "Quest of Player",
@@ -2085,58 +1687,6 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ],
-          "response": [
-            {
-              "Name": "quests",
-              "Required": "Y",
-              "Type": "array",
-              "Description": "player info",
-              "Array_data" : [
-                {
-                  "Name": "quest_name",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "quest name"
-                },
-                {
-                  "Name": "description",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "description of quest"
-                },
-                {
-                  "Name": "hint",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "hint"
-                },
-                {
-                  "Name": "image",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "url to the quest image"
-                },
-                {
-                  "Name": "tag",
-                  "Required": "Y",
-                  "Type": "array",
-                  "Description": "tag"
-                },
-                {
-                  "Name": "sort_order",
-                  "Required": "Y",
-                  "Type": "integer",
-                  "Description": "sort order"
-                },
-                {
-                  "Name": "global_quest",
-                  "Required": "Y",
-                  "Type": "boolean",
-                  "Description": "global quest flag"
-                }
-              ]
-            }
           ]
         },
         {
@@ -2214,26 +1764,11 @@
               "Description": "0 = not force if player has not enough reward to deduct, 1 = force to do the deduct (and player's reward becomes zero)"
             }
           ],
-          "response": [
-            {
-              "Name": "old_value",
-              "Required": "Y",
-              "Type": "integer",
-              "Description": "amount of the reward before deduct"
-            },
-            {
-              "Name": "new_value",
-              "Required": "Y",
-              "Type": "integer",
-              "Description": "amount of the reward after deduct"
-            },
-            {
-              "Name": "value_deducted",
-              "Required": "Y",
-              "Type": "integer",
-              "Description": "amount of the deducted reward"
-            }
-          ]
+          "response": {
+            "old_value":      { "-type": "integer"},
+            "new_value":      { "-type": "integer"},
+            "value_deducted": { "-type": "integer"}
+          }
         },
         {
           "MethodName": "Gift",
@@ -2291,26 +1826,11 @@
               "Description": "gift amount"
             }
           ],
-          "response": [
-            {
-              "Name": "gift_name",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "gift name"
-            },
-            {
-              "Name": "type",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "type of gift"
-            },
-            {
-              "Name": "remaining",
-              "Required": "Y",
-              "Type": "integer",
-              "Description": "remaining gift after sent"
-            }
-          ]
+          "response": {
+            "gift_name":  { "-type": "string"},
+            "type":       { "-type": "string"},
+            "remaining":  { "-type": "integer"}
+          }
         },
         {
           "MethodName": "Player Referral Code",
@@ -2328,14 +1848,9 @@
               "Description": "player id as used in client's website"
             }
           ],
-          "response": [
-            {
-              "Name": "code",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "referral code of the player"
-            }
-          ]
+          "response": {
+            "code":  { "-type": "string"}
+          }
         },
         {
           "MethodName": "Rank by Custom parameter",
@@ -2381,19 +1896,10 @@
               "Description": "year to rank players by (2015, 2016 , ...)"
             }
           ],
-          "response_list": "Y",
           "response": [
             {
-              "Name": "cl_player_id",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "player id as used in client's website"
-            },
-            {
-              "Name": "amount",
-              "Required": "Y",
-              "Type": "integer",
-              "Description": "amount"
+              "cl_player_id": { "-type": "string"},
+              "quantity":     { "-type": "integer"}
             }
           ]
         },
@@ -2413,19 +1919,10 @@
               "Description": "player id as used in client's website"
             }
           ],
-          "response_list": "Y",
           "response": [
             {
-              "Name": "node_id",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "node id"
-            },
-            {
-              "Name": "name",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "name of nade"
+              "node_id": { "-type": "string"},
+              "name":     { "-type": "string"}
             }
           ]
         },
@@ -2449,37 +1946,18 @@
               "Required": "URI",
               "Default": "",
               "Type": "string",
-              "Description": "Node Id to add player"
+              "Description": "Node Id"
             }
           ],
-          "response": [
-            {
-              "Name": "organize_type",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "type of specific node"
-            },
-            {
-              "Name": "roles",
-              "Required": "Y",
-              "Type": "array_list",
-              "Description": "roles",
-              "Array_data" : [
-                {
-                  "Name": "role",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "role of player in the specific node"
-                },
-                {
-                  "Name": "join_date",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "date/time that the player has joined"
-                }
-              ]
-            }
-          ]
+          "response": {
+            "organize_type": { "-type": "string"},
+            "roles": [
+              {
+                  "role": { "-type": "string"},
+                  "join_date": { "-type": "string"}
+              }
+            ]
+          }
         },
         {
           "MethodName": "Sale report",
@@ -2525,20 +2003,12 @@
               "Description": "Select parameter to report from action log [default = \"amount\"]"
             }
           ],
-          "response_list": "Y",
-          "response_dynamic": "Y",
           "response": [
             {
-              "Name": "node_id",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "node id"
-            },
-            {
-              "Name": "name",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "name of nade"
+              "node_id":              { "-type": "string"},
+              "name":                 { "-type": "string"},
+              "[a-zA-Z0-9-%_:\\.]+":  { "-type": "any" },
+              "percent_changed":      { "-type": "integer" }
             }
           ]
         },
@@ -2593,8 +2063,14 @@
               "Description": "Select parameter to report from action log [default = \"amount\"]"
             }
           ],
-          "response_dynamic": "Y",
-          "response": []
+          "response": {
+            "[a-zA-Z0-9-%_:\\.]+": {
+              "[a-zA-Z0-9-%_:\\.]+": {
+                "[a-zA-Z0-9-%_:\\.]+": { "-type": "integer"} ,
+                "percent_changed": { "-type": "integer"} 
+              }
+            }
+          }
         },
         {
           "MethodName": "Unlock",
@@ -5558,7 +5034,7 @@
               "Required": "URI",
               "Default": "",
               "Type": "string",
-              "Description": "Node Id to add player"
+              "Description": "Node Id to remove player"
             },
             {
               "Name": "player_id",
