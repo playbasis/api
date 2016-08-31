@@ -6,82 +6,82 @@ require_once APPPATH . '/libraries/REST_Controller.php';
  *
  * An extension on fully RESTful server implementation for implementing logging functionality for Playbasis API.
  *
- * @package        	CodeIgniter
- * @subpackage    	Libraries
- * @category    	Libraries
- * @author        	Thanakij Pechprasarn
- * @version 		1.0.0
+ * @package            CodeIgniter
+ * @subpackage        Libraries
+ * @category        Libraries
+ * @author            Thanakij Pechprasarn
+ * @version         1.0.0
  */
 abstract class REST2_Controller extends REST_Controller
 {
-	protected $validToken;
-	protected $client_id;
-	protected $site_id;
-	protected $client_data;
-	protected $client_date;
-	protected $client_usage;
-	protected $client_plan;
-	protected $method_data;
-	private $log_id;
+    protected $validToken;
+    protected $client_id;
+    protected $site_id;
+    protected $client_data;
+    protected $client_date;
+    protected $client_usage;
+    protected $client_plan;
+    protected $method_data;
+    private $log_id;
 
-	/**
-	 * Developers can extend this class and add a check in here.
-	 */
-	protected function early_checks()
-	{
-		$token = $this->input->post('token'); // token: POST
-		$api_key = $this->input->get('api_key'); // api_key: GET/POST
-		if (empty($api_key)) {
-			$api_key = $this->input->post('api_key');
-		}
-		return $this->_early_checks($token, $api_key);
-	}
+    /**
+     * Developers can extend this class and add a check in here.
+     */
+    protected function early_checks()
+    {
+        $token = $this->input->post('token'); // token: POST
+        $api_key = $this->input->get('api_key'); // api_key: GET/POST
+        if (empty($api_key)) {
+            $api_key = $this->input->post('api_key');
+        }
+        return $this->_early_checks($token, $api_key);
+    }
 
-	protected function _early_checks($token=null, $api_key=null)
-	{
-		/* 0.1 Load libraries */
-		$this->load->model('rest_model');
-		$this->load->model('auth_model');
-		$this->load->model('client_model');
-		$this->load->model('tool/error', 'error');
+    protected function _early_checks($token=null, $api_key=null)
+    {
+        /* 0.1 Load libraries */
+        $this->load->model('rest_model');
+        $this->load->model('auth_model');
+        $this->load->model('client_model');
+        $this->load->model('tool/error', 'error');
 
-		/* 0.2 Adjust $this->request->body */
-		if (!empty($this->request->body)) {
-			if (is_array($this->request->body) && count(count($this->request->body) == 1) && array_key_exists(0, $this->request->body)) {
-				$this->request->body = $this->request->body[0];
-			}
-			if (gettype($this->request->body) == 'string') {
-				$str = trim($this->request->body);
-				if ($str[0] == '{' && $str[strlen($str)-1] == '}') {
-					$this->request->body = $this->format->factory($this->request->body, 'json')->to_array();
-				}
-			}
-		}
+        /* 0.2 Adjust $this->request->body */
+        if (!empty($this->request->body)) {
+            if (is_array($this->request->body) && count(count($this->request->body) == 1) && array_key_exists(0, $this->request->body)) {
+                $this->request->body = $this->request->body[0];
+            }
+            if (gettype($this->request->body) == 'string') {
+                $str = trim($this->request->body);
+                if ($str[0] == '{' && $str[strlen($str)-1] == '}') {
+                    $this->request->body = $this->format->factory($this->request->body, 'json')->to_array();
+                }
+            }
+        }
 
-		/* 1.1 Log request */
-		if (!$token && !$api_key) {
-			return; // return early if neither token or api_key is found
-		}
-		$this->validToken = !empty($token) ? $this->auth_model->findToken($token) : (!empty($api_key) ? $this->auth_model->createTokenFromAPIKey($api_key) : null);
-		$this->client_id = !empty($this->validToken) ? $this->validToken['client_id'] : null;
-		$this->site_id = !empty($this->validToken) ? $this->validToken['site_id'] : null;
-		$this->log_id = $this->rest_model->logRequest(array(
-			'client_id' => $this->client_id,
-			'site_id' => $this->site_id,
-			'api_key' => !empty($api_key) ? $api_key : null,
-			'token' => !empty($token) ? $token : null,
-			'class_name' => null,
-			'class_method' => null,
-			'method' => $this->request->method,
-			'scheme' => isset($_SERVER['REQUEST_SCHEME']) && $_SERVER['REQUEST_SCHEME'] ? $_SERVER['REQUEST_SCHEME'] : (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] ? 'https' : 'http'),
-			'uri' => $this->uri->uri_string(),
-			'query' => isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : null,
-			'request' => !empty($this->request->body) ? $this->request->body : $_POST,
-			'response' => null,
-			'format' => null,
-			'ip' => $this->input->ip_address(),
-			'agent' => array_key_exists('HTTP_USER_AGENT', $_SERVER) ? $_SERVER['HTTP_USER_AGENT'] : null,
-		));
+        /* 1.1 Log request */
+        if (!$token && !$api_key) {
+            return; // return early if neither token or api_key is found
+        }
+        $this->validToken = !empty($token) ? $this->auth_model->findToken($token) : (!empty($api_key) ? $this->auth_model->createTokenFromAPIKey($api_key) : null);
+        $this->client_id = !empty($this->validToken) ? $this->validToken['client_id'] : null;
+        $this->site_id = !empty($this->validToken) ? $this->validToken['site_id'] : null;
+        $this->log_id = $this->rest_model->logRequest(array(
+            'client_id' => $this->client_id,
+            'site_id' => $this->site_id,
+            'api_key' => !empty($api_key) ? $api_key : null,
+            'token' => !empty($token) ? $token : null,
+            'class_name' => null,
+            'class_method' => null,
+            'method' => $this->request->method,
+            'scheme' => isset($_SERVER['REQUEST_SCHEME']) && $_SERVER['REQUEST_SCHEME'] ? $_SERVER['REQUEST_SCHEME'] : (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] ? 'https' : 'http'),
+            'uri' => $this->uri->uri_string(),
+            'query' => isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : null,
+            'request' => !empty($this->request->body) ? $this->request->body : $_POST,
+            'response' => null,
+            'format' => null,
+            'ip' => $this->input->ip_address(),
+            'agent' => array_key_exists('HTTP_USER_AGENT', $_SERVER) ? $_SERVER['HTTP_USER_AGENT'] : null,
+        ));
 
         /* 1.2 Client-Site Limit Requests */
         if (!$this->client_id || !$this->site_id) {
@@ -143,324 +143,297 @@ abstract class REST2_Controller extends REST_Controller
                 $this->response($this->error->setError("SETUP_MOBILE"), 200);
             }
         }
-	}
+    }
 
-	protected function find_method_uri($method){
-		$method_uri = "";
-		if(is_array($method) && isset($method["parameters"]) && isset($method["URI"])){
-			$method_uri = $method["URI"];
-			foreach($method["parameters"] as $parameter){
-				if($parameter["Required"] == "URI"){
-					if($parameter["Type"] == "integer" || $parameter["Type"] == "number"){
-						$method_uri = str_replace(":".$parameter["Name"], ANY_NUMBER, $method_uri);
-					}else{
-						$method_uri = str_replace(":".$parameter["Name"], ANY_STRING, $method_uri);
-					}
-				}
-			}
-		}
-		return $method_uri;
-	}
+    protected function find_method_uri($method){
+        $method_uri = "";
+        if(is_array($method) && isset($method["parameters"]) && isset($method["URI"])){
+            $method_uri = $method["URI"];
+            foreach($method["parameters"] as $parameter){
+                if($parameter["Required"] == "URI"){
+                    if($parameter["Type"] == "integer" || $parameter["Type"] == "number"){
+                        $method_uri = str_replace(":".$parameter["Name"], ANY_NUMBER, $method_uri);
+                    }else{
+                        $method_uri = str_replace(":".$parameter["Name"], ANY_STRING, $method_uri);
+                    }
+                }
+            }
+        }
+        return $method_uri;
+    }
 
-	/**
-	 * Fire Method
-	 *
-	 * Fires the designated controller method with the given arguments.
-	 *
-	 * @param array $method The controller method to fire
-	 * @param array $args The arguments to pass to the controller method
-	 */
-	protected function _fire_method($method, $args)
-	{
-		/* 1.2 Log class_name and method */
-		$class_name = get_class($this);
-		$this->rest_model->logResponse($this->log_id, $this->site_id, array(
-			'class_name' => $class_name,
-			'class_method' => $method[1],
-		));
-		try {
-			/* 2.1 Validate request (basic common validation for all controllers) */
-			if (!in_array($class_name, array('Auth', 'Facebook', 'Geditor', 'Instagram', 'Janrain', 'Mobile', 'Notification', 'Pipedrive', 'Playbasis'))) { // list of modules that don't require auth info
-				// Check required parameter from pbapp.json
-				if(isset($this->uri->router)) {
-					$json = file_get_contents(getcwd() . "/iodocs/public/data/pbapp.json");
-					$pbapp_data = json_decode($json, true);
-					$found_endpoint = false;
-					$missing_parameter = array();
-					$exception_param = array();
-					foreach ($pbapp_data['endpoints'] as $endpoint ) {
-						if (in_array($method[0]->uri->segments[1],$endpoint['endpoint'])) {
-							foreach ($endpoint['methods'] as $end_method) {
-								if (($this->uri->router == $this->find_method_uri($end_method)) && ($this->request->method == strtolower($end_method['HTTPMethod']))) {
-									$found_endpoint = true;
-									$this->method_data = $end_method;
-									foreach ($end_method['parameters'] as $parameter) {
-										// validate each parameter here
-										if (strtoupper($parameter['Required']) == 'Y' && !isset($this->_args[$parameter['Name']]) && !in_array($parameter['Name'], $exception_param)) {
-											array_push($missing_parameter, $parameter['Name']);
-										}
-									}
-									if(isset($end_method['parameters_or'])) foreach($end_method['parameters_or'] as $parameter_or){
-										$check_parameter_or = false;
-										foreach ($parameter_or as $param_or){
-											if(array_key_exists($param_or, $this->_args))
-											{
-												$check_parameter_or = true;
-											}
-										}
-										if(!$check_parameter_or){
-											$param = implode(" or ", $parameter_or);
-											array_push($missing_parameter, $param);
-										}
-									}
-									break;
-								}
-							}
-							if($found_endpoint) break;
-						}
-					}
-					if(!$found_endpoint){
-						$this->response(array('status' => false, 'error' => 'Unknown method.'), 404);
-					}
+    /**
+     * Fire Method
+     *
+     * Fires the designated controller method with the given arguments.
+     *
+     * @param array $method The controller method to fire
+     * @param array $args The arguments to pass to the controller method
+     */
+    protected function _fire_method($method, $args)
+    {
+        /* 1.2 Log class_name and method */
+        $class_name = get_class($this);
+        $this->rest_model->logResponse($this->log_id, $this->site_id, array(
+            'class_name' => $class_name,
+            'class_method' => $method[1],
+        ));
+        try {
+            /* 2.1 Validate request (basic common validation for all controllers) */
+            if (!in_array($class_name, array('Auth', 'Facebook', 'Geditor', 'Instagram', 'Janrain', 'Mobile', 'Notification', 'Pipedrive', 'Playbasis'))) { // list of modules that don't require auth info
+                // Check required parameter from pbapp.json
+                if(isset($this->uri->router)) {
+                    $json = file_get_contents(getcwd() . "/iodocs/public/data/pbapp.json");
+                    $pbapp_data = json_decode($json, true);
+                    $found_endpoint = false;
+                    $missing_parameter = array();
+                    $exception_param = array();
+                    foreach ($pbapp_data['endpoints'] as $endpoint ) {
+                        if (in_array($method[0]->uri->segments[1],$endpoint['endpoint'])) {
+                            foreach ($endpoint['methods'] as $end_method) {
+                                if (($this->uri->router == $this->find_method_uri($end_method)) && ($this->request->method == strtolower($end_method['HTTPMethod']))) {
+                                    $found_endpoint = true;
+                                    $this->method_data = $end_method;
+                                    foreach ($end_method['parameters'] as $parameter) {
+                                        // validate each parameter here
+                                        if (strtoupper($parameter['Required']) == 'Y' && !isset($this->_args[$parameter['Name']]) && !in_array($parameter['Name'], $exception_param)) {
+                                            array_push($missing_parameter, $parameter['Name']);
+                                        }
+                                    }
+                                    if(isset($end_method['parameters_or'])) foreach($end_method['parameters_or'] as $parameter_or){
+                                        $check_parameter_or = false;
+                                        foreach ($parameter_or as $param_or){
+                                            if(array_key_exists($param_or, $this->_args))
+                                            {
+                                                $check_parameter_or = true;
+                                            }
+                                        }
+                                        if(!$check_parameter_or){
+                                            $param = implode(" or ", $parameter_or);
+                                            array_push($missing_parameter, $param);
+                                        }
+                                    }
+                                    break;
+                                }
+                            }
+                            if($found_endpoint) break;
+                        }
+                    }
+                    if(!$found_endpoint){
+                        $this->response(array('status' => false, 'error' => 'Unknown method.'), 404);
+                    }
 
-					switch ($this->request->method) {
-						case 'get': // every GET call requires 'api_key'
-							$required = $this->input->checkParam(array(
-								'api_key'
-							));
-							if ($required)
-								$this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
-							if (!$this->validToken)
-								$this->response($this->error->setError('INVALID_API_KEY_OR_SECRET'), 200);
-							break;
-						case 'post': // every POST call requires 'token'
-							$required = $this->input->checkParam(array(
-								'token'
-							));
-							if ($required)
-								$this->response($this->error->setError('TOKEN_REQUIRED', $required), 200);
-							if (!$this->validToken)
-								$this->response($this->error->setError('INVALID_TOKEN'), 200);
-							break;
-					}
-					if (!empty($missing_parameter)) {
-						$this->response($this->error->setError('PARAMETER_MISSING', $missing_parameter), 200);
-					}
-				}
-			}
-			/* 2.2 Process request */
-			call_user_func_array($method, $args);
-		} catch (Exception $e) {
+                    switch ($this->request->method) {
+                        case 'get': // every GET call requires 'api_key'
+                            $required = $this->input->checkParam(array(
+                                'api_key'
+                            ));
+                            if ($required)
+                                $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
+                            if (!$this->validToken)
+                                $this->response($this->error->setError('INVALID_API_KEY_OR_SECRET'), 200);
+                            break;
+                        case 'post': // every POST call requires 'token'
+                            $required = $this->input->checkParam(array(
+                                'token'
+                            ));
+                            if ($required)
+                                $this->response($this->error->setError('TOKEN_REQUIRED', $required), 200);
+                            if (!$this->validToken)
+                                $this->response($this->error->setError('INVALID_TOKEN'), 200);
+                            break;
+                    }
+                    if (!empty($missing_parameter)) {
+                        $this->response($this->error->setError('PARAMETER_MISSING', $missing_parameter), 200);
+                    }
+                }
+            }
+            /* 2.2 Process request */
+            call_user_func_array($method, $args);
+        } catch (Exception $e) {
             ini_set('mongo.allow_empty_keys', TRUE);
-			$this->load->model('tool/error', 'error');
-			$msg = $e->getMessage();
-			log_message('error', $msg);
-			/* 3.2 Log response (exception) */
-			$data = $this->error->setError('INTERNAL_ERROR', $msg);
-			$this->rest_model->logResponse($this->log_id, $this->site_id, array(
-				'response' => $data,
-				'format' => $this->response->format,
-				'error' => $e->getTraceAsString(),
-			));
-			$this->response($data, 200);
-		}
-	}
-
-	private function format_data($data, $format)
-	{
-		$output = $data;
-
-		// If the format method exists, call and return the output in that format
-		if (method_exists($this, '_format_'.$format))
-		{
-			// Set the correct format header
-			header('Content-Type: '.$this->_supported_formats[$format]);
-
-			$output = $this->{'_format_'.$format}($data);
-		}
-
-		// If the format method exists, call and return the output in that format
-		elseif (method_exists($this->format, 'to_'.$format))
-		{
-			// Set the correct format header
-			header('Content-Type: '.$this->_supported_formats[$format]);
-
-			$output = $this->format->factory($data)->{'to_'.$format}();
-		}
-
-		return $output;
-	}
-
-	private function is_type_match($expected_type, $parameter_type){
-		$result = false;
-		if($expected_type == $parameter_type){
-			$result = true;
-		}elseif($parameter_type == "array_list" || $parameter_type == "array_dynamic"){
-			$result = ($expected_type == "array");
-		}
-		return $result;
-	}
-
-
-
-	/**
-	 * Response
-	 *
-	 * Takes pure data and optionally a status code, then creates the response.
-	 *
-	 * @param array $data
-	 * @param null|int $http_code
-	 */
-    private function check_input_uri ($require, $pb_app_uri, $uri, &$pb_app_key, $response){
-        $index = array_search(":".$pb_app_key, $pb_app_uri,true);
-        $key = $uri[$index+1];
-        $status = false;
-        if($require == "INPUT_URI" && array_key_exists($key, $response)){
-            $pb_app_key = $key;
-            $status = true;
+            $this->load->model('tool/error', 'error');
+            $msg = $e->getMessage();
+            log_message('error', $msg);
+            /* 3.2 Log response (exception) */
+            $data = $this->error->setError('INTERNAL_ERROR', $msg);
+            $this->rest_model->logResponse($this->log_id, $this->site_id, array(
+                'response' => $data,
+                'format' => $this->response->format,
+                'error' => $e->getTraceAsString(),
+            ));
+            $this->response($data, 200);
         }
-        return $status;
-    }
-    private function check_input($require, &$pb_app_key, $arg){
-        $status = false;
-        if($require == "INPUT" && array_key_exists($pb_app_key, $arg)){
-            $pb_app_key = $arg[$pb_app_key];
-            $status = true;
-        }
-        return $status;
     }
 
-	private function check_response(&$pointer_data, &$pointer_response ,&$check_response) {
-		$response_result = array();
-		$is_error = false;
-		foreach($check_response as $response){
-			if(($response["Required"] == "Y") && !array_key_exists($response["Name"],$pointer_response)){
-				$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response result(s) missing");
-				$is_error = true;
-				break;
-			}else {
-				if (array_key_exists($response["Name"], $pointer_response) || 
-                    (($response["Required"] == "INPUT") && $this->check_input($response["Required"], $response["Name"], $this->_args)) ||
-                    (($response["Required"] == "INPUT_URI") && $this->check_input_uri($response["Required"], explode("/", $this->method_data['URI']),$this->uri->segments, $response["Name"], $pointer_response))) {
-					if (!is_null($pointer_response[$response["Name"]]) && !$this->is_type_match(gettype($pointer_response[$response["Name"]]), $response["Type"])) {
-						$pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid");
-						$is_error = true;
-						break;
-					}
+    private function format_data($data, $format)
+    {
+        $output = $data;
 
-					if ($response["Type"] == "array_list") {
-						if(is_array($pointer_response[$response["Name"]])) {
-							$response_result[$response["Name"]] = array();
-							foreach ($pointer_response[$response["Name"]] as $index => &$list) {
-								if (array_key_exists("message", $list)) {
-									array_push($response_result[$response["Name"]], $list);
-									continue;
-								}
-								$list = $this->check_response($pointer_data, $list,$response['Array_data'] , true);
-								array_push($response_result[$response["Name"]], $list);
-							}
-						} else {
-							$response_result[$response["Name"]] = $pointer_response[$response["Name"]];
-						}
-					} elseif($response["Type"] == "array") {
-						$response_result[$response["Name"]] =  $this->check_response($pointer_data, $pointer_response[$response["Name"]],$response['Array_data']);
-					} else {
-						$response_result[$response["Name"]] = $pointer_response[$response["Name"]];
-					}
-				}
-			}
-		}
-		if(!$is_error) $pointer_response = $response_result;
-		return $response_result;
-	}
+        // If the format method exists, call and return the output in that format
+        if (method_exists($this, '_format_'.$format))
+        {
+            // Set the correct format header
+            header('Content-Type: '.$this->_supported_formats[$format]);
 
-	public function response($data = array(), $http_code = null)
-	{
-		global $CFG;
+            $output = $this->{'_format_'.$format}($data);
+        }
 
-		// If data is empty and not code provide, error and bail
-		if (empty($data) && $http_code === null)
-		{
-			$http_code = 404;
+        // If the format method exists, call and return the output in that format
+        elseif (method_exists($this->format, 'to_'.$format))
+        {
+            // Set the correct format header
+            header('Content-Type: '.$this->_supported_formats[$format]);
 
-			// create the output variable here in the case of $this->response(array());
-			$output = NULL;
-		}
+            $output = $this->format->factory($data)->{'to_'.$format}();
+        }
 
-		// Otherwise (if no data but 200 provided) or some data, carry on camping!
-		else
-		{
-			// Is compression requested?
-			if ($CFG->item('compress_output') === TRUE && $this->_zlib_oc == FALSE)
-			{
-				if (extension_loaded('zlib'))
-				{
-					if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) AND strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== FALSE)
-					{
-						ob_start('ob_gzhandler');
-					}
-				}
-			}
+        return $output;
+    }
 
-			is_numeric($http_code) OR $http_code = 200;
+    private function is_type_match($expected_type, $parameter_type){
+        $result = false;
+        if($expected_type == $parameter_type){
+            $result = true;
+        }elseif($parameter_type == "array_list" || $parameter_type == "array_dynamic"){
+            $result = ($expected_type == "array");
+        }
+        return $result;
+    }
 
-			if($this->method_data && isset($this->method_data["response"]) && $data['success'] == true){
-                $temp_res = $data["response"];
-				if (isset($this->method_data["response_list"]) && $this->method_data["response_list"] == "Y") {
-					foreach ($data["response"] as &$list) {
-						if (array_key_exists("message", $list)) {
-							continue;
-						}
-						$this->check_response($data, $list, $this->method_data["response"]);
-					}
-				} else {
-					$this->check_response($data, $data["response"],$this->method_data["response"]);
-				}
-				if(isset($this->method_data['response_dynamic']) && $this->method_data['response_dynamic'] == "Y"){
-					$check_response_key = array_column($this->method_data['response'], 'Name');
-					foreach($check_response_key as $key){
-						if(isset($this->method_data['response_list']) && $this->method_data['response_list'] == "Y"){
-							foreach ($temp_res as &$temp) {
-								unset($temp[$key]);
-							}
-						} else {
-							unset($temp_res[$key]);
-						}
-					}
-					if(isset($this->method_data['response_list']) && $this->method_data['response_list'] == "Y"){
-						foreach ($data["response"] as $index => &$data_response){
-							$data_response +=  $temp_res[$index];
-						}
-					} else {
-						$data["response"] += $temp_res;
-					}
-				}
-			}
+    /**
+     * Response
+     *
+     * Takes pure data and optionally a status code, then creates the response.
+     *
+     * @param array $data
+     * @param null|int $http_code
+     */
+
+    private function check_response(&$pointer_data, &$pointer_response ,&$check_response) {
+        $response_result = array();
+        $is_error = false;
+        $pointer_response_temp = $pointer_response;
+
+        if(!is_array($pointer_response) && isset($check_response['-type'])) {
+            if (!is_null($pointer_response) && isset($check_response["-type"]) && !$this->is_type_match(gettype($pointer_response), $check_response["-type"])){
+                $pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid");
+                return;
+            } else {
+                return;
+            }
+        }
+
+        if(is_array($check_response)) foreach($check_response as $key => &$response){
+            if(!array_key_exists('-optional',$pointer_response) && (!array_key_exists($key,$pointer_response) && !($key == "[a-zA-Z0-9-%_:\.]+"))){
+                $pointer_data = $this->error->setError('INTERNAL_ERROR', "Response result(s) missing");
+                $is_error = true;
+                break;
+            }else {
+                $match = preg_grep('/\b'.$key.'\b/',  array_keys($pointer_response_temp));
+                foreach ($match as $match_key) {
+                    unset($pointer_response_temp[$match_key]);
+                    if (array_key_exists($match_key, $pointer_response)) {
+                        if (!is_null($pointer_response[$match_key]) && isset($response["-type"]) && !$this->is_type_match(gettype($pointer_response[$match_key]), $response["-type"])) {
+                            $pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid");
+                            $is_error = true;
+                            break;
+                        }
+
+                        if (is_array($pointer_response[$match_key]) && isset($pointer_response[$match_key][0])) {
+                            if (is_array($pointer_response[$match_key])) {
+                                $response_result[$key] = array();
+                                foreach ($pointer_response[$match_key] as $index => &$list) {
+                                    if (array_key_exists("message", $list)) {
+                                        array_push($response_result[$match_key], $list);
+                                        continue;
+                                    }
+                                    $list = $this->check_response($pointer_data, $list, $response[0]);
+                                    array_push($response_result[$match_key], $list);
+                                }
+                            } else {
+                                $response_result[$match_key] = $pointer_response[$match_key];
+                            }
+                        } elseif (isset($pointer_response[$match_key]) && !isset($response['-type'])) {
+                            $response_result[$match_key] = $this->check_response($pointer_data, $pointer_response[$match_key], $response);
+                        } elseif (isset($pointer_response[$match_key]) && isset($response['-type'])) {
+                            $response_result[$match_key] = $pointer_response[$match_key];
+                        }
+                    }
+                }
+            }
+        }
+        if(!$is_error) $pointer_response = $response_result;
+        return $response_result;
+    }
+
+    public function response($data = array(), $http_code = null)
+    {
+        global $CFG;
+
+        // If data is empty and not code provide, error and bail
+        if (empty($data) && $http_code === null)
+        {
+            $http_code = 404;
+
+            // create the output variable here in the case of $this->response(array());
+            $output = NULL;
+        }
+
+        // Otherwise (if no data but 200 provided) or some data, carry on camping!
+        else
+        {
+            // Is compression requested?
+            if ($CFG->item('compress_output') === TRUE && $this->_zlib_oc == FALSE)
+            {
+                if (extension_loaded('zlib'))
+                {
+                    if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) AND strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== FALSE)
+                    {
+                        ob_start('ob_gzhandler');
+                    }
+                }
+            }
+
+            is_numeric($http_code) OR $http_code = 200;
+
+            if($this->method_data && isset($this->method_data["response"]) && $data['success'] == true){
+                if (isset($this->method_data["response"][0])) {
+                    foreach ($data["response"] as &$list) {
+                        if (array_key_exists("message", $list)) {
+                            continue;
+                        }
+                        $this->check_response($data, $list, $this->method_data["response"]);
+                    }
+                } else {
+                    $this->check_response($data, $data["response"], $this->method_data["response"]);
+                }
+            }
             
-			$output = $this->format_data($data, $this->response->format);
-		}
+            $output = $this->format_data($data, $this->response->format);
+        }
 
-		header('HTTP/1.1: ' . $http_code);
-		header('Status: ' . $http_code);
-		header('Access-Control-Allow-Origin: *'); // allow cross domain
-		header_remove('Set-Cookie');
+        header('HTTP/1.1: ' . $http_code);
+        header('Status: ' . $http_code);
+        header('Access-Control-Allow-Origin: *'); // allow cross domain
+        header_remove('Set-Cookie');
 
-		// If zlib.output_compression is enabled it will compress the output,
-		// but it will not modify the content-length header to compensate for
-		// the reduction, causing the browser to hang waiting for more data.
-		// We'll just skip content-length in those cases.
-		if ( ! $this->_zlib_oc && ! $CFG->item('compress_output'))
-		{
-			header('Content-Length: ' . strlen($output));
-		}
-		/* 3.1 Log response (actual output) */
-		ini_set('mongo.allow_empty_keys', TRUE); // allow empty keys to be inserted in MongoDB (for example, insight needs this)
-		$this->rest_model->logResponse($this->log_id, $this->site_id, array(
-			'response' => $data,
-			'format' => $this->response->format,
-		));
+        // If zlib.output_compression is enabled it will compress the output,
+        // but it will not modify the content-length header to compensate for
+        // the reduction, causing the browser to hang waiting for more data.
+        // We'll just skip content-length in those cases.
+        if ( ! $this->_zlib_oc && ! $CFG->item('compress_output'))
+        {
+            header('Content-Length: ' . strlen($output));
+        }
+        /* 3.1 Log response (actual output) */
+         ini_set('mongo.allow_empty_keys', TRUE); // allow empty keys to be inserted in MongoDB (for example, insight needs this)
+        $this->rest_model->logResponse($this->log_id, $this->site_id, array(
+            'response' => $data,
+            'format' => $this->response->format,
+        ));
 
-		exit($output);
-	}
+        exit($output);
+    }
 }
 ?>
