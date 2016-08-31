@@ -28,20 +28,10 @@
               "Description": "api secret issued by Playbasis"
             }
           ],
-          "response": [
-            {
-              "Name": "token",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "access token"
-            },
-            {
-              "Name": "date_expire",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "expire date of the token"
-            }
-          ]
+          "response": {
+            "token":        { "-type": "string"},
+            "date_expire":  { "-type": "string"}
+          }
         },
         {
           "MethodName": "Renew",
@@ -66,20 +56,10 @@
               "Description": "api secret issued by Playbasis"
             }
           ],
-          "response": [
-            {
-              "Name": "token",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "access token"
-            },
-            {
-              "Name": "date_expire",
-              "Required": "Y",
-              "Type": "string",
-              "Description": "expire date of the token"
-            }
-          ]
+          "response": {
+            "token":        { "-type": "string"},
+            "date_expire":  { "-type": "string"}
+          }
         }
       ]
     },
@@ -293,284 +273,67 @@
               "Description": "player id as used in client's website"
             }
           ],
-          "response": [
-            {
-              "Name": "player",
-              "Required": "Y",
-              "Type": "array",
-              "Description": "player info",
-              "Array_data" : [
+          "response": {
+            "player": {
+              "image":            { "-type": "string"},
+              "email":            { "-type": "string"},
+              "phone_number":     { "-type": "string"},
+              "username":         { "-type": "string"},
+              "exp":              { "-type": "integer"},
+              "level":            { "-type": "integer"},
+              "first_name":       { "-type": "string"},
+              "last_name":        { "-type": "string"},
+              "gender":           { "-type": "integer"},
+              "birth_date":       { "-type": "string"},
+              "registered":       { "-type": "string"},
+              "percent_of_level": { "-type": "double"},
+              "level_title":      { "-type": "string"},
+              "level_image":      { "-type": "string"},
+              "badges": [
                 {
-                  "Name": "image",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "url to the player profile image"
-                },
-                {
-                  "Name": "username",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "username of the player"
-                },
-                {
-                  "Name": "email",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "email address of the player"
-                },
-                {
-                  "Name": "phone_number",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "phone number of the player (+66xxyyyzzzz)"
-                },
-                {
-                  "Name": "exp",
-                  "Required": "Y",
-                  "Type": "integer",
-                  "Description": "exp of the player"
-                },
-                {
-                  "Name": "level",
-                  "Required": "Y",
-                  "Type": "integer",
-                  "Description": "level of the player"
-                },
-                {
-                  "Name": "first_name",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "first name of the player"
-                },
-                {
-                  "Name": "last_name",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "last name of the player"
-                },
-                {
-                  "Name": "gender",
-                  "Required": "Y",
-                  "Type": "integer",
-                  "Description": "1=Male, 2=Female"
-                },
-                {
-                  "Name": "birth_date",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "date of birth in the format YYYY-MM-DD (ex.1982-09-29)"
-                },
-                {
-                  "Name": "registered",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "registered date/time"
-                },
-                {
-                  "Name": "percent_of_level",
-                  "Required": "Y",
-                  "Type": "double",
-                  "Description": "percent of level"
-                },
-                {
-                  "Name": "level_title",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "level title"
-                },
-                {
-                  "Name": "level_image",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "level image"
-                },
-                {
-                  "Name": "badges",
-                  "Required": "Y",
-                  "Type": "array_list",
-                  "Description": "badges that player has received",
-                  "Array_data" : [
-                    {
-                      "Name": "badge_id",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "badges id"
-                    },
-                    {
-                      "Name": "image",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "url to the badge image"
-                    },
-                    {
-                      "Name": "name",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "badges name"
-                    },
-                    {
-                      "Name": "description",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "description of badge"
-                    },
-                    {
-                      "Name": "amount",
-                      "Required": "Y",
-                      "Type": "integer",
-                      "Description": "amount of badge(s) that play has received"
-                    },
-                    {
-                      "Name": "hint",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "hint"
-                    },
-                    {
-                      "Name": "tags",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "tags"
-                    }
-                  ]
-                },
-                {
-                  "Name": "goods",
-                  "Required": "Y",
-                  "Type": "array_list",
-                  "Description": "goods that player has received",
-                  "Array_data" : [
-                    {
-                      "Name": "goods_id",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "goods id"
-                    },
-                    {
-                      "Name": "image",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "url to the goods image"
-                    },
-                    {
-                      "Name": "name",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "goods name"
-                    },
-                    {
-                      "Name": "description",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "description of goods"
-                    },
-                    {
-                      "Name": "code",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "goods code"
-                    },
-                    {
-                      "Name": "amount",
-                      "Required": "Y",
-                      "Type": "integer",
-                      "Description": "amount of goods(s) that play has received"
-                    },
-                    {
-                      "Name": "group",
-                      "Required": "N",
-                      "Type": "string",
-                      "Description": "group of goods"
-                    }
-                  ]
-                },
-                {
-                  "Name": "points",
-                  "Required": "Y",
-                  "Type": "array_list",
-                  "Description": "points that player has received",
-                  "Array_data" : [
-                    {
-                      "Name": "reward_id",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "reward id"
-                    },
-                    {
-                      "Name": "reward_name",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "reward name"
-                    },
-                    {
-                      "Name": "value",
-                      "Required": "Y",
-                      "Type": "integer",
-                      "Description": "amount of reward(s) that player has received"
-                    }
-                  ]
-                },
-                {
-                  "Name": "organization",
-                  "Required": "N",
-                  "Type": "array_list",
-                  "Description": "organization",
-                  "Array_data" : [
-                    {
-                      "Name": "name",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "organization name that associate to the player"
-                    },
-                    {
-                      "Name": "node_id",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "the organization id"
-                    },
-                    {
-                      "Name": "organize_type",
-                      "Required": "Y",
-                      "Type": "string",
-                      "Description": "the organization type"
-                    },
-                    {
-                      "Name": "roles",
-                      "Required": "Y",
-                      "Type": "array_list",
-                      "Description": "role of player",
-                      "Array_data" : [
-                        {
-                          "Name": "role",
-                          "Required": "Y",
-                          "Type": "string",
-                          "Description": "role type"
-                        },
-                        {
-                          "Name": "join_date",
-                          "Required": "Y",
-                          "Type": "string",
-                          "Description": "date/time when the player was set the role"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "Name": "last_login",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "latest date/time that the player has login"
-                },
-                {
-                  "Name": "last_logout",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "latest date/time that the player has logout"
+                  "badge_id":     { "-type": "string"},
+                  "image":        { "-type": "string"},
+                  "name":         { "-type": "string"},
+                  "description":  { "-type": "string"},
+                  "amount":       { "-type": "integer"},
+                  "hint":         { "-type": "string"},
+                  "tags":         { "-type": "string"}
                 }
-              ]
+              ],
+              "goods": [
+                {
+                  "goods_id":     { "-type": "string"},
+                  "image":        { "-type": "string"},
+                  "name":         { "-type": "string"},
+                  "description":  { "-type": "string"},
+                  "code":         { "-type": "string"},
+                  "amount":       { "-type": "integer"}
+                }
+              ],
+              "points": [
+                {
+                  "reward_id":    { "-type": "string"},
+                  "reward_name":  { "-type": "string"},
+                  "value":        { "-type": "integer"}
+                }
+              ],
+              "organization": [
+                {
+                  "name":          { "-type": "string"},
+                  "node_id":       { "-type": "string"},
+                  "organize_type": { "-type": "string"},
+                  "roles": [
+                    {
+                      "role":      { "-type": "string"},
+                      "join_date": { "-type": "string"}
+                    }
+                  ]
+                }
+              ],
+              "last_login":       { "-type": "string"},
+              "last_logout":      { "-type": "string"}
             }
-          ]
+          }
         },
         {
           "MethodName": "List Custom Fields of Player",
@@ -588,22 +351,13 @@
               "Description": "player id as used in client's website"
             }
           ],
-          "response": [
-            {
-              "Name": "player",
-              "Required": "Y",
-              "Type": "array",
-              "Description": "player info",
-              "Array_data" : [
-                {
-                  "Name": "custom",
-                  "Required": "N",
-                  "Type": "array_dynamic",
-                  "Description": "custom field of a player"
-                }
-              ]
+          "response": {
+            "player": {
+              "custom": {
+                "[a-zA-Z0-9-%_:\\.]+":  { "-type": "string"}
+              }
             }
-          ]
+          }
         },
         {
           "MethodName": "Set Custom Field of Player",
@@ -949,14 +703,9 @@
               "Description": "email as used in client's website"
             }
           ],
-          "response": [
-            {
-              "Name": "success",
-              "Required": "N",
-              "Type": "boolean",
-              "Description": "result status"
-            }
-          ]
+          "response": {
+            "success": { "-type": "boolean"}
+          }
         },
         {
           "MethodName": "Verify player email",
@@ -981,20 +730,10 @@
               "Description": "player id as used in client's website"
             }
           ],
-          "response": [
-            {
-              "Name": "success",
-              "Required": "N",
-              "Type": "boolean",
-              "Description": "result status"
-            },
-            {
-              "Name": "message",
-              "Required": "N",
-              "Type": "string",
-              "Description": "result message"
-            }
-          ]
+          "response": {
+            "success": { "-type": "boolean", "-optional": "true"},
+            "message": { "-type": "string",  "-optional": "true"}
+          }
         },
         {
           "MethodName": "Delete",
@@ -1837,38 +1576,13 @@
               "Description": "number of  level"
             }
           ],
-          "response": [
-            {
-              "Name": "level_title",
-              "Required": "N",
-              "Type": "string",
-              "Description": "level title"
-            },
-            {
-              "Name": "level",
-              "Required": "N",
-              "Type": "integer",
-              "Description": "level"
-            },
-            {
-              "Name": "min_exp",
-              "Required": "N",
-              "Type": "double",
-              "Description": "minimal exp of this level range"
-            },
-            {
-              "Name": "max_exp",
-              "Required": "N",
-              "Type": "integer",
-              "Description": "maximum exp of this level range"
-            },
-            {
-              "Name": "level_image",
-              "Required": "N",
-              "Type": "string",
-              "Description": "url to image of the level"
-            }
-          ]
+          "response": {
+            "level_title": { "-type": "string"},
+            "level":       { "-type": "integer"},
+            "min_exp":     { "-type": "double"},
+            "max_exp":     { "-type": "integer"},
+            "level_image": { "-type": "string"}
+          }
         },
         {
           "MethodName": "Levels",
@@ -1880,36 +1594,13 @@
           "parameters": [
           ],
           "response_list": "Y",
-          "response": [
+          "responses": [
             {
-              "Name": "level_title",
-              "Required": "N",
-              "Type": "string",
-              "Description": "level title"
-            },
-            {
-              "Name": "level",
-              "Required": "N",
-              "Type": "integer",
-              "Description": "level"
-            },
-            {
-              "Name": "min_exp",
-              "Required": "N",
-              "Type": "double",
-              "Description": "minimal exp of this level range"
-            },
-            {
-              "Name": "max_exp",
-              "Required": "N",
-              "Type": "integer",
-              "Description": "maximum exp of this level range"
-            },
-            {
-              "Name": "level_image",
-              "Required": "N",
-              "Type": "string",
-              "Description": "url to image of the level"
+              "level_title": { "-type": "string"},
+              "level":       { "-type": "integer"},
+              "min_exp":     { "-type": "double"},
+              "max_exp":     { "-type": "integer"},
+              "level_image": { "-type": "string"}
             }
           ]
         },
