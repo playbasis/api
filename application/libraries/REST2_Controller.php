@@ -316,11 +316,11 @@ abstract class REST2_Controller extends REST_Controller
         $pointer_response_temp = $pointer_response;
 
         if(!is_array($pointer_response) && isset($check_response['-type'])) {
-            if (!is_null($pointer_response) && isset($check_response["-type"]) && !$this->is_type_match(gettype($pointer_response), $check_response["-type"])){
+            if (!is_null($pointer_response) && isset($check_response["-type"]) && !$this->is_type_match(gettype($pointer_response), $check_response["-type"]) && $check_response["-type"] != "any"){
                 $pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid");
                 return;
             } else {
-                return;
+                return $pointer_response;
             }
         }
         if(is_array($check_response)) foreach($check_response as $key => &$response){
@@ -344,18 +344,21 @@ abstract class REST2_Controller extends REST_Controller
                         if (is_array($pointer_response[$match_key]) && isset($pointer_response[$match_key][0])) {
                             foreach ($pointer_response[$match_key] as $index => &$list) {
                                 $continue = false;
-                                foreach (array_keys($list) as $l_key){
-                                    if (array_key_exists($l_key, $response[0]) && array_key_exists('-type', $response[0][$l_key]) && $response[0][$l_key]['-type'] == "continue"){
-                                        $continue = true;
-                                        break;
+                                if (is_array($list) && isset($response[0])){
+                                    foreach (array_keys($list) as $l_key){
+                                        if (array_key_exists($l_key, $response[0]) && array_key_exists('-type', $response[0][$l_key]) && $response[0][$l_key]['-type'] == "continue"){
+                                            $continue = true;
+                                            break;
+                                        }
                                     }
+                                    if($continue){
+                                        $response_result[$match_key][$index] = $list;
+                                        continue;
+                                    }
+                                    $response_result[$match_key][$index] = $this->check_response($pointer_data, $list, $response[0]);
+                                } else {
+                                    $response_result[$match_key][$index] = $this->check_response($pointer_data, $list, $response);
                                 }
-                                if($continue){
-                                    $response_result[$match_key][$index] = $list;
-                                    continue;
-                                }
-                                
-                                $response_result[$match_key][$index] = $this->check_response($pointer_data, $list, $response[0]);
                             }
                         } elseif (!isset($response['-type'])) {
                             $response_result[$match_key] = $this->check_response($pointer_data, $pointer_response[$match_key], $response);
