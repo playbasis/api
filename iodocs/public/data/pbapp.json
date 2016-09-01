@@ -226,7 +226,7 @@
                   "description":  { "-type": "string"},
                   "amount":       { "-type": "integer"},
                   "hint":         { "-type": "string"},
-                  "tags":         { "-type": "string"}
+                  "tags":         { "-type": "any"}
                 }
               ],
               "goods": [
@@ -298,7 +298,7 @@
                   "description":  { "-type": "string"},
                   "amount":       { "-type": "integer"},
                   "hint":         { "-type": "string"},
-                  "tags":         { "-type": "string"}
+                  "tags":         { "-type": "any"}
                 }
               ],
               "goods": [
@@ -1378,7 +1378,7 @@
               "description":  { "-type": "string"},
               "amount":       { "-type": "integer"},
               "hint":         { "-type": "string"},
-              "tags":         { "-type": "string"}
+              "tags":         { "-type": "any"}
             }
           ]
         },
@@ -1414,7 +1414,7 @@
               "description":  { "-type": "string"},
               "hint":         { "-type": "string"},
               "sponsor":      { "-type": "boolean"},
-              "tags":         { "-type": "string"},
+              "tags":         { "-type": "any"},
               "amount":       { "-type": "integer"}
             }
           ]
@@ -2007,8 +2007,8 @@
             {
               "node_id":              { "-type": "string"},
               "name":                 { "-type": "string"},
-              "[a-zA-Z0-9-%_:\\.]+":  { "-type": "any" },
-              "percent_changed":      { "-type": "integer" }
+              "percent_changed":      { "-type": "integer" },
+              "[a-zA-Z0-9-%_:\\.]+":  { "-type": "any" }
             }
           ]
         },
@@ -2066,8 +2066,8 @@
           "response": {
             "[a-zA-Z0-9-%_:\\.]+": {
               "[a-zA-Z0-9-%_:\\.]+": {
-                "[a-zA-Z0-9-%_:\\.]+": { "-type": "integer"} ,
-                "percent_changed": { "-type": "integer"} 
+                "percent_changed": { "-type": "integer"},
+                "[a-zA-Z0-9-%_:\\.]+": { "-type": "integer"}
               }
             }
           }
@@ -2120,64 +2120,20 @@
               "Description": "Specific tag(s) to find (e.g. foo,bar)"
             }
           ],
-          "response": [
-            {
-              "Name": "badges",
-              "Required": "Y",
-              "Type": "array_list",
-              "Description": "badges that player has received",
-              "Array_data" : [
-                {
-                  "Name": "badge_id",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "badges id"
-                },
-                {
-                  "Name": "image",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "url to the badge image"
-                },
-                {
-                  "Name": "name",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "badges name"
-                },
-                {
-                  "Name": "description",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "description of badge"
-                },
-                {
-                  "Name": "sort_order",
-                  "Required": "Y",
-                  "Type": "integer",
-                  "Description": "sort order"
-                },
-                {
-                  "Name": "hint",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "hint"
-                },
-                {
-                  "Name": "tags",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "tags"
-                },
-                {
-                  "Name": "sponsor",
-                  "Required": "Y",
-                  "Type": "boolean",
-                  "Description": "sponsor"
-                }
-              ]
-            }
-          ]
+          "response": {
+            "badges": [
+              {
+                "badge_id":     { "-type": "string"},
+                "image":        { "-type": "string"},
+                "sort_order":   { "-type": "integer"},
+                "name":         { "-type": "string"},
+                "description":  { "-type": "string"},
+                "hint":         { "-type": "string"},
+                "sponsor":      { "-type": "boolean"},
+                "tags":         { "-type": "any"}
+              }
+            ]
+          }
         },
         {
           "MethodName": "Badges Info",
@@ -2195,64 +2151,20 @@
               "Description": "Specific tag(s) to find (e.g. foo,bar)"
             }
           ],
-          "response": [
-            {
-              "Name": "badges",
-              "Required": "Y",
-              "Type": "array_list",
-              "Description": "badges that player has received",
-              "Array_data" : [
-                {
-                  "Name": "badge_id",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "badges id"
-                },
-                {
-                  "Name": "image",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "url to the badge image"
-                },
-                {
-                  "Name": "name",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "badges name"
-                },
-                {
-                  "Name": "description",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "description of badge"
-                },
-                {
-                  "Name": "sort_order",
-                  "Required": "Y",
-                  "Type": "integer",
-                  "Description": "sort order"
-                },
-                {
-                  "Name": "hint",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "hint"
-                },
-                {
-                  "Name": "tags",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "tags"
-                },
-                {
-                  "Name": "sponsor",
-                  "Required": "Y",
-                  "Type": "boolean",
-                  "Description": "sponsor"
-                }
-              ]
-            }
-          ]
+          "response": {
+            "badges": [
+              {
+                "badge_id":     { "-type": "string"},
+                "image":        { "-type": "string"},
+                "sort_order":   { "-type": "integer"},
+                "name":         { "-type": "string"},
+                "description":  { "-type": "string"},
+                "hint":         { "-type": "string"},
+                "sponsor":      { "-type": "boolean"},
+                "tags":         { "-type": "any"}
+              }
+            ]
+          }
         },
         {
           "MethodName": "Badge Info",
@@ -2270,64 +2182,18 @@
               "Description": "badge id to query"
             }
           ],
-          "response": [
-            {
-              "Name": "badge",
-              "Required": "Y",
-              "Type": "array",
-              "Description": "badges that player has received",
-              "Array_data" : [
-                {
-                  "Name": "badge_id",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "badges id"
-                },
-                {
-                  "Name": "image",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "url to the badge image"
-                },
-                {
-                  "Name": "name",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "badges name"
-                },
-                {
-                  "Name": "description",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "description of badge"
-                },
-                {
-                  "Name": "sort_order",
-                  "Required": "Y",
-                  "Type": "integer",
-                  "Description": "sort order"
-                },
-                {
-                  "Name": "hint",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "hint"
-                },
-                {
-                  "Name": "tags",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "tags"
-                },
-                {
-                  "Name": "sponsor",
-                  "Required": "Y",
-                  "Type": "boolean",
-                  "Description": "sponsor"
-                }
-              ]
+          "response": {
+            "badge": {
+              "badge_id":     { "-type": "string"},
+              "image":        { "-type": "string"},
+              "sort_order":   { "-type": "integer"},
+              "name":         { "-type": "string"},
+              "description":  { "-type": "string"},
+              "hint":         { "-type": "string"},
+              "sponsor":      { "-type": "boolean"},
+              "tags":         { "-type": "any"}
             }
-          ]
+          }
         }
       ]
     },
@@ -2359,124 +2225,31 @@
               "Description": "Specific tag(s) to find (e.g. foo,bar)"
             }
           ],
-          "response": [
-            {
-              "Name": "goods_list",
-              "Required": "Y",
-              "Type": "array_list",
-              "Description": "goods list",
-              "Array_data" : [
-                {
-                  "Name": "goods_id",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "goods id"
+          "response": {
+            "goods_list": [
+              {
+                "goods_id":             { "-type": "string"},
+                "group":                { "-type": "string", "-optional": "true"},
+                "quantity":             { "-type": "integer"},
+                "image":                { "-type": "string"},
+                "sort_order":           { "-type": "integer"},
+                "name":                 { "-type": "string"},
+                "description":          { "-type": "string"},
+                "redeem": {
+                  "point": {
+                    "point_value":      { "-type": "integer"}
+                  },
+                  "custom":             { "-type": "any"}
                 },
-                {
-                  "Name": "name",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "goods name"
-                },
-                {
-                  "Name": "image",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "url to the goods image"
-                },
-                {
-                  "Name": "description",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "description of goods"
-                },
-                {
-                  "Name": "sort_order",
-                  "Required": "Y",
-                  "Type": "integer",
-                  "Description": "sort order"
-                },
-                {
-                  "Name": "quantity",
-                  "Required": "Y",
-                  "Type": "integer",
-                  "Description": "quantity"
-                },
-                {
-                  "Name": "amount",
-                  "Required": "N",
-                  "Type": "integer",
-                  "Description": "amount of goods(s) that play has received"
-                },
-                {
-                  "Name": "per_user",
-                  "Required": "Y",
-                  "Type": "integer",
-                  "Description": "amount of goods limit for a player"
-                },
-                {
-                  "Name": "tags",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "tags"
-                },
-                {
-                  "Name": "date_start",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "date start"
-                },
-                {
-                  "Name": "date_expire",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "date expire"
-                },
-                {
-                  "Name": "redeem",
-                  "Required": "Y",
-                  "Type": "array_dynamic",
-                  "Description": "redeem by"
-                },
-                {
-                  "Name": "sponsor",
-                  "Required": "Y",
-                  "Type": "boolean",
-                  "Description": "sponsor"
-                },
-                {
-                  "Name": "organize_id",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "organize id associated with the goods"
-                },
-                {
-                  "Name": "organize_role",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "organize role associated with the goods"
-                },
-                {
-                  "Name": "is_group",
-                  "Required": "N",
-                  "Type": "boolean",
-                  "Description": "tags"
-                },
-                {
-                  "Name": "group",
-                  "Required": "N",
-                  "Type": "string",
-                  "Description": "group"
-                },
-                {
-                  "Name": "code",
-                  "Required": "N",
-                  "Type": "array_dynamic",
-                  "Description": "goods group code"
-                }
-              ]
-            }
-          ]
+                "sponsor":              { "-type": "boolean"},
+                "organize_id":          { "-type": "any" },
+                "organize_role":        { "-type": "any" },
+                "tags":                 { "-type": "any" },
+                "date_start":           { "-type": "string", "-optional": "true"},
+                "date_expire":          { "-type": "string", "-optional": "true"}
+              }
+            ]
+          }
         },
         {
           "MethodName": "Goods Info",
@@ -2501,124 +2274,33 @@
               "Description": "player id as used in client's website"
             }
           ],
-          "response": [
+          "response": {
+            "goods":
             {
-              "Name": "goods",
-              "Required": "Y",
-              "Type": "array",
-              "Description": "goods list",
-              "Array_data" : [
-                {
-                  "Name": "goods_id",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "goods id"
+              "goods_id":             { "-type": "string"},
+              "group":                { "-type": "string", "-optional": "true"},
+              "quantity":             { "-type": "integer"},
+              "image":                { "-type": "string"},
+              "sort_order":           { "-type": "integer"},
+              "name":                 { "-type": "string"},
+              "description":          { "-type": "string"},
+              "redeem": {
+                "point": {
+                  "point_value":      { "-type": "integer"}
                 },
-                {
-                  "Name": "name",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "goods name"
-                },
-                {
-                  "Name": "image",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "url to the goods image"
-                },
-                {
-                  "Name": "description",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "description of goods"
-                },
-                {
-                  "Name": "sort_order",
-                  "Required": "Y",
-                  "Type": "integer",
-                  "Description": "sort order"
-                },
-                {
-                  "Name": "quantity",
-                  "Required": "Y",
-                  "Type": "integer",
-                  "Description": "quantity"
-                },
-                {
-                  "Name": "amount",
-                  "Required": "N",
-                  "Type": "integer",
-                  "Description": "amount of goods(s) that play has received"
-                },
-                {
-                  "Name": "per_user",
-                  "Required": "Y",
-                  "Type": "integer",
-                  "Description": "amount of goods limit for a player"
-                },
-                {
-                  "Name": "tags",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "tags"
-                },
-                {
-                  "Name": "date_start",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "date start"
-                },
-                {
-                  "Name": "date_expire",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "date expire"
-                },
-                {
-                  "Name": "redeem",
-                  "Required": "Y",
-                  "Type": "array_dynamic",
-                  "Description": "redeem by"
-                },
-                {
-                  "Name": "sponsor",
-                  "Required": "Y",
-                  "Type": "boolean",
-                  "Description": "sponsor"
-                },
-                {
-                  "Name": "organize_id",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "organize id associated with the goods"
-                },
-                {
-                  "Name": "organize_role",
-                  "Required": "Y",
-                  "Type": "string",
-                  "Description": "organize role associated with the goods"
-                },
-                {
-                  "Name": "is_group",
-                  "Required": "N",
-                  "Type": "boolean",
-                  "Description": "tags"
-                },
-                {
-                  "Name": "group",
-                  "Required": "N",
-                  "Type": "string",
-                  "Description": "group"
-                },
-                {
-                  "Name": "code",
-                  "Required": "N",
-                  "Type": "array_dynamic",
-                  "Description": "goods group code"
-                }
-              ]
-            }
-          ]
+                "custom":             { "-type": "any"}
+              },
+              "code":                 { "-type": "any"},
+              "sponsor":              { "-type": "boolean"},
+              "organize_id":          { "-type": "any" },
+              "organize_role":        { "-type": "any" },
+              "tags":                 { "-type": "any" },
+              "date_start":           { "-type": "string", "-optional": "true"},
+              "date_expire":          { "-type": "string", "-optional": "true"},
+              "days_expire":          { "-type": "string", "-optional": "true"}
+            },
+            "amount":                 { "-type": "integer", "-optional": "true"}
+          }
         },
         {
           "MethodName": "Goods Group Available",
@@ -2707,7 +2389,8 @@
               "Type": "integer",
               "Description": "amount of the goods to redeem"
             }
-          ]
+          ],
+          "response": {"-type": "integer"}
         },
         {
           "MethodName": "Coupon code verification",
@@ -2738,7 +2421,34 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "response": {
+            "events": {
+              "event_type":                 { "-type": "string"},
+              "goos_data": {
+                "goods_id":                 { "-type": "string"},
+                "group":                    { "-type": "string", "-optional": "true"},
+                "name":                     { "-type": "string"},
+                "description":              { "-type": "string"},
+                "quantity":                 { "-type": "integer"},
+                "image":                    { "-type": "string"},
+                "redeem": {
+                  "point": {
+                    "point_value":          { "-type": "integer"}
+                  },
+                  "custom":                 { "-type": "any"}
+                },
+                "code":                     { "-type": "any"},
+                "tags":                     { "-type": "any" },
+                "sponsor":                  { "-type": "boolean"},
+                "sort_order":               { "-type": "integer"},
+                "date_start":               { "-type": "string", "-optional": "true"},
+                "date_expire":              { "-type": "string", "-optional": "true"},
+                "days_expire":              { "-type": "string", "-optional": "true"}
+              },
+              "value":                      { "-type": "integer"}
+            }
+          }
         },
         {
           "MethodName": "Coupon code verification with redeem",
@@ -2776,7 +2486,34 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "response": {
+            "events": {
+              "event_type":                 { "-type": "string"},
+              "goos_data": {
+                "goods_id":                 { "-type": "string"},
+                "group":                    { "-type": "string", "-optional": "true"},
+                "name":                     { "-type": "string"},
+                "description":              { "-type": "string"},
+                "quantity":                 { "-type": "integer"},
+                "image":                    { "-type": "string"},
+                "redeem": {
+                  "point": {
+                    "point_value":          { "-type": "integer"}
+                  },
+                  "custom":                 { "-type": "any"}
+                },
+                "code":                     { "-type": "any"},
+                "tags":                     { "-type": "any" },
+                "sponsor":                  { "-type": "boolean"},
+                "sort_order":               { "-type": "integer"},
+                "date_start":               { "-type": "string", "-optional": "true"},
+                "date_expire":              { "-type": "string", "-optional": "true"},
+                "days_expire":              { "-type": "string", "-optional": "true"}
+              },
+              "value":                      { "-type": "integer"}
+            }
+          }
         },
         {
           "MethodName": "Return sponsor goods for player",
@@ -2793,7 +2530,12 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "response": {
+            "goods": {
+              "is_group":       { "-type": "boolean"}
+            }
+          }
         }
       ]
     },
@@ -2817,8 +2559,23 @@
               "Type": "string",
               "Description": "name of goods group"
             }
+          ],
+          "response": [
+            {
+              "branch": [
+                {
+                  "b_id":       { "-type": "string"},
+                  "b_name":     { "-type": "string"}
+                }
+              ],
+              "merchant": {
+                "id":           { "-type": "string"},
+                "name":         { "-type": "string"}
+              }
+            }
           ]
-        }]
+        }
+      ]
     },
     {
       "name": "Engine API",
@@ -2847,6 +2604,40 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
+          ],
+          "response": [
+            {
+              "name":                               { "-type": "string"},
+              "description":                        { "-type": "string"},
+              "tags":                               { "-type": "any"},
+              "jigsaw_set": [
+                {
+                  "id":                             { "-type": "string"},
+                  "name":                           { "-type": "string"},
+                  "description":                    { "-type": "string"},
+                  "specific_id":                    { "-type": "string"},
+                  "category":                       { "-type": "string"},
+                  "sort_order":                     { "-type": "integer"},
+                  "jigsaw_index":                   { "-type": "string"},
+                  "dataSet": [
+                    {
+                      "field_type":                 { "-type": "string"},
+                      "sortOrder":                  { "-type": "string"},
+                      "param_name":                 { "-type": "string"},
+                      "label":                      { "-type": "string"},
+                      "placeholder":                { "-type": "string", "-optional": "true"},
+                      "value":                      { "-type": "string"}
+                    }
+                  ],
+                  "config": {
+                    "[a-zA-Z0-9-%_:\\.]+":          { "-type": "any"}
+                  }
+                }
+              ],
+              "active_status":                      { "-type": "boolean"},
+              "id":                                 { "-type": "string"},
+              "action":                             { "-type": "any"}
+            }
           ]
         },
         {
@@ -2871,7 +2662,39 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "response": {
+            "name":                               { "-type": "string"},
+            "description":                        { "-type": "string"},
+            "tags":                               { "-type": "any"},
+            "jigsaw_set": [
+              {
+                "id":                             { "-type": "string"},
+                "name":                           { "-type": "string"},
+                "description":                    { "-type": "string"},
+                "specific_id":                    { "-type": "string"},
+                "category":                       { "-type": "string"},
+                "sort_order":                     { "-type": "integer"},
+                "jigsaw_index":                   { "-type": "string"},
+                "dataSet": [
+                  {
+                    "field_type":                 { "-type": "string"},
+                    "sortOrder":                  { "-type": "string"},
+                    "param_name":                 { "-type": "string"},
+                    "label":                      { "-type": "string"},
+                    "placeholder":                { "-type": "string", "-optional": "true"},
+                    "value":                      { "-type": "string"}
+                  }
+                ],
+                "config": {
+                  "[a-zA-Z0-9-%_:\\.]+":          { "-type": "any"}
+                }
+              }
+            ],
+            "active_status":                      { "-type": "boolean"},
+            "id":                                 { "-type": "string"},
+            "action":                             { "-type": "any"}
+          }
         },
         {
           "MethodName": "Rule",
@@ -2952,8 +2775,15 @@
           "HTTPMethod": "GET",
           "URI": "Engine/actionConfig",
           "RequiresOAuth": "N",
-          "Public": "Y", "save":"save",
-          "parameters": []
+          "Public": "Y",
+          "save": "save",
+          "parameters": [],
+          "response": {
+            "[a-zA-Z0-9-%_:\\.]+": {
+              "name":     { "-type": "string"},
+              "config":   { "-type": "any"}
+            }
+          }
         },
         {
           "MethodName": "Process Quest Rule",
@@ -3018,7 +2848,30 @@
               "Type": "string",
               "Description": "action of player"
             }
-          ]
+          ],
+          "response": {
+            "events": [
+              {
+                "event_type":     { "-type": "string"},
+                "reward_type":    { "-type": "string"},
+                "reward_data":    {
+                  "description":  { "-type": "string"},
+                  "per_user":     { "-type": "string"},
+                  "image":        { "-type": "string"},
+                  "date_start":   { "-type": "string"},
+                  "date_expire":  { "-type": "string"},
+                  "name":         { "-type": "string"},
+                  "code":         { "-type": "string"},
+                  "goods_id":     { "-type": "string"},
+                  "group":        { "-type": "string"}
+                },
+                "value":          { "-type": "string"}
+              }
+            ],
+            "events_missions":    { "-type": "any"},
+            "events_quests":      { "-type": "any"},
+            "processing_time":    { "-type": "string"}
+          }
         },
         {
           "MethodName": "Action Reward Player By Json",
@@ -3035,7 +2888,30 @@
               "Type": "string",
               "Description": "json data"
             }
-          ]
+          ],
+          "response": {
+            "events": [
+              {
+                "event_type":     { "-type": "string"},
+                "reward_type":    { "-type": "string"},
+                "reward_data":    {
+                  "description":  { "-type": "string"},
+                  "per_user":     { "-type": "string"},
+                  "image":        { "-type": "string"},
+                  "date_start":   { "-type": "string"},
+                  "date_expire":  { "-type": "string"},
+                  "name":         { "-type": "string"},
+                  "code":         { "-type": "string"},
+                  "goods_id":     { "-type": "string"},
+                  "group":        { "-type": "string"}
+                },
+                "value":          { "-type": "string"}
+              }
+            ],
+            "events_missions":    { "-type": "any"},
+            "events_quests":      { "-type": "any"},
+            "processing_time":    { "-type": "string"}
+          }
         },
         {
           "MethodName": "Process Rule Facebook",
@@ -3076,7 +2952,103 @@
               "Type": "string",
               "Description": "Specific tag(s) to find (e.g. foo,bar)"
             }
-          ]
+          ],
+          "response": {
+            "quests": [
+              {
+                "quest_name":                         { "-type": "string"},
+                "description":                        { "-type": "string"},
+                "hint":                               { "-type": "string"},
+                "image":                              { "-type": "string"},
+                "tags":                               { "-type": "any"},
+                "sort_order":                         { "-type": "string"},
+                "global_quest":                       { "-type": "string"},
+                "missions": [
+                  {
+                    "mission_name":                   { "-type": "string"},
+                    "mission_number":                 { "-type": "string"},
+                    "description":                    { "-type": "string"},
+                    "hint":                           { "-type": "string"},
+                    "image":                          { "-type": "string"},
+                    "completion": [
+                      {
+                        "completion_op":              { "-type": "string"},
+                        "completion_filter":          { "-type": "string"},
+                        "completion_value":           { "-type": "string"},
+                        "completion_id":              { "-type": "string"},
+                        "completion_type":            { "-type": "string"},
+                        "completion_element_id":      { "-type": "string"},
+                        "completion_title":           { "-type": "string"},
+                        "filtered_param": {
+                          "[a-zA-Z0-9-%_:\\.]+": {
+                            "operation":              { "-type": "string"},
+                            "completion_string":      { "-type": "string"}
+                          }
+                        },
+                        "completion_data": {
+                          "action_id":                { "-type": "string"},
+                          "name":                     { "-type": "string"},
+                          "description":              { "-type": "string"},
+                          "icon":                     { "-type": "string"},
+                          "color":                    { "-type": "string"}
+                        }
+                      }
+                    ],
+                    "mission_id":                     { "-type": "string"}
+                  }
+                ],
+                "organize_id":                        { "-type": "any"},
+                "organize_role":                      { "-type": "any"},
+                "status":                             { "-type": "boolean"},
+                "mission_order":                      { "-type": "boolean"},
+                "date_added":                         { "-type": "string"},
+                "rewards": [
+                  {
+                    "reward_value":                   { "-type": "string"},
+                    "reward_id":                      { "-type": "string"},
+                    "reward_type":                    { "-type": "string"},
+                    "reward_data":
+                    {
+                      "name":                         { "-type": "string"},
+                      "goods_id":                     { "-type": "string", "-optional": "true"},
+                      "badge_id":                     { "-type": "string", "-optional": "true"},
+                      "description":                  { "-type": "string"},
+                      "quantity":                     { "-type": "integer", "-optional": "true"},
+                      "per_user":                     { "-type": "integer", "-optional": "true"},
+                      "image":                        { "-type": "string"},
+                      "status":                       { "-type": "boolean", "-optional": "true"},
+                      "deleted":                      { "-type": "boolean", "-optional": "true"},
+                      "claim":                        { "-type": "boolean", "-optional": "true"},
+                      "redeem":                       { "-type": "boolean", "-optional": "true"},
+                      "sponsor":                      { "-type": "boolean"},
+                      "sort_order":                   { "-type": "integer", "-optional": "true"},
+                      "language_id":                  { "-type": "integer", "-optional": "true"},
+                      "date_start":                   { "-type": "string", "-optional": "true"},
+                      "date_expire":                  { "-type": "string", "-optional": "true"},
+                      "date_added":                   { "-type": "string", "-optional": "true"},
+                      "date_modified":                { "-type": "string", "-optional": "true"},
+                      "group":                        { "-type": "string", "-optional": "true"},
+                      "hint":                         { "-type": "string", "-optional": "true"},
+                      "tags":                         { "-type": "any", "-optional": "true"},
+                      "organize_id":                  { "-type": "any", "-optional": "true"},
+                      "organize_role":                { "-type": "any", "-optional": "true"}
+                    }
+                  }
+                ],
+                "feedbacks":                          { "-type": "any"},
+                "date_modified":                      { "-type": "string"},
+                "condition": [
+                  {
+                    "condition_value":                { "-type": "string"},
+                    "condition_type":                 { "-type": "string"},
+                    "condition_id":                   { "-type": "string"},
+                    "condition_data":                 { "-type": "any"}
+                  }
+                ],
+                "quest_id":                           { "-type": "string"}
+              }
+            ]
+          }
         },
         {
           "MethodName": "Quest List Info",
@@ -3093,7 +3065,103 @@
               "Type": "string",
               "Description": "Specific tag(s) to find (e.g. foo,bar)"
             }
-          ]
+          ],
+          "response": {
+            "quests": [
+              {
+                "quest_name":                         { "-type": "string"},
+                "description":                        { "-type": "string"},
+                "hint":                               { "-type": "string"},
+                "image":                              { "-type": "string"},
+                "tags":                               { "-type": "any"},
+                "sort_order":                         { "-type": "string"},
+                "global_quest":                       { "-type": "string"},
+                "missions": [
+                  {
+                    "mission_name":                   { "-type": "string"},
+                    "mission_number":                 { "-type": "string"},
+                    "description":                    { "-type": "string"},
+                    "hint":                           { "-type": "string"},
+                    "image":                          { "-type": "string"},
+                    "completion": [
+                      {
+                        "completion_op":              { "-type": "string"},
+                        "completion_filter":          { "-type": "string"},
+                        "completion_value":           { "-type": "string"},
+                        "completion_id":              { "-type": "string"},
+                        "completion_type":            { "-type": "string"},
+                        "completion_element_id":      { "-type": "string"},
+                        "completion_title":           { "-type": "string"},
+                        "filtered_param": {
+                          "[a-zA-Z0-9-%_:\\.]+": {
+                            "operation":              { "-type": "string"},
+                            "completion_string":      { "-type": "string"}
+                          }
+                        },
+                        "completion_data": {
+                          "action_id":                { "-type": "string"},
+                          "name":                     { "-type": "string"},
+                          "description":              { "-type": "string"},
+                          "icon":                     { "-type": "string"},
+                          "color":                    { "-type": "string"}
+                        }
+                      }
+                    ],
+                    "mission_id":                     { "-type": "string"}
+                  }
+                ],
+                "organize_id":                        { "-type": "any"},
+                "organize_role":                      { "-type": "any"},
+                "status":                             { "-type": "boolean"},
+                "mission_order":                      { "-type": "boolean"},
+                "date_added":                         { "-type": "string"},
+                "rewards": [
+                  {
+                    "reward_value":                   { "-type": "string"},
+                    "reward_id":                      { "-type": "string"},
+                    "reward_type":                    { "-type": "string"},
+                    "reward_data":
+                    {
+                      "name":                         { "-type": "string"},
+                      "goods_id":                     { "-type": "string", "-optional": "true"},
+                      "badge_id":                     { "-type": "string", "-optional": "true"},
+                      "description":                  { "-type": "string"},
+                      "quantity":                     { "-type": "integer", "-optional": "true"},
+                      "per_user":                     { "-type": "integer", "-optional": "true"},
+                      "image":                        { "-type": "string"},
+                      "status":                       { "-type": "boolean", "-optional": "true"},
+                      "deleted":                      { "-type": "boolean", "-optional": "true"},
+                      "claim":                        { "-type": "boolean", "-optional": "true"},
+                      "redeem":                       { "-type": "boolean", "-optional": "true"},
+                      "sponsor":                      { "-type": "boolean"},
+                      "sort_order":                   { "-type": "integer", "-optional": "true"},
+                      "language_id":                  { "-type": "integer", "-optional": "true"},
+                      "date_start":                   { "-type": "string", "-optional": "true"},
+                      "date_expire":                  { "-type": "string", "-optional": "true"},
+                      "date_added":                   { "-type": "string", "-optional": "true"},
+                      "date_modified":                { "-type": "string", "-optional": "true"},
+                      "group":                        { "-type": "string", "-optional": "true"},
+                      "hint":                         { "-type": "string", "-optional": "true"},
+                      "tags":                         { "-type": "any", "-optional": "true"},
+                      "organize_id":                  { "-type": "any", "-optional": "true"},
+                      "organize_role":                { "-type": "any", "-optional": "true"}
+                    }
+                  }
+                ],
+                "feedbacks":                          { "-type": "any"},
+                "date_modified":                      { "-type": "string"},
+                "condition": [
+                  {
+                    "condition_value":                { "-type": "string"},
+                    "condition_type":                 { "-type": "string"},
+                    "condition_id":                   { "-type": "string"},
+                    "condition_data":                 { "-type": "any"}
+                  }
+                ],
+                "quest_id":                           { "-type": "string"}
+              }
+            ]
+          }
         },
         {
           "MethodName": "Quest Info",
@@ -3110,7 +3178,101 @@
               "Type": "string",
               "Description": "quest id to query"
             }
-          ]
+          ],
+          "responsef": {
+            "quest": {
+              "quest_name":                         { "-type": "string"},
+              "description":                        { "-type": "string"},
+              "hint":                               { "-type": "string"},
+              "image":                              { "-type": "string"},
+              "tags":                               { "-type": "any"},
+              "sort_order":                         { "-type": "string"},
+              "global_quest":                       { "-type": "string"},
+              "missions": [
+                {
+                  "mission_name":                   { "-type": "string"},
+                  "mission_number":                 { "-type": "string"},
+                  "description":                    { "-type": "string"},
+                  "hint":                           { "-type": "string"},
+                  "image":                          { "-type": "string"},
+                  "completion": [
+                    {
+                      "completion_op":              { "-type": "string"},
+                      "completion_filter":          { "-type": "string"},
+                      "completion_value":           { "-type": "string"},
+                      "completion_id":              { "-type": "string"},
+                      "completion_type":            { "-type": "string"},
+                      "completion_element_id":      { "-type": "string"},
+                      "completion_title":           { "-type": "string"},
+                      "filtered_param": {
+                        "[a-zA-Z0-9-%_:\\.]+": {
+                          "operation":              { "-type": "string"},
+                          "completion_string":      { "-type": "string"}
+                        }
+                      },
+                      "completion_data": {
+                        "action_id":                { "-type": "string"},
+                        "name":                     { "-type": "string"},
+                        "description":              { "-type": "string"},
+                        "icon":                     { "-type": "string"},
+                        "color":                    { "-type": "string"}
+                      }
+                    }
+                  ],
+                  "mission_id":                     { "-type": "string"}
+                }
+              ],
+              "organize_id":                        { "-type": "any"},
+              "organize_role":                      { "-type": "any"},
+              "status":                             { "-type": "boolean"},
+              "mission_order":                      { "-type": "boolean"},
+              "date_added":                         { "-type": "string"},
+              "rewards": [
+                {
+                  "reward_value":                   { "-type": "string"},
+                  "reward_id":                      { "-type": "string"},
+                  "reward_type":                    { "-type": "string"},
+                  "reward_data":
+                  {
+                    "name":                         { "-type": "string"},
+                    "goods_id":                     { "-type": "string", "-optional": "true"},
+                    "badge_id":                     { "-type": "string", "-optional": "true"},
+                    "description":                  { "-type": "string"},
+                    "quantity":                     { "-type": "integer", "-optional": "true"},
+                    "per_user":                     { "-type": "integer", "-optional": "true"},
+                    "image":                        { "-type": "string"},
+                    "status":                       { "-type": "boolean", "-optional": "true"},
+                    "deleted":                      { "-type": "boolean", "-optional": "true"},
+                    "claim":                        { "-type": "boolean", "-optional": "true"},
+                    "redeem":                       { "-type": "boolean", "-optional": "true"},
+                    "sponsor":                      { "-type": "boolean"},
+                    "sort_order":                   { "-type": "integer", "-optional": "true"},
+                    "language_id":                  { "-type": "integer", "-optional": "true"},
+                    "date_start":                   { "-type": "string", "-optional": "true"},
+                    "date_expire":                  { "-type": "string", "-optional": "true"},
+                    "date_added":                   { "-type": "string", "-optional": "true"},
+                    "date_modified":                { "-type": "string", "-optional": "true"},
+                    "group":                        { "-type": "string", "-optional": "true"},
+                    "hint":                         { "-type": "string", "-optional": "true"},
+                    "tags":                         { "-type": "any", "-optional": "true"},
+                    "organize_id":                  { "-type": "any", "-optional": "true"},
+                    "organize_role":                { "-type": "any", "-optional": "true"}
+                  }
+                }
+              ],
+              "feedbacks":                          { "-type": "any"},
+              "date_modified":                      { "-type": "string"},
+              "condition": [
+                {
+                  "condition_value":                { "-type": "string"},
+                  "condition_type":                 { "-type": "string"},
+                  "condition_id":                   { "-type": "string"},
+                  "condition_data":                 { "-type": "any"}
+                }
+              ],
+              "quest_id":                           { "-type": "string"}
+            }
+          }
         },
         {
           "MethodName": "Mission Info",
@@ -3134,7 +3296,40 @@
               "Type": "string",
               "Description": "mission id to query"
             }
-          ]
+          ],
+          "response": {
+            "mission_name":                   { "-type": "string"},
+            "mission_number":                 { "-type": "string"},
+            "description":                    { "-type": "string"},
+            "hint":                           { "-type": "string"},
+            "image":                          { "-type": "string"},
+            "completion": [
+              {
+                "completion_op":              { "-type": "string"},
+                "completion_filter":          { "-type": "string"},
+                "completion_value":           { "-type": "string"},
+                "completion_id":              { "-type": "string"},
+                "completion_type":            { "-type": "string"},
+                "completion_element_id":      { "-type": "string"},
+                "completion_title":           { "-type": "string"},
+                "filtered_param": {
+                  "[a-zA-Z0-9-%_:\\.]+": {
+                    "operation":              { "-type": "string"},
+                    "completion_string":      { "-type": "string"}
+                  }
+                },
+                "completion_data": {
+                  "action_id":                { "-type": "string"},
+                  "name":                     { "-type": "string"},
+                  "description":              { "-type": "string"},
+                  "icon":                     { "-type": "string"},
+                  "color":                    { "-type": "string"}
+                }
+              }
+            ],
+            "mission_id":                     { "-type": "string"},
+            "quest_id":                       { "-type": "string"}
+          }
         },
         {
           "MethodName": "Quest List Available For Player",
@@ -3151,7 +3346,103 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "response": {
+            "quests": [
+              {
+                "quest_name":                         { "-type": "string"},
+                "description":                        { "-type": "string"},
+                "hint":                               { "-type": "string"},
+                "image":                              { "-type": "string"},
+                "tags":                               { "-type": "any"},
+                "sort_order":                         { "-type": "string"},
+                "global_quest":                       { "-type": "string"},
+                "condition": [
+                  {
+                    "condition_value":                { "-type": "string"},
+                    "condition_type":                 { "-type": "string"},
+                    "condition_id":                   { "-type": "string"},
+                    "condition_data":                 { "-type": "any"}
+                  }
+                ],
+                "rewards": [
+                  {
+                    "reward_value":                   { "-type": "string"},
+                    "reward_id":                      { "-type": "string"},
+                    "reward_type":                    { "-type": "string"},
+                    "reward_data":
+                    {
+                      "name":                         { "-type": "string"},
+                      "goods_id":                     { "-type": "string", "-optional": "true"},
+                      "badge_id":                     { "-type": "string", "-optional": "true"},
+                      "description":                  { "-type": "string"},
+                      "quantity":                     { "-type": "integer", "-optional": "true"},
+                      "per_user":                     { "-type": "integer", "-optional": "true"},
+                      "image":                        { "-type": "string"},
+                      "status":                       { "-type": "boolean", "-optional": "true"},
+                      "deleted":                      { "-type": "boolean", "-optional": "true"},
+                      "claim":                        { "-type": "boolean", "-optional": "true"},
+                      "redeem":                       { "-type": "boolean", "-optional": "true"},
+                      "sponsor":                      { "-type": "boolean"},
+                      "sort_order":                   { "-type": "integer", "-optional": "true"},
+                      "language_id":                  { "-type": "integer", "-optional": "true"},
+                      "date_start":                   { "-type": "string", "-optional": "true"},
+                      "date_expire":                  { "-type": "string", "-optional": "true"},
+                      "date_added":                   { "-type": "string", "-optional": "true"},
+                      "date_modified":                { "-type": "string", "-optional": "true"},
+                      "group":                        { "-type": "string", "-optional": "true"},
+                      "hint":                         { "-type": "string", "-optional": "true"},
+                      "tags":                         { "-type": "any", "-optional": "true"},
+                      "organize_id":                  { "-type": "any", "-optional": "true"},
+                      "organize_role":                { "-type": "any", "-optional": "true"}
+                    }
+                  }
+                ],
+                "missions": [
+                  {
+                    "mission_name":                   { "-type": "string"},
+                    "mission_number":                 { "-type": "string"},
+                    "description":                    { "-type": "string"},
+                    "hint":                           { "-type": "string"},
+                    "image":                          { "-type": "string"},
+                    "completion": [
+                      {
+                        "completion_op":              { "-type": "string"},
+                        "completion_filter":          { "-type": "string"},
+                        "completion_value":           { "-type": "string"},
+                        "completion_id":              { "-type": "string"},
+                        "completion_type":            { "-type": "string"},
+                        "completion_element_id":      { "-type": "string"},
+                        "completion_title":           { "-type": "string"},
+                        "filtered_param": {
+                          "[a-zA-Z0-9-%_:\\.]+": {
+                            "operation":              { "-type": "string"},
+                            "completion_string":      { "-type": "string"}
+                          }
+                        },
+                        "completion_data": {
+                          "action_id":                { "-type": "string"},
+                          "name":                     { "-type": "string"},
+                          "description":              { "-type": "string"},
+                          "icon":                     { "-type": "string"},
+                          "color":                    { "-type": "string"}
+                        }
+                      }
+                    ],
+                    "mission_id":                     { "-type": "string"}
+                  }
+                ],
+                "organize_id":                        { "-type": "any"},
+                "organize_role":                      { "-type": "any"},
+                "status":                             { "-type": "boolean"},
+                "mission_order":                      { "-type": "boolean"},
+                "feedbacks":                          { "-type": "any"},
+                "date_added":                         { "-type": "string"},
+                "date_modified":                      { "-type": "string"},
+                "quest_id":                           { "-type": "string"}
+              }
+            ]
+          }
         },
         {
           "MethodName": "Quest Available For Player",
@@ -3175,7 +3466,12 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "response": {
+            "event_type":       { "-type": "string"},
+            "event_message":    { "-type": "string"},
+            "event_status":     { "-type": "boolean"}
+          }
         },
         {
           "MethodName": "Join Quest",
@@ -3206,7 +3502,13 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "response": {
+            "events": {
+              "event_type":     { "-type": "string"},
+              "quest_id":       { "-type": "string"}
+            }
+          }
         },
         {
           "MethodName": "Join All Quests",
@@ -3230,7 +3532,10 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "response": {
+            "join_all":    { "-type": "string"}
+          }
         },
         {
           "MethodName": "Cancel Quest",
@@ -3261,7 +3566,13 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "response": {
+            "events": {
+              "event_type":     { "-type": "string"},
+              "quest_id":       { "-type": "string"}
+            }
+          }
         },
         {
           "MethodName": "Reset a Player's Quest",
@@ -3292,7 +3603,11 @@
               "Type": "string",
               "Description": "quest id"
             }
-          ]
+          ],
+          "response": {
+            "result":             { "-type": "string"},
+            "processing_time":    { "-type": "string"}
+          }
         },
         {
           "MethodName": "Quest Leader Board",
@@ -3348,7 +3663,40 @@
                 "join"
               ]
             }
-          ]
+          ],
+          "response": {
+            "result": [
+              {
+                "current":               { "-type": "integer"},
+                "date_completed":        { "-type": "string"},
+                "date_join":             { "-type": "string"},
+                "player": {
+                  "cl_player_id":        { "-type": "string"},
+                  "image":               { "-type": "string"},
+                  "username":            { "-type": "string"},
+                  "first_name":          { "-type": "string"},
+                  "last_name":           { "-type": "string"}
+                },
+                "goal":                  { "-type": "integer"}
+              }
+            ],
+            "player_data": {
+              "current":                 { "-type": "integer", "-optional": "true"},
+              "date_completed":          { "-type": "string", "-optional": "true"},
+              "date_join":               { "-type": "string", "-optional": "true"},
+              "player": {
+                "cl_player_id":          { "-type": "string", "-optional": "true"},
+                "image":                 { "-type": "string", "-optional": "true"},
+                "username":              { "-type": "string", "-optional": "true"},
+                "first_name":            { "-type": "string", "-optional": "true"},
+                "last_name":             { "-type": "string", "-optional": "true"}
+              },
+              "goal":                    { "-type": "integer", "-optional": "true"},
+              "rank":                    { "-type": "integer", "-optional": "true"},
+              "-optional": "true",
+              "-type": "array"
+            }
+          }
         }
       ]
     },

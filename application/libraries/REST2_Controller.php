@@ -324,9 +324,9 @@ abstract class REST2_Controller extends REST_Controller
             }
         }
         if(is_array($check_response)) foreach($check_response as $key => &$response){
-            if(!(array_key_exists('-optional',$response) && $response['-optional'] == "true") &&
+            if(is_array($response) && !(array_key_exists('-optional',$response) && $response['-optional'] == "true") &&
               (!array_key_exists($key,$pointer_response) && ($key != "[a-zA-Z0-9-%_:\.]+")) &&
-              $response['-type'] != "continue"){
+                (!array_key_exists('-type',$response) || $response['-type'] != "continue") && $response["-type"] != "any"){
                 $pointer_data = $this->error->setError('INTERNAL_ERROR', "Response result(s) missing");
                 $is_error = true;
                 break;
@@ -344,18 +344,20 @@ abstract class REST2_Controller extends REST_Controller
                         if (is_array($pointer_response[$match_key]) && isset($pointer_response[$match_key][0])) {
                             foreach ($pointer_response[$match_key] as $index => &$list) {
                                 $continue = false;
-                                if (is_array($list) && isset($response[0])){
-                                    foreach (array_keys($list) as $l_key){
-                                        if (array_key_exists($l_key, $response[0]) && array_key_exists('-type', $response[0][$l_key]) && $response[0][$l_key]['-type'] == "continue"){
+                                if (is_array($list) && isset($response[0])) {
+                                    foreach (array_keys($list) as $l_key) {
+                                        if (array_key_exists($l_key, $response[0]) && array_key_exists('-type', $response[0][$l_key]) && $response[0][$l_key]['-type'] == "continue") {
                                             $continue = true;
                                             break;
                                         }
                                     }
-                                    if($continue){
+                                    if ($continue) {
                                         $response_result[$match_key][$index] = $list;
                                         continue;
                                     }
                                     $response_result[$match_key][$index] = $this->check_response($pointer_data, $list, $response[0]);
+                                } elseif ($response["-type"] == "any") {
+                                    $response_result[$match_key][$index] = $list;
                                 } else {
                                     $response_result[$match_key][$index] = $this->check_response($pointer_data, $list, $response);
                                 }
