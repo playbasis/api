@@ -2,21 +2,18 @@
 
 class AuthTest extends PHPUnit_Framework_TestCase
 {
-
     public function setUp()
     {
-        $CI =& get_instance();
-        $CI->load->model('auth_model');
+        new GlobalSetup();
     }
 
     public function testGetApiInfo()
     {
         $auth = new Auth_model();
         $res = $auth->getApiInfo(array(
-            'key' => 'abc',
-            'secret' => 'abcde'
+            'key' => $_ENV['API_KEY'],
+            'secret' => $_ENV['API_SECRET'],
         ));
-        //print_r($res);
 
         $this->assertCount(4, $res);
         $this->assertArrayHasKey('client_id', $res);

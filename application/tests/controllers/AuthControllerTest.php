@@ -8,23 +8,16 @@ class AuthControllerTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $CI =& get_instance();
-        $CI->load->model('auth_model');
-        $CI->load->library('restclient');
-
-        $this->api_key = 'abc';
-        $this->api_secret = 'abcde';
-        $this->base_url = $CI->config->base_url();
+        new GlobalSetup();
     }
 
     public function testGetApiInfo()
     {
         $rest = new RestClient();
         $result = $rest->post($this->base_url .'Auth', array(
-            'api_key' => $this->api_key,
-            'api_secret' => $this->api_secret,
+            'api_key' => $_ENV['API_KEY'],
+            'api_secret' => $_ENV['API_SECRET'],
         ));
-        print_r($result);
 
         $this->assertTrue($result->success);
     }

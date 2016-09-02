@@ -5,8 +5,7 @@ class AuthFailureTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $CI =& get_instance();
-        $CI->load->model('auth_model');
+        new GlobalSetup();
     }
 
     public function testGetApiInfo()

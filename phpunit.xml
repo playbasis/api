@@ -16,4 +16,8 @@
             <!--directory suffix=".php">application/libraries</directory-->
         </blacklist>
     </filter>
+    <php>
+        <env name="API_KEY" value="abc"/>
+        <env name="API_SECRET" value="abcde"/>
+    </php>
 </phpunit>

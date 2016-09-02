@@ -7,7 +7,6 @@ class EmailHelperTest extends PHPUnit_Framework_TestCase
     {
         $CI =& get_instance();
         $CI->load->helper('email');
-        $CI->load->model('auth_model');
     }
 
     public function testEmailValidation()
@@ -16,4 +15,3 @@ class EmailHelperTest extends PHPUnit_Framework_TestCase
         $this->assertFalse(valid_email('test#test.com'));
     }
 }
-?>
