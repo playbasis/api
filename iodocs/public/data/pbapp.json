@@ -3734,7 +3734,20 @@
               "Type": "string",
               "Description": "Specific tag(s) to find (e.g. foo,bar)"
             }
-          ]
+          ],
+          "response": {
+            "result": [
+              {
+                "name":                      { "-type": "string"},
+                "image":                     { "-type": "string"},
+                "weight":                    { "-type": "string"},
+                "description":               { "-type": "string"},
+                "description_image":         { "-type": "string"},
+                "quiz_id":                   { "-type": "string"}
+              }
+            ],
+            "processing_time":               { "-type": "string"}
+          }
         },
         {
           "MethodName": "Get Detail of a Quiz",
@@ -3758,13 +3771,93 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "response": {
+            "result": {
+              "name":                                                 { "-type": "string"},
+              "image":                                                { "-type": "string"},
+              "weight":                                               { "-type": "integer"},
+              "date_start":                                           { "-type": "string"},
+              "date_expire":                                          { "-type": "string"},
+              "status":                                               { "-type": "boolean"},
+              "description":                                          { "-type": "string"},
+              "description_image":                                    { "-type": "string"},
+              "deleted":                                              { "-type": "boolean"},
+              "grades": [
+                {
+                  "grade_id":                                         { "-type": "string"},
+                  "start":                                            { "-type": "string"},
+                  "end":                                              { "-type": "string"},
+                  "grade":                                            { "-type": "string"},
+                  "rank":                                             { "-type": "string"},
+                  "rank_image":                                       { "-type": "string"},
+                  "rewards": {
+                    "exp": {
+                      "exp_value":                                    { "-type": "string"}
+                    },
+                    "point": {
+                      "point_value":                                  { "-type": "string"}
+                    },
+                    "badge": [
+                      {
+                        "badge_id":                                   { "-type": "string"},
+                        "badge_value":                                { "-type": "string"}
+                      }
+                    ]
+                  },
+                  "feedbacks": {
+                    "email": {                                          "-type": "array", "-optional": "true",
+                      "[a-zA-Z0-9-%_:\\.]+": {
+                        "subject":                                    { "-type": "string"}
+                      }
+
+                    },
+                    "sms": {                                            "-type": "array", "-optional": "true",
+                      "[a-zA-Z0-9-%_:\\.]+": {
+                        "checked":                                    { "-type": "string"}
+                      }
+
+                    }
+                  }
+                },
+                {
+                  "grade_id":                                         { "-type": "string"},
+                  "start":                                            { "-type": "string"},
+                  "end":                                              { "-type": "string"},
+                  "grade":                                            { "-type": "string"},
+                  "rank":                                             { "-type": "string"},
+                  "rank_image":                                       { "-type": "string"},
+                  "rewards": {
+                    "exp": {
+                      "exp_value":                                    { "-type": "string"}
+                    },
+                    "point": {
+                      "point_value":                                  { "-type": "string"}
+                    }
+                  },
+                  "feedbacks": {
+                    "email": {                                          "-type": "array","-optional": "true",
+                      "[a-zA-Z0-9-%_:\\.]+": {
+                        "subject":                                    { "-type": "string"}
+                      }
+                    }
+                  }
+                }
+              ],
+              "question_order":                                       { "-type": "boolean"},
+              "tags":                                                 { "-type": "any"},
+              "quiz_id":                                              { "-type": "string"},
+              "total_max_score":                                      { "-type": "integer"},
+              "total_questions":                                      { "-type": "integer"}
+            },
+            "processing_time":                                        { "-type": "string"}
+          }
         },
         {
           "MethodName": "Random Get a Quiz for a Player",
           "Synopsis": "Randomly get one quiz of a list of active quizzes for a given player.",
           "HTTPMethod": "GET",
-          "URI": "Quiz/random/",
+          "URI": "Quiz/random",
           "RequiresOAuth": "N",
           "Public": "Y",
           "parameters": [
@@ -3789,7 +3882,19 @@
               "Type": "string",
               "Description": "Specific tag(s) to find (e.g. foo,bar)"
             }
-          ]
+          ],
+          "response": {
+            "result": {
+              "name":                   { "-type": "string"},
+              "image":                  { "-type": "string"},
+              "weight":                 { "-type": "integer"},
+              "tags":                   { "-type": "any"},
+              "description":            { "-type": "string"},
+              "description_image":      { "-type": "string"},
+              "quiz_id":                { "-type": "string"}
+            },
+            "processing_time":          { "-type": "string"}
+          }
         },
         {
           "MethodName": "List Recent Quizzes Done by the Player",
@@ -3810,16 +3915,53 @@
               "Name": "limit",
               "Required": "URI",
               "Default": "5",
-              "Type": "string",
+              "Type": "integer",
               "Description": "limit number of quizzes"
             }
-          ]
+          ],
+          "response": {
+            "result": [
+              {
+                "value":                                  { "-type": "integer"},
+                "grade": {
+                  "grade_id":                             { "-type": "string", "-optional": "true"},
+                  "start":                                { "-type": "string", "-optional": "true"},
+                  "end":                                  { "-type": "string", "-optional": "true"},
+                  "grade":                                { "-type": "string", "-optional": "true"},
+                  "rank":                                 { "-type": "string", "-optional": "true"},
+                  "rank_image":                           { "-type": "string", "-optional": "true"},
+                  "rewards": [
+                    {
+                      "event_type":                       { "-type": "string"},
+                      "reward_type":                      { "-type": "string"},
+                      "reward_id":                        { "-type": "string"},
+                      "value":                            { "-type": "string"}
+                    }
+                  ],
+                  "feedbacks": {                            "-type": "any", "-optional": "true",
+                    "email": {
+                      "[a-zA-Z0-9-%_:\\.]+": {
+                        "subject":                        { "-type": "string"}
+                      }
+                    }
+                  },
+                  "score":                                { "-type": "integer"},
+                  "max_score":                            { "-type": "string"},
+                  "total_score":                          { "-type": "integer"},
+                  "total_max_score":                      { "-type": "integer"}
+                },
+                "total_completed_questions":              { "-type": "integer"},
+                "quiz_id":                                { "-type": "string"}
+              }
+            ],
+            "processing_time":                            { "-type": "string"}
+          }
         },
         {
           "MethodName": "List Recent Quizzes Done by the Player",
           "Synopsis": "List recent quizzes done by the player.",
           "HTTPMethod": "GET",
-          "URI": "Quiz/player/:player_id/",
+          "URI": "Quiz/player/:player_id",
           "RequiresOAuth": "N",
           "Public": "Y", "save":"save",
           "parameters": [
@@ -3830,7 +3972,44 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "response": {
+            "result": [
+              {
+                "value":                                  { "-type": "integer"},
+                "grade": {
+                  "grade_id":                             { "-type": "string", "-optional": "true"},
+                  "start":                                { "-type": "string", "-optional": "true"},
+                  "end":                                  { "-type": "string", "-optional": "true"},
+                  "grade":                                { "-type": "string", "-optional": "true"},
+                  "rank":                                 { "-type": "string", "-optional": "true"},
+                  "rank_image":                           { "-type": "string", "-optional": "true"},
+                  "rewards": [
+                    {
+                      "event_type":                       { "-type": "string"},
+                      "reward_type":                      { "-type": "string"},
+                      "reward_id":                        { "-type": "string"},
+                      "value":                            { "-type": "string"}
+                    }
+                  ],
+                  "feedbacks": {                            "-type": "any", "-optional": "true",
+                    "email": {
+                      "[a-zA-Z0-9-%_:\\.]+": {
+                        "subject":                        { "-type": "string"}
+                      }
+                    }
+                  },
+                  "score":                                { "-type": "integer"},
+                  "max_score":                            { "-type": "string"},
+                  "total_score":                          { "-type": "integer"},
+                  "total_max_score":                      { "-type": "integer"}
+                },
+                "total_completed_questions":              { "-type": "integer"},
+                "quiz_id":                                { "-type": "string"}
+              }
+            ],
+            "processing_time":                            { "-type": "string"}
+          }
         },
         {
           "MethodName": "List Pending Quizzes by the Player",
@@ -3851,7 +4030,7 @@
               "Name": "limit",
               "Required": "URI",
               "Default": "5",
-              "Type": "string",
+              "Type": "integer",
               "Description": "limit number of quizzes"
             }
           ]
@@ -3913,7 +4092,28 @@
                 "2"
               ]
             }
-          ]
+          ],
+          "response": {
+            "result": {
+              "question":           { "-type": "string"},
+              "question_image":     { "-type": "string"},
+              "timelimit":          { "-type": "string"},
+              "question_number":    { "-type": "string"},
+              "options": [
+                {
+                  "option":         { "-type": "string"},
+                  "option_image":   { "-type": "string"},
+                  "option_id":      { "-type": "string"},
+                  "score":          { "-type": "string", "-optional": "true"},
+                  "explanation":    { "-type": "string", "-optional": "true"}
+                }
+              ],
+              "index":              { "-type": "integer"},
+              "total":              { "-type": "integer"},
+              "question_id":        { "-type": "string"}
+            },
+            "processing_time":      { "-type": "string"}
+          }
         },
         {
           "MethodName": "Get a Question from a Quiz with reset timestamp",
@@ -3962,7 +4162,28 @@
                 "2"
               ]
             }
-          ]
+          ],
+          "response": {
+          "result": {               "-type": "any","-optional": "true",
+            "question":           { "-type": "string"},
+            "question_image":     { "-type": "string"},
+            "timelimit":          { "-type": "string"},
+            "question_number":    { "-type": "string"},
+            "options": [
+              {
+                "option":         { "-type": "string"},
+                "option_image":   { "-type": "string"},
+                "option_id":      { "-type": "string"},
+                "score":          { "-type": "string", "-optional": "true"},
+                "explanation":    { "-type": "string", "-optional": "true"}
+              }
+            ],
+            "index":              { "-type": "integer"},
+            "total":              { "-type": "integer"},
+            "question_id":        { "-type": "string"}
+          },
+          "processing_time":      { "-type": "string"}
+        }
         },
         {
           "MethodName": "Answer a Question from a Quiz",
@@ -4007,7 +4228,34 @@
               "Type": "string",
               "Description": "option id"
             }
-          ]
+          ],
+          "response": {
+            "result": {
+              "options": [
+                {
+                  "option":                         { "-type": "string"},
+                  "score":                          { "-type": "string"},
+                  "explanation":                    { "-type": "string"},
+                  "option_image":                   { "-type": "string"},
+                  "option_id":                      { "-type": "string"}
+                }
+              ],
+              "score":                              { "-type": "integer"},
+              "max_score":                          { "-type": "string"},
+              "explanation":                        { "-type": "string"},
+              "total_score":                        { "-type": "integer"},
+              "total_max_score":                    { "-type": "integer"},
+              "grade": {
+                "score":                            { "-type": "integer"},
+                "max_score":                        { "-type": "string"},
+                "total_score":                      { "-type": "integer"},
+                "total_max_score":                  { "-type": "integer"}
+              },
+              "rewards":                            { "-type": "any"}
+
+            },
+            "processing_time":                      { "-type": "string"}
+          }
         },
         {
           "MethodName": "Rank Players by Their Scores for a Quiz",
@@ -4028,10 +4276,20 @@
               "Name": "limit",
               "Required": "URI",
               "Default": "5",
-              "Type": "string",
+              "Type": "integer",
               "Description": "limit number of players"
             }
-          ]
+          ],
+          "response": {
+            "result": [
+              {
+                "pb_player_id":       { "-type": "string"},
+                "player_id":          { "-type": "string"},
+                "score":              { "-type": "integer"}
+              }
+            ],
+            "processing_time":        { "-type": "string"}
+          }
         },
         {
           "MethodName": "Rank Players by Their Scores for a Quiz",
@@ -4048,7 +4306,17 @@
               "Type": "string",
               "Description": "quiz id"
             }
-          ]
+          ],
+          "response": {
+            "result": [
+              {
+                "pb_player_id":       { "-type": "string"},
+                "player_id":          { "-type": "string"},
+                "score":              { "-type": "integer"}
+              }
+            ],
+            "processing_time":        { "-type": "string"}
+          }
         },
         {
           "MethodName": "Query for Quiz's Statistics",
@@ -4065,7 +4333,27 @@
               "Type": "string",
               "Description": "quiz id"
             }
-          ]
+          ],
+          "response": {
+            "result": [
+              {
+                "question":                 { "-type": "string"},
+                "question_image":           { "-type": "string"},
+                "question_id":              { "-type": "string"},
+                "options": [
+                  {
+                    "option":               { "-type": "string"},
+                    "option_image":         { "-type": "string"},
+                    "option_id":            { "-type": "string"},
+                    "count":                { "-type": "integer"}
+                  }
+                ],
+                "index":                    { "-type": "integer"},
+                "total":                    { "-type": "integer"}
+              }
+            ],
+            "processing_time":  { "-type": "string"}
+          }
         },
         {
           "MethodName": "Reset a Player's Quiz",
@@ -4096,7 +4384,11 @@
               "Type": "string",
               "Description": "quiz id"
             }
-          ]
+          ],
+          "response": {
+            "result":                   { "-type": "string"},
+            "processing_time":          { "-type": "string"}
+          }
         }
       ]
     },

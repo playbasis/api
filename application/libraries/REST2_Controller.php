@@ -324,9 +324,9 @@ abstract class REST2_Controller extends REST_Controller
             }
         }
         if(is_array($check_response)) foreach($check_response as $key => &$response){
-            if(is_array($response) && !(array_key_exists('-optional',$response) && $response['-optional'] == "true") &&
+            if(is_array($response) && !isset($response[0]) && !(array_key_exists('-optional',$response) && $response['-optional'] == "true") &&
               (!array_key_exists($key,$pointer_response) && ($key != "[a-zA-Z0-9-%_:\.]+")) &&
-                (!array_key_exists('-type',$response) || $response['-type'] != "continue") && $response["-type"] != "any"){
+                (!array_key_exists('-type',$response) || ($response['-type'] != "continue" && $response["-type"] != "any"))){
                 $pointer_data = $this->error->setError('INTERNAL_ERROR', "Response result(s) missing");
                 $is_error = true;
                 break;
