@@ -310,10 +310,41 @@ abstract class REST2_Controller extends REST_Controller
      * @param null|int $http_code
      */
 
-    private function check_response(&$pointer_data, &$pointer_response ,&$check_response) {
-        $response_result = array();
-        $is_error = false;
-        $pointer_response_temp = $pointer_response;
+    private function check_response(&$static_pointer_data, &$pointer_data, $data_head, $check_response, $check_head, &$response_result, &$is_error) {
+
+        if(isset($check_response[$check_head]['-type'])){
+            if (!is_null($pointer_data[$data_head]) && (gettype($pointer_data[$data_head]) != $check_response[$check_head]["-type"]) && $check_response[$check_head]["-type"] != "any"){
+                $is_error = true;
+                $static_pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid");
+            } else {
+                $response_result[$data_head] = $pointer_data[$data_head];
+            }
+
+        }else{
+            if(isset($check_response[$check_head][0])){
+                foreach($pointer_data[$data_head] as $key => $value){
+                    $this->check_response($static_pointer_data, $pointer_data[$data_head], $key, $check_response[$check_head], 0, $response_result[$data_head], $is_error);
+                }
+            }else{
+                foreach($check_response[$check_head] as $key => $value){
+                    $matches = preg_grep('/\b'.$key.'\b/',  array_keys($pointer_data[$data_head]));
+
+                    if(!$matches && !(array_key_exists('-optional',$check_response[$check_head][$key]) && $check_response[$check_head][$key]['-optional'] == "true")){
+                        $is_error = true;
+                        $static_pointer_data = $this->error->setError('INTERNAL_ERROR', "Response result(s) missing");
+                        break;
+                    }
+                    foreach($matches as $match){
+                        $response_result[$data_head][$match] = array();
+                        $this->check_response($static_pointer_data, $pointer_data[$data_head], $match, $check_response[$check_head], $key, $response_result[$data_head], $is_error);
+                        unset($pointer_data[$data_head][$match]);
+                    }
+                }
+            }
+        }
+
+
+        /*$pointer_response_temp  = is_null($pointer_response) ? array() : $pointer_response;
 
         if(!is_array($pointer_response) && isset($check_response['-type'])) {
             if (!is_null($pointer_response) && isset($check_response["-type"]) && !$this->is_type_match(gettype($pointer_response), $check_response["-type"]) && $check_response["-type"] != "any"){
@@ -324,7 +355,7 @@ abstract class REST2_Controller extends REST_Controller
             }
         }
         if(is_array($check_response)) foreach($check_response as $key => &$response){
-            if(is_array($response) && !isset($response[0]) && !(array_key_exists('-optional',$response) && $response['-optional'] == "true") &&
+            if(!is_null($pointer_response) && is_array($response) && !isset($response[0]) && !(array_key_exists('-optional',$response) && $response['-optional'] == "true") &&
               (!array_key_exists($key,$pointer_response) && ($key != "[a-zA-Z0-9-%_:\.]+")) &&
                 (!array_key_exists('-type',$response) || ($response['-type'] != "continue" && $response["-type"] != "any"))){
                 $pointer_data = $this->error->setError('INTERNAL_ERROR', "Response result(s) missing");
@@ -370,9 +401,8 @@ abstract class REST2_Controller extends REST_Controller
                     }
                 }
             }
-        }
-        if(!$is_error) $pointer_response = $response_result;
-        return $response_result;
+        }*/
+        //$pointer_response = $response_result;
     }
 
     public function response($data = array(), $http_code = null)
@@ -405,18 +435,16 @@ abstract class REST2_Controller extends REST_Controller
 
             is_numeric($http_code) OR $http_code = 200;
 
-            if($this->method_data && isset($this->method_data["response"]) && $data['success'] == true){
-                if (isset($this->method_data["response"][0])) {
-                    foreach ($data["response"] as &$list) {
-                        if (array_key_exists("message", $list)) {
-                            continue;
-                        }
-                        $this->check_response($data, $list, $this->method_data["response"][0]);
-                    }
-                } else {
-                    $this->check_response($data, $data["response"], $this->method_data["response"]);
+            $response_result = array();
+            $is_error = false;
+
+            if($this->method_data && isset($this->method_data["response"]) && $data['success'] == true) {
+                $this->check_response($data, $data, "response", $this->method_data, "response", $response_result, $is_error);
+                if (!$is_error) {
+                    $data["response"] = $response_result["response"];
                 }
             }
+
             
             $output = $this->format_data($data, $this->response->format);
         }
