@@ -169,6 +169,7 @@
           "response": {
             "player": [
               {
+                "message":      { "-type": "continue", "-optional": "true"},
                 "image":        { "-type": "string"},
                 "email":        { "-type": "string"},
                 "username":     { "-type": "string"},
@@ -182,8 +183,7 @@
                 "registered":   { "-type": "string"},
                 "last_login":   { "-type": "string"},
                 "last_logout":  { "-type": "string"},
-                "cl_player_id": { "-type": "string"},
-                "message":      { "-type": "continue"}
+                "cl_player_id": { "-type": "string"}
               }
             ]
           }
@@ -7585,11 +7585,10 @@
           "RequiresOAuth": "N",
           "Public": "Y", "save":"save",
           "parameters": [],
-          "response": [
-            {
-              "[a-zA-Z0-9-%_:\\.]+": {"-type": "string"}
-            }
-          ]
+          "response": {
+            "[a-zA-Z0-9-%_:\\.]+": {"-type": "string"}
+          }
+
         },
         {
           "MethodName": "Action Log",
@@ -7607,7 +7606,10 @@
           "URI": "Action/usedonly",
           "RequiresOAuth": "N",
           "Public": "Y", "save":"save",
-          "parameters": []
+          "parameters": [],
+          "response": {
+            "[a-zA-Z0-9-%_:\\.]+": {"-type": "string"}
+          }
         },
         {
           "MethodName": "Get Reward",
@@ -7616,7 +7618,10 @@
           "URI": "Reward",
           "RequiresOAuth": "N",
           "Public": "Y", "save":"save",
-          "parameters": []
+          "parameters": [],
+          "response": {
+            "[a-zA-Z0-9-%_:\\.]+": {"-type": "string"}
+          }
         },
         {
           "MethodName": "Get Reward badge",
@@ -7625,7 +7630,21 @@
           "URI": "Reward/badge",
           "RequiresOAuth": "N",
           "Public": "Y", "save":"save",
-          "parameters": []
+          "parameters": [],
+          "response": {
+            "badges": [
+              {
+                "badge_id":       {"-type": "string"},
+                "image":          {"-type": "string"},
+                "sort_order":     {"-type": "integer"},
+                "name":           {"-type": "string"},
+                "description":    {"-type": "string"},
+                "hint":           {"-type": "string"},
+                "sponsor":        {"-type": "boolean"},
+                "tags":           {"-type": "any"}
+              }
+            ]
+           }
         },
         {
           "MethodName": "Get Reward log",
@@ -7641,6 +7660,13 @@
               "Default": "",
               "Type": "string",
               "Description": "reward type"
+            }
+          ],
+          "responses": [
+            {
+              "[a-zA-Z0-9-%_:\\.]+": {
+                "[a-zA-Z0-9-%_:\\.]+":                {"-type": "integer"}
+              }
             }
           ]
         },
@@ -7660,7 +7686,14 @@
           "URI": "Player/new",
           "RequiresOAuth": "N",
           "Public": "Y", "save":"save",
-          "parameters": []
+          "parameters": [],
+          "response": [
+            {
+              "[a-zA-Z0-9-%_:\\.]+": {
+                "count":                            {"-type": "integer"}
+              }
+            }
+          ]
         },
         {
           "MethodName": "Get Player DAU",
@@ -7862,7 +7895,22 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "response": {
+            "result": {
+              "_id":                            {"-type": "string"},
+              "client_id":                      {"-type": "string"},
+              "site_id":                        {"-type": "string"},
+              "pb_player_id":                   {"-type": "string"},
+              "subscription_id":                {"-type": "string"},
+              "fitbit_token":                   {"-type": "string"},
+              "data_added":                     {"-type": "string"},
+              "data_modified":                  {"-type": "string"},
+              "status":                         {"-type": "boolean"},
+              "deleted":                        {"-type": "boolean"}
+            },
+            "processing_time":                  {"-type": "string"}
+          }
         },
         {
           "MethodName": "Add FitBit Player",
@@ -7900,7 +7948,13 @@
               "Type": "string",
               "Description": "subscription id to subscribe FitBit activity"
             }
-          ]
+          ],
+          "response": {
+            "result": {
+              "$id":                        {"-type": "string"}
+            },
+            "processing_time":              {"-type": "string"}
+          }
         },
         {
           "MethodName": "Update FitBit Player",
@@ -7938,7 +7992,11 @@
               "Type": "string",
               "Description": "subscription id to subscribe FitBit activity"
             }
-          ]
+          ],
+          "response": {
+            "result":                        {"-type": "boolean"},
+            "processing_time":               {"-type": "string"}
+          }
         },
         {
           "MethodName": "Delete FitBit Player",
@@ -7962,7 +8020,10 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "response": {
+            "processing_time":        {"-type": "string"}
+          }
         },
         {
           "MethodName": "Retrieve FitBit Player Data",
@@ -8011,6 +8072,7 @@
               "Description": "date start in the format yyyy-MM-dd or today."
             }
           ]
+
         }
       ]
     },
@@ -8053,7 +8115,18 @@
                 "false"
               ]
             }
-          ]
+          ],
+          "response": {
+            "result": [
+              {
+                "trip_id":          {"-type": "string"},
+                "finished":         {"-type": "boolean"},
+                "date_start":       {"-type": "string"},
+                "date_end":         {"-type": "string"}
+              }
+            ],
+            "processing_time":      {"-type": "string"}
+          }
         },
         {
           "MethodName": "Start Trip",
@@ -8077,7 +8150,11 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "response": {
+            "trip_id":               {"-type": "string"},
+            "processing_time":       {"-type": "string"}
+          }
         },
         {
           "MethodName": "Finish Trip",
@@ -8112,7 +8189,14 @@
                 "false"
               ]
             }
-          ]
+          ],
+          "response": {
+          "result": {
+            "driving_score":       {"-type": "string"},
+            "total_distance":      {"-type": "string"}
+          },
+          "processing_time":       {"-type": "string"}
+        }
         },
         {
           "MethodName": "Retrieve Trip Log",
@@ -8136,7 +8220,22 @@
               "Type": "string",
               "Description": "Specific trip id"
             }
-          ]
+          ],
+          "response": {
+            "result": [
+              {
+                "speed":             {"-type": "string"},
+                "latitude":          {"-type": "string"},
+                "longitude":         {"-type": "string"},
+                "altitude":          {"-type": "string"},
+                "rpm":               {"-type": "string"},
+                "distance":          {"-type": "string"},
+                "speed_limit":       {"-type": "string"},
+                "timestamp":         {"-type": "string"}
+              }
+            ],
+            "processing_time":       {"-type": "string"}
+          }
         },
         {
           "MethodName": "Add Trip Log",
@@ -8216,7 +8315,10 @@
               "Type": "integer",
               "Description": "Speed limit at the location ( km/h )"
             }
-          ]
+          ],
+          "response": {
+            "processing_time":       {"-type": "string"}
+          }
         }
       ]
     },
@@ -8296,6 +8398,18 @@
               "Type": "string",
               "Description": "Specify status of the content to find. Possible values are true, false and all. The default value is true"
             }
+          ],
+          "response": [
+            {
+              "game_name":                  {"-type": "string"},
+              "date_added":                 {"-type": "string"},
+              "date_modified":              {"-type": "string"},
+              "image":                      {"-type": "string"},
+              "template": {
+                "template_name":            {"-type": "string"},
+                "config":                   {"-type": "any"}
+              }
+            }
           ]
         },
         {
@@ -8335,7 +8449,25 @@
               "Type": "string",
               "Description": "Specific item id in the game"
             }
-          ]
+          ],
+          "response": {
+            "stage_level":                     {"-type": "integer"},
+            "stage_name":                      {"-type": "string"},
+            "items_status": [
+              {
+                "item_id":                     {"-type": "string"},
+                "item_name":                   {"-type": "string"},
+                "item_config": {
+                  "row":                       {"-type": "integer"},
+                  "column":                    {"-type": "integer"},
+                  "days_to_deduct":            {"-type": "integer"},
+                  "amount_to_harvest":         {"-type": "integer"}
+                },
+                "item_status":                 {"-type": "integer"},
+                "item_image":                  {"-type": "integer"}
+              }
+            ]
+          }
         },
         {
           "MethodName": "Set Game Current Stage",
