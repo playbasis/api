@@ -313,8 +313,8 @@ abstract class REST2_Controller extends REST_Controller
     private function check_response(&$static_pointer_data, &$pointer_data, $data_head, $check_response, $check_head, &$response_result, &$is_error) {
 
         if(isset($check_response[$check_head]['-type'])){
-            if (!is_null($pointer_data[$data_head]) && (gettype($pointer_data[$data_head]) != $check_response[$check_head]["-type"])
-                && $check_response[$check_head]["-type"] != "any" && $check_response[$check_head]["-type"] != "continue"){
+            if ( !is_null($pointer_data[$data_head]) && (gettype($pointer_data[$data_head]) != $check_response[$check_head]["-type"])
+                 && $check_response[$check_head]["-type"] != "any" && $check_response[$check_head]["-type"] != "continue"){
                 $is_error = true;
                 $static_pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid");
             }else {
@@ -324,9 +324,11 @@ abstract class REST2_Controller extends REST_Controller
 
         }else{
             $response_result[$data_head] = array();
-            if(isset($check_response[$check_head][0])){
-                foreach($pointer_data[$data_head] as $key => $value){
-                    $this->check_response($static_pointer_data, $pointer_data[$data_head], $key, $check_response[$check_head], 0, $response_result[$data_head], $is_error);
+            if(isset($check_response[$check_head][0]) ){
+                if(!is_null($pointer_data[$data_head])){
+                    foreach($pointer_data[$data_head] as $key => $value){
+                        $this->check_response($static_pointer_data, $pointer_data[$data_head], $key, $check_response[$check_head], 0, $response_result[$data_head], $is_error);
+                    }
                 }
             }else{
                 foreach($check_response[$check_head] as $key => $value){
