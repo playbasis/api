@@ -313,35 +313,49 @@ abstract class REST2_Controller extends REST_Controller
     private function check_response(&$static_pointer_data, &$pointer_data, $data_head, $check_response, $check_head, &$response_result, &$is_error) {
 
         if(isset($check_response[$check_head]['-type'])){
-            if (!is_null($pointer_data[$data_head]) && (gettype($pointer_data[$data_head]) != $check_response[$check_head]["-type"]) && $check_response[$check_head]["-type"] != "any"){
+            if (!is_null($pointer_data[$data_head]) && (gettype($pointer_data[$data_head]) != $check_response[$check_head]["-type"])
+                && $check_response[$check_head]["-type"] != "any" && $check_response[$check_head]["-type"] != "continue"){
                 $is_error = true;
                 $static_pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid");
-            } else {
+            }else {
                 $response_result[$data_head] = $pointer_data[$data_head];
+                return $check_response[$check_head]["-type"];
             }
 
         }else{
+            $response_result[$data_head] = array();
             if(isset($check_response[$check_head][0])){
                 foreach($pointer_data[$data_head] as $key => $value){
                     $this->check_response($static_pointer_data, $pointer_data[$data_head], $key, $check_response[$check_head], 0, $response_result[$data_head], $is_error);
                 }
             }else{
                 foreach($check_response[$check_head] as $key => $value){
+                    $type = null;
                     $matches = preg_grep('/\b'.$key.'\b/',  array_keys($pointer_data[$data_head]));
 
-                    if(!$matches && !(array_key_exists('-optional',$check_response[$check_head][$key]) && $check_response[$check_head][$key]['-optional'] == "true")){
+                    if(!$matches && ($key != "-optional") && ($key != "[a-zA-Z0-9-%_:\.]+")
+                                 && !(array_key_exists('-optional',$check_response[$check_head][$key])
+                                 && $check_response[$check_head][$key]['-optional'] == "true")
+                                 && !(array_key_exists('-type',$check_response[$check_head][$key]) && $check_response[$check_head][$key]['-type'] == "continue")
+                                 && !(isset($check_response[$check_head][$key][1]) && array_key_exists('-optional',$check_response[$check_head][$key][1]) && $check_response[$check_head][$key][1]['-optional'] == "true")
+                    ){
                         $is_error = true;
                         $static_pointer_data = $this->error->setError('INTERNAL_ERROR', "Response result(s) missing");
                         break;
                     }
                     foreach($matches as $match){
-                        $response_result[$data_head][$match] = array();
-                        $this->check_response($static_pointer_data, $pointer_data[$data_head], $match, $check_response[$check_head], $key, $response_result[$data_head], $is_error);
+                        $type = $this->check_response($static_pointer_data, $pointer_data[$data_head], $match, $check_response[$check_head], $key, $response_result[$data_head], $is_error);
                         unset($pointer_data[$data_head][$match]);
+                    }
+
+                    if($type == "continue"){
+                        break;
                     }
                 }
             }
         }
+
+        return "nothing";
 
 
         /*$pointer_response_temp  = is_null($pointer_response) ? array() : $pointer_response;
