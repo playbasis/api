@@ -126,6 +126,7 @@
           ],
           "response": {
             "player": { 
+              "cl_player_id": { "-type": "string"},
               "image":        { "-type": "string"},
               "email":        { "-type": "string"},
               "username":     { "-type": "string"},
@@ -138,8 +139,7 @@
               "birth_date":   { "-type": "string"},
               "registered":   { "-type": "string"},
               "last_login":   { "-type": "string"},
-              "last_logout":  { "-type": "string"},
-              "cl_player_id": { "-type": "string"}
+              "last_logout":  { "-type": "string"}
             }
           }
         },
@@ -169,7 +169,8 @@
           "response": {
             "player": [
               {
-                "message":      { "-type": "continue", "-optional": "true"},
+                "message":      { "-type": "continue"},
+                "cl_player_id": { "-type": "string"},
                 "image":        { "-type": "string"},
                 "email":        { "-type": "string"},
                 "username":     { "-type": "string"},
@@ -182,8 +183,7 @@
                 "birth_date":   { "-type": "string"},
                 "registered":   { "-type": "string"},
                 "last_login":   { "-type": "string"},
-                "last_logout":  { "-type": "string"},
-                "cl_player_id": { "-type": "string"}
+                "last_logout":  { "-type": "string"}
               }
             ]
           }
@@ -354,7 +354,7 @@
           ],
           "response": {
             "player": {
-              "custom": {
+              "custom": {                "-optional": "true",
                 "[a-zA-Z0-9-%_:\\.]+":  { "-type": "string"}
               }
             }
@@ -905,7 +905,7 @@
               ]
             }
           ],
-          "response": {
+          "responses": {
             "to":              { "-type": "string"},
             "from":            { "-type": "string"},
             "message":         { "-type": "string"},
@@ -1639,7 +1639,89 @@
               "Type": "string",
               "Description": "fields to be included (comma ',' as delimiter)"
             }
-          ]
+          ],
+          "response": {
+            "quest": {
+              "quest_name":                   { "-type": "string"},
+              "description":                  { "-type": "string"},
+              "hint":                         { "-type": "string"},
+              "image":                        { "-type": "string"},
+              "tags":                         { "-type": "any"},
+              "sort_order":                   { "-type": "string"},
+              "global_quest":                 { "-type": "string"},
+              "condition": [
+                {
+                  "condition_value":                { "-type": "string"},
+                  "condition_type":                 { "-type": "string"},
+                  "condition_id":                   { "-type": "string"},
+                  "condition_data":                 { "-type": "any"}
+                }
+              ],
+              "rewards": [
+                {
+                  "reward_value":             { "-type": "string"},
+                  "reward_id":                { "-type": "string"},
+                  "reward_type":              { "-type": "string"},
+                  "reward_data": {
+                      "[a-zA-Z0-9-%_:\\.]+":  { "-type": "any"}
+                  }
+                }
+              ],
+              "feedbacks": [
+                {
+                  "subject":          { "-type": "string", "-optional": "true"},
+                  "template_id":      { "-type": "string"},
+                  "feedback_type":    { "-type": "string"},
+                  "feedback_data": {
+                      "name":         { "-type": "string"},
+                      "message":      { "-type": "string"}
+                  }
+                }
+              ],
+              "missions": [
+                {
+                  "mission_name":                   { "-type": "string"},
+                  "mission_number":                 { "-type": "string"},
+                  "description":                    { "-type": "string"},
+                  "hint":                           { "-type": "string"},
+                  "image":                          { "-type": "string"},
+                  "completion": [
+                    {
+                      "completion_op":              { "-type": "string"},
+                      "completion_filter":          { "-type": "string"},
+                      "completion_value":           { "-type": "string"},
+                      "completion_id":              { "-type": "string"},
+                      "completion_type":            { "-type": "string"},
+                      "completion_element_id":      { "-type": "string"},
+                      "completion_title":           { "-type": "string"},
+                      "filtered_param": {
+                        "[a-zA-Z0-9-%_:\\.]+": {
+                          "operation":              { "-type": "string"},
+                          "completion_string":      { "-type": "string"}
+                        }
+                      },
+                      "completion_data": {
+                        "action_id":                { "-type": "string"},
+                        "name":                     { "-type": "string"},
+                        "description":              { "-type": "string"},
+                        "icon":                     { "-type": "string"},
+                        "color":                    { "-type": "string"}
+                      }
+                    }
+                  ],
+                  "mission_id":                     { "-type": "string"}
+                }
+              ],
+              "mission_order":      { "-type": "boolean"},
+              "organize_id":        { "-type": "string"},
+              "organize_role":      { "-type": "string"},
+              "status":             { "-type": "string"},
+              "date_added":         { "-type": "string"},
+              "date_modified":      { "-type": "string"},
+              "num_missions":       { "-type": "any"},
+              "quest_id":           { "-type": "string"}
+            }  
+          }
         },
         {
           "MethodName": "Quest List of Player",
@@ -1670,7 +1752,91 @@
               "Type": "string",
               "Description": "fields to be included (comma ',' as delimiter)"
             }
-          ]
+          ],
+          "response": {
+            "quests": [
+              {
+                "quest_name":                   { "-type": "string"},
+                "description":                  { "-type": "string"},
+                "hint":                         { "-type": "string"},
+                "image":                        { "-type": "string"},
+                "tags":                         { "-type": "any"},
+                "sort_order":                   { "-type": "string"},
+                "global_quest":                 { "-type": "string"},
+                "condition": [
+                  {
+                    "condition_value":                { "-type": "string"},
+                    "condition_type":                 { "-type": "string"},
+                    "condition_id":                   { "-type": "string"},
+                    "condition_data":                 { "-type": "any"}
+                  }
+                ],
+                "rewards": [
+                  {
+                    "reward_value":             { "-type": "string"},
+                    "reward_id":                { "-type": "string"},
+                    "reward_type":              { "-type": "string"},
+                    "reward_data": {
+                        "[a-zA-Z0-9-%_:\\.]+":  { "-type": "any"}
+                    }
+                  }
+                ],
+                "feedbacks": [
+                  {
+                    "subject":          { "-type": "string", "-optional": "true"},
+                    "template_id":      { "-type": "string"},
+                    "feedback_type":    { "-type": "string"},
+                    "feedback_data": {
+                        "name":         { "-type": "string"},
+                        "message":      { "-type": "string"}
+                    }
+                  }
+                ],
+                "missions": [
+                  {
+                    "mission_name":                   { "-type": "string"},
+                    "mission_number":                 { "-type": "string"},
+                    "description":                    { "-type": "string"},
+                    "hint":                           { "-type": "string"},
+                    "image":                          { "-type": "string"},
+                    "completion": [
+                      {
+                        "completion_op":              { "-type": "string"},
+                        "completion_filter":          { "-type": "string"},
+                        "completion_value":           { "-type": "string"},
+                        "completion_id":              { "-type": "string"},
+                        "completion_type":            { "-type": "string"},
+                        "completion_element_id":      { "-type": "string"},
+                        "completion_title":           { "-type": "string"},
+                        "filtered_param": {
+                          "[a-zA-Z0-9-%_:\\.]+": {
+                            "operation":              { "-type": "string"},
+                            "completion_string":      { "-type": "string"}
+                          }
+                        },
+                        "completion_data": {
+                          "action_id":                { "-type": "string"},
+                          "name":                     { "-type": "string"},
+                          "description":              { "-type": "string"},
+                          "icon":                     { "-type": "string"},
+                          "color":                    { "-type": "string"}
+                        }
+                      }
+                    ],
+                    "mission_id":                     { "-type": "string"}
+                  }
+                ],
+                "mission_order":      { "-type": "boolean"},
+                "organize_id":        { "-type": "string"},
+                "organize_role":      { "-type": "string"},
+                "status":             { "-type": "string"},
+                "date_added":         { "-type": "string"},
+                "date_modified":      { "-type": "string"},
+                "num_missions":       { "-type": "any"},
+                "quest_id":           { "-type": "string"}
+              }
+            ]
+          }
         },
         {
           "MethodName": "All Quests of Player",
@@ -2972,26 +3138,31 @@
                     "image":                          { "-type": "string"},
                     "completion": [
                       {
+                        "completion_value":           { "-type": "string"},
+                        "completion_type":            { "-type": "string"},
+                        "completion_id":              { "-type": "string"},
+                        "completion_title":           { "-type": "string"},
+                        "completion_data": {
+                            "action_id":                { "-type": "string"},
+                            "name":                     { "-type": "string"},
+                            "description":              { "-type": "string"},
+                            "icon":                     { "-type": "string"},
+                            "color":                    { "-type": "string"}
+                        },
                         "completion_op":              { "-type": "string"},
                         "completion_filter":          { "-type": "string"},
-                        "completion_value":           { "-type": "string"},
-                        "completion_id":              { "-type": "string"},
-                        "completion_type":            { "-type": "string"},
+                        
+                        
+                        
                         "completion_element_id":      { "-type": "string"},
-                        "completion_title":           { "-type": "string"},
+                        
                         "filtered_param": {
                           "[a-zA-Z0-9-%_:\\.]+": {
                             "operation":              { "-type": "string"},
                             "completion_string":      { "-type": "string"}
                           }
-                        },
-                        "completion_data": {
-                          "action_id":                { "-type": "string"},
-                          "name":                     { "-type": "string"},
-                          "description":              { "-type": "string"},
-                          "icon":                     { "-type": "string"},
-                          "color":                    { "-type": "string"}
                         }
+                        
                       }
                     ],
                     "mission_id":                     { "-type": "string"}

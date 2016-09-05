@@ -323,7 +323,7 @@ abstract class REST2_Controller extends REST_Controller
             }
 
         }else{
-            $response_result[$data_head] = array();
+            $response_result[$data_head] = is_null($pointer_data[$data_head]) ? null : array();
             if(isset($check_response[$check_head][0]) ){
                 if(!is_null($pointer_data[$data_head])){
                     foreach($pointer_data[$data_head] as $key => $value){
