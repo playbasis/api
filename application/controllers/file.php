@@ -250,7 +250,7 @@ class File extends REST2_Controller
         $this->benchmark->mark('end');
         $t = $this->benchmark->elapsed_time('start', 'end');
 
-        $files['processing_time'] = $t;
+        //$files['processing_time'] = $t;
         array_walk_recursive($files, array($this, "convert_mongo_object_and_category"));
 
         $this->response($this->resp->setRespond($files), 200);

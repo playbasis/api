@@ -2239,7 +2239,7 @@
                   "point": {
                     "point_value":      { "-type": "integer"}
                   },
-                  "custom":             { "-type": "any"}
+                  "custom":             { "-type": "any", "-optional": "true"}
                 },
                 "sponsor":              { "-type": "boolean"},
                 "organize_id":          { "-type": "any" },
@@ -2288,7 +2288,7 @@
                 "point": {
                   "point_value":      { "-type": "integer"}
                 },
-                "custom":             { "-type": "any"}
+                "custom":             { "-type": "any", "-optional": "true"}
               },
               "code":                 { "-type": "any"},
               "sponsor":              { "-type": "boolean"},
@@ -2436,7 +2436,7 @@
                   "point": {
                     "point_value":          { "-type": "integer"}
                   },
-                  "custom":                 { "-type": "any"}
+                  "custom":                 { "-type": "any", "-optional": "true"}
                 },
                 "code":                     { "-type": "any"},
                 "tags":                     { "-type": "any" },
@@ -2501,7 +2501,7 @@
                   "point": {
                     "point_value":          { "-type": "integer"}
                   },
-                  "custom":                 { "-type": "any"}
+                  "custom":                 { "-type": "any", "-optional": "true"}
                 },
                 "code":                     { "-type": "any"},
                 "tags":                     { "-type": "any" },
@@ -4433,7 +4433,39 @@
               "Type": "integer",
               "Description": "amount of the goods to give to player"
             }
-          ]
+          ],
+          "response": {
+            "events": [
+              {
+                "event_type":                   { "-type": "string"},
+                "goods_data": {
+                  "description":                { "-type": "string"},
+                  "quantity":                   { "-type": "integer"},
+                  "per_user":                   { "-type": "string"},
+                  "image":                      { "-type": "string"},
+                  "sponsor":                    { "-type": "boolean"},
+                  "sort_order":                 { "-type": "integer"},
+                  "redeem":                     {
+                    "point":                    {
+                      "point_value":            { "-type": "integer"}
+                    }
+                  },
+                  "tags":                       { "-type": "any"},
+                  "date_start":                 { "-type": "string"},
+                  "date_expire":                { "-type": "string"},
+                  "days_expire":                { "-type": "string"},
+                  "name":                       { "-type": "string"},
+                  "date_expired_coupon":        { "-type": "any"},
+                  "code":                       { "-type": "string"},
+                  "goods_id":                   { "-type": "string"},
+                  "group":                      { "-type": "string"}
+                },
+                "value":                        { "-type": "integer"}
+              }
+            ],
+            "log_id":                           { "-type": "string"},
+            "processing_time":                  { "-type": "string"}
+          }
         },
         {
           "MethodName": "Redeem Goods Group",
@@ -4471,7 +4503,38 @@
               "Type": "integer",
               "Description": "amount of the goods to redeem"
             }
-          ]
+          ],
+          "response": {
+            "events": [
+              {
+                "event_type":                   { "-type": "string"},
+                "goods_data": {
+                  "description":                { "-type": "string"},
+                  "quantity":                   { "-type": "integer"},
+                  "per_user":                   { "-type": "string"},
+                  "image":                      { "-type": "string"},
+                  "sponsor":                    { "-type": "boolean"},
+                  "sort_order":                 { "-type": "integer"},
+                  "redeem":                     {
+                    "point":                    {
+                      "point_value":            { "-type": "integer"}
+                    }
+                  },
+                  "tags":                       { "-type": "any"},
+                  "date_start":                 { "-type": "string"},
+                  "date_expire":                { "-type": "string"},
+                  "days_expire":                { "-type": "string"},
+                  "name":                       { "-type": "string"},
+                  "date_expired_coupon":        { "-type": "any", "-optional": "true"},
+                  "code":                       { "-type": "string"},
+                  "goods_id":                   { "-type": "string"},
+                  "group":                      { "-type": "string"}
+                },
+                "value":                        { "-type": "integer"}
+              }
+            ],
+            "log_id":                           { "-type": "string"}
+          }
         },
         {
           "MethodName": "Redeem Verification",
@@ -4637,7 +4700,8 @@
               "Type": "string",
               "Description": "template message (either message or template_id is required)"
             }
-          ]
+          ],
+          "responses": { "-type": "any"}
         },
         {
           "MethodName": "Send Email",
@@ -4690,7 +4754,8 @@
               "Type": "string",
               "Description": "email message (either message or template_id is required)"
             }
-          ]
+          ],
+          "responses": { "-type": "any"}
         },
         {
           "MethodName": "Send Email Coupon",
@@ -4742,7 +4807,8 @@
               "Type": "string",
               "Description": "template message (either message or template_id is required)"
             }
-          ]
+          ],
+          "responses": { "-type": "any"}
         },
         {
           "MethodName": "Check Email black list",
@@ -4766,7 +4832,8 @@
               "Type": "string",
               "Description": "email to check blacklist"
             }
-          ]
+          ],
+          "responses": { "-type": "boolean"}
         },
         {
           "MethodName": "Add Email black list",
@@ -4790,7 +4857,8 @@
               "Type": "string",
               "Description": "email to check blacklist"
             }
-          ]
+          ],
+          "responses": { "-type": "string"}
         },
         {
           "MethodName": "Remove Email black list",
@@ -4814,7 +4882,8 @@
               "Type": "string",
               "Description": "email to check blacklist"
             }
-          ]
+          ],
+          "responses": { "-type": "string"}
         },
         {
           "MethodName": "List Recent Email Sent to a Player",
@@ -4838,6 +4907,12 @@
               "Type": "string",
               "Description": "'datetime' format supported by strtotime"
             }
+          ],
+          "response": [
+            {
+              "subject":          { "-type": "string"},
+              "date_added":       { "-type": "string"}
+            }
           ]
         },
         {
@@ -4848,6 +4923,11 @@
           "RequiresOAuth": "N",
           "Public": "Y",
           "parameters": [
+          ],
+          "responses": [
+            {
+              "name":        { "-type": "string"}
+            }
           ]
         },
         {
@@ -4872,7 +4952,8 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "responses":    { "-type": "string"}
         },
         {
           "MethodName": "Send SMS By Phone Number",
@@ -4903,7 +4984,13 @@
               "Type": "string",
               "Description": "SMS message (either message or template_id is required)"
             }
-          ]
+          ],
+          "response": {
+            "to":                 { "-type": "string"},
+            "from":               { "-type": "string"},
+            "message":            { "-type": "string"},
+            "processing_time":    { "-type": "string"}
+          }
         },
         {
           "MethodName": "Send SMS",
@@ -4941,7 +5028,13 @@
               "Type": "string",
               "Description": "template message (either message or template_id is required)"
             }
-          ]
+          ],
+          "response": {
+            "to":                 { "-type": "string"},
+            "from":               { "-type": "string"},
+            "message":            { "-type": "string"},
+            "processing_time":    { "-type": "string"}
+          }
         },
         {
           "MethodName": "Send SMS Coupon",
@@ -4986,7 +5079,13 @@
               "Type": "string",
               "Description": "template message (either message or template_id is required)"
             }
-          ]
+          ],
+          "response": {
+            "to":                 { "-type": "string"},
+            "from":               { "-type": "string"},
+            "message":            { "-type": "string"},
+            "processing_time":    { "-type": "string"}
+          }
         },
         {
           "MethodName": "List Recent SMS Sent to a Player",
@@ -5010,6 +5109,12 @@
               "Type": "string",
               "Description": "'datetime' format supported by strtotime"
             }
+          ],
+          "response": [
+            {
+              "message":        { "-type": "string"},
+              "date_added":     { "-type": "string"}
+            }
           ]
         },
         {
@@ -5020,7 +5125,10 @@
           "RequiresOAuth": "N",
           "Public": "Y",
           "parameters": [
-          ]
+          ],
+          "responses": {
+            "name":     { "-type": "string"}
+          }
         },
         {
           "MethodName": "Get Processed SMS Template",
@@ -5044,7 +5152,8 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "responses":     { "-type": "string"}
         },
         {
           "MethodName": "Device Registration",
@@ -5100,7 +5209,10 @@
                 "Android"
               ]
             }
-          ]
+          ],
+          "response": {
+            "processing_time":    { "-type": "string"}
+          }
         },
         {
           "MethodName": "Send Push-Notification",
@@ -5138,7 +5250,8 @@
               "Type": "string",
               "Description": "template message (either message or template_id is required)"
             }
-          ]
+          ],
+          "responses":     { "-type": "string"}
         },
         {
           "MethodName": "Send Push-Notification Coupon",
@@ -5183,7 +5296,8 @@
               "Type": "string",
               "Description": "template message (either message or template_id is required)"
             }
-          ]
+          ],
+          "responses":     { "-type": "string"}
         },
         {
           "MethodName": "List Recent Push Notification to a Player",
@@ -5207,7 +5321,8 @@
               "Type": "string",
               "Description": "'datetime' format supported by strtotime"
             }
-          ]
+          ],
+          "responses":     { "-type": "string"}
         },
         {
           "MethodName": "List Push Notification Template",
@@ -5217,6 +5332,11 @@
           "RequiresOAuth": "N",
           "Public": "Y",
           "parameters": [
+          ],
+          "response": [
+            {
+              "name":       { "-type": "string"}
+            }
           ]
         },
         {
@@ -5241,7 +5361,8 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "responses":     { "-type": "string"}
         }
       ]
     },
@@ -5293,7 +5414,47 @@
               "Type": "string",
               "Description": "specify 'all' or 'player' (default is 'all')"
             }
-          ]
+          ],
+          "response": {
+            "activities": [
+              {
+                "event_type":        { "-type": "string"},
+                "message":           { "-type": "string", "-optional": "true"},
+                "reward_id":         { "-type": "string", "-optional": "true"},
+                "reward_name":       { "-type": "string", "-optional": "true"},
+                "value":             { "-type": "integer", "-optional": "true"},
+                "goods_id":          { "-type": "string", "-optional": "true"},
+                "quest_id":          { "-type": "string", "-optional": "true"},
+                "mission_id":        { "-type": "string", "-optional": "true"},
+                "quiz_id":           { "-type": "string", "-optional": "true"},
+                "date_added":        { "-type": "string"},
+                "id":                { "-type": "string"},
+                "player": {
+                  "cl_player_id":    { "-type": "string"},
+                  "username":        { "-type": "string"},
+                  "first_name":      { "-type": "string"},
+                  "last_name":       { "-type": "string"},
+                  "image":           { "-type": "string"},
+                  "exp":             { "-type": "integer"},
+                  "level":           { "-type": "integer"},
+                  "gender":          { "-type": "integer"}
+                },
+                "action_name":       { "-type": "string"},
+                "string_filter":     { "-type": "string", "-optional": "true"},
+                "action_icon":       { "-type": "string"},
+                "goods": {             "-type": "array", "-optional": "true",
+                  "goods_id":        { "-type": "string", "-optional": "true"},
+                  "image":           { "-type": "string", "-optional": "true"},
+                  "name":            { "-type": "string", "-optional": "true"},
+                  "description":     { "-type": "string", "-optional": "true"},
+                  "sponsor":         { "-type": "boolean", "-optional": "true"},
+                  "date_start":      { "-type": "string", "-optional": "true"},
+                  "date_expire":     { "-type": "string", "-optional": "true"}
+                }
+
+              }
+            ]
+          }
         },
         {
           "MethodName": "Detail Activity",
@@ -5310,7 +5471,45 @@
               "Type": "string",
               "Description": "id of the activity"
             }
-          ]
+          ],
+          "response": {
+            "activity": {
+              "event_type":        { "-type": "string"},
+              "message":           { "-type": "string", "-optional": "true"},
+              "reward_id":         { "-type": "string", "-optional": "true"},
+              "reward_name":       { "-type": "string", "-optional": "true"},
+              "value":             { "-type": "integer", "-optional": "true"},
+              "goods_id":          { "-type": "string", "-optional": "true"},
+              "quest_id":          { "-type": "string", "-optional": "true"},
+              "mission_id":        { "-type": "string", "-optional": "true"},
+              "quiz_id":           { "-type": "string", "-optional": "true"},
+              "date_added":        { "-type": "string"},
+              "id":                { "-type": "string"},
+              "player": {
+                "cl_player_id":    { "-type": "string"},
+                "username":        { "-type": "string"},
+                "first_name":      { "-type": "string"},
+                "last_name":       { "-type": "string"},
+                "image":           { "-type": "string"},
+                "exp":             { "-type": "integer"},
+                "level":           { "-type": "integer"},
+                "gender":          { "-type": "integer"}
+              },
+              "action_name":       { "-type": "string"},
+              "string_filter":     { "-type": "string", "-optional": "true"},
+              "action_icon":       { "-type": "string"},
+              "goods": {             "-type": "array", "-optional": "true",
+                "goods_id":        { "-type": "string", "-optional": "true"},
+                "image":           { "-type": "string", "-optional": "true"},
+                "name":            { "-type": "string", "-optional": "true"},
+                "description":     { "-type": "string", "-optional": "true"},
+                "sponsor":         { "-type": "boolean", "-optional": "true"},
+                "date_start":      { "-type": "string", "-optional": "true"},
+                "date_expire":     { "-type": "string", "-optional": "true"}
+              },
+              "socials":           { "-type": "any", "-optional": "true"}
+            }
+          }
         },
         {
           "MethodName": "Like Activity",
@@ -5341,7 +5540,10 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "response": {
+            "result":         { "-type": "boolean"}
+          }
         },
         {
           "MethodName": "Comment Activity",
@@ -5379,7 +5581,10 @@
               "Type": "string",
               "Description": "comment message"
             }
-          ]
+          ],
+          "response": {
+            "result":         { "-type": "boolean"}
+          }
         }
       ]
     },
@@ -5417,7 +5622,38 @@
               "Type": "integer",
               "Description": "number of results to return"
             }
-          ]
+          ],
+          "success": true,
+          "error_code": "0000",
+          "message": "Success",
+          "response": {
+            "points": [
+              {
+                "message":          { "-type": "string"},
+                "reward_id":        { "-type": "string"},
+                "reward_name":      { "-type": "string"},
+                "value":            { "-type": "integer"},
+                "date_added":       { "-type": "string"},
+                "player": {
+                  "cl_player_id":   { "-type": "string"},
+                  "image":          { "-type": "string"},
+                  "username":       { "-type": "string"},
+                  "exp":            { "-type": "integer"},
+                  "level":          { "-type": "integer"},
+                  "first_name":     { "-type": "string"},
+                  "last_name":      { "-type": "string"},
+                  "gender":         { "-type": "integer"}
+                },
+                "badge": {            "-type": "array", "-optional": "true",
+                  "badge_id":       { "-type": "string"},
+                  "image":          { "-type": "string"},
+                  "name":           { "-type": "string"},
+                  "description":    { "-type": "string"},
+                  "hint":           { "-type": "string"}
+                }
+              }
+            ]
+          }
         },
         {
           "MethodName": "Recent Point By Player",
@@ -5434,7 +5670,35 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "response": {
+            "points": [
+              {
+                "message":          { "-type": "string"},
+                "reward_id":        { "-type": "string"},
+                "reward_name":      { "-type": "string"},
+                "value":            { "-type": "integer"},
+                "date_added":       { "-type": "string"},
+                "player": {
+                  "cl_player_id":   { "-type": "string"},
+                  "image":          { "-type": "string"},
+                  "username":       { "-type": "string"},
+                  "exp":            { "-type": "integer"},
+                  "level":          { "-type": "integer"},
+                  "first_name":     { "-type": "string"},
+                  "last_name":      { "-type": "string"},
+                  "gender":         { "-type": "integer"}
+                },
+                "badge": {            "-type": "array", "-optional": "true",
+                  "badge_id":       { "-type": "string"},
+                  "image":          { "-type": "string"},
+                  "name":           { "-type": "string"},
+                  "description":    { "-type": "string"},
+                  "hint":           { "-type": "string"}
+                }
+              }
+            ]
+          }
         },
         {
           "MethodName": "Reset Point",
@@ -5458,7 +5722,10 @@
               "Type": "string",
               "Description": "name of the point-based reward to query"
             }
-          ]
+          ],
+          "response": {
+            "reset":        { "-type": "boolean"}
+          }
         }
       ]
     },
@@ -5517,7 +5784,25 @@
               "Type": "string",
               "Description": "Specify paging limit [default = 20]"
             }
-          ]
+          ],
+          "response": {
+            "results": [
+              {
+                "_id":               { "-type": "string"},
+                "name":              { "-type": "string"},
+                "description":       { "-type": "string"},
+                "status":            { "-type": "boolean"},
+                "slug":              { "-type": "string"},
+                "date_added":        { "-type": "string"},
+                "date_modified":     { "-type": "string"},
+                "parent": {            "-type": "array", "-optional": "true",
+                  "id":              { "-type": "string"},
+                  "name":            { "-type": "string"}
+                }
+              }
+            ],
+            "processing_time":       { "-type": "string"}
+          }
         },
         {
           "MethodName": "List nodes",
@@ -5583,7 +5868,29 @@
               "Type": "string",
               "Description": "Specify paging limit [default = 20]"
             }
-          ]
+          ],
+          "response": {
+            "results": [
+              {
+                "_id":                  { "-type": "string"},
+                "name":                 { "-type": "string"},
+                "description":          { "-type": "string"},
+                "status":               { "-type": "boolean"},
+                "slug":                 { "-type": "string"},
+                "date_added":           { "-type": "string"},
+                "date_modified":        { "-type": "string"},
+                "organize": {
+                  "id":                 { "-type": "string"},
+                  "name":               { "-type": "string"}
+                },
+                "parent": {               "-type": "array", "-optional": "true",
+                  "id":                 { "-type": "string"},
+                  "name":               { "-type": "string"}
+                }
+              }
+            ],
+            "processing_time":          { "-type": "string"}
+          }
         },
         {
           "MethodName": "Add player to Node",
@@ -5614,7 +5921,10 @@
               "Type": "string",
               "Description": "Player Id to add to Node"
             }
-          ]
+          ],
+          "response": {
+            "processing_time":         { "-type": "string"}
+          }
         },
         {
           "MethodName": "Add player to Node",
@@ -5639,7 +5949,7 @@
               "Description": "Node Id to add player"
             },
             {
-              "Name": "organize",
+              "Name": "organize_type",
               "Required": "URI",
               "Default": "",
               "Type": "string",
@@ -5683,7 +5993,10 @@
               "Type": "string",
               "Description": "Player Id to add to Node"
             }
-          ]
+          ],
+          "response": {
+            "processing_time":         { "-type": "string"}
+          }
         },
         {
           "MethodName": "Set player role",
@@ -5721,7 +6034,10 @@
               "Type": "string",
               "Description": "Role name to set player's role"
             }
-          ]
+          ],
+          "response": {
+            "processing_time":         { "-type": "string"}
+          }
         },
         {
           "MethodName": "Unset player role",
@@ -5759,7 +6075,10 @@
               "Type": "string",
               "Description": "Role name to unset player's role"
             }
-          ]
+          ],
+          "response": {
+            "processing_time":         { "-type": "string"}
+          }
         },
         {
           "MethodName": "Get Players list from node id",
@@ -5782,6 +6101,11 @@
               "Default": "",
               "Type": "string",
               "Description": "Role name to unset player's role"
+            }
+          ],
+          "response": [
+            {
+              "player_id":         { "-type": "string"}
             }
           ]
         },
@@ -5856,7 +6180,26 @@
               "Type": "string",
               "Description": "year to rank players by (2015, 2016 , ...)"
             }
-          ]
+          ],
+          "response": {
+            "leaderboard": [
+              {
+                "cl_player_id":           { "-type": "string"},
+                "image":                  { "-type": "string"},
+                "username":               { "-type": "string"},
+                "first_name":             { "-type": "string"},
+                "last_name":              { "-type": "string"},
+                "nodes_info": [
+                  {
+                    "_id":                { "-type": "string"},
+                    "name":               { "-type": "string"}
+                  }
+                ],
+                "percent_changed":        { "-type": "integer"},
+                "[a-zA-Z0-9-%_:\\.]+":    { "-type": "integer"}
+              }
+            ]
+          }
         },
         {
           "MethodName": "Peer Leader board",
@@ -5873,7 +6216,26 @@
               "Type": "string",
               "Description": "organization id to be ranked"
             }
-          ]
+          ],
+          "response": {
+            "leaderboard": [
+              {
+                "cl_player_id":           { "-type": "string"},
+                "image":                  { "-type": "string"},
+                "username":               { "-type": "string"},
+                "first_name":             { "-type": "string"},
+                "last_name":              { "-type": "string"},
+                "nodes_info": [
+                  {
+                    "_id":                { "-type": "string"},
+                    "name":               { "-type": "string"}
+                  }
+                ],
+                "percent_changed":        { "-type": "integer"},
+                "[a-zA-Z0-9-%_:\\.]+":    { "-type": "integer"}
+              }
+            ]
+          }
         },
         {
           "MethodName": "Peer Leader board By Action",
@@ -5946,7 +6308,26 @@
               "Type": "string",
               "Description": "year to rank players by (2015, 2016 , ...)"
             }
-          ]
+          ],
+          "response": {
+            "leaderboard": [
+              {
+                "cl_player_id":           { "-type": "string"},
+                "image":                  { "-type": "string"},
+                "username":               { "-type": "string"},
+                "first_name":             { "-type": "string"},
+                "last_name":              { "-type": "string"},
+                "nodes_info": [
+                  {
+                    "_id":                { "-type": "string"},
+                    "name":               { "-type": "string"}
+                  }
+                ],
+                "percent_changed":        { "-type": "integer"},
+                "[a-zA-Z0-9-%_:\\.]+":    { "-type": "integer"}
+              }
+            ]
+          }
         },
         {
           "MethodName": "Find child nodes",
@@ -5967,7 +6348,7 @@
               "Name": "layer",
               "Required": "URI",
               "Default": "",
-              "Type": "number",
+              "Type": "integer",
               "Description": "Layer of nodes under specific node to find [default = 0 (for finding all layer)]"
             }
           ]
@@ -6393,7 +6774,37 @@
               "Type": "string",
               "Description": "true = Display content which the player does not give feedback yet, false = Display content which the player has given the feedback"
             }
-          ]
+          ],
+          "response": {
+            "result": [
+              {
+                "_id":                                {"-type": "string"},
+                "title":                              {"-type": "string"},
+                "summary":                            {"-type": "string"},
+                "detail":                             {"-type": "string"},
+                "date_start":                         {"-type": "string"},
+                "date_end":                           {"-type": "string"},
+                "image":                              {"-type": "string"},
+                "status":                             {"-type": "boolean"},
+                "pin":                                {"-type": "string","-optional": "true"},
+                "tags":                               {"-type": "any"},
+                "node_id":                            {"-type": "string"},
+                "category":                           {"-type": "string","-optional": "true"},
+                "organize": [
+                  {
+                    "name":                           {"-type": "string"},
+                    "node_id":                        {"-type": "string"},
+                    "organize_type":                  {"-type": "string"},
+                    "roles":                          {"-type": "any"}
+                  }
+                ],
+                "player_id":                          {"-type": "string","-optional": "true"},
+                "image_thumb_small":                  {"-type": "string"},
+                "image_thumb_large":                  {"-type": "string"}
+              }
+            ],
+            "processing_time":                        {"-type": "string"}
+          }
         },
         {
           "MethodName": "Count Content",
@@ -6466,7 +6877,11 @@
               "Type": "string",
               "Description": "true = Display content which the player does not give feedback yet, false = Display content which the player has given the feedback"
             }
-          ]
+          ],
+          "response": {
+            "result":                       {"-type": "integer"},
+            "processing_time":              {"-type": "string"}
+          }
         },
         {
           "MethodName": "Create content",
@@ -6581,7 +6996,12 @@
               "Type": "string",
               "Description": "custom field values separated by comma"
             }
-          ]
+          ],
+          "response": {
+            "result":                        {"-type": "any"},
+            "node_id":                       {"-type": "string"},
+            "processing_time":               {"-type": "string"}
+          }
         },
         {
           "MethodName": "Update content",
@@ -6689,7 +7109,10 @@
               "Type": "string",
               "Description": "custom field values separated by comma"
             }
-          ]
+          ],
+          "response": {
+            "processing_time":              {"-type": "string"}
+          }
         },
         {
           "MethodName": "Delete content",
@@ -6713,7 +7136,10 @@
               "Type": "string",
               "Description": "node id as used in client's content"
             }
-          ]
+          ],
+          "response": {
+            "processing_time":              {"-type": "string"}
+          }
         },
         {
           "MethodName": "Retrieve Category",
@@ -6765,7 +7191,16 @@
               "Type": "integer",
               "Description": "number of results to return"
             }
-          ]
+          ],
+          "response": {
+            "result": [
+              {
+                "_id":               {"-type": "string"},
+                "name":              {"-type": "string"}
+              }
+            ],
+            "processing_time":       {"-type": "string"}
+          }
         },
         {
           "MethodName": "Create Category",
@@ -6789,7 +7224,10 @@
               "Type": "string",
               "Description": "Specific name of category"
             }
-          ]
+          ],
+          "response": {
+            "processing_time":       {"-type": "string"}
+          }
         },
         {
           "MethodName": "Update Category",
@@ -6820,7 +7258,10 @@
               "Type": "string",
               "Description": "Specific new name of category"
             }
-          ]
+          ],
+          "response": {
+            "processing_time":         {"-type": "string"}
+          }
         },
         {
           "MethodName": "Delete Category",
@@ -6844,7 +7285,10 @@
               "Type": "string",
               "Description": "Specific id of category"
             }
-          ]
+          ],
+          "response": {
+            "processing_time":         {"-type": "string"}
+          }
         },
         {
           "MethodName": "Action Like",
@@ -6889,7 +7333,11 @@
               "Type": "string",
               "Description": "custom field values separated by comma"
             }
-          ]
+          ],
+          "response": {
+            "result":                  {"-type": "boolean"},
+            "processing_time":         {"-type": "string"}
+          }
         },
         {
           "MethodName": "Action Dislike",
@@ -6934,7 +7382,10 @@
               "Type": "string",
               "Description": "custom field values separated by comma"
             }
-          ]
+          ],
+          "response": {
+            "processing_time":         {"-type": "string"}
+          }
         },
         {
           "MethodName": "Give feedback",
@@ -6986,7 +7437,11 @@
                 "Type": "string",
                 "Description": "custom field values separated by comma"
             }
-          ]
+          ],
+          "response": {
+            "result":                  {"-type": "any"},
+            "processing_time":         {"-type": "string"}
+          }
         }
       ]
     },
@@ -7072,7 +7527,24 @@
               "Type": "string",
               "Description": "Direction to order ('desc', 'asc')"
             }
-          ]
+          ],
+          "response": {
+            "0": {
+              "_id":                          {"-type": "string"},
+              "client_id":                    {"-type": "string"},
+              "site_id":                      {"-type": "string"},
+              "user_id":                      {"-type": "string"},
+              "url":                          {"-type": "string"},
+              "file_size":                    {"-type": "integer"},
+              "file_name":                    {"-type": "string"},
+              "directory":                    {"-type": "string"},
+              "date_added":                   {"-type": "string"},
+              "date_modified":                {"-type": "string"},
+              "thumb_small":                  {"-type": "string"},
+              "thumb_large":                  {"-type": "string"}
+            },
+            "processing_time":                {"-type": "string"}
+          }
         },
         {
           "MethodName": "Delete",
@@ -7102,7 +7574,7 @@
     },
     {
       "name": "Insights API",
-      "endpoint": ["Action,Reward,Player"],
+      "endpoint": ["Action","Reward","Player"],
       "Public": "Y",
       "methods": [
         {
@@ -7112,7 +7584,12 @@
           "URI": "Action",
           "RequiresOAuth": "N",
           "Public": "Y", "save":"save",
-          "parameters": []
+          "parameters": [],
+          "response": [
+            {
+              "[a-zA-Z0-9-%_:\\.]+": {"-type": "string"}
+            }
+          ]
         },
         {
           "MethodName": "Action Log",

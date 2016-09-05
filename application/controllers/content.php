@@ -502,7 +502,7 @@ class Content extends REST2_Controller
                 $contentInfo['custom'][$key] = isset($values[$i]) ? $values[$i] : null;
             }
         }
-        if (is_array($contentInfo['custom'])) {
+        if (isset($contentInfo['custom']) && is_array($contentInfo['custom'])) {
             foreach ($contentInfo['custom'] as $name => $value) {
                 $value = str_replace(',', '', $value);
                 if (is_numeric($value)) {
@@ -585,7 +585,7 @@ class Content extends REST2_Controller
                 $contentInfo['custom'][$key] = isset($values[$i]) ? $values[$i] : null;
             }
         }
-        if (is_array($contentInfo['custom'])) {
+        if (isset($contentInfo['custom']) && is_array($contentInfo['custom'])) {
             foreach ($contentInfo['custom'] as $name => $value) {
                 $value = str_replace(',', '', $value);
                 if (is_numeric($value)) {
