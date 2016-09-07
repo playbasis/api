@@ -905,7 +905,7 @@
               ]
             }
           ],
-          "responses": {
+          "response": {
             "to":              { "-type": "string"},
             "from":            { "-type": "string"},
             "message":         { "-type": "string"},
@@ -1208,12 +1208,12 @@
                 "reward_name":              { "-type": "string"},
                 "value":                    { "-type": "integer"},
                 "date_added":               { "-type": "string"},
-                "action_name":              { "-type": "string"},
-                "action_parameters": {  
-                    "[a-zA-Z0-9-%_:\\.]+":  { "-type": "any"}
+                "action_name":              { "-type": "string", "-optional": "true"},
+                "action_parameters": {        "-optional": "true",
+                    "[a-zA-Z0-9-%_:\\.]+":  { "-type": "any", "-optional": "true"}
                 },
-                "action_time":              { "-type": "string"},
-                "string_filter":            { "-type": "string"}
+                "action_time":              { "-type": "string", "-optional": "true"},
+                "string_filter":            { "-type": "string", "-optional": "true"}
               }
             ]
           }
@@ -1623,7 +1623,7 @@
               "Required": "URI",
               "Default": "",
               "Type": "string",
-              "Description": "quest id as player need to join"
+              "Description": "quest id as player has joined"
             },
             {
               "Name": "player_id",
@@ -1640,7 +1640,7 @@
               "Description": "fields to be included (comma ',' as delimiter)"
             }
           ],
-          "response": {
+          "responses": {
             "quest": {
               "quest_name":                   { "-type": "string"},
               "description":                  { "-type": "string"},
@@ -1648,20 +1648,19 @@
               "image":                        { "-type": "string"},
               "tags":                         { "-type": "any"},
               "sort_order":                   { "-type": "string"},
-              "global_quest":                 { "-type": "string"},
               "condition": [
                 {
-                  "condition_value":                { "-type": "string"},
                   "condition_type":                 { "-type": "string"},
-                  "condition_id":                   { "-type": "string"},
+                  "condition_id":                { "-type": "string"},
+                  "condition_value":                   { "-type": "string"},
                   "condition_data":                 { "-type": "any"}
                 }
               ],
               "rewards": [
                 {
-                  "reward_value":             { "-type": "string"},
+                  "reward_type":             { "-type": "string"},
                   "reward_id":                { "-type": "string"},
-                  "reward_type":              { "-type": "string"},
+                  "reward_value":              { "-type": "string"},
                   "reward_data": {
                       "[a-zA-Z0-9-%_:\\.]+":  { "-type": "any"}
                   }
@@ -1713,6 +1712,7 @@
                 }
               ],
               "mission_order":      { "-type": "boolean"},
+              "global_quest":       { "-type": "string", "-optional": "true"},
               "organize_id":        { "-type": "string"},
               "organize_role":      { "-type": "string"},
               "status":             { "-type": "string"},
@@ -1753,7 +1753,7 @@
               "Description": "fields to be included (comma ',' as delimiter)"
             }
           ],
-          "response": {
+          "responses": {
             "quests": [
               {
                 "quest_name":                   { "-type": "string"},
@@ -2771,7 +2771,7 @@
               "Description": "player id as used in client's website"
             }
           ],
-          "response": [
+          "responses": [
             {
               "name":                               { "-type": "string"},
               "description":                        { "-type": "string"},
@@ -3518,7 +3518,7 @@
               "Description": "player id as used in client's website"
             }
           ],
-          "response": {
+          "responses": {
             "quests": [
               {
                 "quest_name":                         { "-type": "string"},
@@ -8621,7 +8621,7 @@
               "Description": "Specific item id in the game"
             }
           ],
-          "response": {
+          "responses": {
             "stage_level":                     {"-type": "integer"},
             "stage_name":                      {"-type": "string"},
             "items_status": [
