@@ -2524,10 +2524,10 @@
           "response": {
             "badges": [
               {
+                "name":         { "-type": "string"},
                 "badge_id":     { "-type": "string"},
                 "image":        { "-type": "string"},
                 "sort_order":   { "-type": "integer"},
-                "name":         { "-type": "string"},
                 "description":  { "-type": "string"},
                 "hint":         { "-type": "string"},
                 "sponsor":      { "-type": "boolean"},
@@ -2555,10 +2555,10 @@
           "response": {
             "badges": [
               {
+                "name":         { "-type": "string"},
                 "badge_id":     { "-type": "string"},
                 "image":        { "-type": "string"},
                 "sort_order":   { "-type": "integer"},
-                "name":         { "-type": "string"},
                 "description":  { "-type": "string"},
                 "hint":         { "-type": "string"},
                 "sponsor":      { "-type": "boolean"},
@@ -2585,10 +2585,10 @@
           ],
           "response": {
             "badge": {
+              "name":         { "-type": "string"},
               "badge_id":     { "-type": "string"},
               "image":        { "-type": "string"},
               "sort_order":   { "-type": "integer"},
-              "name":         { "-type": "string"},
               "description":  { "-type": "string"},
               "hint":         { "-type": "string"},
               "sponsor":      { "-type": "boolean"},
@@ -2629,13 +2629,15 @@
           "response": {
             "goods_list": [
               {
+                "name":                 { "-type": "string"},
                 "goods_id":             { "-type": "string"},
-                "group":                { "-type": "string", "-optional": "true"},
+                "is_group":             { "-type": "boolean", "-optional": "true"},
+                "group":                { "-type": "string" , "-optional": "true"},
                 "quantity":             { "-type": "integer"},
                 "image":                { "-type": "string"},
                 "sort_order":           { "-type": "integer"},
-                "name":                 { "-type": "string"},
                 "description":          { "-type": "string"},
+                "code":                 { "-type": "any" , "-optional": "true"},
                 "redeem": {
                   "point": {
                     "point_value":      { "-type": "integer"}
@@ -2643,8 +2645,9 @@
                   "custom":             { "-type": "any", "-optional": "true"}
                 },
                 "sponsor":              { "-type": "boolean"},
-                "organize_id":          { "-type": "any" },
-                "organize_role":        { "-type": "any" },
+                "organize":             { "-type": "string", "-optional": "true" },
+                "organize_id":          { "-type": "string", "-optional": "true" },
+                "organize_role":        { "-type": "string", "-optional": "true" },
                 "tags":                 { "-type": "any" },
                 "date_start":           { "-type": "string", "-optional": "true"},
                 "date_expire":          { "-type": "string", "-optional": "true"}
@@ -2676,8 +2679,7 @@
             }
           ],
           "response": {
-            "goods":
-            {
+            "goods": {
               "goods_id":             { "-type": "string"},
               "group":                { "-type": "string", "-optional": "true"},
               "quantity":             { "-type": "integer"},
@@ -2691,7 +2693,7 @@
                 },
                 "custom":             { "-type": "any", "-optional": "true"}
               },
-              "code":                 { "-type": "any"},
+              "code":                 { "-type": "any", "-optional": "true"},
               "sponsor":              { "-type": "boolean"},
               "organize_id":          { "-type": "any" },
               "organize_role":        { "-type": "any" },
