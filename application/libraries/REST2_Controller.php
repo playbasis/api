@@ -327,10 +327,16 @@ abstract class REST2_Controller extends REST_Controller
             if(!is_null($pointer_data[$data_head]) && !empty($pointer_data[$data_head])) {
                 if (isset($check_response[$check_head][0])) {
                     foreach ($pointer_data[$data_head] as $key => $value) {
+                        if($is_error){
+                            break;
+                        }
                         $this->check_response($static_pointer_data, $pointer_data[$data_head], $key, $check_response[$check_head], 0, $response_result[$data_head], $is_error);
                     }
                 } else {
                     foreach ($check_response[$check_head] as $key => $value) {
+                        if($is_error){
+                            break;
+                        }
                         $type = null;
                         $matches = preg_grep('/\b' . $key . '\b/', array_keys($pointer_data[$data_head]));
 
@@ -345,6 +351,9 @@ abstract class REST2_Controller extends REST_Controller
                             break;
                         }
                         foreach ($matches as $match) {
+                            if($is_error){
+                                break;
+                            }
                             $type = $this->check_response($static_pointer_data, $pointer_data[$data_head], $match, $check_response[$check_head], $key, $response_result[$data_head], $is_error);
                             unset($pointer_data[$data_head][$match]);
                         }

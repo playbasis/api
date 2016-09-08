@@ -2634,6 +2634,7 @@
                 "is_group":             { "-type": "boolean", "-optional": "true"},
                 "group":                { "-type": "string" , "-optional": "true"},
                 "quantity":             { "-type": "integer"},
+                "amount":               { "-type": "integer", "-optional": "true"},
                 "image":                { "-type": "string"},
                 "sort_order":           { "-type": "integer"},
                 "description":          { "-type": "string"},
@@ -2680,29 +2681,31 @@
           ],
           "response": {
             "goods": {
+              "name":                 { "-type": "string"},
               "goods_id":             { "-type": "string"},
-              "group":                { "-type": "string", "-optional": "true"},
+              "is_group":             { "-type": "boolean", "-optional": "true"},
+              "group":                { "-type": "string" , "-optional": "true"},
               "quantity":             { "-type": "integer"},
+              "per_user":             { "-type": "integer" , "-optional": "true"},
               "image":                { "-type": "string"},
               "sort_order":           { "-type": "integer"},
-              "name":                 { "-type": "string"},
               "description":          { "-type": "string"},
+              "code":                 { "-type": "any" , "-optional": "true"},
               "redeem": {
                 "point": {
                   "point_value":      { "-type": "integer"}
                 },
                 "custom":             { "-type": "any", "-optional": "true"}
               },
-              "code":                 { "-type": "any", "-optional": "true"},
               "sponsor":              { "-type": "boolean"},
-              "organize_id":          { "-type": "any" },
-              "organize_role":        { "-type": "any" },
+              "organize":             { "-type": "string", "-optional": "true" },
+              "organize_id":          { "-type": "string", "-optional": "true" },
+              "organize_role":        { "-type": "string", "-optional": "true" },
               "tags":                 { "-type": "any" },
               "date_start":           { "-type": "string", "-optional": "true"},
-              "date_expire":          { "-type": "string", "-optional": "true"},
-              "days_expire":          { "-type": "string", "-optional": "true"}
+              "date_expire":          { "-type": "string", "-optional": "true"}
             },
-            "amount":                 { "-type": "integer", "-optional": "true"}
+            "amount": { "-type": "integer", "-optional": "true"}
           }
         },
         {
