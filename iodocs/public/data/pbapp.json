@@ -1655,6 +1655,9 @@
                   "condition_id":             { "-type": "string"},
                   "condition_value":          { "-type": "string"},
                   "condition_data":           { "-type": "any"}
+                },
+                {
+                  "-optional": "true"
                 }
               ],
               "rewards": [
@@ -1665,6 +1668,9 @@
                   "reward_data": {
                       "[a-zA-Z0-9-%_:\\.]+":  { "-type": "any"}
                   }
+                },
+                {
+                  "-optional": "true"
                 }
               ],
               "feedbacks": [
@@ -1676,6 +1682,9 @@
                       "name":         { "-type": "string"},
                       "message":      { "-type": "string"}
                   }
+                },
+                {
+                  "-optional": "true"
                 }
               ],
               "missions": [
@@ -1757,7 +1766,7 @@
               "organize_role":      { "-type": "string"},
               "status":             { "-type": "string"},
               "date_added":         { "-type": "string"},
-              "date_modified":      { "-type": "string"},
+              "date_modified":      { "-type": "string", "-optional": "true"},
               "num_missions":       { "-type": "any"}
             }  
           }
@@ -1808,6 +1817,9 @@
                     "condition_id":             { "-type": "string"},
                     "condition_value":          { "-type": "string"},
                     "condition_data":           { "-type": "any"}
+                  },
+                  {
+                    "-optional": "true"
                   }
                 ],
                 "rewards": [
@@ -1818,6 +1830,9 @@
                     "reward_data": {
                         "[a-zA-Z0-9-%_:\\.]+":  { "-type": "any"}
                     }
+                  },
+                  {
+                    "-optional": "true"
                   }
                 ],
                 "feedbacks": [
@@ -1829,6 +1844,9 @@
                         "name":         { "-type": "string"},
                         "message":      { "-type": "string"}
                     }
+                  },
+                  {
+                    "-optional": "true"
                   }
                 ],
                 "missions": [
@@ -1910,7 +1928,7 @@
                 "organize_role":      { "-type": "string"},
                 "status":             { "-type": "string"},
                 "date_added":         { "-type": "string"},
-                "date_modified":      { "-type": "string"},
+                "date_modified":      { "-type": "string", "-optional": "true"},
                 "num_missions":       { "-type": "any"}
               }
             ]
