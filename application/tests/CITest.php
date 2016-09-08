@@ -11,7 +11,7 @@
  *
  * @property-read resource	$db		Reference to database
  */
-abstract class CITestCase extends PHPUnit_Extensions_Database_TestCase
+abstract class CITestCase extends PHPUnit_Framework_TestCase
 {
     /**
      * Reference to CodeIgniter
@@ -44,6 +44,10 @@ abstract class CITestCase extends PHPUnit_Extensions_Database_TestCase
     {
         parent::__construct($name, $data, $dataName);
         $this->CI =& get_instance();
+        $this->CI->load->model('auth_model');
+        $this->CI->load->model('badge_model');
+
+        $this->CI->load->library('restclient');
     }
 
     /**
@@ -87,5 +91,22 @@ abstract class CITestCase extends PHPUnit_Extensions_Database_TestCase
     public function getDataSet()
     {
         return $this->getConnection()->createDataSet();
+    }
+
+    public function getClientSite($clientSite = null)
+    {
+        $auth = new Auth_model();
+        $res = $auth->getApiInfo(array(
+            'key' => $_ENV['API_KEY'],
+            'secret' => $_ENV['API_SECRET'],
+        ));
+
+        if ($clientSite === 'client_id'){
+            return $res['client_id'];
+        }elseif ($clientSite === 'site_id'){
+            return $res['site_id'];
+        }else{
+            return $res;
+        }
     }
 }

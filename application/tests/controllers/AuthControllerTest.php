@@ -1,24 +1,33 @@
 <?php
+require_once(__DIR__.'/../CITest.php');
 
-class AuthControllerTest extends PHPUnit_Framework_TestCase
+class AuthControllerTest extends CITestCase
 {
-    private $api_key;
-    private $api_secret;
-    private $base_url;
+    protected $CI;
 
     public function setUp()
     {
-        new GlobalSetup();
+        $this->CI =& get_instance();
     }
 
     public function testGetApiInfo()
     {
         $rest = new RestClient();
-        $result = $rest->post($this->base_url .'Auth', array(
+        $response = $rest->post('Auth', array(
             'api_key' => $_ENV['API_KEY'],
             'api_secret' => $_ENV['API_SECRET'],
         ));
+        $this->assertTrue($response->success);
+        return $response;
+    }
 
-        $this->assertTrue($result->success);
+    /**
+     * @depends testGetApiInfo
+     */
+    public function testGetApiInfoCon($response)
+    {
+        $this->CI = new Auth();
+
+        $test = $this->CI->index_post();
     }
 }

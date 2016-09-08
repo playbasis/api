@@ -1,17 +1,19 @@
 <?php
-class BadgeTest extends PHPUnit_Framework_TestCase
+require_once(__DIR__.'/../CITest.php');
+
+class BadgeTest extends CITestCase
 {
-    protected $badge_test;
+    //protected $badge_test;
 
     public function setUp()
     {
-        $this->badge_test = new GlobalSetup();
+
     }
 
     public function testAllBadges()
     {
         $badge_model = new Badge_model();
-        $clientSite = $this->badge_test->getClientSite();
+        $clientSite = $this->getClientSite();
 
         $return = $badge_model->getAllBadges(array(
             'client_id' => $clientSite['client_id'],
@@ -35,7 +37,7 @@ class BadgeTest extends PHPUnit_Framework_TestCase
     {
 
         $badge_model = new Badge_model();
-        $clientSite = $this->badge_test->getClientSite();
+        $clientSite = $this->getClientSite();
 
         $return = $badge_model->getBadge(array(
             'client_id' => $clientSite['client_id'],
@@ -53,7 +55,7 @@ class BadgeTest extends PHPUnit_Framework_TestCase
     public function testGetBadgeName(array $badge)
     {
         $badge_model = new Badge_model();
-        $clientSite = $this->badge_test->getClientSite();
+        $clientSite = $this->getClientSite();
 
         $return = $badge_model->getBadgeName($clientSite['client_id'], $clientSite['site_id'], $badge['badge_id']);
         $this->assertEquals($badge['name'], $return);
@@ -70,7 +72,7 @@ class BadgeTest extends PHPUnit_Framework_TestCase
     public function testGeBadgeIDByName(array $badge)
     {
         $badge_model = new Badge_model();
-        $clientSite = $this->badge_test->getClientSite();
+        $clientSite = $this->getClientSite();
 
         $return = $badge_model->getBadgeIDByName($clientSite['client_id'], $clientSite['site_id'], $badge['name']);
         $this->assertEquals($badge['badge_id'], $return);

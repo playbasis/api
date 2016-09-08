@@ -1,10 +1,11 @@
 <?php
+require_once(__DIR__.'/../CITest.php');
 
-class AuthTest extends PHPUnit_Framework_TestCase
+class AuthTest extends CITestCase
 {
     public function setUp()
     {
-        new GlobalSetup();
+       // new GlobalSetup();
     }
 
     public function testGetApiInfo()
