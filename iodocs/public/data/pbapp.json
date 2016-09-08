@@ -1931,7 +1931,130 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "response": {
+            "quests": [
+              {
+                "quest_name":                   { "-type": "string"},
+                "quest_id":                     { "-type": "string"},
+                "description":                  { "-type": "string"},
+                "hint":                         { "-type": "string"},
+                "image":                        { "-type": "string"},
+                "tags":                         { "-type": "any"},
+                "sort_order":                   { "-type": "string"},
+                "condition": [
+                  {
+                    "condition_type":           { "-type": "string"},
+                    "condition_id":             { "-type": "string"},
+                    "condition_value":          { "-type": "string"},
+                    "condition_data":           { "-type": "any"}
+                  }
+                ],
+                "rewards": [
+                  {
+                    "reward_type":              { "-type": "string"},
+                    "reward_id":                { "-type": "string"},
+                    "reward_value":             { "-type": "string"},
+                    "reward_data": {
+                        "[a-zA-Z0-9-%_:\\.]+":  { "-type": "any"}
+                    }
+                  }
+                ],
+                "feedbacks": [
+                  {
+                    "feedback_type":    { "-type": "string"},
+                    "template_id":      { "-type": "string"},
+                    "subject":          { "-type": "string", "-optional": "true"},
+                    "feedback_data": {
+                        "name":         { "-type": "string"},
+                        "message":      { "-type": "string"}
+                    }
+                  }
+                ],
+                "missions": [
+                  {
+                    "mission_name":                   { "-type": "string"},
+                    "mission_id":                     { "-type": "string"},
+                    "mission_number":                 { "-type": "string"},
+                    "description":                    { "-type": "string"},
+                    "hint":                           { "-type": "string"},
+                    "image":                          { "-type": "string"},
+                    "status":                         { "-type": "string"},
+                    "completion": [
+                      {
+                        "completion_type":            { "-type": "string"},
+                        "completion_id":              { "-type": "string"},
+                        "completion_title":           { "-type": "string"},
+                        "completion_value":           { "-type": "string"},
+                        "completion_data": {
+                          "[a-zA-Z0-9-%_:\\.]+":      { "-type": "any"}
+                        },
+                        "completion_element_id":      { "-type": "string", "-optional": "true"},
+                        "completion_op":              { "-type": "string", "-optional": "true"},
+                        "completion_filter":          { "-type": "string", "-optional": "true"},
+                        "filtered_param": {             "-optional": "true",
+                          "[a-zA-Z0-9-%_:\\.]+": {
+                            "operation":              { "-type": "string"},
+                            "completion_string":      { "-type": "string"}
+                          }
+                        }
+                      },
+                      {
+                        "-optional": "true"
+                      }
+                    ],
+                    "rewards": [
+                      {
+                        "reward_type":                { "-type": "string"},
+                        "reward_id":                  { "-type": "string"},
+                        "reward_value":               { "-type": "string"},
+                        "reward_data": {
+                            "[a-zA-Z0-9-%_:\\.]+":    { "-type": "any"}
+                        }
+                      },
+                      {
+                        "-optional": "true"
+                      }
+                    ],
+                    "feedbacks": [
+                      {
+                        "feedback_type":    { "-type": "string"},
+                        "template_id":      { "-type": "string"},
+                        "subject":          { "-type": "string", "-optional": "true"},
+                        "feedback_data": {
+                            "name":         { "-type": "string"},
+                            "message":      { "-type": "string"}
+                        }
+                      },
+                      {
+                        "-optional": "true"
+                      }
+                    ],
+                    "pending": [
+                      {
+                        "event_type":                 { "-type": "string"},
+                        "message":                    { "-type": "string"},
+                        "incomplete": {                 "-optional": "true",
+                          "incompletion_id":          { "-type": "string"},
+                          "incompletion_type":        { "-type": "string"},
+                          "incompletion_value":       { "-type": "integer"},
+                          "incompletion_element_id":  { "-type": "string", "-optional": "true"}
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "mission_order":      { "-type": "boolean"},
+                "global_quest":       { "-type": "string", "-optional": "true"},
+                "organize_id":        { "-type": "string"},
+                "organize_role":      { "-type": "string"},
+                "status":             { "-type": "boolean"},
+                "player_status":      { "-type": "string", "-optional": "true"},
+                "date_added":         { "-type": "string"},
+                "date_modified":      { "-type": "string"}
+              }
+            ]
+          }
         },
         {
           "MethodName": "Quest Reward History",
@@ -1962,7 +2085,23 @@
               "Type": "integer",
               "Description": "number of results to return"
             }
-          ]
+          ],
+          "response": {
+            "rewards": [
+              {
+                "quest_id":       { "-type": "string"},
+                "mission_id":     { "-type": "string"},
+                "reward_type":    { "-type": "string"},
+                "reward_id":      { "-type": "string"},
+                "reward_name":    { "-type": "string"},
+                "reward_value":   { "-type": "string"},
+                "date_added":     { "-type": "string"},
+                "date_modified":  { "-type": "string"},
+                "quest_name":     { "-type": "string"},
+                "type":           { "-type": "string"}
+              }
+            ]
+          }
         },
         {
           "MethodName": "Deduct Reward",
@@ -2140,10 +2279,10 @@
               "Description": "year to rank players by (2015, 2016 , ...)"
             }
           ],
-          "response": [
+          "responses": [
             {
-              "cl_player_id": { "-type": "string"},
-              "quantity":     { "-type": "integer"}
+              "cl_player_id":         { "-type": "string"},
+              "[a-zA-Z0-9-%_:\\.]+":  { "-type": "integer"}
             }
           ]
         },
@@ -2310,8 +2449,8 @@
           "response": {
             "[a-zA-Z0-9-%_:\\.]+": {
               "[a-zA-Z0-9-%_:\\.]+": {
-                "percent_changed": { "-type": "integer"},
-                "[a-zA-Z0-9-%_:\\.]+": { "-type": "integer"}
+                "percent_changed":      { "-type": "integer"},
+                "[a-zA-Z0-9-%_:\\.]+":  { "-type": "integer"}
               }
             }
           }
