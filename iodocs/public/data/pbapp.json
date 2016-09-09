@@ -2850,7 +2850,8 @@
                 "sort_order":               { "-type": "integer"},
                 "date_start":               { "-type": "string", "-optional": "true"},
                 "date_expire":              { "-type": "string", "-optional": "true"},
-                "days_expire":              { "-type": "string", "-optional": "true"}
+                "organize_id":              { "-type": "string", "-optional": "true"},
+                "organize_role":            { "-type": "string", "-optional": "true"}
               },
               "value":                      { "-type": "integer"}
             }
@@ -2915,7 +2916,8 @@
                 "sort_order":               { "-type": "integer"},
                 "date_start":               { "-type": "string", "-optional": "true"},
                 "date_expire":              { "-type": "string", "-optional": "true"},
-                "days_expire":              { "-type": "string", "-optional": "true"}
+                "organize_id":              { "-type": "string", "-optional": "true"},
+                "organize_role":            { "-type": "string", "-optional": "true"}
               },
               "value":                      { "-type": "integer"}
             }
