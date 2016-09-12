@@ -1695,7 +1695,7 @@
                   "description":                    { "-type": "string"},
                   "hint":                           { "-type": "string"},
                   "image":                          { "-type": "string"},
-                  "status":                         { "-type": "string"},
+                  "status":                         { "-type": "string", "-optional": "true"},
                   "completion": [
                     {
                       "completion_type":            { "-type": "string"},
@@ -1756,6 +1756,9 @@
                         "incompletion_value":       { "-type": "integer"},
                         "incompletion_element_id":  { "-type": "string", "-optional": "true"}
                       }
+                    },
+                    {
+                      "-optional": "true"
                     }
                   ]
                 }
@@ -1857,7 +1860,7 @@
                     "description":                    { "-type": "string"},
                     "hint":                           { "-type": "string"},
                     "image":                          { "-type": "string"},
-                    "status":                         { "-type": "string"},
+                    "status":                         { "-type": "string", "-optional": "true"},
                     "completion": [
                       {
                         "completion_type":            { "-type": "string"},
@@ -1918,6 +1921,9 @@
                           "incompletion_value":       { "-type": "integer"},
                           "incompletion_element_id":  { "-type": "string", "-optional": "true"}
                         }
+                      },
+                      {
+                        "-optional": "true"
                       }
                     ]
                   }
@@ -1997,7 +2003,7 @@
                     "description":                    { "-type": "string"},
                     "hint":                           { "-type": "string"},
                     "image":                          { "-type": "string"},
-                    "status":                         { "-type": "string"},
+                    "status":                         { "-type": "string", "-optional": "true"},
                     "completion": [
                       {
                         "completion_type":            { "-type": "string"},
@@ -2058,6 +2064,9 @@
                           "incompletion_value":       { "-type": "integer"},
                           "incompletion_element_id":  { "-type": "string", "-optional": "true"}
                         }
+                      },
+                      {
+                        "-optional": "true"
                       }
                     ]
                   }
@@ -3444,101 +3453,111 @@
           "response": {
             "quests": [
               {
-                "quest_name":                         { "-type": "string"},
-                "description":                        { "-type": "string"},
-                "hint":                               { "-type": "string"},
-                "image":                              { "-type": "string"},
-                "tags":                               { "-type": "any"},
-                "sort_order":                         { "-type": "string"},
-                "global_quest":                       { "-type": "string"},
+                "quest_name":                   { "-type": "string"},
+                "quest_id":                     { "-type": "string"},
+                "description":                  { "-type": "string"},
+                "hint":                         { "-type": "string"},
+                "image":                        { "-type": "string"},
+                "tags":                         { "-type": "any"},
+                "sort_order":                   { "-type": "string"},
+                "condition": [
+                  {
+                    "condition_type":           { "-type": "string"},
+                    "condition_id":             { "-type": "string"},
+                    "condition_value":          { "-type": "string"},
+                    "condition_data":           { "-type": "any"}
+                  }
+                ],
+                "rewards": [
+                  {
+                    "reward_type":              { "-type": "string"},
+                    "reward_id":                { "-type": "string"},
+                    "reward_value":             { "-type": "string"},
+                    "reward_data": {
+                        "[a-zA-Z0-9-%_:\\.]+":  { "-type": "any"}
+                    }
+                  }
+                ],
+                "feedbacks": [
+                  {
+                    "feedback_type":    { "-type": "string"},
+                    "template_id":      { "-type": "string"},
+                    "subject":          { "-type": "string", "-optional": "true"},
+                    "feedback_data": {
+                        "name":         { "-type": "string"},
+                        "message":      { "-type": "string"}
+                    }
+                  }
+                ],
                 "missions": [
                   {
                     "mission_name":                   { "-type": "string"},
+                    "mission_id":                     { "-type": "string"},
                     "mission_number":                 { "-type": "string"},
                     "description":                    { "-type": "string"},
                     "hint":                           { "-type": "string"},
                     "image":                          { "-type": "string"},
+                    "status":                         { "-type": "string", "-optional": "true"},
                     "completion": [
                       {
-                        "completion_value":           { "-type": "string"},
                         "completion_type":            { "-type": "string"},
                         "completion_id":              { "-type": "string"},
                         "completion_title":           { "-type": "string"},
+                        "completion_value":           { "-type": "string"},
                         "completion_data": {
-                            "action_id":                { "-type": "string"},
-                            "name":                     { "-type": "string"},
-                            "description":              { "-type": "string"},
-                            "icon":                     { "-type": "string"},
-                            "color":                    { "-type": "string"}
+                          "[a-zA-Z0-9-%_:\\.]+":      { "-type": "any"}
                         },
-                        "completion_op":              { "-type": "string"},
-                        "completion_filter":          { "-type": "string"},
-                        
-                        
-                        
-                        "completion_element_id":      { "-type": "string"},
-                        
-                        "filtered_param": {
+                        "completion_element_id":      { "-type": "string", "-optional": "true"},
+                        "completion_op":              { "-type": "string", "-optional": "true"},
+                        "completion_filter":          { "-type": "string", "-optional": "true"},
+                        "filtered_param": {             "-optional": "true",
                           "[a-zA-Z0-9-%_:\\.]+": {
                             "operation":              { "-type": "string"},
                             "completion_string":      { "-type": "string"}
                           }
                         }
-                        
+                      },
+                      {
+                        "-optional": "true"
                       }
                     ],
-                    "mission_id":                     { "-type": "string"}
+                    "rewards": [
+                      {
+                        "reward_type":                { "-type": "string"},
+                        "reward_id":                  { "-type": "string"},
+                        "reward_value":               { "-type": "string"},
+                        "reward_data": {
+                            "[a-zA-Z0-9-%_:\\.]+":    { "-type": "any"}
+                        }
+                      },
+                      {
+                        "-optional": "true"
+                      }
+                    ],
+                    "feedbacks": [
+                      {
+                        "feedback_type":    { "-type": "string"},
+                        "template_id":      { "-type": "string"},
+                        "subject":          { "-type": "string", "-optional": "true"},
+                        "feedback_data": {
+                            "name":         { "-type": "string"},
+                            "message":      { "-type": "string"}
+                        }
+                      },
+                      {
+                        "-optional": "true"
+                      }
+                    ]
                   }
                 ],
-                "organize_id":                        { "-type": "any"},
-                "organize_role":                      { "-type": "any"},
-                "status":                             { "-type": "boolean"},
-                "mission_order":                      { "-type": "boolean"},
-                "date_added":                         { "-type": "string"},
-                "rewards": [
-                  {
-                    "reward_value":                   { "-type": "string"},
-                    "reward_id":                      { "-type": "string"},
-                    "reward_type":                    { "-type": "string"},
-                    "reward_data":
-                    {
-                      "name":                         { "-type": "string"},
-                      "goods_id":                     { "-type": "string", "-optional": "true"},
-                      "badge_id":                     { "-type": "string", "-optional": "true"},
-                      "description":                  { "-type": "string"},
-                      "quantity":                     { "-type": "integer", "-optional": "true"},
-                      "per_user":                     { "-type": "integer", "-optional": "true"},
-                      "image":                        { "-type": "string"},
-                      "status":                       { "-type": "boolean", "-optional": "true"},
-                      "deleted":                      { "-type": "boolean", "-optional": "true"},
-                      "claim":                        { "-type": "boolean", "-optional": "true"},
-                      "redeem":                       { "-type": "boolean", "-optional": "true"},
-                      "sponsor":                      { "-type": "boolean"},
-                      "sort_order":                   { "-type": "integer", "-optional": "true"},
-                      "language_id":                  { "-type": "integer", "-optional": "true"},
-                      "date_start":                   { "-type": "string", "-optional": "true"},
-                      "date_expire":                  { "-type": "string", "-optional": "true"},
-                      "date_added":                   { "-type": "string", "-optional": "true"},
-                      "date_modified":                { "-type": "string", "-optional": "true"},
-                      "group":                        { "-type": "string", "-optional": "true"},
-                      "hint":                         { "-type": "string", "-optional": "true"},
-                      "tags":                         { "-type": "any", "-optional": "true"},
-                      "organize_id":                  { "-type": "any", "-optional": "true"},
-                      "organize_role":                { "-type": "any", "-optional": "true"}
-                    }
-                  }
-                ],
-                "feedbacks":                          { "-type": "any"},
-                "date_modified":                      { "-type": "string"},
-                "condition": [
-                  {
-                    "condition_value":                { "-type": "string"},
-                    "condition_type":                 { "-type": "string"},
-                    "condition_id":                   { "-type": "string"},
-                    "condition_data":                 { "-type": "any"}
-                  }
-                ],
-                "quest_id":                           { "-type": "string"}
+                "mission_order":      { "-type": "boolean"},
+                "global_quest":       { "-type": "string", "-optional": "true"},
+                "organize_id":        { "-type": "string"},
+                "organize_role":      { "-type": "string"},
+                "status":             { "-type": "boolean"},
+                "player_status":      { "-type": "string", "-optional": "true"},
+                "date_added":         { "-type": "string"},
+                "date_modified":      { "-type": "string"}
               }
             ]
           }
@@ -3562,96 +3581,111 @@
           "response": {
             "quests": [
               {
-                "quest_name":                         { "-type": "string"},
-                "description":                        { "-type": "string"},
-                "hint":                               { "-type": "string"},
-                "image":                              { "-type": "string"},
-                "tags":                               { "-type": "any"},
-                "sort_order":                         { "-type": "string"},
-                "global_quest":                       { "-type": "string"},
+                "quest_name":                   { "-type": "string"},
+                "quest_id":                     { "-type": "string"},
+                "description":                  { "-type": "string"},
+                "hint":                         { "-type": "string"},
+                "image":                        { "-type": "string"},
+                "tags":                         { "-type": "any"},
+                "sort_order":                   { "-type": "string"},
+                "condition": [
+                  {
+                    "condition_type":           { "-type": "string"},
+                    "condition_id":             { "-type": "string"},
+                    "condition_value":          { "-type": "string"},
+                    "condition_data":           { "-type": "any"}
+                  }
+                ],
+                "rewards": [
+                  {
+                    "reward_type":              { "-type": "string"},
+                    "reward_id":                { "-type": "string"},
+                    "reward_value":             { "-type": "string"},
+                    "reward_data": {
+                        "[a-zA-Z0-9-%_:\\.]+":  { "-type": "any"}
+                    }
+                  }
+                ],
+                "feedbacks": [
+                  {
+                    "feedback_type":    { "-type": "string"},
+                    "template_id":      { "-type": "string"},
+                    "subject":          { "-type": "string", "-optional": "true"},
+                    "feedback_data": {
+                        "name":         { "-type": "string"},
+                        "message":      { "-type": "string"}
+                    }
+                  }
+                ],
                 "missions": [
                   {
                     "mission_name":                   { "-type": "string"},
+                    "mission_id":                     { "-type": "string"},
                     "mission_number":                 { "-type": "string"},
                     "description":                    { "-type": "string"},
                     "hint":                           { "-type": "string"},
                     "image":                          { "-type": "string"},
+                    "status":                         { "-type": "string", "-optional": "true"},
                     "completion": [
                       {
-                        "completion_op":              { "-type": "string"},
-                        "completion_filter":          { "-type": "string"},
-                        "completion_value":           { "-type": "string"},
-                        "completion_id":              { "-type": "string"},
                         "completion_type":            { "-type": "string"},
-                        "completion_element_id":      { "-type": "string"},
+                        "completion_id":              { "-type": "string"},
                         "completion_title":           { "-type": "string"},
-                        "filtered_param": {
+                        "completion_value":           { "-type": "string"},
+                        "completion_data": {
+                          "[a-zA-Z0-9-%_:\\.]+":      { "-type": "any"}
+                        },
+                        "completion_element_id":      { "-type": "string", "-optional": "true"},
+                        "completion_op":              { "-type": "string", "-optional": "true"},
+                        "completion_filter":          { "-type": "string", "-optional": "true"},
+                        "filtered_param": {             "-optional": "true",
                           "[a-zA-Z0-9-%_:\\.]+": {
                             "operation":              { "-type": "string"},
                             "completion_string":      { "-type": "string"}
                           }
-                        },
-                        "completion_data": {
-                          "action_id":                { "-type": "string"},
-                          "name":                     { "-type": "string"},
-                          "description":              { "-type": "string"},
-                          "icon":                     { "-type": "string"},
-                          "color":                    { "-type": "string"}
                         }
+                      },
+                      {
+                        "-optional": "true"
                       }
                     ],
-                    "mission_id":                     { "-type": "string"}
+                    "rewards": [
+                      {
+                        "reward_type":                { "-type": "string"},
+                        "reward_id":                  { "-type": "string"},
+                        "reward_value":               { "-type": "string"},
+                        "reward_data": {
+                            "[a-zA-Z0-9-%_:\\.]+":    { "-type": "any"}
+                        }
+                      },
+                      {
+                        "-optional": "true"
+                      }
+                    ],
+                    "feedbacks": [
+                      {
+                        "feedback_type":    { "-type": "string"},
+                        "template_id":      { "-type": "string"},
+                        "subject":          { "-type": "string", "-optional": "true"},
+                        "feedback_data": {
+                            "name":         { "-type": "string"},
+                            "message":      { "-type": "string"}
+                        }
+                      },
+                      {
+                        "-optional": "true"
+                      }
+                    ]
                   }
                 ],
-                "organize_id":                        { "-type": "any"},
-                "organize_role":                      { "-type": "any"},
-                "status":                             { "-type": "boolean"},
-                "mission_order":                      { "-type": "boolean"},
-                "date_added":                         { "-type": "string"},
-                "rewards": [
-                  {
-                    "reward_value":                   { "-type": "string"},
-                    "reward_id":                      { "-type": "string"},
-                    "reward_type":                    { "-type": "string"},
-                    "reward_data":
-                    {
-                      "name":                         { "-type": "string"},
-                      "goods_id":                     { "-type": "string", "-optional": "true"},
-                      "badge_id":                     { "-type": "string", "-optional": "true"},
-                      "description":                  { "-type": "string"},
-                      "quantity":                     { "-type": "integer", "-optional": "true"},
-                      "per_user":                     { "-type": "integer", "-optional": "true"},
-                      "image":                        { "-type": "string"},
-                      "status":                       { "-type": "boolean", "-optional": "true"},
-                      "deleted":                      { "-type": "boolean", "-optional": "true"},
-                      "claim":                        { "-type": "boolean", "-optional": "true"},
-                      "redeem":                       { "-type": "boolean", "-optional": "true"},
-                      "sponsor":                      { "-type": "boolean"},
-                      "sort_order":                   { "-type": "integer", "-optional": "true"},
-                      "language_id":                  { "-type": "integer", "-optional": "true"},
-                      "date_start":                   { "-type": "string", "-optional": "true"},
-                      "date_expire":                  { "-type": "string", "-optional": "true"},
-                      "date_added":                   { "-type": "string", "-optional": "true"},
-                      "date_modified":                { "-type": "string", "-optional": "true"},
-                      "group":                        { "-type": "string", "-optional": "true"},
-                      "hint":                         { "-type": "string", "-optional": "true"},
-                      "tags":                         { "-type": "any", "-optional": "true"},
-                      "organize_id":                  { "-type": "any", "-optional": "true"},
-                      "organize_role":                { "-type": "any", "-optional": "true"}
-                    }
-                  }
-                ],
-                "feedbacks":                          { "-type": "any"},
-                "date_modified":                      { "-type": "string"},
-                "condition": [
-                  {
-                    "condition_value":                { "-type": "string"},
-                    "condition_type":                 { "-type": "string"},
-                    "condition_id":                   { "-type": "string"},
-                    "condition_data":                 { "-type": "any"}
-                  }
-                ],
-                "quest_id":                           { "-type": "string"}
+                "mission_order":      { "-type": "boolean"},
+                "global_quest":       { "-type": "string", "-optional": "true"},
+                "organize_id":        { "-type": "string"},
+                "organize_role":      { "-type": "string"},
+                "status":             { "-type": "boolean"},
+                "player_status":      { "-type": "string", "-optional": "true"},
+                "date_added":         { "-type": "string"},
+                "date_modified":      { "-type": "string"}
               }
             ]
           }
@@ -3672,99 +3706,138 @@
               "Description": "quest id to query"
             }
           ],
-          "responsef": {
+          "response": {
             "quest": {
-              "quest_name":                         { "-type": "string"},
-              "description":                        { "-type": "string"},
-              "hint":                               { "-type": "string"},
-              "image":                              { "-type": "string"},
-              "tags":                               { "-type": "any"},
-              "sort_order":                         { "-type": "string"},
-              "global_quest":                       { "-type": "string"},
+              "quest_name":                   { "-type": "string"},
+              "quest_id":                     { "-type": "string"},
+              "description":                  { "-type": "string"},
+              "hint":                         { "-type": "string"},
+              "image":                        { "-type": "string"},
+              "tags":                         { "-type": "any"},
+              "sort_order":                   { "-type": "string"},
+              "condition": [
+                {
+                  "condition_type":           { "-type": "string"},
+                  "condition_id":             { "-type": "string"},
+                  "condition_value":          { "-type": "string"},
+                  "condition_data":           { "-type": "any"}
+                },
+                {
+                  "-optional": "true"
+                }
+              ],
+              "rewards": [
+                {
+                  "reward_type":              { "-type": "string"},
+                  "reward_id":                { "-type": "string"},
+                  "reward_value":             { "-type": "string"},
+                  "reward_data": {
+                      "[a-zA-Z0-9-%_:\\.]+":  { "-type": "any"}
+                  }
+                },
+                {
+                  "-optional": "true"
+                }
+              ],
+              "feedbacks": [
+                {
+                  "feedback_type":    { "-type": "string"},
+                  "template_id":      { "-type": "string"},
+                  "subject":          { "-type": "string", "-optional": "true"},
+                  "feedback_data": {
+                      "name":         { "-type": "string"},
+                      "message":      { "-type": "string"}
+                  }
+                },
+                {
+                  "-optional": "true"
+                }
+              ],
               "missions": [
                 {
                   "mission_name":                   { "-type": "string"},
+                  "mission_id":                     { "-type": "string"},
                   "mission_number":                 { "-type": "string"},
                   "description":                    { "-type": "string"},
                   "hint":                           { "-type": "string"},
                   "image":                          { "-type": "string"},
+                  "status":                         { "-type": "string", "-optional": "true"},
                   "completion": [
                     {
-                      "completion_op":              { "-type": "string"},
-                      "completion_filter":          { "-type": "string"},
-                      "completion_value":           { "-type": "string"},
-                      "completion_id":              { "-type": "string"},
                       "completion_type":            { "-type": "string"},
-                      "completion_element_id":      { "-type": "string"},
+                      "completion_id":              { "-type": "string"},
                       "completion_title":           { "-type": "string"},
-                      "filtered_param": {
+                      "completion_value":           { "-type": "string"},
+                      "completion_data": {
+                        "[a-zA-Z0-9-%_:\\.]+":      { "-type": "any"}
+                      },
+                      "completion_element_id":      { "-type": "string", "-optional": "true"},
+                      "completion_op":              { "-type": "string", "-optional": "true"},
+                      "completion_filter":          { "-type": "string", "-optional": "true"},
+                      "filtered_param": {             "-optional": "true",
                         "[a-zA-Z0-9-%_:\\.]+": {
                           "operation":              { "-type": "string"},
                           "completion_string":      { "-type": "string"}
                         }
-                      },
-                      "completion_data": {
-                        "action_id":                { "-type": "string"},
-                        "name":                     { "-type": "string"},
-                        "description":              { "-type": "string"},
-                        "icon":                     { "-type": "string"},
-                        "color":                    { "-type": "string"}
                       }
+                    },
+                    {
+                      "-optional": "true"
                     }
                   ],
-                  "mission_id":                     { "-type": "string"}
+                  "rewards": [
+                    {
+                      "reward_type":                { "-type": "string"},
+                      "reward_id":                  { "-type": "string"},
+                      "reward_value":               { "-type": "string"},
+                      "reward_data": {
+                          "[a-zA-Z0-9-%_:\\.]+":    { "-type": "any"}
+                      }
+                    },
+                    {
+                      "-optional": "true"
+                    }
+                  ],
+                  "feedbacks": [
+                    {
+                      "feedback_type":    { "-type": "string"},
+                      "template_id":      { "-type": "string"},
+                      "subject":          { "-type": "string", "-optional": "true"},
+                      "feedback_data": {
+                          "name":         { "-type": "string"},
+                          "message":      { "-type": "string"}
+                      }
+                    },
+                    {
+                      "-optional": "true"
+                    }
+                  ],
+                  "pending": [
+                    {
+                      "event_type":                 { "-type": "string"},
+                      "message":                    { "-type": "string"},
+                      "incomplete": {                 "-optional": "true",
+                        "incompletion_id":          { "-type": "string"},
+                        "incompletion_type":        { "-type": "string"},
+                        "incompletion_value":       { "-type": "integer"},
+                        "incompletion_element_id":  { "-type": "string", "-optional": "true"}
+                      }
+                    },
+                    {
+                      "-optional": "true"
+                    }
+                  ]
                 }
               ],
-              "organize_id":                        { "-type": "any"},
-              "organize_role":                      { "-type": "any"},
-              "status":                             { "-type": "boolean"},
-              "mission_order":                      { "-type": "boolean"},
-              "date_added":                         { "-type": "string"},
-              "rewards": [
-                {
-                  "reward_value":                   { "-type": "string"},
-                  "reward_id":                      { "-type": "string"},
-                  "reward_type":                    { "-type": "string"},
-                  "reward_data":
-                  {
-                    "name":                         { "-type": "string"},
-                    "goods_id":                     { "-type": "string", "-optional": "true"},
-                    "badge_id":                     { "-type": "string", "-optional": "true"},
-                    "description":                  { "-type": "string"},
-                    "quantity":                     { "-type": "integer", "-optional": "true"},
-                    "per_user":                     { "-type": "integer", "-optional": "true"},
-                    "image":                        { "-type": "string"},
-                    "status":                       { "-type": "boolean", "-optional": "true"},
-                    "deleted":                      { "-type": "boolean", "-optional": "true"},
-                    "claim":                        { "-type": "boolean", "-optional": "true"},
-                    "redeem":                       { "-type": "boolean", "-optional": "true"},
-                    "sponsor":                      { "-type": "boolean"},
-                    "sort_order":                   { "-type": "integer", "-optional": "true"},
-                    "language_id":                  { "-type": "integer", "-optional": "true"},
-                    "date_start":                   { "-type": "string", "-optional": "true"},
-                    "date_expire":                  { "-type": "string", "-optional": "true"},
-                    "date_added":                   { "-type": "string", "-optional": "true"},
-                    "date_modified":                { "-type": "string", "-optional": "true"},
-                    "group":                        { "-type": "string", "-optional": "true"},
-                    "hint":                         { "-type": "string", "-optional": "true"},
-                    "tags":                         { "-type": "any", "-optional": "true"},
-                    "organize_id":                  { "-type": "any", "-optional": "true"},
-                    "organize_role":                { "-type": "any", "-optional": "true"}
-                  }
-                }
-              ],
-              "feedbacks":                          { "-type": "any"},
-              "date_modified":                      { "-type": "string"},
-              "condition": [
-                {
-                  "condition_value":                { "-type": "string"},
-                  "condition_type":                 { "-type": "string"},
-                  "condition_id":                   { "-type": "string"},
-                  "condition_data":                 { "-type": "any"}
-                }
-              ],
-              "quest_id":                           { "-type": "string"}
-            }
+              "mission_order":      { "-type": "boolean"},
+              "global_quest":       { "-type": "string", "-optional": "true"},
+              "organize_id":        { "-type": "string"},
+              "organize_role":      { "-type": "string"},
+              "status":             { "-type": "boolean"},
+              "date_added":         { "-type": "string"},
+              "date_modified":      { "-type": "string", "-optional": "true"},
+              "num_missions":       { "-type": "any", "-optional": "true"}
+            }  
           }
         },
         {
@@ -3792,35 +3865,61 @@
           ],
           "response": {
             "mission_name":                   { "-type": "string"},
+            "mission_id":                     { "-type": "string"},
             "mission_number":                 { "-type": "string"},
             "description":                    { "-type": "string"},
             "hint":                           { "-type": "string"},
             "image":                          { "-type": "string"},
             "completion": [
               {
-                "completion_op":              { "-type": "string"},
-                "completion_filter":          { "-type": "string"},
-                "completion_value":           { "-type": "string"},
-                "completion_id":              { "-type": "string"},
                 "completion_type":            { "-type": "string"},
-                "completion_element_id":      { "-type": "string"},
+                "completion_id":              { "-type": "string"},
                 "completion_title":           { "-type": "string"},
-                "filtered_param": {
+                "completion_value":           { "-type": "string"},
+                "completion_data": {
+                  "[a-zA-Z0-9-%_:\\.]+":      { "-type": "any"}
+                },
+                "completion_element_id":      { "-type": "string", "-optional": "true"},
+                "completion_op":              { "-type": "string", "-optional": "true"},
+                "completion_filter":          { "-type": "string", "-optional": "true"},
+                "filtered_param": {             "-optional": "true",
                   "[a-zA-Z0-9-%_:\\.]+": {
                     "operation":              { "-type": "string"},
                     "completion_string":      { "-type": "string"}
                   }
-                },
-                "completion_data": {
-                  "action_id":                { "-type": "string"},
-                  "name":                     { "-type": "string"},
-                  "description":              { "-type": "string"},
-                  "icon":                     { "-type": "string"},
-                  "color":                    { "-type": "string"}
                 }
+              },
+              {
+                "-optional": "true"
               }
             ],
-            "mission_id":                     { "-type": "string"},
+            "rewards": [
+              {
+                "reward_type":                { "-type": "string"},
+                "reward_id":                  { "-type": "string"},
+                "reward_value":               { "-type": "string"},
+                "reward_data": {
+                    "[a-zA-Z0-9-%_:\\.]+":    { "-type": "any"}
+                }
+              },
+              {
+                "-optional": "true"
+              }
+            ],
+            "feedbacks": [
+              {
+                "feedback_type":    { "-type": "string"},
+                "template_id":      { "-type": "string"},
+                "subject":          { "-type": "string", "-optional": "true"},
+                "feedback_data": {
+                    "name":         { "-type": "string"},
+                    "message":      { "-type": "string"}
+                }
+              },
+              {
+                "-optional": "true"
+              }
+            ],
             "quest_id":                       { "-type": "string"}
           }
         },
@@ -3840,99 +3939,138 @@
               "Description": "player id as used in client's website"
             }
           ],
-          "responses": {
+          "response": {
             "quests": [
               {
-                "quest_name":                         { "-type": "string"},
-                "description":                        { "-type": "string"},
-                "hint":                               { "-type": "string"},
-                "image":                              { "-type": "string"},
-                "tags":                               { "-type": "any"},
-                "sort_order":                         { "-type": "string"},
-                "global_quest":                       { "-type": "string"},
+                "quest_name":                   { "-type": "string"},
+                "quest_id":                     { "-type": "string"},
+                "description":                  { "-type": "string"},
+                "hint":                         { "-type": "string"},
+                "image":                        { "-type": "string"},
+                "tags":                         { "-type": "any"},
+                "sort_order":                   { "-type": "string"},
                 "condition": [
                   {
-                    "condition_value":                { "-type": "string"},
-                    "condition_type":                 { "-type": "string"},
-                    "condition_id":                   { "-type": "string"},
-                    "condition_data":                 { "-type": "any"}
+                    "condition_type":           { "-type": "string"},
+                    "condition_id":             { "-type": "string"},
+                    "condition_value":          { "-type": "string"},
+                    "condition_data":           { "-type": "any"}
+                  },
+                  {
+                    "-optional": "true"
                   }
                 ],
                 "rewards": [
                   {
-                    "reward_value":                   { "-type": "string"},
-                    "reward_id":                      { "-type": "string"},
-                    "reward_type":                    { "-type": "string"},
-                    "reward_data":
-                    {
-                      "name":                         { "-type": "string"},
-                      "goods_id":                     { "-type": "string", "-optional": "true"},
-                      "badge_id":                     { "-type": "string", "-optional": "true"},
-                      "description":                  { "-type": "string"},
-                      "quantity":                     { "-type": "integer", "-optional": "true"},
-                      "per_user":                     { "-type": "integer", "-optional": "true"},
-                      "image":                        { "-type": "string"},
-                      "status":                       { "-type": "boolean", "-optional": "true"},
-                      "deleted":                      { "-type": "boolean", "-optional": "true"},
-                      "claim":                        { "-type": "boolean", "-optional": "true"},
-                      "redeem":                       { "-type": "boolean", "-optional": "true"},
-                      "sponsor":                      { "-type": "boolean"},
-                      "sort_order":                   { "-type": "integer", "-optional": "true"},
-                      "language_id":                  { "-type": "integer", "-optional": "true"},
-                      "date_start":                   { "-type": "string", "-optional": "true"},
-                      "date_expire":                  { "-type": "string", "-optional": "true"},
-                      "date_added":                   { "-type": "string", "-optional": "true"},
-                      "date_modified":                { "-type": "string", "-optional": "true"},
-                      "group":                        { "-type": "string", "-optional": "true"},
-                      "hint":                         { "-type": "string", "-optional": "true"},
-                      "tags":                         { "-type": "any", "-optional": "true"},
-                      "organize_id":                  { "-type": "any", "-optional": "true"},
-                      "organize_role":                { "-type": "any", "-optional": "true"}
+                    "reward_type":              { "-type": "string"},
+                    "reward_id":                { "-type": "string"},
+                    "reward_value":             { "-type": "string"},
+                    "reward_data": {
+                        "[a-zA-Z0-9-%_:\\.]+":  { "-type": "any"}
                     }
+                  },
+                  {
+                    "-optional": "true"
+                  }
+                ],
+                "feedbacks": [
+                  {
+                    "feedback_type":    { "-type": "string"},
+                    "template_id":      { "-type": "string"},
+                    "subject":          { "-type": "string", "-optional": "true"},
+                    "feedback_data": {
+                        "name":         { "-type": "string"},
+                        "message":      { "-type": "string"}
+                    }
+                  },
+                  {
+                    "-optional": "true"
                   }
                 ],
                 "missions": [
                   {
                     "mission_name":                   { "-type": "string"},
+                    "mission_id":                     { "-type": "string"},
                     "mission_number":                 { "-type": "string"},
                     "description":                    { "-type": "string"},
                     "hint":                           { "-type": "string"},
                     "image":                          { "-type": "string"},
+                    "status":                         { "-type": "string", "-optional": "true"},
                     "completion": [
                       {
-                        "completion_op":              { "-type": "string"},
-                        "completion_filter":          { "-type": "string"},
-                        "completion_value":           { "-type": "string"},
-                        "completion_id":              { "-type": "string"},
                         "completion_type":            { "-type": "string"},
-                        "completion_element_id":      { "-type": "string"},
+                        "completion_id":              { "-type": "string"},
                         "completion_title":           { "-type": "string"},
-                        "filtered_param": {
+                        "completion_value":           { "-type": "string"},
+                        "completion_data": {
+                          "[a-zA-Z0-9-%_:\\.]+":      { "-type": "any"}
+                        },
+                        "completion_element_id":      { "-type": "string", "-optional": "true"},
+                        "completion_op":              { "-type": "string", "-optional": "true"},
+                        "completion_filter":          { "-type": "string", "-optional": "true"},
+                        "filtered_param": {             "-optional": "true",
                           "[a-zA-Z0-9-%_:\\.]+": {
                             "operation":              { "-type": "string"},
                             "completion_string":      { "-type": "string"}
                           }
-                        },
-                        "completion_data": {
-                          "action_id":                { "-type": "string"},
-                          "name":                     { "-type": "string"},
-                          "description":              { "-type": "string"},
-                          "icon":                     { "-type": "string"},
-                          "color":                    { "-type": "string"}
                         }
+                      },
+                      {
+                        "-optional": "true"
                       }
                     ],
-                    "mission_id":                     { "-type": "string"}
+                    "rewards": [
+                      {
+                        "reward_type":                { "-type": "string"},
+                        "reward_id":                  { "-type": "string"},
+                        "reward_value":               { "-type": "string"},
+                        "reward_data": {
+                            "[a-zA-Z0-9-%_:\\.]+":    { "-type": "any"}
+                        }
+                      },
+                      {
+                        "-optional": "true"
+                      }
+                    ],
+                    "feedbacks": [
+                      {
+                        "feedback_type":    { "-type": "string"},
+                        "template_id":      { "-type": "string"},
+                        "subject":          { "-type": "string", "-optional": "true"},
+                        "feedback_data": {
+                            "name":         { "-type": "string"},
+                            "message":      { "-type": "string"}
+                        }
+                      },
+                      {
+                        "-optional": "true"
+                      }
+                    ],
+                    "pending": [
+                      {
+                        "event_type":                 { "-type": "string"},
+                        "message":                    { "-type": "string"},
+                        "incomplete": {                 "-optional": "true",
+                          "incompletion_id":          { "-type": "string"},
+                          "incompletion_type":        { "-type": "string"},
+                          "incompletion_value":       { "-type": "integer"},
+                          "incompletion_element_id":  { "-type": "string", "-optional": "true"}
+                        }
+                      },
+                      {
+                        "-optional": "true"
+                      }
+                    ]
                   }
                 ],
-                "organize_id":                        { "-type": "any"},
-                "organize_role":                      { "-type": "any"},
-                "status":                             { "-type": "boolean"},
-                "mission_order":                      { "-type": "boolean"},
-                "feedbacks":                          { "-type": "any"},
-                "date_added":                         { "-type": "string"},
-                "date_modified":                      { "-type": "string"},
-                "quest_id":                           { "-type": "string"}
+                "mission_order":      { "-type": "boolean"},
+                "global_quest":       { "-type": "string", "-optional": "true"},
+                "organize_id":        { "-type": "string"},
+                "organize_role":      { "-type": "string"},
+                "status":             { "-type": "boolean"},
+                "date_added":         { "-type": "string"},
+                "date_modified":      { "-type": "string", "-optional": "true"},
+                "num_missions":       { "-type": "any", "-optional": "true"}
               }
             ]
           }
@@ -4098,7 +4236,7 @@
             }
           ],
           "response": {
-            "result":             { "-type": "string"},
+            "result":             { "-type": "any"},
             "processing_time":    { "-type": "string"}
           }
         },
@@ -4233,10 +4371,11 @@
               {
                 "name":                      { "-type": "string"},
                 "image":                     { "-type": "string"},
-                "weight":                    { "-type": "string"},
+                "weight":                    { "-type": "integer"},
                 "description":               { "-type": "string"},
                 "description_image":         { "-type": "string"},
-                "quiz_id":                   { "-type": "string"}
+                "quiz_id":                   { "-type": "string"},
+                "tags":                      { "-type": "any"}
               }
             ],
             "processing_time":               { "-type": "string"}
