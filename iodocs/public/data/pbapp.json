@@ -2850,6 +2850,7 @@
                 "sort_order":               { "-type": "integer"},
                 "date_start":               { "-type": "string", "-optional": "true"},
                 "date_expire":              { "-type": "string", "-optional": "true"},
+                "days_expire":              { "-type": "string", "-optional": "true"},
                 "organize_id":              { "-type": "string", "-optional": "true"},
                 "organize_role":            { "-type": "string", "-optional": "true"}
               },
@@ -2916,6 +2917,7 @@
                 "sort_order":               { "-type": "integer"},
                 "date_start":               { "-type": "string", "-optional": "true"},
                 "date_expire":              { "-type": "string", "-optional": "true"},
+                "days_expire":              { "-type": "string", "-optional": "true"},
                 "organize_id":              { "-type": "string", "-optional": "true"},
                 "organize_role":            { "-type": "string", "-optional": "true"}
               },
@@ -3013,7 +3015,7 @@
               "Description": "player id as used in client's website"
             }
           ],
-          "responses": [
+          "response": [
             {
               "name":                               { "-type": "string"},
               "description":                        { "-type": "string"},
@@ -3025,7 +3027,7 @@
                   "description":                    { "-type": "string"},
                   "specific_id":                    { "-type": "string"},
                   "category":                       { "-type": "string"},
-                  "sort_order":                     { "-type": "integer"},
+                  "sort_order":                     { "-type": "integer", "-optional": "true"},
                   "jigsaw_index":                   { "-type": "string"},
                   "dataSet": [
                     {
@@ -3034,7 +3036,7 @@
                       "param_name":                 { "-type": "string"},
                       "label":                      { "-type": "string"},
                       "placeholder":                { "-type": "string", "-optional": "true"},
-                      "value":                      { "-type": "string"}
+                      "value":                      { "-type": "any"}
                     }
                   ],
                   "config": {
@@ -3073,6 +3075,7 @@
           ],
           "response": {
             "name":                               { "-type": "string"},
+            "id":                                 { "-type": "string"},
             "description":                        { "-type": "string"},
             "tags":                               { "-type": "any"},
             "jigsaw_set": [
@@ -3082,7 +3085,7 @@
                 "description":                    { "-type": "string"},
                 "specific_id":                    { "-type": "string"},
                 "category":                       { "-type": "string"},
-                "sort_order":                     { "-type": "integer"},
+                "sort_order":                     { "-type": "integer", "-optional": "true"},
                 "jigsaw_index":                   { "-type": "string"},
                 "dataSet": [
                   {
@@ -3091,7 +3094,7 @@
                     "param_name":                 { "-type": "string"},
                     "label":                      { "-type": "string"},
                     "placeholder":                { "-type": "string", "-optional": "true"},
-                    "value":                      { "-type": "string"}
+                    "value":                      { "-type": "any"}
                   }
                 ],
                 "config": {
@@ -3100,7 +3103,6 @@
               }
             ],
             "active_status":                      { "-type": "boolean"},
-            "id":                                 { "-type": "string"},
             "action":                             { "-type": "any"}
           }
         },
@@ -3175,7 +3177,54 @@
               "Type": "string",
               "Description": "you can specify a session id to extend expire session time for that player"
             }
-          ]
+          ],
+          "response": {
+            "events": [
+              {
+                "event_type":   { "-type": "string"},
+                "reward_type":  { "-type": "string", "-optional": "true"},
+                "reward_data":  { "-type": "any",    "-optional": "true"},
+                "value":        { "-type": "any"}
+              }
+            ],
+            "events_missions": [
+              {
+                "events": [
+                  {
+                    "event_type":   { "-type": "string"},
+                    "reward_type":  { "-type": "string", "-optional": "true"},
+                    "reward_data":  { "-type": "any",    "-optional": "true"},
+                    "value":        { "-type": "any"}
+                  }
+                ],
+                "mission_id":       { "-type": "string"},
+                "mission_number":   { "-type": "string"},
+                "mission_name":     { "-type": "string"},
+                "description":      { "-type": "string"},
+                "hint":             { "-type": "string"},
+                "image":            { "-type": "string"},
+                "quest_id":         { "-type": "string"}
+              }
+            ],
+            "events_quests": [
+              {
+                "events": [
+                  {
+                    "event_type":   { "-type": "string"},
+                    "reward_type":  { "-type": "string", "-optional": "true"},
+                    "reward_data":  { "-type": "any",    "-optional": "true"},
+                    "value":        { "-type": "any"}
+                  }
+                ],
+                "quest_id":         { "-type": "string"},
+                "quest_name":       { "-type": "string"},
+                "description":      { "-type": "string"},
+                "hint":             { "-type": "string"},
+                "image":            { "-type": "string"}
+              }
+            ],
+            "processing_time":      { "-type": "string", "-optional": "true"}
+          }
         },
         {
           "MethodName": "Action Config",
@@ -3207,30 +3256,13 @@
               "Default": "",
               "Type": "string",
               "Description": "access token returned from Auth"
-            }
-          ]
-        },
-        {
-          "MethodName": "Action reward Player",
-          "Synopsis": "Get player reward from the action",
-          "HTTPMethod": "GET",
-          "URI": "Engine/json",
-          "RequiresOAuth": "N",
-          "Public": "Y", "save":"save",
-          "parameters": [
-            {
-              "Name": "pb_player_id",
-              "Required": "Y",
-              "Default": "",
-              "Type": "string",
-              "Description": "internal id of player"
             },
             {
-              "Name": "action",
+              "Name": "quest_id",
               "Required": "Y",
               "Default": "",
               "Type": "string",
-              "Description": "action of player"
+              "Description": "quest id"
             }
           ]
         },
@@ -3260,25 +3292,49 @@
           "response": {
             "events": [
               {
-                "event_type":     { "-type": "string"},
-                "reward_type":    { "-type": "string"},
-                "reward_data":    {
-                  "description":  { "-type": "string"},
-                  "per_user":     { "-type": "string"},
-                  "image":        { "-type": "string"},
-                  "date_start":   { "-type": "string"},
-                  "date_expire":  { "-type": "string"},
-                  "name":         { "-type": "string"},
-                  "code":         { "-type": "string"},
-                  "goods_id":     { "-type": "string"},
-                  "group":        { "-type": "string"}
-                },
-                "value":          { "-type": "string"}
+                "event_type":   { "-type": "string"},
+                "reward_type":  { "-type": "string", "-optional": "true"},
+                "reward_data":  { "-type": "any",    "-optional": "true"},
+                "value":        { "-type": "any"}
               }
             ],
-            "events_missions":    { "-type": "any"},
-            "events_quests":      { "-type": "any"},
-            "processing_time":    { "-type": "string"}
+            "events_missions": [
+              {
+                "events": [
+                  {
+                    "event_type":   { "-type": "string"},
+                    "reward_type":  { "-type": "string", "-optional": "true"},
+                    "reward_data":  { "-type": "any",    "-optional": "true"},
+                    "value":        { "-type": "any"}
+                  }
+                ],
+                "mission_id":       { "-type": "string"},
+                "mission_number":   { "-type": "string"},
+                "mission_name":     { "-type": "string"},
+                "description":      { "-type": "string"},
+                "hint":             { "-type": "string"},
+                "image":            { "-type": "string"},
+                "quest_id":         { "-type": "string"}
+              }
+            ],
+            "events_quests": [
+              {
+                "events": [
+                  {
+                    "event_type":   { "-type": "string"},
+                    "reward_type":  { "-type": "string", "-optional": "true"},
+                    "reward_data":  { "-type": "any",    "-optional": "true"},
+                    "value":        { "-type": "any"}
+                  }
+                ],
+                "quest_id":         { "-type": "string"},
+                "quest_name":       { "-type": "string"},
+                "description":      { "-type": "string"},
+                "hint":             { "-type": "string"},
+                "image":            { "-type": "string"}
+              }
+            ],
+            "processing_time":      { "-type": "string", "-optional": "true"}
           }
         },
         {
@@ -3300,25 +3356,49 @@
           "response": {
             "events": [
               {
-                "event_type":     { "-type": "string"},
-                "reward_type":    { "-type": "string"},
-                "reward_data":    {
-                  "description":  { "-type": "string"},
-                  "per_user":     { "-type": "string"},
-                  "image":        { "-type": "string"},
-                  "date_start":   { "-type": "string"},
-                  "date_expire":  { "-type": "string"},
-                  "name":         { "-type": "string"},
-                  "code":         { "-type": "string"},
-                  "goods_id":     { "-type": "string"},
-                  "group":        { "-type": "string"}
-                },
-                "value":          { "-type": "string"}
+                "event_type":   { "-type": "string"},
+                "reward_type":  { "-type": "string", "-optional": "true"},
+                "reward_data":  { "-type": "any",    "-optional": "true"},
+                "value":        { "-type": "any"}
               }
             ],
-            "events_missions":    { "-type": "any"},
-            "events_quests":      { "-type": "any"},
-            "processing_time":    { "-type": "string"}
+            "events_missions": [
+              {
+                "events": [
+                  {
+                    "event_type":   { "-type": "string"},
+                    "reward_type":  { "-type": "string", "-optional": "true"},
+                    "reward_data":  { "-type": "any",    "-optional": "true"},
+                    "value":        { "-type": "any"}
+                  }
+                ],
+                "mission_id":       { "-type": "string"},
+                "mission_number":   { "-type": "string"},
+                "mission_name":     { "-type": "string"},
+                "description":      { "-type": "string"},
+                "hint":             { "-type": "string"},
+                "image":            { "-type": "string"},
+                "quest_id":         { "-type": "string"}
+              }
+            ],
+            "events_quests": [
+              {
+                "events": [
+                  {
+                    "event_type":   { "-type": "string"},
+                    "reward_type":  { "-type": "string", "-optional": "true"},
+                    "reward_data":  { "-type": "any",    "-optional": "true"},
+                    "value":        { "-type": "any"}
+                  }
+                ],
+                "quest_id":         { "-type": "string"},
+                "quest_name":       { "-type": "string"},
+                "description":      { "-type": "string"},
+                "hint":             { "-type": "string"},
+                "image":            { "-type": "string"}
+              }
+            ],
+            "processing_time":      { "-type": "string", "-optional": "true"}
           }
         },
         {
