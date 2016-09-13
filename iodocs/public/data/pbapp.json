@@ -2979,7 +2979,7 @@
               "Description": "name of goods group"
             }
           ],
-          "response": [
+          "responses": [
             {
               "branch": [
                 {
@@ -5046,32 +5046,51 @@
               {
                 "event_type":                   { "-type": "string"},
                 "goods_data": {
+                  "goods_id":                   { "-type": "string"},
+                  "name":                       { "-type": "string"},
                   "description":                { "-type": "string"},
                   "quantity":                   { "-type": "integer"},
-                  "per_user":                   { "-type": "string"},
+                  "per_user":                   { "-type": "integer"},
                   "image":                      { "-type": "string"},
                   "sponsor":                    { "-type": "boolean"},
                   "sort_order":                 { "-type": "integer"},
-                  "redeem":                     {
-                    "point":                    {
+                  "code":                       { "-type": "string"},
+                  "redeem": {
+                    "point": {
                       "point_value":            { "-type": "integer"}
-                    }
+                    },
+                    "badge": [
+                      {
+                        "badge_id":             { "-type": "string"},
+                        "badge_value":          { "-type": "integer"}
+                      },
+                      {
+                        "-optional": "true"
+                      }
+                    ],
+                    "custom": [
+                      {
+                        "custom_id":            { "-type": "string"},
+                        "custom_name":          { "-type": "string"},
+                        "custom_value":         { "-type": "integer"}
+                      },
+                      {
+                        "-optional": "true"
+                      }
+                    ]
                   },
                   "tags":                       { "-type": "any"},
                   "date_start":                 { "-type": "string"},
                   "date_expire":                { "-type": "string"},
-                  "days_expire":                { "-type": "string"},
-                  "name":                       { "-type": "string"},
-                  "date_expired_coupon":        { "-type": "any"},
-                  "code":                       { "-type": "string"},
-                  "goods_id":                   { "-type": "string"},
-                  "group":                      { "-type": "string"}
+                  "group":                      { "-type": "string", "-optional": "true"},
+                  "organize_id":                { "-type": "any", "-optional": "true"},
+                  "organize_role":              { "-type": "string", "-optional": "true"}
                 },
                 "value":                        { "-type": "integer"}
               }
             ],
             "log_id":                           { "-type": "string"},
-            "processing_time":                  { "-type": "string"}
+            "processing_time":                  { "-type": "string", "-optional": "true"}
           }
         },
         {
@@ -5116,31 +5135,52 @@
               {
                 "event_type":                   { "-type": "string"},
                 "goods_data": {
+                  "goods_id":                   { "-type": "string"},
+                  "name":                       { "-type": "string"},
                   "description":                { "-type": "string"},
                   "quantity":                   { "-type": "integer"},
-                  "per_user":                   { "-type": "string"},
+                  "per_user":                   { "-type": "integer"},
                   "image":                      { "-type": "string"},
                   "sponsor":                    { "-type": "boolean"},
                   "sort_order":                 { "-type": "integer"},
-                  "redeem":                     {
-                    "point":                    {
+                  "code":                       { "-type": "string"},
+                  "redeem": {
+                    "point": {
                       "point_value":            { "-type": "integer"}
-                    }
+                    },
+                    "badge": [
+                      {
+                        "badge_id":             { "-type": "string"},
+                        "badge_value":          { "-type": "integer"}
+                      },
+                      {
+                        "-optional": "true"
+                      }
+                    ],
+                    "custom": [
+                      {
+                        "custom_id":            { "-type": "string"},
+                        "custom_name":          { "-type": "string"},
+                        "custom_value":         { "-type": "integer"}
+                      },
+                      {
+                        "-optional": "true"
+                      }
+                    ]
                   },
                   "tags":                       { "-type": "any"},
                   "date_start":                 { "-type": "string"},
                   "date_expire":                { "-type": "string"},
                   "days_expire":                { "-type": "string"},
-                  "name":                       { "-type": "string"},
-                  "date_expired_coupon":        { "-type": "any", "-optional": "true"},
-                  "code":                       { "-type": "string"},
-                  "goods_id":                   { "-type": "string"},
-                  "group":                      { "-type": "string"}
+                  "group":                      { "-type": "string", "-optional": "true"},
+                  "organize_id":                { "-type": "any", "-optional": "true"},
+                  "organize_role":              { "-type": "string", "-optional": "true"}
                 },
                 "value":                        { "-type": "integer"}
               }
             ],
-            "log_id":                           { "-type": "string"}
+            "log_id":                           { "-type": "string"},
+            "processing_time":                  { "-type": "string", "-optional": "true"}
           }
         },
         {
@@ -5178,6 +5218,12 @@
               "Default": "",
               "Type": "string",
               "Description": "merchant PIN Code generated from admin dashboard"
+            }
+          ],
+          "response": [
+            {
+              "success": { "-type": "boolean"},
+              "details": { "-type": "any", "-optional": "true"}
             }
           ]
         },
