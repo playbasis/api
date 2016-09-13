@@ -2306,7 +2306,7 @@
               "Description": "year to rank players by (2015, 2016 , ...)"
             }
           ],
-          "responses": [
+          "response": [
             {
               "cl_player_id":         { "-type": "string"},
               "[a-zA-Z0-9-%_:\\.]+":  { "-type": "integer"}
@@ -4370,11 +4370,11 @@
             "result": [
               {
                 "name":                      { "-type": "string"},
+                "quiz_id":                   { "-type": "string"},
                 "image":                     { "-type": "string"},
                 "weight":                    { "-type": "integer"},
                 "description":               { "-type": "string"},
                 "description_image":         { "-type": "string"},
-                "quiz_id":                   { "-type": "string"},
                 "tags":                      { "-type": "any"}
               }
             ],
@@ -4407,14 +4407,20 @@
           "response": {
             "result": {
               "name":                                                 { "-type": "string"},
+              "quiz_id":                                              { "-type": "string"},
               "image":                                                { "-type": "string"},
               "weight":                                               { "-type": "integer"},
               "date_start":                                           { "-type": "string"},
               "date_expire":                                          { "-type": "string"},
+              "tags":                                                 { "-type": "any"},
+              "type":                                                 { "-type": "string"},
               "status":                                               { "-type": "boolean"},
               "description":                                          { "-type": "string"},
               "description_image":                                    { "-type": "string"},
               "deleted":                                              { "-type": "boolean"},
+              "question_order":                                       { "-type": "boolean"},
+              "total_max_score":                                      { "-type": "integer"},
+              "total_questions":                                      { "-type": "integer"},
               "grades": [
                 {
                   "grade_id":                                         { "-type": "string"},
@@ -4434,53 +4440,48 @@
                       {
                         "badge_id":                                   { "-type": "string"},
                         "badge_value":                                { "-type": "string"}
+                      },
+                      {
+                        "-optional": "true"
+                      }
+                    ],
+                    "custom": [
+                      {
+                        "custom_id":                                  { "-type": "string"},
+                        "custom_value":                               { "-type": "string"}
+                      },
+                      {
+                        "-optional": "true"
                       }
                     ]
                   },
                   "feedbacks": {
-                    "email": {                                          "-type": "array", "-optional": "true",
+                    "email": {                                          "-optional": "true",
                       "[a-zA-Z0-9-%_:\\.]+": {
-                        "subject":                                    { "-type": "string"}
+                        "subject":                                    { "-type": "string"},
+                        "checked":                                    { "-type": "string", "-optional": "true"}
                       }
-
                     },
-                    "sms": {                                            "-type": "array", "-optional": "true",
+                    "sms": {                                            "-optional": "true",
                       "[a-zA-Z0-9-%_:\\.]+": {
-                        "checked":                                    { "-type": "string"}
+                        "checked":                                    { "-type": "string", "-optional": "true"}
                       }
-
+                    },
+                    "push": {                                            "-optional": "true",
+                      "[a-zA-Z0-9-%_:\\.]+": {
+                        "checked":                                    { "-type": "string", "-optional": "true"}
+                      }
                     }
                   }
                 },
                 {
-                  "grade_id":                                         { "-type": "string"},
-                  "start":                                            { "-type": "string"},
-                  "end":                                              { "-type": "string"},
-                  "grade":                                            { "-type": "string"},
-                  "rank":                                             { "-type": "string"},
-                  "rank_image":                                       { "-type": "string"},
-                  "rewards": {
-                    "exp": {
-                      "exp_value":                                    { "-type": "string"}
-                    },
-                    "point": {
-                      "point_value":                                  { "-type": "string"}
-                    }
-                  },
-                  "feedbacks": {
-                    "email": {                                          "-type": "array","-optional": "true",
-                      "[a-zA-Z0-9-%_:\\.]+": {
-                        "subject":                                    { "-type": "string"}
-                      }
-                    }
-                  }
+                  "-optional": "true"
                 }
               ],
-              "question_order":                                       { "-type": "boolean"},
-              "tags":                                                 { "-type": "any"},
-              "quiz_id":                                              { "-type": "string"},
-              "total_max_score":                                      { "-type": "integer"},
-              "total_questions":                                      { "-type": "integer"}
+              "questions":                                            { "-type": "integer", "-optional": "true"},
+              "total_score":                                          { "-type": "integer", "-optional": "true"},
+              "grade":                                                { "-type": "any", "-optional": "true"},
+              "date_join":                                            { "-type": "string", "-optional": "true"}
             },
             "processing_time":                                        { "-type": "string"}
           }
@@ -4517,13 +4518,13 @@
           ],
           "response": {
             "result": {
-              "name":                   { "-type": "string"},
-              "image":                  { "-type": "string"},
-              "weight":                 { "-type": "integer"},
-              "tags":                   { "-type": "any"},
-              "description":            { "-type": "string"},
-              "description_image":      { "-type": "string"},
-              "quiz_id":                { "-type": "string"}
+              "name":                      { "-type": "string"},
+              "quiz_id":                   { "-type": "string"},
+              "image":                     { "-type": "string"},
+              "weight":                    { "-type": "integer"},
+              "description":               { "-type": "string"},
+              "description_image":         { "-type": "string"},
+              "tags":                      { "-type": "any"}
             },
             "processing_time":          { "-type": "string"}
           }
@@ -4554,36 +4555,11 @@
           "response": {
             "result": [
               {
+                "quiz_id":                                { "-type": "string"},
                 "value":                                  { "-type": "integer"},
-                "grade": {
-                  "grade_id":                             { "-type": "string", "-optional": "true"},
-                  "start":                                { "-type": "string", "-optional": "true"},
-                  "end":                                  { "-type": "string", "-optional": "true"},
-                  "grade":                                { "-type": "string", "-optional": "true"},
-                  "rank":                                 { "-type": "string", "-optional": "true"},
-                  "rank_image":                           { "-type": "string", "-optional": "true"},
-                  "rewards": [
-                    {
-                      "event_type":                       { "-type": "string"},
-                      "reward_type":                      { "-type": "string"},
-                      "reward_id":                        { "-type": "string"},
-                      "value":                            { "-type": "string"}
-                    }
-                  ],
-                  "feedbacks": {                            "-type": "any", "-optional": "true",
-                    "email": {
-                      "[a-zA-Z0-9-%_:\\.]+": {
-                        "subject":                        { "-type": "string"}
-                      }
-                    }
-                  },
-                  "score":                                { "-type": "integer"},
-                  "max_score":                            { "-type": "string"},
-                  "total_score":                          { "-type": "integer"},
-                  "total_max_score":                      { "-type": "integer"}
-                },
+                "grade":                                  { "-type": "any"},
                 "total_completed_questions":              { "-type": "integer"},
-                "quiz_id":                                { "-type": "string"}
+                "total_pending_questions":                { "-type": "integer", "-optional": "true"}
               }
             ],
             "processing_time":                            { "-type": "string"}
@@ -4608,36 +4584,11 @@
           "response": {
             "result": [
               {
+                "quiz_id":                                { "-type": "string"},
                 "value":                                  { "-type": "integer"},
-                "grade": {
-                  "grade_id":                             { "-type": "string", "-optional": "true"},
-                  "start":                                { "-type": "string", "-optional": "true"},
-                  "end":                                  { "-type": "string", "-optional": "true"},
-                  "grade":                                { "-type": "string", "-optional": "true"},
-                  "rank":                                 { "-type": "string", "-optional": "true"},
-                  "rank_image":                           { "-type": "string", "-optional": "true"},
-                  "rewards": [
-                    {
-                      "event_type":                       { "-type": "string"},
-                      "reward_type":                      { "-type": "string"},
-                      "reward_id":                        { "-type": "string"},
-                      "value":                            { "-type": "string"}
-                    }
-                  ],
-                  "feedbacks": {                            "-type": "any", "-optional": "true",
-                    "email": {
-                      "[a-zA-Z0-9-%_:\\.]+": {
-                        "subject":                        { "-type": "string"}
-                      }
-                    }
-                  },
-                  "score":                                { "-type": "integer"},
-                  "max_score":                            { "-type": "string"},
-                  "total_score":                          { "-type": "integer"},
-                  "total_max_score":                      { "-type": "integer"}
-                },
+                "grade":                                  { "-type": "any"},
                 "total_completed_questions":              { "-type": "integer"},
-                "quiz_id":                                { "-type": "string"}
+                "total_pending_questions":                { "-type": "integer", "-optional": "true"}
               }
             ],
             "processing_time":                            { "-type": "string"}
@@ -4665,7 +4616,19 @@
               "Type": "integer",
               "Description": "limit number of quizzes"
             }
-          ]
+          ],
+          "response": {
+            "result": [
+              {
+                "quiz_id":                                { "-type": "string"},
+                "value":                                  { "-type": "integer"},
+                "grade":                                  { "-type": "any"},
+                "total_completed_questions":              { "-type": "integer"},
+                "total_pending_questions":                { "-type": "integer", "-optional": "true"}
+              }
+            ],
+            "processing_time":                            { "-type": "string"}
+          }
         },
         {
           "MethodName": "List Pending Quizzes by the Player",
@@ -4682,7 +4645,19 @@
               "Type": "string",
               "Description": "player id as used in client's website"
             }
-          ]
+          ],
+          "response": {
+            "result": [
+              {
+                "quiz_id":                                { "-type": "string"},
+                "value":                                  { "-type": "integer"},
+                "grade":                                  { "-type": "any"},
+                "total_completed_questions":              { "-type": "integer"},
+                "total_pending_questions":                { "-type": "integer", "-optional": "true"}
+              }
+            ],
+            "processing_time":                            { "-type": "string"}
+          }
         },
         {
           "MethodName": "Get a Question from a Quiz",
@@ -4727,24 +4702,25 @@
           ],
           "response": {
             "result": {
-              "question":           { "-type": "string"},
-              "question_image":     { "-type": "string"},
-              "timelimit":          { "-type": "string"},
-              "question_number":    { "-type": "string"},
+              "question":               { "-type": "string"},
+              "question_image":         { "-type": "string"},
+              "timelimit":              { "-type": "string"},
+              "question_number":        { "-type": "string"},
               "options": [
                 {
-                  "option":         { "-type": "string"},
-                  "option_image":   { "-type": "string"},
-                  "option_id":      { "-type": "string"},
-                  "score":          { "-type": "string", "-optional": "true"},
-                  "explanation":    { "-type": "string", "-optional": "true"}
+                  "option":             { "-type": "string"},
+                  "option_image":       { "-type": "string"},
+                  "option_id":          { "-type": "string"},
+                  "score":              { "-type": "string", "-optional": "true"},
+                  "explanation":        { "-type": "string", "-optional": "true"}
                 }
               ],
-              "index":              { "-type": "integer"},
-              "total":              { "-type": "integer"},
-              "question_id":        { "-type": "string"}
+              "index":                  { "-type": "integer"},
+              "total":                  { "-type": "integer"},
+              "question_id":            { "-type": "string"},
+              "remaining_time_in_sec":  { "-type": "integer"}
             },
-            "processing_time":      { "-type": "string"}
+            "processing_time":          { "-type": "string"}
           }
         },
         {
@@ -4796,26 +4772,26 @@
             }
           ],
           "response": {
-          "result": {               "-type": "any","-optional": "true",
-            "question":           { "-type": "string"},
-            "question_image":     { "-type": "string"},
-            "timelimit":          { "-type": "string"},
-            "question_number":    { "-type": "string"},
-            "options": [
-              {
-                "option":         { "-type": "string"},
-                "option_image":   { "-type": "string"},
-                "option_id":      { "-type": "string"},
-                "score":          { "-type": "string", "-optional": "true"},
-                "explanation":    { "-type": "string", "-optional": "true"}
-              }
-            ],
-            "index":              { "-type": "integer"},
-            "total":              { "-type": "integer"},
-            "question_id":        { "-type": "string"}
-          },
-          "processing_time":      { "-type": "string"}
-        }
+            "result": {               "-type": "any","-optional": "true",
+              "question":           { "-type": "string"},
+              "question_image":     { "-type": "string"},
+              "timelimit":          { "-type": "string"},
+              "question_number":    { "-type": "string"},
+              "options": [
+                {
+                  "option":         { "-type": "string"},
+                  "option_image":   { "-type": "string"},
+                  "option_id":      { "-type": "string"},
+                  "score":          { "-type": "string", "-optional": "true"},
+                  "explanation":    { "-type": "string", "-optional": "true"}
+                }
+              ],
+              "index":              { "-type": "integer"},
+              "total":              { "-type": "integer"},
+              "question_id":        { "-type": "string"}
+            },
+            "processing_time":      { "-type": "string"}
+          }
         },
         {
           "MethodName": "Answer a Question from a Quiz",
@@ -4884,7 +4860,6 @@
                 "total_max_score":                  { "-type": "integer"}
               },
               "rewards":                            { "-type": "any"}
-
             },
             "processing_time":                      { "-type": "string"}
           }
