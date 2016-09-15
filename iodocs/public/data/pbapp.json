@@ -2804,8 +2804,7 @@
               "Type": "integer",
               "Description": "amount of the goods to redeem"
             }
-          ],
-          "response": {"-type": "integer"}
+          ]
         },
         {
           "MethodName": "Coupon code verification",
@@ -2979,7 +2978,7 @@
               "Description": "name of goods group"
             }
           ],
-          "responses": [
+          "response": [
             {
               "branch": [
                 {
@@ -5220,12 +5219,11 @@
               "Description": "merchant PIN Code generated from admin dashboard"
             }
           ],
-          "response": [
-            {
-              "success": { "-type": "boolean"},
-              "details": { "-type": "any", "-optional": "true"}
-            }
-          ]
+          "response": {
+            "success": { "-type": "boolean"},
+            "details": { "-type": "any", "-optional": "true"}
+          }
+
         },
         {
           "MethodName": "Redeem Sponsor",
@@ -5354,7 +5352,7 @@
               "Description": "template message (either message or template_id is required)"
             }
           ],
-          "responses": { "-type": "any"}
+          "response": { "-type": "any"}
         },
         {
           "MethodName": "Send Email",
@@ -5408,7 +5406,7 @@
               "Description": "email message (either message or template_id is required)"
             }
           ],
-          "responses": { "-type": "any"}
+          "response": { "-type": "any"}
         },
         {
           "MethodName": "Send Email Coupon",
@@ -5461,7 +5459,7 @@
               "Description": "template message (either message or template_id is required)"
             }
           ],
-          "responses": { "-type": "any"}
+          "response": { "-type": "any"}
         },
         {
           "MethodName": "Check Email black list",
@@ -5486,7 +5484,7 @@
               "Description": "email to check blacklist"
             }
           ],
-          "responses": { "-type": "boolean"}
+          "response": { "-type": "boolean"}
         },
         {
           "MethodName": "Add Email black list",
@@ -5511,7 +5509,7 @@
               "Description": "email to check blacklist"
             }
           ],
-          "responses": { "-type": "string"}
+          "response": { "-type": "string"}
         },
         {
           "MethodName": "Remove Email black list",
@@ -5536,7 +5534,7 @@
               "Description": "email to check blacklist"
             }
           ],
-          "responses": { "-type": "string"}
+          "response": { "-type": "string"}
         },
         {
           "MethodName": "List Recent Email Sent to a Player",
@@ -5577,7 +5575,7 @@
           "Public": "Y",
           "parameters": [
           ],
-          "responses": [
+          "response": [
             {
               "name":        { "-type": "string"}
             }
@@ -5606,7 +5604,7 @@
               "Description": "player id as used in client's website"
             }
           ],
-          "responses":    { "-type": "string"}
+          "response":    { "-type": "string"}
         },
         {
           "MethodName": "Send SMS By Phone Number",
@@ -5779,9 +5777,11 @@
           "Public": "Y",
           "parameters": [
           ],
-          "responses": {
-            "name":     { "-type": "string"}
-          }
+          "response": [
+            {
+              "name":{ "-type": "string"}
+            }
+          ]
         },
         {
           "MethodName": "Get Processed SMS Template",
@@ -5806,7 +5806,7 @@
               "Description": "player id as used in client's website"
             }
           ],
-          "responses":     { "-type": "string"}
+          "response":     { "-type": "string"}
         },
         {
           "MethodName": "Device Registration",
@@ -5904,7 +5904,7 @@
               "Description": "template message (either message or template_id is required)"
             }
           ],
-          "responses":     { "-type": "string"}
+          "response":     { "-type": "any"}
         },
         {
           "MethodName": "Send Push-Notification Coupon",
@@ -5950,7 +5950,7 @@
               "Description": "template message (either message or template_id is required)"
             }
           ],
-          "responses":     { "-type": "string"}
+          "response":     { "-type": "any"}
         },
         {
           "MethodName": "List Recent Push Notification to a Player",
@@ -5975,7 +5975,12 @@
               "Description": "'datetime' format supported by strtotime"
             }
           ],
-          "responses":     { "-type": "string"}
+          "response": [
+            {
+              "messages":   { "-type": "string"},  
+              "date_added": { "-type": "string"}
+            }
+          ]
         },
         {
           "MethodName": "List Push Notification Template",
@@ -6015,7 +6020,7 @@
               "Description": "player id as used in client's website"
             }
           ],
-          "responses":     { "-type": "string"}
+          "response":     { "-type": "string"}
         }
       ]
     },
