@@ -6073,14 +6073,14 @@
               "Description": "specify 'all' or 'player' (default is 'all')"
             }
           ],
-          "response": {
+          "responses": {
             "activities": [
               {
                 "event_type":        { "-type": "string"},
                 "message":           { "-type": "string", "-optional": "true"},
                 "reward_id":         { "-type": "string", "-optional": "true"},
                 "reward_name":       { "-type": "string", "-optional": "true"},
-                "value":             { "-type": "integer", "-optional": "true"},
+                "value":             { "-type": "integer","-optional": "true"},
                 "goods_id":          { "-type": "string", "-optional": "true"},
                 "quest_id":          { "-type": "string", "-optional": "true"},
                 "mission_id":        { "-type": "string", "-optional": "true"},
@@ -6100,12 +6100,12 @@
                 "action_name":       { "-type": "string"},
                 "string_filter":     { "-type": "string", "-optional": "true"},
                 "action_icon":       { "-type": "string"},
-                "goods": {             "-type": "array", "-optional": "true",
+                "goods": {             "-optional": "true",
                   "goods_id":        { "-type": "string", "-optional": "true"},
                   "image":           { "-type": "string", "-optional": "true"},
                   "name":            { "-type": "string", "-optional": "true"},
                   "description":     { "-type": "string", "-optional": "true"},
-                  "sponsor":         { "-type": "boolean", "-optional": "true"},
+                  "sponsor":         { "-type": "boolean","-optional": "true"},
                   "date_start":      { "-type": "string", "-optional": "true"},
                   "date_expire":     { "-type": "string", "-optional": "true"}
                 }
@@ -6281,9 +6281,6 @@
               "Description": "number of results to return"
             }
           ],
-          "success": true,
-          "error_code": "0000",
-          "message": "Success",
           "response": {
             "points": [
               {
@@ -6302,7 +6299,10 @@
                   "last_name":      { "-type": "string"},
                   "gender":         { "-type": "integer"}
                 },
-                "badge": {            "-type": "array", "-optional": "true",
+                "action_name":      { "-type": "string", "-optional": "true"},
+                "string_filter":    { "-type": "string", "-optional": "true"},
+                "action_icon":      { "-type": "string", "-optional": "true"},
+                "badge": {            "-optional": "true",
                   "badge_id":       { "-type": "string"},
                   "image":          { "-type": "string"},
                   "name":           { "-type": "string"},
@@ -6347,7 +6347,10 @@
                   "last_name":      { "-type": "string"},
                   "gender":         { "-type": "integer"}
                 },
-                "badge": {            "-type": "array", "-optional": "true",
+                "action_name":      { "-type": "string", "-optional": "true"},
+                "string_filter":    { "-type": "string", "-optional": "true"},
+                "action_icon":      { "-type": "string", "-optional": "true"},
+                "badge": {            "-optional": "true",
                   "badge_id":       { "-type": "string"},
                   "image":          { "-type": "string"},
                   "name":           { "-type": "string"},
@@ -6453,7 +6456,7 @@
                 "slug":              { "-type": "string"},
                 "date_added":        { "-type": "string"},
                 "date_modified":     { "-type": "string"},
-                "parent": {            "-type": "array", "-optional": "true",
+                "parent": {            "-optional": "true",
                   "id":              { "-type": "string"},
                   "name":            { "-type": "string"}
                 }
@@ -6541,7 +6544,7 @@
                   "id":                 { "-type": "string"},
                   "name":               { "-type": "string"}
                 },
-                "parent": {               "-type": "array", "-optional": "true",
+                "parent": {               "-optional": "true",
                   "id":                 { "-type": "string"},
                   "name":               { "-type": "string"}
                 }
