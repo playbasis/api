@@ -47,6 +47,8 @@ $route['default_controller'] = "welcome/playbasis";
 $route['Auth'] = 'auth';
 $route['Auth/renew'] = 'auth/renew';
 
+$route['Setting/appStatus'] = 'setting/appStatus';
+
 //player API
 $route['Player/'.ANY_STRING] = 'player/index/$1';
 $route['Player/'.ANY_STRING.'/data/all'] = 'player/details/$1';
@@ -104,9 +106,12 @@ $route['Player/point'] = 'player/point/';
 $route['Player/'.ANY_STRING.'/point_history'] = 'player/point_history/$1';
 $route['Player/'.ANY_STRING.'/quest_reward_history'] = 'player/quest_reward_history/$1';
 
-$route['Player/'.ANY_STRING.'/action/'.ANY_STRING.'/(time|count)'] = 'player/action/$1/$2/$3';
-$route['Player/action/'.ANY_STRING.'/(time|count)'] = 'player/action/0/$1/$2';
-$route['Player/'.ANY_STRING.'/action/(time|count)'] = 'player/action/$1/0/$2';
+$route['Player/'.ANY_STRING.'/action/'.ANY_STRING.'/time'] = 'player/action/$1/$2/time';
+$route['Player/'.ANY_STRING.'/action/'.ANY_STRING.'/count'] = 'player/action/$1/$2/count';
+$route['Player/action/'.ANY_STRING.'/time'] = 'player/action/0/$1/time';
+$route['Player/action/'.ANY_STRING.'/count'] = 'player/action/0/$1/count';
+$route['Player/'.ANY_STRING.'/action/time'] = 'player/action/$1/0/time';
+$route['Player/'.ANY_STRING.'/action/count'] = 'player/action/$1/0/count';
 $route['Player/action'] = 'player/action/';
 
 $route['Player/'.ANY_STRING.'/badge'] = 'player/badge/$1';
@@ -157,11 +162,11 @@ $route['Goods'] = 'goods/index';
 $route['Goods/sponsor/'.ANY_STRING] = 'goods/sponsor/$1';
 $route['Goods/sponsor'] = 'goods/sponsor';
 $route['Goods/ad'] = 'goods/personalizedSponsor';
-$route['Goods/couponVerify'] = 'goods/couponVerify';
 
 //Merchant API
 $route['Merchant/availableBranchGoodsGroup'] = 'merchant/availableBranchGoodsGroup';
-
+$route['Merchant/goodsGroup/verify'] = 'merchant/GoodsGroupVerify';
+$route['Merchant/goodsGroup/redeem'] = 'merchant/GoodsGroupRedeem';
 //engine API
 $route['Engine/actionConfig']	= 'engine/getActionConfig';
 $route['Engine/rules']	= 'engine/rules';
@@ -176,7 +181,6 @@ $route['Engine/json']	= 'engine/json/0';
 $route['Redeem/goods/'.ANY_STRING] = 'redeem/goods/$1';
 $route['Redeem/goods'] = 'redeem/goods/0';
 $route['Redeem/goodsGroup'] = 'redeem/goodsGroup';
-$route['Redeem/goodsGroup/verify'] = 'redeem/merchantGoodsGroup';
 $route['Redeem/sponsor/'.ANY_STRING] = 'redeem/sponsor/$1';
 $route['Redeem/sponsor'] = 'redeem/sponsor/0';
 $route['Redeem/sponsorGroup'] = 'redeem/sponsorGroup';
@@ -268,7 +272,8 @@ $route['notification'] = 'notification/index';
 //push notification
 $route['Push/'.ANY_STRING.'/deviceRegistration'] = 'push/deviceRegistration/$1';
 $route['Push/deviceRegistration'] = 'push/deviceRegistration';
-
+$route['Push/deviceDeRegistration'] = 'push/deviceDeRegistration';
+$route['Push/sendPush'] = 'push/push_async';
 $route['Push/'.ANY_STRING.'/send'] = 'push/send/$1';
 $route['Push/send'] = 'push/send';
 $route['Push/goods'] = 'push/send_goods';

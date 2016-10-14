@@ -12,6 +12,7 @@ class Push extends REST2_Controller
         $this->load->model('player_model');
         $this->load->model('push_model');
         $this->load->model('redeem_model');
+        $this->load->model('tool/utility', 'utility');
         $this->load->model('tool/error', 'error');
         $this->load->model('tool/respond', 'resp');
     }
@@ -50,6 +51,13 @@ class Push extends REST2_Controller
                 'player_id'
             )), 200);
         }
+        
+        $not_message = $this->input->checkParam(array('message'));
+        $not_template_id = $this->input->checkParam(array('template_id'));
+        if ($not_message && $not_template_id) {
+            $this->response($this->error->setError('PARAMETER_MISSING', array("message/template_id")), 200);
+        }
+
         //get playbasis player id
         $pb_player_id = $this->player_model->getPlaybasisId(array_merge($this->validToken, array(
             'cl_player_id' => $player_id
@@ -59,20 +67,33 @@ class Push extends REST2_Controller
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         }
 
-        $devices = $this->player_model->listDevices($this->client_id, $this->site_id, $pb_player_id,
-            array('device_token', 'os_type'));
+        $message = null;
+        if (!$not_template_id) {
+            $template = $this->push_model->getTemplateByTemplateId($this->site_id, $this->input->post('template_id'));
+            if (!$template) {
+                $this->response($this->error->setError('TEMPLATE_NOT_FOUND', $this->input->post('template_id')), 200);
+            }
+            $message = $template['body'];
+        } else {
+            $message = $this->input->post('message');
+        }
+
+        $devices = $this->player_model->listDevices($this->client_id, $this->site_id, $pb_player_id, array('device_token', 'os_type'));
+        $site_name = $this->client_model->findSiteNameBySiteId($this->site_id);
         if ($devices) {
             foreach ($devices as $device) {
                 $notificationInfo = array(
+                    'title' => $site_name,
                     'device_token' => $device['device_token'],
-                    'messages' => $this->input->post('message'),
+                    'messages' => $message,
                     'data' => array(
-                        'client_id' => $this->client_id,
-                        'site_id' => $this->site_id
+                        'player_id' => $player_id
                     ),
                     'badge_number' => 1
                 );
-                $this->push_model->initial($notificationInfo, $device['os_type']);
+                $api_key = $this->auth_model->getApikeyBySite($this->site_id);
+                $params = array('notification_info' => http_build_query($notificationInfo) ,'type' => $device['os_type'], 'api_key' => $api_key);
+                $this->utility->request('Push','sendPush', http_build_query($params, '', '&'));
                 $this->push_model->log($notificationInfo, $device, $pb_player_id, $player_id);
             }
         }
@@ -155,26 +176,38 @@ class Push extends REST2_Controller
         $message = $this->utility->replace_template_vars($message,
             array_merge($player, array('coupon' => $redeemData['code'])));
 
-        $devices = $this->player_model->listDevices($this->client_id, $this->site_id, $pb_player_id,
-            array('device_token', 'os_type'));
+        $devices = $this->player_model->listDevices($this->client_id, $this->site_id, $pb_player_id, array('device_token', 'os_type'));
+        $site_name = $this->client_model->findSiteNameBySiteId($this->site_id);
         if ($devices) {
             foreach ($devices as $device) {
                 $notificationInfo = array(
+                    'title' => $site_name,
                     'device_token' => $device['device_token'],
                     'messages' => $message,
                     'data' => array(
-                        'client_id' => $this->client_id,
-                        'site_id' => $this->site_id
+                        'player_id' => $cl_player_id
                     ),
                     'badge_number' => 1
                 );
-                $this->push_model->initial($notificationInfo, $device['os_type']);
+                $api_key = $this->auth_model->getApikeyBySite($this->site_id);
+                $params = array('notification_info' => http_build_query($notificationInfo) ,'type' => $device['os_type'], 'api_key' => $api_key);
+                $this->utility->request('Push','sendPush', http_build_query($params, '', '&'));
                 $this->push_model->log($notificationInfo, $device, $pb_player_id, $cl_player_id);
             }
         }
         $this->response($this->resp->setRespond(''), 200);
     }
 
+    function push_async_get (){
+        
+        parse_str($this->input->get('notification_info'), $notificationInfo);
+        $site_data = $this->auth_model->getClientSiteByApiKey($this->input->get('api_key'));
+        $notificationInfo['data']['client_id'] = $site_data['client_id'];
+        $notificationInfo['data']['site_id'] = $site_data['site_id'];
+        $type = $this->input->get('type');
+        $this->push_model->initial($notificationInfo, $type);
+    }
+    
     /*
     public function send_post()
     {
@@ -238,6 +271,44 @@ class Push extends REST2_Controller
         $this->response($this->resp->setRespond(array('processing_time' => $t)), 200);
     }
 
+    public function deviceDeRegistration_post()
+    {
+        $this->benchmark->mark('start');
+
+        $not_player_id = $this->input->checkParam(array('player_id'));
+        $not_device_token = $this->input->checkParam(array('device_token'));
+        
+        if ($not_player_id && $not_device_token) {
+            $this->response($this->error->setError('PARAMETER_MISSING', array('player_id/device_token')), 200);
+        }
+
+        if (!$not_player_id){
+            //get playbasis player id
+            $pb_player_id = $this->player_model->getPlaybasisId(array_merge($this->validToken, array(
+                'cl_player_id' => $this->input->post('player_id')
+            )));
+
+            if (!$pb_player_id) {
+                $this->response($this->error->setError('USER_NOT_EXIST'), 200);
+            }
+        }
+        
+        if (!$not_device_token) {
+            $device_token = $this->input->post('device_token');
+            $devices = $this->player_model->getDeviceByToken($this->client_id, $this->site_id,$device_token);
+            if (is_null($devices)) {
+                $this->response($this->error->setError('DEVICE_NOT_EXIST'), 200);
+            }
+        }
+
+        $this->player_model->deRegisterDevices($this->client_id, $this->site_id, 
+                                               isset($pb_player_id) && !empty($pb_player_id)? $pb_player_id : null,
+                                               isset($device_token) && !empty($device_token) ? $device_token : null);
+
+        $this->benchmark->mark('end');
+        $t = $this->benchmark->elapsed_time('start', 'end');
+        $this->response($this->resp->setRespond(array('processing_time' => $t)), 200);
+    }
     /*
     public function adhocSend_post()
     {
@@ -302,7 +373,7 @@ class Push extends REST2_Controller
             }
             $result = $template['body'];
             $player_id = $this->input->get('player_id');
-            if ($player_id) {
+            if ($this->utility->is_not_empty($player_id)) {
                 $validToken = array_merge($this->validToken, array(
                     'cl_player_id' => $player_id
                 ));

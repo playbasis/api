@@ -243,8 +243,11 @@ class Service extends REST2_Controller
             $this->response($this->error->setError('PARAMETER_MISSING', array('player_id')), 200);
         }
 
+        $event_type = $this->input->get('event_type') ? explode(',',strtoupper($this->input->get('event_type'))) : null;
+        $action_name = $this->input->get('action_name') ? explode(',',$this->input->get('action_name')) : null;
+        
         $respondThis['activities'] = $this->service_model->getRecentActivities($this->site_id, $offset,
-            $limit > 500 ? 500 : $limit, $pb_player_id, $last_read_activity_id, $mode);
+            $limit > 500 ? 500 : $limit, $pb_player_id, $last_read_activity_id, $mode , $event_type, $action_name);
         $this->response($this->resp->setRespond($respondThis), 200);
     }
 
@@ -273,7 +276,7 @@ class Service extends REST2_Controller
             $this->response($this->error->setError('EVENT_NOT_EXIST'), 200);
         }
         $player_id = ($this->input->post('player_id'));
-        if (!$player_id) {
+        if (!$this->utility->is_not_empty($player_id)) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('player_id')), 200);
         }
         $from_pb_player_id = $player_id ? $this->player_model->getPlaybasisId(array_merge($this->validToken,
@@ -300,7 +303,7 @@ class Service extends REST2_Controller
             $this->response($this->error->setError('EVENT_NOT_EXIST'), 200);
         }
         $player_id = ($this->input->post('player_id'));
-        if (!$player_id) {
+        if (!$this->utility->is_not_empty($player_id)) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('player_id')), 200);
         }
         $from_pb_player_id = $player_id ? $this->player_model->getPlaybasisId(array_merge($this->validToken,
@@ -312,7 +315,7 @@ class Service extends REST2_Controller
             'pb_player_id' => $activity['pb_player_id'],
             'from_pb_player_id' => $from_pb_player_id,
             'action_name' => 'comment',
-            'message' => $this->input->post('message') ? $this->input->post('message') : null,
+            'message' => $this->utility->is_not_empty($this->input->post('message')) ? $this->input->post('message') : null,
         ));
         $this->response($this->resp->setRespond(array('result' => true)), 200);
     }

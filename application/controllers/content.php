@@ -11,6 +11,7 @@ class Content extends REST2_Controller
         $this->load->model('content_model');
         $this->load->model('player_model');
         $this->load->model('store_org_model');
+        $this->load->model('tool/utility', 'utility');
         $this->load->model('tool/error', 'error');
         $this->load->model('tool/respond', 'resp');
     }
@@ -52,7 +53,8 @@ class Content extends REST2_Controller
         //$content_ids_to_player = array_merge($content_ids_to_player, $content_ids_to_feedback);
         //$content_ids_to_player = array_unique($content_ids_to_player);
 
-        if (isset($query_data['limit']) && isset($query_data['sort']) && ((strtolower($query_data['sort']) === 'followup') || strtolower($query_data['sort'] === 'random'))) {
+        if (isset($query_data['limit']) && isset($query_data['sort']) && ((strtolower($query_data['sort']) === 'followup')
+                || (strtolower($query_data['sort']) === 'action') ||  strtolower($query_data['sort'] === 'random'))) {
             $query_data['_limit'] = $query_data['limit'];
             $query_data['limit'] += count($content_ids_to_player);
         }
@@ -114,17 +116,21 @@ class Content extends REST2_Controller
             (isset($query_data['sort']) && strtolower($query_data['sort'] === 'random')) ? array() : $content_ids_to_player,
             (isset($query_data['sort']) && strtolower($query_data['sort'] === 'random')) ? array() : $content_ids_to_feedback);
 
-        foreach ($contents as &$content){
-            $nodes_list = $this->store_org_model->getAssociatedNodeOfContent($this->validToken['client_id'],
-                $this->validToken['site_id'], $content['_id']);
-            $organization = array();
-            if (!empty($nodes_list)) {
-                foreach ($nodes_list as $node) {
+        $list_content = array();
+        foreach ($contents as $val) {
+            array_push($list_content, new MongoId($val['_id']));
+        }
+
+        $content_node = $this->store_org_model->aggregateAssociatedNodeOfContent($this->validToken['client_id'],
+            $this->validToken['site_id'], $list_content);
+        if (!empty($content_node)) {
+            foreach ($content_node as $content) {
+                $organization = array();
+                foreach ($content['node'] as $node){
                     $org_node = $this->store_org_model->retrieveNodeById($this->validToken['site_id'], $node['node_id']);
                     $name = $org_node['name'];
                     $org_info = $this->store_org_model->retrieveOrganizeById($this->validToken['client_id'],
                         $this->validToken['site_id'], $org_node['organize']);
-                    $node_id = (String)$node['node_id'];
                     $roles = array();
                     if (isset($node['roles']) && is_array($node['roles'])) {
                         foreach ($node['roles'] as $role_name => $date_join) {
@@ -137,12 +143,13 @@ class Content extends REST2_Controller
                     }
                     array_push($organization, array(
                         'name' => $name,
-                        'node_id' => $node_id,
+                        'node_id' => (String)$node['node_id'],
                         'organize_type' => $org_info['name'],
                         'roles' => $roles
                     ));
                 }
-                $content['organize'] = $organization;
+                $key = array_search($content['_id'], array_column($contents, '_id'));
+                if ($key !== false) $contents[$key]['organize'] = $organization;
             }
         }
 
@@ -173,7 +180,6 @@ class Content extends REST2_Controller
                 $val['image'] = $this->config->item('IMG_PATH') . $val['image'];
             }
         });
-        array_walk_recursive($contents, array($this, "convert_mongo_object_and_optional"));
 
         $result = array();
         if (isset($query_data['sort']) && $query_data['sort'] == 'random') {
@@ -282,7 +288,8 @@ class Content extends REST2_Controller
             }
             if (count($contents) > 0) {
                 foreach ($contents as $key => $val) {
-                    $val['number_followup'] = $this->content_model->countValidContentFollowup($this->client_id, $this->site_id, $val['_id']);;
+                    $pb_player_id_list = $this->getPlayerIdListForSameType($pb_player_id, 'Country');
+                    $val['number_followup'] = $this->content_model->countValidContentFollowup($this->client_id, $this->site_id, $val['_id'], $pb_player_id_list);
 
                     if (isset($pb_player_id) && !empty($pb_player_id)){
                         $player_action = $this->content_model->retrieveExistingPlayerContent(array(
@@ -311,8 +318,11 @@ class Content extends REST2_Controller
                 $result = isset($query_data['limit']) && !empty($query_data['limit']) ? array_slice($result, 0, $query_data['limit']) : $result;
             }
         }elseif(isset($query_data['sort']) && $query_data['sort'] == 'action'){
-            foreach ($contents as $key => $val){
-                $val['number_action'] = $this->content_model->countContentAction($this->client_id, $this->site_id, $val['_id']);
+            $pb_player_id_list = $this->getPlayerIdListForSameType($pb_player_id, 'Country');
+            $number_action = $this->content_model->countContentAllAction($this->client_id, $this->site_id, $list_content, $pb_player_id_list);
+            foreach ($contents as $val) {
+                $key = array_search($val['_id'], array_column($number_action, '_id'));
+                $val['number_action'] = $key !== false && isset($number_action[$key]['player']) ? $number_action[$key]['player'] : 0;
                 $result[] = $val;
             }
             usort($result, function ($a, $b) use ($query_data) {
@@ -345,6 +355,7 @@ class Content extends REST2_Controller
             }
         }
 
+        array_walk_recursive($result, array($this, "convert_mongo_object_and_optional"));
         $this->benchmark->mark('end');
         $t = $this->benchmark->elapsed_time('start', 'end');
         $this->response($this->resp->setRespond(array('result' => $result, 'processing_time' => $t)), 200);
@@ -527,7 +538,7 @@ class Content extends REST2_Controller
         $contentInfo['summary']  = $this->input->post('summary');
         $contentInfo['detail']   = $this->input->post('detail');
 
-        if($this->input->post('category')) {
+        if($this->utility->is_not_empty($this->input->post('category'))) {
             $category = $this->content_model->retrieveContentCategory($this->client_id, $this->site_id, array(
                 'name' => $this->input->post('category')
             ));
@@ -537,7 +548,7 @@ class Content extends REST2_Controller
             $contentInfo['category'] = new MongoId($category[0]['_id']);
         }
 
-        if ($this->input->post('player_id')) {
+        if ($this->utility->is_not_empty($this->input->post('player_id'))) {
             $pb_player_id = $this->player_model->getPlaybasisId(array(
                 'client_id'    => $this->validToken['client_id'],
                 'site_id'      => $this->validToken['site_id'],
@@ -566,7 +577,7 @@ class Content extends REST2_Controller
                 $contentInfo['custom'][$key] = isset($values[$i]) ? $values[$i] : null;
             }
 
-            if (is_array($contentInfo['custom'])) {
+            if (isset($contentInfo['custom']) && is_array($contentInfo['custom'])) {
                 foreach ($contentInfo['custom'] as $name => $value) {
                     $value = str_replace(',', '', $value);
                     if (is_numeric($value)) {
@@ -596,19 +607,19 @@ class Content extends REST2_Controller
             $this->response($this->error->setError('PARAMETER_INVALID',array('node_id')), 200);
         }
 
-        if($this->input->post('title')){
+        if($this->utility->is_not_empty($this->input->post('title'))){
             $contentInfo['title'] = $this->input->post('title');
         }
 
-        if($this->input->post('summary')){
+        if($this->utility->is_not_empty($this->input->post('summary'))){
             $contentInfo['summary'] = $this->input->post('summary');
         }
 
-        if($this->input->post('detail')){
+        if($this->utility->is_not_empty($this->input->post('detail'))){
             $contentInfo['detail'] = $this->input->post('detail');
         }
 
-        if($this->input->post('category')) {
+        if($this->utility->is_not_empty($this->input->post('category'))) {
             $category = $this->content_model->retrieveContentCategory($this->client_id, $this->site_id, array(
                 'name' => $this->input->post('category')
             ));
@@ -650,7 +661,7 @@ class Content extends REST2_Controller
                 $contentInfo['custom'][$key] = isset($values[$i]) ? $values[$i] : null;
             }
             
-            if (is_array($contentInfo['custom'])) {
+            if (isset($contentInfo['custom']) && is_array($contentInfo['custom'])) {
                 foreach ($contentInfo['custom'] as $name => $value) {
                     $value = str_replace(',', '', $value);
                     if (is_numeric($value)) {
@@ -877,7 +888,7 @@ class Content extends REST2_Controller
         $client_id = $this->validToken['client_id'];
         $site_id = $this->validToken['site_id'];
 
-        if(!$this->input->post('name')){
+        if(!$this->utility->is_not_empty($this->input->post('name'))){
             $this->response($this->error->setError('PARAMETER_MISSING', array('name')), 200);
         }
 
@@ -998,5 +1009,68 @@ class Content extends REST2_Controller
             $this->response($this->error->setError('CONTENT_NOT_FOUND'), 200);
         }
         return $contents;
+    }
+
+    private function getPlayerIdListForSameType($pb_player_id, $organize=null)
+    {
+        if (isset($pb_player_id) && !empty($pb_player_id)) {
+
+            $player_id_list_from_node = array($pb_player_id);
+            $node_of_player = $this->store_org_model->retrieveNodeByPBPlayerID($this->client_id, $this->site_id,
+                $pb_player_id);
+
+            if (isset($node_of_player) && is_array($node_of_player)) {
+
+                foreach ($node_of_player as $node) {
+
+                    // Get only player list with same organize
+                    if (isset($organize) && !empty($organize)) {
+                        $node_details = $this->store_org_model->retrieveNodeById($this->site_id, $node['node_id']);
+                        $organize_id = $this->store_org_model->retrieveOrganizeByName($this->client_id, $this->site_id,
+                            $organize)['_id'];
+                        if ($node_details['organize'] != $organize_id) {
+                            continue;
+                        }
+                    }
+                    $player_id_from_node = $this->store_org_model->getPlayersByNodeId($this->client_id, $this->site_id,
+                        $node['node_id']);
+                    if (isset($player_id_from_node) && !empty($player_id_from_node)) {
+                        foreach ($player_id_from_node as $val) {
+                            array_push($player_id_list_from_node, $val['pb_player_id']);
+                        }
+                    }
+                }
+                $player_id_list_from_node = array_unique($player_id_list_from_node);
+            }
+
+            // Get same respondent type
+            $player_details = $this->player_model->getById($this->site_id, $pb_player_id);
+
+            if (isset($player_details['custom']['source']) && ($player_details['custom']['source'] == 'lucid')) {
+                $player_id_list = $this->player_model->find_player_with_in($this->client_id, $this->site_id, array(
+                    'source' => 'lucid',
+                ));
+            } elseif ((strpos($player_details['email'], '@unilever.com') !== false)) {
+                $player_id_list = $this->player_model->find_player_with_in($this->client_id, $this->site_id, array(
+                    'email' => '@unilever.com',
+                    'not_source' => 'lucid',
+                ));
+            } else {
+                $player_id_list = $this->player_model->find_player_with_in($this->client_id, $this->site_id, array(
+                    'not_email' => '@unilever.com',
+                    'not_source' => 'lucid',
+                ));
+            }
+
+            if (empty($player_id_list)){
+                return array_values($player_id_list_from_node);
+            }else{
+                return array_values(array_intersect($player_id_list_from_node, $player_id_list));
+            }
+
+        }
+
+        return null;
+
     }
 }

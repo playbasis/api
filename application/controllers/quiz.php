@@ -137,7 +137,9 @@ class Quiz extends REST2_Controller
         $total_max_score = 0;
         if (is_array($questions)) {
             foreach ($questions as $question) {
-                $total_max_score += $this->get_max_score_of_question($question['options']);
+                if(isset($question['options'])) {
+                    $total_max_score += $this->get_max_score_of_question($question['options']);
+                }
             }
         }
         $result['total_max_score'] = $total_max_score;
@@ -894,7 +896,7 @@ class Quiz extends REST2_Controller
     {
         $this->benchmark->mark('start');
 
-        $player_id = $this->input->post('player_id') ? $this->input->post('player_id') : $this->response($this->error->setError('PARAMETER_MISSING',
+        $player_id = $this->utility->is_not_empty($this->input->post('player_id')) ? $this->input->post('player_id') : $this->response($this->error->setError('PARAMETER_MISSING',
             array('player_id')), 200);
 
         $pb_player_id = $this->player_model->getPlaybasisId(array_merge($this->validToken, array(
@@ -1328,13 +1330,20 @@ class Quiz extends REST2_Controller
             $player['code'] = $this->player_model->generateCode($input['pb_player_id']);
         }
         $message = $this->utility->replace_template_vars($template['body'], $player);
+        $site_name = $this->client_model->findSiteNameBySiteId($input['site_id']);
         foreach ($devices as $device) {
-            $this->push_model->initial(array(
+            $notificationInfo = array(
+                'title' => $site_name,
                 'device_token' => $device['device_token'],
                 'messages' => $message,
                 'badge_number' => 1,
-                'data' => null,
-            ), $device['os_type']);
+                'data' => array(
+                    'player_id' => $player['cl_player_id']
+                )
+            );
+            $api_key = $this->auth_model->getApikeyBySite($input['site_id']);
+            $params = array('notification_info' => http_build_query($notificationInfo) ,'type' => $device['os_type'], 'api_key' => $api_key);
+            $this->utility->request('Push','sendPush', http_build_query($params, '', '&'));
         }
         return true;
     }

@@ -100,8 +100,10 @@ class Quest extends REST2_Controller
 
             if (!(count($event_of_quest) > 0)) {
                 $player_missions = array();
-                foreach ($q["missions"] as $pm) {
-                    $player_missions[$pm["mission_id"] . ""] = isset($pm["status"]) ? $pm["status"] : "unjoin";
+                if (isset($q['missions']) && is_array($q['missions'])) {
+                    foreach ($q["missions"] as $pm) {
+                        $player_missions[$pm["mission_id"] . ""] = isset($pm["status"]) ? $pm["status"] : "unjoin";
+                    }
                 }
 
                 if ((bool)$quest["mission_order"]) {
@@ -214,79 +216,86 @@ class Quest extends REST2_Controller
                     }
                 } else {
 
-                    foreach ($quest["missions"] as $m) {
+                    if (isset($quest['missions']) && is_array($quest['missions'])) {
+                        foreach ($quest["missions"] as $m) {
+                            if (isset($player_missions[$m["mission_id"] . ""]) && $player_missions[$m["mission_id"] . ""] != "finish") {
 
-                        if (isset($player_missions[$m["mission_id"] . ""]) && $player_missions[$m["mission_id"] . ""] != "finish") {
-
-                            if (isset($player_missions[$m["mission_id"] . ""]) && $player_missions[$m["mission_id"] . ""] == "unjoin") {
-                                if (!$test_id) {
-                                    $this->updateMissionStatusOfPlayer($pb_player_id, $q["quest_id"], $m["mission_id"],
-                                        $validToken, "join");
-                                }
-                            }
-
-                            if (!$test_id) {
-                                $event_of_mission = $this->checkCompletionMission($quest, $m, $pb_player_id,
-                                    $validToken, $badge_player_check);
-                            } else {
-                                $event_of_mission = array();
-                            }
-
-                            if (!(count($event_of_mission) > 0)) {
-                                if (!$test_id) {
-                                    $this->updateMissionStatusOfPlayer($pb_player_id, $q["quest_id"], $m["mission_id"], $validToken, "finish");
-                                    try{
-                                        $this->updateMissionRewardPlayer($pb_player_id, $q["quest_id"], $m["mission_id"], $validToken, $questResult);
-                                    } catch (Exception $e){}
-                                    
-                                    /* process "feedbacks" */
-                                    if (isset($m["feedbacks"]) && is_array($m["feedbacks"])) {
-                                        foreach ($m["feedbacks"] as $feedback) {
-                                            $this->processFeedback($feedback["feedback_type"], array(
-                                                'client_id' => $client_id,
-                                                'site_id' => $site_id,
-                                                'pb_player_id' => $pb_player_id,
-                                                'input' => array(
-                                                    'template_id' => $feedback["template_id"],
-                                                    'subject' => isset($feedback["subject"]) ? $feedback["subject"] : null,
-                                                ),
-                                            ));
-                                        }
+                                if (isset($player_missions[$m["mission_id"] . ""]) && $player_missions[$m["mission_id"] . ""] == "unjoin") {
+                                    if (!$test_id) {
+                                        $this->updateMissionStatusOfPlayer($pb_player_id, $q["quest_id"],
+                                            $m["mission_id"],
+                                            $validToken, "join");
                                     }
-                                    /* [quest usage] increase usage value on client's account */
-                                    $this->quest_model->insertQuestUsage(
-                                        $client_id,
-                                        $site_id,
-                                        $q["quest_id"],
-                                        $m["mission_id"],
-                                        $pb_player_id
-                                    );
-                                    /* fire complete-mission action */
-
-                                    array_push($request_array,array('api_key' => $platform['api_key'],
-                                                                    'pb_player_id' => $pb_player_id . '',
-                                                                    'action' => ACTION_COMPLETE_MISSION));
-                                    /*$this->utility->request('engine', 'json', http_build_query(array(
-                                        'api_key' => $platform['api_key'],
-                                        'pb_player_id' => $pb_player_id . '',
-                                        'action' => ACTION_COMPLETE_MISSION,
-                                    )));*/
                                 }
+
+                                if (!$test_id) {
+                                    $event_of_mission = $this->checkCompletionMission($quest, $m, $pb_player_id,
+                                        $validToken, $badge_player_check);
+                                } else {
+                                    $event_of_mission = array();
+                                }
+
+                                if (!(count($event_of_mission) > 0)) {
+                                    if (!$test_id) {
+                                        $this->updateMissionStatusOfPlayer($pb_player_id, $q["quest_id"],
+                                            $m["mission_id"], $validToken, "finish");
+                                        try {
+                                            $this->updateMissionRewardPlayer($pb_player_id, $q["quest_id"],
+                                                $m["mission_id"], $validToken, $questResult);
+                                        } catch (Exception $e) {
+                                        }
+
+                                        /* process "feedbacks" */
+                                        if (isset($m["feedbacks"]) && is_array($m["feedbacks"])) {
+                                            foreach ($m["feedbacks"] as $feedback) {
+                                                $this->processFeedback($feedback["feedback_type"], array(
+                                                    'client_id' => $client_id,
+                                                    'site_id' => $site_id,
+                                                    'pb_player_id' => $pb_player_id,
+                                                    'input' => array(
+                                                        'template_id' => $feedback["template_id"],
+                                                        'subject' => isset($feedback["subject"]) ? $feedback["subject"] : null,
+                                                    ),
+                                                ));
+                                            }
+                                        }
+                                        /* [quest usage] increase usage value on client's account */
+                                        $this->quest_model->insertQuestUsage(
+                                            $client_id,
+                                            $site_id,
+                                            $q["quest_id"],
+                                            $m["mission_id"],
+                                            $pb_player_id
+                                        );
+                                        /* fire complete-mission action */
+
+                                        array_push($request_array, array(
+                                            'api_key' => $platform['api_key'],
+                                            'pb_player_id' => $pb_player_id . '',
+                                            'action' => ACTION_COMPLETE_MISSION
+                                        ));
+                                        /*$this->utility->request('engine', 'json', http_build_query(array(
+                                            'api_key' => $platform['api_key'],
+                                            'pb_player_id' => $pb_player_id . '',
+                                            'action' => ACTION_COMPLETE_MISSION,
+                                        )));*/
+                                    }
+                                    //for check total mission finish
+                                    $player_finish_count++;
+                                }
+                            } else {
                                 //for check total mission finish
                                 $player_finish_count++;
+                                continue;
                             }
-                        } else {
-                            //for check total mission finish
-                            $player_finish_count++;
-                            continue;
-                        }
 
-                        $event = array(
-                            'mission_id' => $m["mission_id"],
-                            'mission_status' => (count($event_of_mission) > 0 ? false : true),
-                            'mission_events' => $event_of_mission
-                        );
-                        array_push($missionEvent, $event);
+                            $event = array(
+                                'mission_id' => $m["mission_id"],
+                                'mission_status' => (count($event_of_mission) > 0 ? false : true),
+                                'mission_events' => $event_of_mission
+                            );
+                            array_push($missionEvent, $event);
+                        }
                     }
                 }
             }
@@ -1789,7 +1798,7 @@ class Quest extends REST2_Controller
     {
         $this->benchmark->mark('start');
 
-        $player_id = $this->input->post('player_id') ? $this->input->post('player_id') : $this->response($this->error->setError('PARAMETER_MISSING',
+        $player_id = $this->utility->is_not_empty($this->input->post('player_id')) ? $this->input->post('player_id') : $this->response($this->error->setError('PARAMETER_MISSING',
             array('player_id')), 200);
 
         $pb_player_id = $this->player_model->getPlaybasisId(array_merge($this->validToken, array(
@@ -1827,7 +1836,7 @@ class Quest extends REST2_Controller
             $this->response($this->error->setError('PARAMETER_INVALID', array('quest_id')), 200);
         }
 
-        if($this->input->get('player_id')){
+        if($this->utility->is_not_empty($this->input->get('player_id'))){
             $cl_player_id = $this->input->get('player_id');
             $pb_player_id = $this->player_model->getPlaybasisId(array(
                 'client_id' => $this->validToken['client_id'],
@@ -2094,8 +2103,8 @@ class Quest extends REST2_Controller
         }
 
         /* player-2 */
-        if (isset($input['player-2'])) {
-            $player2 = $this->player_model->getById($input['site_id'], $input['player-2']);
+        if (isset($input['pb_player_id-2'])) {
+            $player2 = $this->player_model->getById($input['site_id'], $input['pb_player_id-2']);
             if ($player2) {
                 $player['first_name-2'] = $player2['first_name'];
                 $player['last_name-2'] = $player2['last_name'];
@@ -2103,7 +2112,7 @@ class Quest extends REST2_Controller
                 $player['email-2'] = $player2['email'];
                 $player['phone_number-2'] = $player2['phone_number'];
                 if (!isset($player2['code']) && strpos($template['body'], '{{code-2}}') !== false) {
-                    $player['code-2'] = $this->player_model->generateCode($input['player-2']);
+                    $player['code-2'] = $this->player_model->generateCode($input['pb_player_id-2']);
                 }
             }
         }
@@ -2161,8 +2170,8 @@ class Quest extends REST2_Controller
         }
 
         /* player-2 */
-        if (isset($input['player-2'])) {
-            $player2 = $this->player_model->getById($input['site_id'], $input['player-2']);
+        if (isset($input['pb_player_id-2'])) {
+            $player2 = $this->player_model->getById($input['site_id'], $input['pb_player_id-2']);
             if ($player2) {
                 $player['first_name-2'] = $player2['first_name'];
                 $player['last_name-2'] = $player2['last_name'];
@@ -2170,7 +2179,7 @@ class Quest extends REST2_Controller
                 $player['email-2'] = $player2['email'];
                 $player['phone_number-2'] = $player2['phone_number'];
                 if (!isset($player2['code']) && strpos($template['body'], '{{code-2}}') !== false) {
-                    $player['code-2'] = $this->player_model->generateCode($input['player-2']);
+                    $player['code-2'] = $this->player_model->generateCode($input['pb_player_id-2']);
                 }
             }
         }
@@ -2262,8 +2271,8 @@ class Quest extends REST2_Controller
         }
 
         /* player-2 */
-        if (isset($input['player-2'])) {
-            $player2 = $this->player_model->getById($input['site_id'], $input['player-2']);
+        if (isset($input['pb_player_id-2'])) {
+            $player2 = $this->player_model->getById($input['site_id'], $input['pb_player_id-2']);
             if ($player2) {
                 $player['first_name-2'] = $player2['first_name'];
                 $player['last_name-2'] = $player2['last_name'];
@@ -2271,7 +2280,7 @@ class Quest extends REST2_Controller
                 $player['email-2'] = $player2['email'];
                 $player['phone_number-2'] = $player2['phone_number'];
                 if (!isset($player2['code']) && strpos($template['body'], '{{code-2}}') !== false) {
-                    $player['code-2'] = $this->player_model->generateCode($input['player-2']);
+                    $player['code-2'] = $this->player_model->generateCode($input['pb_player_id-2']);
                 }
             }
         }
@@ -2284,13 +2293,23 @@ class Quest extends REST2_Controller
             $player['coupon'] = $input['coupon'];
         }
         $message = $this->utility->replace_template_vars($template['body'], $player);
+        $site_name = $this->client_model->findSiteNameBySiteId($input['site_id']);
         foreach ($devices as $device) {
-            $this->push_model->initial(array(
+
+            $notificationInfo = array(
+                'title' => $site_name,
                 'device_token' => $device['device_token'],
                 'messages' => $message,
                 'badge_number' => 1,
-                'data' => null,
-            ), $device['os_type']);
+                'data' => array(
+                    'player_id_1' => $player['cl_player_id'],
+                    'player_id_2' => $player['cl_player_id-2']
+                )
+            );
+
+            $api_key = $this->auth_model->getApikeyBySite($input['site_id']);
+            $params = array('notification_info' => http_build_query($notificationInfo) ,'type' => $device['os_type'], 'api_key' => $api_key);
+            $this->utility->request('Push','sendPush', http_build_query($params, '', '&'));
         }
         return true;
     }
@@ -2323,13 +2342,21 @@ class Quest extends REST2_Controller
             return false;
         }
 
+        $site_name = $this->client_model->findSiteNameBySiteId($input['site_id']);
         foreach ($devices as $device) {
-            $this->push_model->initial(array(
+            $notificationInfo = array(
+                'title' => $site_name,
                 'device_token' => $device['device_token'],
                 'messages' => $message,
                 'badge_number' => 1,
-                'data' => array('client_id'=>$input['client_id'], 'site_id'=>$input['site_id'],'item_info'=>$item_info),
-            ), $device['os_type']);
+                'data' => array(
+                    'player_id' => $input['player_id'], 
+                    'item_info'=>$item_info
+                )
+            );
+            $api_key = $this->auth_model->getApikeyBySite($input['site_id']);
+            $params = array('notification_info' => http_build_query($notificationInfo) ,'type' => $device['os_type'], 'api_key' => $api_key);
+            $this->utility->request('Push','sendPush', http_build_query($params, '', '&'));
         }
         return true;
     }

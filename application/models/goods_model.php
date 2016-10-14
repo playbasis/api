@@ -320,7 +320,8 @@ class Goods_model extends MY_Model
             'group',
             'code',
             'organize_id',
-            'organize_role'
+            'organize_role',
+            'tags'
         ));
         $this->mongo_db->where(array(
             'client_id' => $client_id,
@@ -352,19 +353,20 @@ class Goods_model extends MY_Model
         $amount,
         $is_sponsor = false
     ) {
-        $goodsList = $this->getGoodsByGroup($is_sponsor ? null : $client_id, $is_sponsor ? null : $site_id, $group, 0,
-            1);
+        $msg = array();
+        $goodsList = $this->getGoodsByGroup($is_sponsor ? null : $client_id, $is_sponsor ? null : $site_id, $group, 0, 1);
         if ($goodsList) {
-            if ($this->checkGoods($client_id, $site_id, $goodsList[0], $pb_player_id, $amount)) {
-                $total = $this->getTotalGoodsByGroup($is_sponsor ? null : $client_id, $is_sponsor ? null : $site_id,
-                    $group);
+            if ($this->checkGoods($client_id, $site_id, $goodsList[0], $pb_player_id, $amount , $msg)) {
+                $total = $this->getTotalGoodsByGroup($is_sponsor ? null : $client_id, $is_sponsor ? null : $site_id, $group);
                 $offset = rand(0, $total - 1); // randomly pick one
                 $goodsList = $this->getGoodsByGroup($is_sponsor ? null : $client_id, $is_sponsor ? null : $site_id,
                     $group, $offset, 1);
                 return $goodsList ? $goodsList[0] : null;
             }
+        } else {
+            $msg['error'] = 'GOODS_NOT_ENOUGH';
         }
-        return null;
+        return $msg;
     }
 
     public function getGoodsFromGroup($client_id, $site_id, $group, $pb_player_id, $amount, $is_sponsor = false)
@@ -436,7 +438,7 @@ class Goods_model extends MY_Model
         return $results ? $results['result'] : array();
     }
 
-    private function checkGoods($client_id, $site_id, $goods, $pb_player_id, $amount)
+    private function checkGoods($client_id, $site_id, $goods, $pb_player_id, $amount, &$msg = array())
     {
         if (isset($goods['date_start'])) {
             $goods['date_start'] = datetimeMongotoReadable($goods['date_start']);
@@ -446,10 +448,12 @@ class Goods_model extends MY_Model
         }
         $valid = $this->checkGoodsTime($goods);
         if (!$valid) {
+            $msg['error'] = "GOODS_NOT_AVAILABLE";
             return false;
         }
         $valid = $this->checkGoodsAmount($goods, $amount);
         if (!$valid) {
+            $msg['error'] = "GOODS_NOT_ENOUGH";
             return false;
         }
         $playerRecord = $this->getGoodsToPlayerRecord($goods['goods_id'], $pb_player_id);
@@ -459,14 +463,17 @@ class Goods_model extends MY_Model
         }
         $valid = $this->checkGoodsPlayerPoint($goods, $pb_player_id, $amount, $client_id, $site_id);
         if (!$valid) {
+            $msg['error'] = "POINT_NOT_ENOUGH";
             return false;
         }
         $valid = $this->checkGoodsPlayerBadge($goods, $pb_player_id, $amount);
         if (!$valid) {
+            $msg['error'] = "BADGE_NOT_ENOUGH";
             return false;
         }
-        $valid = $this->checkGoodsPlayerCustom($goods, $pb_player_id, $amount);
+        $valid = $this->checkGoodsPlayerCustom($goods, $pb_player_id, $amount, $msg);
         if (!$valid) {
+            $msg['error'] = "CUSTOM_POINT_NOT_ENOUGH";
             return false;
         }
         return true;
@@ -548,7 +555,7 @@ class Goods_model extends MY_Model
         return true;
     }
 
-    private function checkGoodsPlayerCustom($goods, $pb_player_id, $amount)
+    private function checkGoodsPlayerCustom($goods, $pb_player_id, $amount, &$msg = array())
     {
         if (isset($goods['redeem']['custom'])) {
             $redeem_current = 0;
@@ -565,8 +572,12 @@ class Goods_model extends MY_Model
                     $value = (int)$playerRecord['value'];
                     if ($value * $amount >= $goods['redeem']['custom'][$reward_id->{'$id'}] * $amount) {
                         $redeem_current++;
+                    } else {
+                        $msg['custom_id'][] = $reward_id->{'$id'};
                     }
                 }
+            } else {
+                $msg['custom_id'] = $list_custom_id;
             }
 
             if ($redeem_current < $redeem_at_least) {

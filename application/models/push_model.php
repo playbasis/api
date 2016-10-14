@@ -65,7 +65,7 @@ class Push_model extends MY_Model
                 $message->setCustomIdentifier("Playbasis-Notification");
 
                 // Set badge icon to "3"
-                $message->setBadge($data['badge_number']);
+                $message->setBadge(intval($data['badge_number']));
 
                 // Set a simple welcome text
                 $message->setText($data['messages']);
@@ -114,10 +114,11 @@ class Push_model extends MY_Model
                 //define( 'API_ACCESS_KEY', 'AIzaSyCeCZPwysyiPnP4A-PWKFiSgz_QbWYPFtE' );
                 //$registrationIds = $data['device_token'];
                 $registrationIds =  array($data['device_token']);
+                
                 $msg = array
                 (
                     'message' => $data['messages'],
-                    'title'  => 'Playbasis API',
+                    'title'  => isset($data['title']) && !empty($data['title']) ? $data['title'] : "Playbasis API",
                     //'subtitle'    => $data['subtitle'],
                     //'tickerText'  => $data['description'],
                     'badge' => $data['badge_number'],
@@ -277,7 +278,7 @@ class Push_model extends MY_Model
             return array();
         }
         $this->set_site_mongodb($site_id);
-        $this->mongo_db->select(array('message', 'date_added'));
+        $this->mongo_db->select(array('messages', 'date_added'));
         $this->mongo_db->select(array(), array('_id'));
         $this->mongo_db->where('site_id', $site_id);
         $this->mongo_db->where('cl_player_id', $cl_player_id);

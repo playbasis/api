@@ -26,7 +26,7 @@ class Redeem extends REST2_Controller
         $this->load->model('tool/respond', 'resp');
     }
 
-    public function goods_post($option = 0)
+    public function goods_post()
     {
         $this->benchmark->mark('goods_redeem_start');
 
@@ -122,7 +122,7 @@ class Redeem extends REST2_Controller
         $this->response($this->resp->setRespond($redeemResult), 200);
     }
 
-    public function sponsor_post($option = 0)
+    public function sponsor_post()
     {
         $this->benchmark->mark('goods_redeem_start');
 
@@ -264,7 +264,7 @@ class Redeem extends REST2_Controller
 
         $goods = $this->goods_model->getGoodsByGroupAndPlayerId($this->validToken['client_id'],
             $this->validToken['site_id'], $group, $pb_player_id, $amount);
-        if ($goods) {
+        if ($goods && !isset($goods['error'])) {
             if (isset($goods['organize_id'])) {
                 if ((!array_key_exists((string)$goods['organize_id'], $org_id_list)
                     || ((isset($goods['organize_role']) && $goods['organize_role'] != "")
@@ -303,98 +303,39 @@ class Redeem extends REST2_Controller
                 $goods = $this->goods_model->getGoodsByGroupAndPlayerId($this->validToken['client_id'],
                     $this->validToken['site_id'], $group, $pb_player_id, $amount);
             }
-        }
-        $this->response($this->error->setError('GOODS_NOT_FOUND'), 200);
-    }
-
-    public function merchantGoodsGroup_post()
-    {
-        $required = $this->input->checkParam(array(
-            'goods_group',
-            'coupon_code',
-            'pin_code'
-        ));
-        if ($required) {
-            $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
-        }
-
-        $group = $this->input->post('goods_group');
-        $code = $this->input->post('coupon_code');
-        $goods_info = $this->goods_model->getGoodsByGroupAndCode($this->client_id, $this->site_id, $group, $code);
-
-        if (!$goods_info) {
-            $this->response($this->error->setError('REDEEM_INVALID_COUPON_CODE'), 200);
-        }
-        $goods_id = $goods_info['goods_id'];
-
-        $merchantRedeem = $this->merchant_model->getMerchantRedeemLogByGoodsId($this->validToken['client_id'],
-            $this->validToken['site_id'], new MongoId($goods_id));
-
-        if (empty($merchantRedeem)) {
-
-            $validToken = $this->validToken;
-            $player_id = $this->player_model->getPbAndCilentIdByGoodsId($validToken, new MongoId($goods_id));
-
-            $pb_player_id = $player_id['pb_player_id'];
-            $cl_player_id = $player_id['cl_player_id'];
-
-            if (!$pb_player_id) {
-                // Goods is not yet redeemed
-                $this->response($this->error->setError('GOODS_IS_NOT_REDEEMED'), 200);
-            }
-
-            $goods = $this->player_model->getGoodsByGoodsId($pb_player_id, $this->validToken['site_id'],
-                new MongoId($goods_id));
-            if (!empty($goods)) {
-                // Get all branches that are allowed to verify the goods group
-                $merchantGoodsGroups = $this->merchant_model->getMerchantGoodsGroups($this->validToken['client_id'],
-                    $this->validToken['site_id'], $goods['group']);
-                if (empty($merchantGoodsGroups)) {
-                    $this->response($this->error->setError('BRANCH_IS_NOT_ALLOW_TO_VERIFY_GOODS'), 200);
-                }
-                $branches_allow = array();
-                foreach ($merchantGoodsGroups as $merchantGoodsGroup) {
-                    foreach ($merchantGoodsGroup['branches_allow'] as $branch) {
-                        array_push($branches_allow, $branch['b_id']);
-                    }
-                }
-                $pin_code = $this->input->post('pin_code');
-                // Check whether the input pin_code is match to any branches in $branches_allow
-                // if not found mean that the branch's pin_code cannot verify this goods.
-                $branch = $this->merchant_model->getMerchantBranchByBranchesAndPinCode($this->validToken['client_id'],
-                    $this->validToken['site_id'], $branches_allow, $pin_code);
-
-                if (!empty($branch)) {
-                    $branch_log_data['b_id'] = $branch['_id'];
-                    $branch_log_data['b_name'] = $branch['branch_name'];
-
-                    $log_result = $this->merchant_model->logMerchantRedeem($this->validToken['client_id'],
-                        $this->validToken['site_id'], new MongoId($goods_id), $goods['group'], $cl_player_id,
-                        $pb_player_id, $branch_log_data);
-
-                    $result = $this->merchant_model->getMerchantRedeemLogByLogId($this->validToken['client_id'],
-                        $this->validToken['site_id'], new MongoId($log_result));
-                    if ($result) {
-                        $this->player_model->deleteGoodsFromPlayer($this->validToken['client_id'],
-                            $this->validToken['site_id'], $pb_player_id, new MongoId($goods_id));
-                    }
-
-                    $this->response($this->resp->setRespond(array("success" => true)), 200);
-                } else {
-                    $this->response($this->error->setError('BRANCH_IS_NOT_ALLOW_TO_VERIFY_GOODS'), 200);
+        } else {
+            if(isset($goods['error'])) {
+                switch ($goods['error']) {
+                    case 'GOODS_NOT_AVAILABLE':
+                        $this->response($this->error->setError('REDEEM_GOODS_NOT_AVAILABLE'), 200);
+                        break;
+                    case 'GOODS_NOT_ENOUGH':
+                        $this->response($this->error->setError('REDEEM_GOODS_NOT_ENOUGH'), 200);
+                        break;
+                    case 'POINT_NOT_ENOUGH':
+                        $this->response($this->error->setError('REDEEM_POINT_NOT_ENOUGH'), 200);
+                        break;
+                    case 'BADGE_NOT_ENOUGH':
+                        $this->response($this->error->setError('REDEEM_BADGE_NOT_ENOUGH'), 200);
+                        break;
+                    case 'CUSTOM_POINT_NOT_ENOUGH':
+                        $reward_name = array();
+                        foreach ($goods['custom_id'] as $reward_id){
+                            $reward_name[] = $this->client_model->getRewardName(array(
+                                'client_id' => $validToken['client_id'],
+                                'site_id' => $validToken['site_id'],
+                                'reward_id' => $reward_id
+                            ));
+                        }
+                        $reward_name = implode(',', $reward_name);
+                        $this->response($this->error->setError('REDEEM_CUSTOM_POINT_NOT_ENOUGH', $reward_name), 200);
+                        break;
                 }
             } else {
-                $this->response($this->error->setError('GOODS_IS_NOT_REDEEMED'), 200);
+                $this->response($this->error->setError('GOODS_NOT_FOUND'), 200);
             }
-        } else {
-            $resp['success'] = false;
-
-            $details['verified_at'] = $merchantRedeem['branch']['b_name'];
-            $details['verified_date'] = date('r e', $merchantRedeem['date_added']->sec);
-            $resp['details'] = $details;
-            $this->response($this->resp->setRespond($resp), 200);
         }
-
+         
     }
 
     public function sponsorGroup_post()
@@ -422,7 +363,7 @@ class Redeem extends REST2_Controller
 
         $goods = $this->goods_model->getGoodsByGroupAndPlayerId($this->validToken['client_id'],
             $this->validToken['site_id'], $group, $pb_player_id, $amount);
-        if ($goods) {
+        if ($goods && !isset($goods['error'])) {
             for ($i = 0; $i < MAX_REDEEM_TRIES; $i++) { // try to redeem for a few times before giving up
                 log_message('debug', 'random = ' . $goods['goods_id']);
                 /* actual redemption */
@@ -452,8 +393,38 @@ class Redeem extends REST2_Controller
                 $goods = $this->goods_model->getGoodsByGroupAndPlayerId($this->validToken['client_id'],
                     $this->validToken['site_id'], $group, $pb_player_id, $amount);
             }
+        } else {
+            if(isset($goods['error'])) {
+                switch ($goods['error']) {
+                    case 'GOODS_NOT_AVAILABLE':
+                        $this->response($this->error->setError('REDEEM_GOODS_NOT_AVAILABLE'), 200);
+                        break;
+                    case 'GOODS_NOT_ENOUGH':
+                        $this->response($this->error->setError('REDEEM_GOODS_NOT_ENOUGH'), 200);
+                        break;
+                    case 'POINT_NOT_ENOUGH':
+                        $this->response($this->error->setError('REDEEM_POINT_NOT_ENOUGH'), 200);
+                        break;
+                    case 'BADGE_NOT_ENOUGH':
+                        $this->response($this->error->setError('REDEEM_BADGE_NOT_ENOUGH'), 200);
+                        break;
+                    case 'CUSTOM_POINT_NOT_ENOUGH':
+                        $reward_name = array();
+                        foreach ($goods['custom_id'] as $reward_id){
+                            $reward_name[] = $this->client_model->getRewardName(array(
+                                'client_id' => $validToken['client_id'],
+                                'site_id' => $validToken['site_id'],
+                                'reward_id' => $reward_id
+                            ));
+                        }
+                        $reward_name = implode(',', $reward_name);
+                        $this->response($this->error->setError('REDEEM_CUSTOM_POINT_NOT_ENOUGH', $reward_name), 200);
+                        break;
+                }
+            } else {
+                $this->response($this->error->setError('GOODS_NOT_FOUND'), 200);
+            }
         }
-        $this->response($this->error->setError('GOODS_NOT_FOUND'), 200);
     }
 
     private function redeem(

@@ -42,6 +42,10 @@ class Error extends CI_Model
                 }
                 $errorData['error_code'] = '0903';
                 break;
+            case 'SETTING_DISABLE':
+                $errorData['message'] = "The setting has been disabled";
+                $errorData['error_code'] = '0904';
+                break;
             case 'INTERNAL_ERROR':
                 $errorData['message'] = "There is an internal server error: " . print_r($dataArray, true);
                 $errorData['error_code'] = '0800';
@@ -97,6 +101,10 @@ class Error extends CI_Model
             case 'LITHIUM_SUBSCRIPTION_RECORD_NOT_FOUND':
                 $errorData['message'] = "Lithium subscription record is not found";
                 $errorData['error_code'] = '0813';
+                break;
+            case 'DEVICE_NOT_EXIST':
+                $errorData['message'] = "Device is not found";
+                $errorData['error_code'] = '0814';
                 break;
             case 'INVALID_API_KEY_OR_SECRET':
                 $errorData['message'] = "Invalid API-KEY OR API-SECRET";
@@ -297,6 +305,14 @@ class Error extends CI_Model
             case 'GIFT_NOT_EXIST':
                 $errorData['message'] = "Gift to send is not exist";
                 $errorData['error_code'] = '0610';
+                break;
+            case 'INVALID_STATUS':
+                $errorData['message'] = "Invalid status";
+                $errorData['error_code'] = '0611';
+                break;
+            case 'REDEEM_COUPON_CODE_USED':
+                $errorData['message'] = "Coupon code has been used";
+                $errorData['error_code'] = '0611';
                 break;
             case "QUEST_JOINED":
                 $errorData["message"] = "User has already join this quest";
