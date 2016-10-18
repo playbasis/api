@@ -27,7 +27,10 @@ class AuthControllerTest extends CITestCase
     public function testGetApiInfoCon($response)
     {
         $this->CI = new Auth();
+        $test = $this->getClientSite();
+        $test2 = $this->getToken();
+        var_dump($test2);
 
-        $test = $this->CI->index_post();
+        //$test = $this->CI->index_post();
     }
 }

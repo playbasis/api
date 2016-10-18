@@ -109,4 +109,14 @@ abstract class CITestCase extends PHPUnit_Framework_TestCase
             return $res;
         }
     }
+
+    public function getToken()
+    {
+        $rest = new RestClient();
+        $response = $rest->post('Auth', array(
+            'api_key' => $_ENV['API_KEY'],
+            'api_secret' => $_ENV['API_SECRET'],
+        ));
+        return $response->success ? $response->response->token : null;
+    }
 }
