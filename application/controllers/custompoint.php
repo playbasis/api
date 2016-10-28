@@ -35,7 +35,9 @@ class Custompoint extends REST2_Controller
         $pending_list = $this->reward_model->listPendingRewards($data);
         foreach ($pending_list as &$item)
         {
+            $item['reward_name'] = $this->reward_model->getRewardName($data,$item['reward_id']);
             $item['pending_id'] = $item['_id']->{'$id'};
+            unset($item['reward_id']);
             unset($item['_id']);
         }
         array_walk_recursive($pending_list, array($this, "convert_mongo_object"));

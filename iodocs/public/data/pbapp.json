@@ -2981,7 +2981,7 @@
           "response": [
             {
               "cl_player_id": { "-type": "string"},
-              "reward_id":    { "-type": "string"},
+              "reward_name":    { "-type": "string"},
               "value":        { "-type": "integer"},
               "status":       { "-type": "string"},
               "date_added":   { "-type": "string"},
