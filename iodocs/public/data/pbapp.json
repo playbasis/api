@@ -2937,6 +2937,19 @@
               "Description": "List of player, ex. john,max,robert"
             },
             {
+              "Name": "status",
+              "Required": "N",
+              "Default": "All",
+              "Type": "enumerated",
+              "Description": "status of pending list",
+              "EnumeratedList": [
+                "All",
+                "Approve",
+                "Pending",
+                "Reject"
+              ]
+            },
+            {
               "Name": "from",
               "Required": "N",
               "Default": "",
@@ -2968,8 +2981,9 @@
           "response": [
             {
               "cl_player_id": { "-type": "string"},
-              "reward_id":    { "-type": "string"},
+              "reward_name":    { "-type": "string"},
               "value":        { "-type": "integer"},
+              "status":       { "-type": "string"},
               "date_added":   { "-type": "string"},
               "pending_id":   { "-type": "string"}
             }

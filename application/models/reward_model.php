@@ -34,14 +34,17 @@ class Reward_model extends MY_Model
                   'cl_player_id',
                   'reward_id',
                   'value',
-                'date_added'
+                  'status',
+                  'date_added'
             ));
 
         $this->mongo_db->where(array(
             'client_id' => $data['client_id'],
             'site_id' => $data['site_id'],
-            'status' => true,
         ));
+        if (isset($data['status'])){
+            $this->mongo_db->where('status', $data['status']);
+        }
 
         if (isset($data['player_list']) && !empty($data['player_list']) && is_array($data['player_list'])){
             $this->mongo_db->where_in('cl_player_id', $data['player_list']);
@@ -82,21 +85,21 @@ class Reward_model extends MY_Model
             'client_id' => $data['client_id'],
             'site_id' => $data['site_id'],
             '_id' => $data['pending_id'],
-            'status' => true
+            'status' => 'pending'
         ));
         $pending_reward = $this->mongo_db->get('playbasis_reward_pending_to_player');
 
         if ($pending_reward){
             $pending_reward = $pending_reward[0];
-            $this->mongo_db->where(array(
-                'client_id' => $data['client_id'],
-                'site_id' => $data['site_id'],
-                '_id' => $data['pending_id']
-            ));
-            $this->mongo_db->set('status', false);
-            $this->mongo_db->update('playbasis_reward_pending_to_player');
-
             if ($approve) {
+                $this->mongo_db->where(array(
+                    'client_id' => $data['client_id'],
+                    'site_id' => $data['site_id'],
+                    '_id' => $data['pending_id']
+                ));
+                $this->mongo_db->set('status', 'approve');
+                $this->mongo_db->update('playbasis_reward_pending_to_player');
+
                 $this->mongo_db->where(array(
                     'client_id' => $data['client_id'],
                     'site_id' => $data['site_id'],
@@ -119,6 +122,14 @@ class Reward_model extends MY_Model
                     $this->mongo_db->insert('playbasis_reward_to_player',$pending_reward);
                 }
             } else {
+                $this->mongo_db->where(array(
+                    'client_id' => $data['client_id'],
+                    'site_id' => $data['site_id'],
+                    '_id' => $data['pending_id']
+                ));
+                $this->mongo_db->set('status', 'reject');
+                $this->mongo_db->update('playbasis_reward_pending_to_player');
+
                 $this->mongo_db->where(array(
                     'client_id' => $data['client_id'],
                     'site_id' => $data['site_id'],
