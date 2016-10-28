@@ -253,7 +253,7 @@ class Client_model extends MY_Model
                             'site_id' => $siteId,
                             'reward_id' => $rewardId,
                             'value' => intval($amount),
-                            'status' => true,
+                            'status' => 'pending',
                             'date_added' => $mongoDate,
                             'date_modified' => $mongoDate
                         ));

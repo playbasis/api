@@ -19,6 +19,10 @@ class Custompoint extends REST2_Controller
         $data = $this->input->get();
         $data['client_id'] = $this->validToken['client_id'];
         $data['site_id'] = $this->validToken['site_id'];
+        if (isset($data['status']) && $data['status']){
+            $data['status'] = strtolower($data['status']);
+            if ($data['status'] == 'all') unset($data['status']);
+        }
         if (isset($data['to']) && strtotime($data['to'])){
             $data['to'] = new MongoDate(strtotime($data['to']));
         }
@@ -26,7 +30,7 @@ class Custompoint extends REST2_Controller
             $data['from'] = new MongoDate(strtotime($data['from']));
         }
         if (isset($data['player_list']) && !empty($data['player_list'])){
-            $data['player_list'] = explode(",",$data['player_list']);
+            $data['player_list'] = array_map('trim', explode(",",$data['player_list']));
         }
         $pending_list = $this->reward_model->listPendingRewards($data);
         foreach ($pending_list as &$item)
@@ -53,7 +57,7 @@ class Custompoint extends REST2_Controller
             'site_id' => $this->validToken['site_id']
         );
         $approve = $this->input->post('approve') === "true" ? true : false;
-        $pending_list = explode(",",$this->input->post('pending_list'));
+        $pending_list = array_map('trim', explode(",",$this->input->post('pending_list')));
         $response = array();
         if (is_array($pending_list)) foreach ($pending_list as $pending_id){
             try{
