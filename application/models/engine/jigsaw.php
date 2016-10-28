@@ -359,6 +359,69 @@ class jigsaw extends MY_Model
         }
     }
 
+    private function isInDuration($now,$start_time,$value,$unit){
+        $now = new Datetime(datetimeMongotoReadable($now));
+        $start_time = new Datetime(datetimeMongotoReadable($start_time));
+        $start_time->modify("+".$value." ".$unit);
+
+        $interval = $now->diff($start_time);
+        if($interval->invert == 0){
+            // $now <= $deadline
+            return true;
+        }else{
+            // $now > $deadline
+            return false;
+        }
+    }
+
+    public function duration($config, $input, &$exInfo = array())
+    {
+        assert($config != false);
+        assert(is_array($config));
+        assert(isset($config['duration_value']));
+        assert(isset($config['duration_unit']));
+        assert(isset($config['limit_action']));
+        assert($input != false);
+        assert(is_array($input));
+        assert($input['pb_player_id']);
+        assert($input['rule_id']);
+        assert($input['jigsaw_id']);
+        $now = isset($input['rule_time']) ? $input['rule_time'] : new MongoDate();
+
+        $result = $this->getMostRecentJigsaw($input, array(
+            'input',
+        ));
+
+        if (!$result) {
+            $exInfo['start_time'] = $now;
+            $exInfo['current_count'] = 1;
+            if(1 <= $config['limit_action']){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            $log = $result['input'];
+            $start_time = $log['start_time'];
+
+            if(!$this->isInDuration($now, $start_time, $config['duration_value'], $config['duration_unit'])){
+                $current_count = 1;
+                $exInfo['start_time'] = $now;
+
+            }else{
+                $current_count = $log['current_count']+1;
+                $exInfo['start_time'] = $start_time;
+
+            }
+            $exInfo['current_count'] = $current_count;
+            if($current_count <= $config['limit_action'] ){
+                return true;
+            }else{
+                return false;
+            }
+        }
+    }
+
     public function before($config, $input, &$exInfo = array())
     {
         assert($config != false);
@@ -577,11 +640,11 @@ class jigsaw extends MY_Model
             }
         }
         $c = $this->countActionWithParams($input['client_id'], $input['site_id'], $input['pb_player_id'],
-            $input['action_id'], $params);
+            $input['action_id'], $params, isset($input['pb_player_id-2']) && $input['pb_player_id-2'] ? $input['pb_player_id-2']:null );
         return $c == 0;
     }
 
-    private function countActionWithParams($client_id, $site_id, $pb_player_id, $action_id, $parameters)
+    private function countActionWithParams($client_id, $site_id, $pb_player_id, $action_id, $parameters, $pb_player_id_2=null)
     {
         $this->set_site_mongodb($site_id);
         $this->mongo_db->where(array(
@@ -591,6 +654,9 @@ class jigsaw extends MY_Model
             'action_id' => $action_id,
         ));
 
+        if($pb_player_id_2){
+            $this->mongo_db->where('pb_player_id-2', $pb_player_id_2);
+        }
         foreach ($parameters as $name => $value) {
             $this->mongo_db->where(array('parameters.' . $name => $value));
         }
@@ -682,9 +748,10 @@ class jigsaw extends MY_Model
     public function sequence($config, $input, &$exInfo = array())
     {
         $this->set_site_mongodb($input['site_id']);
-        $result = $this->getMostRecentJigsaw($input, array(
-            'input'
-        ));
+        $global = (isset($config["global"]) && $config["global"] === "true") ? true : false;
+
+        $result = $this->getMostRecentJigsaw($input, array('input'),$global);
+
         $i = !$result || !isset($result['input']['index']) ? 0 : $result['input']['index'] + 1;
         $exInfo['index'] = $i;
         $exInfo['break'] = true; // generally, "sequence" will block
@@ -771,17 +838,21 @@ class jigsaw extends MY_Model
         return $ok;
     }
 
-    public function getMostRecentJigsaw($input, $fields)
+    public function getMostRecentJigsaw($input, $fields, $global = false)
     {
         assert(isset($input['site_id']));
         $this->set_site_mongodb($input['site_id']);
         $this->mongo_db->select($fields);
         $this->mongo_db->where(array(
-            'pb_player_id' => $input['pb_player_id'],
+            'site_id' => $input['site_id'],
             'rule_id' => $input['rule_id'],
             'jigsaw_id' => $input['jigsaw_id'],
             'jigsaw_index' => $input['jigsaw_index']
         ));
+        if(!$global){
+            $this->mongo_db->where('pb_player_id', $input['pb_player_id']);
+        }
+
         $this->mongo_db->order_by(array(
             'date_added' => 'desc'
         ));
@@ -791,10 +862,14 @@ class jigsaw extends MY_Model
         if (!$result) {
             $this->mongo_db->select($fields);
             $this->mongo_db->where(array(
-                'pb_player_id' => $input['pb_player_id'],
+                'site_id' => $input['site_id'],
                 'rule_id' => $input['rule_id'],
                 'jigsaw_id' => $input['jigsaw_id'],
             ));
+            if(!$global){
+                $this->mongo_db->where('pb_player_id', $input['pb_player_id']);
+            }
+
             $this->mongo_db->order_by(array(
                 'date_added' => 'desc'
             ));

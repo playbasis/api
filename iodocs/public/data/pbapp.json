@@ -569,6 +569,38 @@
           "response": []
         },
         {
+          "MethodName": "Referral",
+          "Synopsis": "To add Referral code another player for invitation system",
+          "HTTPMethod": "POST",
+          "URI": "Player/referral",
+          "RequiresOAuth": "N",
+          "Public": "Y",
+          "parameters": [
+            {
+              "Name": "token",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "access token returned from Auth"
+            },
+            {
+              "Name": "player_id",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "player id as used in client's website *** It's available only [A-Za-z0-9_-]"
+            },
+            {
+              "Name": "referral_code",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "referral code of another player for invitation system"
+            }
+          ],
+          "response": []
+        },
+        {
           "MethodName": "Update",
           "Synopsis": "Update player information.",
           "HTTPMethod": "POST",
@@ -2881,6 +2913,180 @@
               "is_group":       { "-type": "boolean"}
             }
           }
+        }
+      ]
+    },
+    {
+      "name": "Point API",
+      "endpoint": ["Point"],
+      "Public": "Y",
+      "methods": [
+        {
+          "MethodName": "Pending List",
+          "Synopsis": "Return list of pending custompoint to be approve",
+          "HTTPMethod": "GET",
+          "URI": "Point/custom/pending",
+          "RequiresOAuth": "N",
+          "Public": "Y",
+          "parameters": [
+            {
+              "Name": "player_list",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "List of player, ex. john,max,robert"
+            },
+            {
+              "Name": "from",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "From date in the format YYYY-MM-DD (ex.1982-09-29)"
+            },
+            {
+              "Name": "to",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "To date in the format YYYY-MM-DD (ex.1982-09-29)"
+            },
+            {
+              "Name": "offset",
+              "Required": "N",
+              "Default": "0",
+              "Type": "string",
+              "Description": "Specify paging offset [default = 0]"
+            },
+            {
+              "Name": "limit",
+              "Required": "N",
+              "Default": "20",
+              "Type": "string",
+              "Description": "Specify paging limit [default = 20]"
+            }
+          ],
+          "response": [
+            {
+              "cl_player_id": { "-type": "string"},
+              "reward_id":    { "-type": "string"},
+              "value":        { "-type": "integer"},
+              "date_added":   { "-type": "string"},
+              "pending_id":   { "-type": "string"}
+            }
+          ]
+        },
+        {
+          "MethodName": "Approve Pending CustomPoint",
+          "Synopsis": "To approve custompoint in pending",
+          "HTTPMethod": "POST",
+          "URI": "Point/custom/approval",
+          "RequiresOAuth": "N",
+          "Public": "Y",
+          "parameters": [
+            {
+              "Name": "token",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "access token returned from Auth"
+            },
+            {
+              "Name": "pending_list",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "list of pending id of custompoint ex. xxxx,xxxx,xxxx"
+            },
+            {
+              "Name": "approve",
+              "Required": "Y",
+              "Default": "true",
+              "Type": "enumerated",
+              "Description": "approve status, true = approve , false = reject",
+              "EnumeratedList": [
+                "true",
+                "false"
+              ]
+            }
+          ],
+          "response": [
+            {
+              "pending_id": { "-type": "string"},
+              "status":     { "-type": "string"}
+            }
+          ]
+        },
+        {
+          "MethodName": "Retrieve Custom Log",
+          "Synopsis": "Return First/Last Reward Custom Log",
+          "HTTPMethod": "GET",
+          "URI": "Point/custom/log",
+          "RequiresOAuth": "N",
+          "Public": "Y",
+          "parameters": [
+            {
+              "Name": "player_id",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "reward_name",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "name of reward to be get the custom log"
+            },
+            {
+              "Name": "key",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "key of custom param"
+            },
+            {
+              "Name": "sort",
+              "Required": "N",
+              "Default": "ASC",
+              "Type": "enumerated",
+              "Description": "ASC=To get first Log , DESC=To get latest Log ,Default as ASC",
+              "EnumeratedList": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          ],
+          "response": {
+            "log_id":       { "-type": "string"},
+            "value":        { "-type": "string"}
+          }
+
+        },
+        {
+          "MethodName": "Clear Reward Custom Log",
+          "Synopsis": "To clear reward custom log",
+          "HTTPMethod": "POST",
+          "URI": "Point/custom/clearLog",
+          "RequiresOAuth": "N",
+          "Public": "Y",
+          "parameters": [
+            {
+              "Name": "token",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "access token returned from Auth"
+            },
+            {
+              "Name": "log_id",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "id of reward custom log"
+            }
+          ],
+          "response": {}
         }
       ]
     },
@@ -9222,6 +9428,76 @@
               "Description": "player id as used in client's website"
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "Style API",
+      "endpoint": ["Style"],
+      "Public": "Y",
+      "methods": [
+        {
+          "MethodName": "Retrieve custom style",
+          "Synopsis": "Retrieve custom style by specified filter fields",
+          "HTTPMethod": "GET",
+          "URI": "Style",
+          "RequiresOAuth": "N",
+          "Public": "Y",
+          "parameters": [
+            {
+              "Name": "name",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "Specific name of group to retrieve custom style"
+            },
+            {
+              "Name": "key",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "Specific key name to retrieve custom style"
+            },
+            {
+              "Name": "sort",
+              "Required": "N",
+              "Default": "name",
+              "Type": "string",
+              "Description": "Specific field to sort ('name', 'key', 'date_added', 'date_modified')"
+            },
+            {
+              "Name": "order",
+              "Required": "N",
+              "Default": "asc",
+              "Type": "string",
+              "Description": "Direction to order ('desc', 'asc'), but if sort is 'random' then this field will be seed number"
+            },
+            {
+              "Name": "offset",
+              "Required": "N",
+              "Default": "0",
+              "Type": "integer",
+              "Description": "number of records starting"
+            },
+            {
+              "Name": "limit",
+              "Required": "N",
+              "Default": "20",
+              "Type": "integer",
+              "Description": "number of results to return"
+            }
+          ],
+          "response": {
+            "result":[
+              {
+                "name":          {"-type": "string"},
+                "key":           {"-type": "string"},
+                "value":         {"-type": "string"},
+                "date_added":    {"-type": "string", "-optional": "true"},
+                "date_modified": {"-type": "string", "-optional": "true"}
+              }
+            ]
+          }
         }
       ]
     }

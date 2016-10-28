@@ -59,6 +59,8 @@ $route['Player/'.ANY_STRING.'/custom'] = 'player/custom/$1';
 
 $route['Player/'.ANY_STRING.'/register'] = 'player/register/$1';
 $route['Player/register'] = 'player/register';
+$route['Player/referral'] = 'player/referral';
+
 $route['Player/registerBatch'] = 'player/registerBatch';
 
 $route['Player/'.ANY_STRING.'/update'] = 'player/update/$1';
@@ -162,6 +164,12 @@ $route['Goods'] = 'goods/index';
 $route['Goods/sponsor/'.ANY_STRING] = 'goods/sponsor/$1';
 $route['Goods/sponsor'] = 'goods/sponsor';
 $route['Goods/ad'] = 'goods/personalizedSponsor';
+
+//Point API
+$route['Point/custom/pending'] = 'custompoint/pending';
+$route['Point/custom/approval'] = 'custompoint/approval';
+$route['Point/custom/log'] = 'custompoint/customLog';
+$route['Point/custom/clearLog'] = 'custompoint/clearCustomLog';
 
 //Merchant API
 $route['Merchant/availableBranchGoodsGroup'] = 'merchant/availableBranchGoodsGroup';
@@ -360,6 +368,9 @@ $route['Import/importSetting'] = 'import/importSetting';
 $route['Game'] = 'game/list';
 $route['Game/playerItemStatus'] = 'game/playerItemStatus';
 $route['Game/setCurrentStage'] = 'game/setCurrentStage';
+
+//Custom style API
+$route['Style'] = 'custom_style/list';
 
 //misc
 //$route['test']	= 'playbasis/test';

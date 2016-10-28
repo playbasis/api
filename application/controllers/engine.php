@@ -32,6 +32,7 @@ class Engine extends Quest
         $this->load->model('level_model');
         $this->load->model('game_model');
         $this->load->model('badge_model');
+        $this->load->model('reward_model');
     }
 
     public function getActionConfig_get()
@@ -983,10 +984,14 @@ class Engine extends Quest
                             }
 
                             $event = array(
-                                'event_type' => 'REWARD_RECEIVED',
+                                'event_type' => isset($jigsawConfig['reward_status']) && !empty($jigsawConfig['reward_status']) ? $jigsawConfig['reward_status'] : 'REWARD_RECEIVED',
                                 'reward_type' => $jigsawConfig['reward_name'],
                                 'value' => $jigsawConfig['quantity']
                             );
+                            if (isset($jigsawConfig['pending_id']) && !empty($jigsawConfig['pending_id'])){
+                                $event['pending_id'] = $jigsawConfig['pending_id'];
+                            }
+
                             array_push($apiResult['events'],
                                 $isGroup ? array_merge($event, array('index' => $exInfo['index'])) : $event);
 
@@ -1076,7 +1081,7 @@ class Engine extends Quest
                                 } else {
                                     //update point-based reward
                                     if (!$input["test"]) {
-                                        $this->client_model->updatePlayerPointReward(
+                                        $reward = $this->client_model->updatePlayerPointReward(
                                             $jigsawConfig['reward_id'],
                                             $jigsawConfig['quantity'],
                                             $input['pb_player_id'],
@@ -1088,10 +1093,13 @@ class Engine extends Quest
                                 }  // close if ($jigsawConfig["reward_name"] == 'exp')
 
                                 $event = array(
-                                    'event_type' => 'REWARD_RECEIVED',
+                                    'event_type' => isset($reward['reward_status']) && !empty($reward['reward_status']) ? $reward['reward_status'] : 'REWARD_RECEIVED',
                                     'reward_type' => $jigsawConfig['reward_name'],
                                     'value' => $jigsawConfig['quantity']
                                 );
+                                if (isset($reward['pending_id']) && !empty($reward['pending_id'])) {
+                                    $event['pending_id'] = $reward['pending_id'];
+                                }
                                 array_push($apiResult['events'],
                                     $isGroup ? array_merge($event, array('index' => $exInfo['index'])) : $event);
 
@@ -1124,6 +1132,14 @@ class Engine extends Quest
                                             $eventMessage,
                                             '');
                                     }
+
+                                    if(isset($jigsawConfig['custom_log']) && $jigsawConfig['custom_log']){
+                                        if(isset($input[$jigsawConfig['custom_log']]) && $input[$jigsawConfig['custom_log']]){
+                                            $this->reward_model->addCustomLog($client_id, $site_id, $input['player_id'],
+                                                $input['pb_player_id'], $jigsawConfig['reward_id'], $jigsawConfig['custom_log'], $input[$jigsawConfig['custom_log']]);
+                                        }
+                                    }
+
                                 }  // close if (!$input["test"])
                             } else {
                                 switch ($jigsawConfig['reward_name']) {
