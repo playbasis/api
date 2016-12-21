@@ -385,6 +385,9 @@ $route['Style'] = 'custom_style/list';
 //Location API
 $route['Location'] = 'location/list';
 
+//Custom API
+$route['HSBC/giveToken'] = 'custom/giveToken';
+
 //misc
 //$route['test']	= 'playbasis/test';
 $route['test']	= 'notification/index';
