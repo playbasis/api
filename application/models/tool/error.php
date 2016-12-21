@@ -620,6 +620,34 @@ class Error extends CI_Model
                 }
                 $errorData['error_code'] = '4005';
                 break;
+            case 'DEFAULT_ERROR':
+                $errorData['message'] = "Please try again in a few moments.";
+                $errorData['error_code'] = '9001';
+                break;
+            case 'PLAYER_HAS_TRANSFERRED':
+                $errorData['message'] = "player_id or receiver_id has transferred";
+                $errorData['error_code'] = '9002';
+                break;
+            case 'TOKEN_NOT_ENOUGH':
+                $errorData['message'] = "Token has not enough";
+                $errorData['error_code'] = '9003';
+                break;
+            case 'TOKEN_NOT_EXIST':
+                $errorData['message'] = "Token does not exist";
+                $errorData['error_code'] = '9004';
+                break;
+            case 'DOLLAR_NOT_ENOUGH':
+                $errorData['message'] = "Dollar has not enough";
+                $errorData['error_code'] = '9005';
+                break;
+            case 'DOLLAR_NOT_EXIST':
+                $errorData['message'] = "Dollar does not exist";
+                $errorData['error_code'] = '9006';
+                break;
+            case 'OUT_OF_CAMPAIGN':
+                $errorData['message'] = "Out of campaign";
+                $errorData['error_code'] = '9007';
+                break;
             default:
                 $errorData['message'] = "Unknown";
                 $errorData['error_code'] = '9999';
