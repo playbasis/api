@@ -98,7 +98,18 @@ class Custom extends REST2_Controller
             // return dollar not exist
             $this->response($this->error->setError('DOLLAR_NOT_EXIST'), 200);
         }
- 
+        //give token
+        $response = $this->curl_request('Engine/rule', array(
+            'token' => $token,
+            'player_id' => $player_id,
+            'receiver_id' => $receiver_id,
+            'action' => ACTION_GIVETOKEN));
+        $response = json_decode($response);
+
+        if(!isset($response->response->events[0]->reward_type) || $response->response->events[0]->reward_type != 'token'){
+            $this->response($this->error->setError('DEFAULT_ERROR'), 200);
+        }
+
         //log transfer
         $this->curl_request('Engine/rule', array(
             'token' => $token,
@@ -107,14 +118,7 @@ class Custom extends REST2_Controller
             'amount' => $amount,
             'campaign_name' => $campaign['name'],
             'action' => ACTION_TRANSFER));
- 
-        //give token
-        $this->curl_request('Engine/rule', array(
-            'token' => $token,
-            'player_id' => $player_id,
-            'receiver_id' => $receiver_id,
-            'action' => ACTION_GIVETOKEN));
- 
+
         //has pending?
         $pending_list = $this->reward_model->listPendingRewards(array('client_id' => $this->client_id, 'site_id' => $this->site_id, 'player_list' => array($player_id), 'status' => 'pending'));
         if($pending_list && is_array($pending_list)){
