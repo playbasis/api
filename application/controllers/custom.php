@@ -3,6 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 require_once APPPATH . '/libraries/REST2_Controller.php';
 define('ACTION_GIVETOKEN', 'givetoken');
 define('ACTION_TRANSFER', 'transfer');
+define('IS_GLOBAL', true);
 
 class Custom extends REST2_Controller
 {
@@ -50,14 +51,22 @@ class Custom extends REST2_Controller
         //check A -> B
         $pb_player_id = $this->player_model->getPlaybasisId(array('client_id' => $this->client_id, 'site_id' => $this->site_id, 'cl_player_id' => $player_id));
         if($pb_player_id){
-            $action_count = $this->player_model->getActionCount($pb_player_id, $action_id, $this->site_id, array('to', 'campaign_name') , array($receiver_id, $campaign['name']));
+            if(IS_GLOBAL){
+                $action_count = $this->player_model->getActionCount($pb_player_id, $action_id, $this->site_id, array('to') , array($receiver_id));
+            } else {
+                $action_count = $this->player_model->getActionCount($pb_player_id, $action_id, $this->site_id, array('to', 'campaign_name') , array($receiver_id, $campaign['name']));
+            }
             $action_count = $action_count['count'];
         }
  
         //check B -> A
         $pb_player_id2 = $this->player_model->getPlaybasisId(array('client_id' => $this->client_id, 'site_id' => $this->site_id, 'cl_player_id' => $receiver_id));
         if($pb_player_id2){
-            $action_count2 = $this->player_model->getActionCount($pb_player_id2, $action_id, $this->site_id, array('to', 'campaign_name') , array($player_id, $campaign['name']));
+            if(IS_GLOBAL){
+                $action_count2 = $this->player_model->getActionCount($pb_player_id2, $action_id, $this->site_id, array('to') , array($player_id));
+            } else {
+                $action_count2 = $this->player_model->getActionCount($pb_player_id2, $action_id, $this->site_id, array('to', 'campaign_name') , array($player_id, $campaign['name']));
+            }
             $action_count2 = $action_count2['count'];
         }
  
