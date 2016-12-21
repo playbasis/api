@@ -4,6 +4,8 @@ require_once APPPATH . '/libraries/REST2_Controller.php';
 define('ACTION_GIVETOKEN', 'givetoken');
 define('ACTION_TRANSFER', 'transfer');
 define('IS_GLOBAL', true);
+define('DOLLAR_REWARD', 'dollar');
+define('TOKEN_REWARD', 'token');
 
 class Custom extends REST2_Controller
 {
@@ -76,8 +78,8 @@ class Custom extends REST2_Controller
         }
  
         //check token
-        $remaining_token = $this->reward_model->remainingPoint(array('client_id' => $this->client_id, 'site_id' => $this->site_id, 'name' => 'token'));
-        if(isset($remaining_token[0]['name']) && $remaining_token[0]['name'] == "token"){
+        $remaining_token = $this->reward_model->remainingPoint(array('client_id' => $this->client_id, 'site_id' => $this->site_id, 'name' => TOKEN_REWARD));
+        if(isset($remaining_token[0]['name']) && $remaining_token[0]['name'] == TOKEN_REWARD){
             if($remaining_token[0]['quantity'] <= 0){
                 //return token not enough
                 $this->response($this->error->setError('TOKEN_NOT_ENOUGH'), 200);
@@ -88,8 +90,8 @@ class Custom extends REST2_Controller
                     }
  
         //check dollar
-        $remaining_dollar = $this->reward_model->remainingPoint(array('client_id' => $this->client_id, 'site_id' => $this->site_id, 'name' => 'dollar'));
-        if(isset($remaining_dollar[0]['name']) && $remaining_dollar[0]['name'] == "dollar"){
+        $remaining_dollar = $this->reward_model->remainingPoint(array('client_id' => $this->client_id, 'site_id' => $this->site_id, 'name' => DOLLAR_REWARD));
+        if(isset($remaining_dollar[0]['name']) && $remaining_dollar[0]['name'] == DOLLAR_REWARD){
             if($remaining_dollar[0]['quantity'] <= 0){
                 //return dollar not enough
                 $this->response($this->error->setError('DOLLAR_NOT_ENOUGH'), 200);
@@ -106,7 +108,7 @@ class Custom extends REST2_Controller
             'action' => ACTION_GIVETOKEN));
         $response = json_decode($response);
 
-        if(!isset($response->response->events[0]->reward_type) || $response->response->events[0]->reward_type != 'token'){
+        if(!isset($response->response->events[0]->reward_type) || $response->response->events[0]->reward_type != TOKEN_REWARD){
             $this->response($this->error->setError('DEFAULT_ERROR'), 200);
         }
 
