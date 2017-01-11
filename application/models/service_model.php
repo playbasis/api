@@ -266,6 +266,9 @@ class Service_model extends MY_Model
         $last_read = $last_read_activity_id ? $this->getDateAddedOfEventById($site_id,
             new MongoId($last_read_activity_id)) : null;
 
+        /* for DBS */
+        $allowed_action_log_ids = (in_array('ACTION', $event_type) && $mode != 'all' ? $this->getRewardedActionLogIds($site_id, $pb_player_id) : null);
+
         $reset = $this->getResetRewardEvent($site_id);
         if ($reset) {
             $reset_where = array();
@@ -300,6 +303,11 @@ class Service_model extends MY_Model
         if(is_array($reward_name)){
             $this->mongo_db->where(array('$or' => array(array('$and' => array(array("event_type" => "REWARD"),
                 array("reward_name" => array('$in' => $reward_name)))), array("event_type" => array('$ne' => "REWARD" )))));
+        }
+
+        /* for DBS */
+        if ($allowed_action_log_ids) {
+            $this->mongo_db->where_in('action_log_id', $allowed_action_log_ids);
         }
 
         $this->mongo_db->limit((int)$limit);
@@ -397,6 +405,19 @@ class Service_model extends MY_Model
         }
 
         return $events_output;
+    }
+
+    private function getRewardedActionLogIds($site_id, $pb_player_id) {
+        $this->mongo_db->where('site_id', $site_id);
+        $this->mongo_db->where('pb_player_id', $pb_player_id);
+        $this->mongo_db->where('event_type', 'REWARD');
+        $this->mongo_db->select(array('action_log_id'));
+        $results = $this->mongo_db->get('playbasis_event_log');
+        $ret = array();
+        if ($results) foreach ($results as $result) {
+            $ret[] = $result['action_log_id'];
+        }
+        return $ret;
     }
 
     private function getArrayKeysInMongoId($arr)
