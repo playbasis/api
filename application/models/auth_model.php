@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-define('TOKEN_EXPIRE', (3 * 24 * 3600)); // 3 days
+
 class Auth_model extends MY_Model
 {
     public function __construct()
@@ -19,10 +19,13 @@ class Auth_model extends MY_Model
         ));
         $this->mongo_db->where(array(
             'api_key' => $data['key'],
-            'api_secret' => $data['secret'],
             'status' => true,
             'deleted' => false
         ));
+        
+        if (isset($data['secret'])){
+            $this->mongo_db->where('api_secret', $data['secret']);
+        }
         $this->mongo_db->limit(1);
         $cl_info = $this->mongo_db->get('playbasis_platform_client_site');
         if ($cl_info) {
@@ -98,7 +101,8 @@ class Auth_model extends MY_Model
             $newToken = $this->token($data['key'], $data['secret'], $r << 1);
         } // prevent duplicate tokens being returned
         $token['token'] = $newToken;
-        $expire = new MongoDate(time() + TOKEN_EXPIRE);
+        $client_expire = defined('TOKEN_CLIENT_EXPIRE') ? TOKEN_CLIENT_EXPIRE : (3 * 24 * 3600);  //default 3 days
+        $expire = new MongoDate(time() + $client_expire);
         $updated = array();
         foreach (self::$dblist as $key => $value) {
             //keep track of which db is already updated
@@ -128,19 +132,145 @@ class Auth_model extends MY_Model
         return $token;
     }
 
+
+    public function generatePlayerToken($data)
+    {
+        $this->set_site_mongodb($data['site_id']);
+        $token = $this->getPlayerToken($data);
+        if ($token) {
+            $result['token'] = $token['token'];
+            $result['refresh_token'] = $token['refresh_token'];
+            $result['date_expire'] = datetimeMongotoReadable($token['date_expire']);
+            return $result;
+        }
+        return $this->renewPlayerToken($data);
+    }
+
+    public function renewPlayerToken($data)
+    {
+        $token = array();
+        $r = rand();
+        $newToken = $this->playerToken($data['key'], $data['pb_player_id'], $r);
+        $oldToken = $this->getPlayerToken($data);
+        if ($oldToken) {
+            $oldToken = $oldToken['token'];
+        } else {
+            $token['refresh_token'] = $this->playerToken($data['key'], $data['pb_player_id'], $r << 1, $data['password']);
+        }
+
+        if ($newToken == $oldToken) {
+            $newToken = $this->playerToken($data['key'], $data['pb_player_id'], $r << 1);
+        } // prevent duplicate tokens being returned
+
+        $token['token'] = $newToken;
+        $player_expire = defined('TOKEN_CLIENT_EXPIRE') ? TOKEN_PLAYER_EXPIRE : (3 * 24 * 3600);  //default 3 days
+        $expire = new MongoDate(time() + $player_expire);
+        $check_player = $this->getPlayerToken($data,false,false);
+        if($check_player){
+            $token['refresh_token'] = $check_player['refresh_token'];
+            $this->mongo_db->where(array(
+                'client_id' => $data['client_id'],
+                'site_id' => $data['site_id'],
+                'platform_id' => $data['platform_id'],
+                'pb_player_id' => $data['pb_player_id']
+            ));
+            $this->mongo_db->set('token', $token['token']);
+            $this->mongo_db->set('date_expire', $expire);
+            $this->mongo_db->update('playbasis_player_token');
+        } else {
+            $this->mongo_db->insert('playbasis_player_token', array(
+                'client_id' => $data['client_id'],
+                'site_id' => $data['site_id'],
+                'platform_id' => $data['platform_id'],
+                'pb_player_id' => $data['pb_player_id'],
+                'token' => $token['token'],
+                'refresh_token' => $token['refresh_token'],
+                'date_expire' => $expire
+            ));
+        }
+
+        $token['date_expire'] = datetimeMongotoReadable($expire);
+        return $token;
+    }
+
+    private function playerToken($key, $player_id, $r, $password = false)
+    {
+        if ($password){
+            $token = hash('sha1', $key . time() . $player_id . $password . $r);
+        } else {
+            $token = hash('sha1', $key . time() . $player_id . $r);
+        }
+        return $token;
+    }
+
+    public function revokePlayerToken($data)
+    {
+        $this->mongo_db->where(array(
+            'client_id' => $data['client_id'],
+            'site_id' => $data['site_id'],
+            'platform_id' => $data['platform_id'],
+            'pb_player_id' => $data['pb_player_id']
+        ));
+        $this->mongo_db->set('date_expire', new MongoDate(strtotime("-1 day", time())));
+        $this->mongo_db->update('playbasis_player_token');
+    }
+
+    public function getPlayerToken($data, $refresh_token = false, $check_player = true)
+    {
+        $this->set_site_mongodb($data['site_id']);
+        $this->mongo_db->select(array(
+            'token',
+            'refresh_token',
+            'date_expire'
+        ));
+        $this->mongo_db->where(array(
+            'site_id' => $data['site_id'],
+            'client_id' => $data['client_id'],
+            'platform_id' => $data['platform_id'],
+            'pb_player_id' => $data['pb_player_id']
+        ));
+
+        if($check_player){
+            if ($refresh_token) {
+                $this->mongo_db->where('refresh_token', $refresh_token);
+            } else {
+                $this->mongo_db->where_gt('date_expire', new MongoDate(time()));
+            }
+        }
+
+        $this->mongo_db->limit(1);
+        $results = $this->mongo_db->get('playbasis_player_token');
+        return $results ? $results[0] : array();
+    }
+
     public function findToken($token)
     {
         $this->set_site_mongodb(0);
         $this->mongo_db->select(array(
             'client_id',
-            'site_id'
+            'site_id',
+            'pb_player_id'
         ));
         $this->mongo_db->where(array(
             'token' => $token,
         ));
         $this->mongo_db->where_gt('date_expire', new MongoDate(time()));
         $this->mongo_db->limit(1);
-        $result = $this->mongo_db->get('playbasis_token');
+        $result = $this->mongo_db->get('playbasis_player_token');
+        $this->auth_method = "player_token";
+        if(!$result){
+            $this->mongo_db->select(array(
+                'client_id',
+                'site_id'
+            ));
+            $this->mongo_db->where(array(
+                'token' => $token,
+            ));
+            $this->mongo_db->where_gt('date_expire', new MongoDate(time()));
+            $this->mongo_db->limit(1);
+            $result = $this->mongo_db->get('playbasis_token');
+            $this->auth_method = "user_token";
+        }
         if ($result && $result[0]) {
             $info = $result[0];
             $info['_id'] = $info['site_id'];
@@ -184,7 +314,7 @@ class Auth_model extends MY_Model
     public function createTokenFromAPIKey($apiKey)
     {
         $this->set_site_mongodb(0);
-
+        $this->auth_method = "api_key";
         $this->mongo_db->select(array(
             'site_id',
             'client_id'
