@@ -91,42 +91,7 @@
               "Description": "player's password"
             }
           ],
-          "responses": {
-            "token":        { "-type": "string"},
-            "date_expire":  { "-type": "string"}
-          }
-        },
-        {
-          "MethodName": "Auth Renew Player's token",
-          "Synopsis": "Create a new token and discard the current token",
-          "HTTPMethod": "POST",
-          "URI": "Auth/player/:player_id/renew",
-          "RequiresOAuth": "N",
-          "Public": "Y",
-          "parameters": [
-            {
-              "Name": "api_key",
-              "Required": "Y",
-              "Default": "",
-              "Type": "string",
-              "Description": "api key issued by Playbasis"
-            },
-            {
-              "Name": "player_id",
-              "Required": "URI",
-              "Default": "",
-              "Type": "string",
-              "Description": "player id as used in client's website "
-            },
-            {
-              "Name": "refresh_token",
-              "Required": "Y",
-              "Default": "",
-              "Type": "string",
-              "Description": "refresh_token "
-            }
-          ],
-          "responses": {
+          "response": {
             "token":        { "-type": "string"},
             "date_expire":  { "-type": "string"}
           }

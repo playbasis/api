@@ -139,7 +139,7 @@ class Auth_model extends MY_Model
         $token = $this->getPlayerToken($data);
         if ($token) {
             $result['token'] = $token['token'];
-            $result['refresh_token'] = $token['refresh_token'];
+            //$result['refresh_token'] = $token['refresh_token'];
             $result['date_expire'] = datetimeMongotoReadable($token['date_expire']);
             return $result;
         }
@@ -155,7 +155,7 @@ class Auth_model extends MY_Model
         if ($oldToken) {
             $oldToken = $oldToken['token'];
         } else {
-            $token['refresh_token'] = $this->playerToken($data['key'], $data['pb_player_id'], $r << 1, $data['password']);
+            //$token['refresh_token'] = $this->playerToken($data['key'], $data['pb_player_id'], $r << 1, $data['password']);
         }
 
         if ($newToken == $oldToken) {
@@ -167,7 +167,7 @@ class Auth_model extends MY_Model
         $expire = new MongoDate(time() + $player_expire);
         $check_player = $this->getPlayerToken($data,false,false);
         if($check_player){
-            $token['refresh_token'] = $check_player['refresh_token'];
+            //$token['refresh_token'] = $check_player['refresh_token'];
             $this->mongo_db->where(array(
                 'client_id' => $data['client_id'],
                 'site_id' => $data['site_id'],
@@ -184,7 +184,7 @@ class Auth_model extends MY_Model
                 'platform_id' => $data['platform_id'],
                 'pb_player_id' => $data['pb_player_id'],
                 'token' => $token['token'],
-                'refresh_token' => $token['refresh_token'],
+                //'refresh_token' => $token['refresh_token'],
                 'date_expire' => $expire
             ));
         }
