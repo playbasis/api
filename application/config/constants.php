@@ -160,7 +160,7 @@ define('MEDIA_MANAGER_LARGE_THUMBNAIL_WIDTH', 240);
 define('MEDIA_MANAGER_LARGE_THUMBNAIL_HEIGHT', 240);
 
 define('TOKEN_CLIENT_EXPIRE', (3 * 24 * 3600)); // 3 days
-define('TOKEN_PLAYER_EXPIRE', (3 * 24 * 3600)); // 3 days
+define('TOKEN_PLAYER_EXPIRE', (2 * 24 * 3600)); // 2 days
 
 define('DEBUG_KEY', 'playbasisthailand');
 /* End of file constants.php */
