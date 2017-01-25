@@ -624,8 +624,8 @@ class Error extends CI_Model
                 }
                 $errorData['error_code'] = '4005';
                 break;
-            case 'DEFAULT_ERROR':
-                $errorData['message'] = "Please try again in a few moments.";
+            case 'FAIL_TOKEN':
+                $errorData['message'] = "Fails condition or exceed limit per user";
                 $errorData['error_code'] = '9001';
                 break;
             case 'PLAYER_HAS_TRANSFERRED':

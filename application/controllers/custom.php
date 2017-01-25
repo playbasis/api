@@ -108,8 +108,14 @@ class Custom extends REST2_Controller
             'action' => ACTION_GIVETOKEN));
         $response = json_decode($response);
 
-        if(!isset($response->response->events[0]->reward_type) || $response->response->events[0]->reward_type != TOKEN_REWARD){
-            $this->response($this->error->setError('DEFAULT_ERROR'), 200);
+        $check_reward = false;
+        if (isset($response->response->events) && is_array($response->response->events)) foreach ($response->response->events as $event){
+            if(isset($event->reward_type) && $event->reward_type == TOKEN_REWARD){
+                $check_reward = true;
+            }
+        }
+        if(!$check_reward){
+            $this->response($this->error->setError('FAIL_TOKEN'), 200);
         }
 
         //log transfer
@@ -136,7 +142,6 @@ class Custom extends REST2_Controller
         } else {
             $this->response($this->resp->setRespond(), 200);
         }
-        $this->response($this->error->setError('DEFAULT_ERROR'), 200);
     }
  
     private function curl_request($url, $postData, $method="post"){
