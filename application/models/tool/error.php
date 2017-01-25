@@ -625,7 +625,7 @@ class Error extends CI_Model
                 $errorData['error_code'] = '4005';
                 break;
             case 'FAIL_TOKEN':
-                $errorData['message'] = "Fails condition or exceed limit per user";
+                $errorData['message'] = "There is no token to be rewarded";
                 $errorData['error_code'] = '9001';
                 break;
             case 'PLAYER_HAS_TRANSFERRED':
