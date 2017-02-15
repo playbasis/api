@@ -196,6 +196,38 @@ class jigsaw extends MY_Model
         return isset($input['game_current_stage']) && ($config['game_level'] == $input['game_current_stage']);
     }
 
+
+
+    public function point($config, $input, &$exInfo = array())
+    {
+        assert($config != false);
+        assert(is_array($config));
+        assert(isset($config['reward_id']));
+        assert(isset($config['operator']));
+        assert(isset($config['value']));
+        $result = false;
+
+        $point_amount = $this->getPlayerPoint($input['site_id'], new MongoId($config['reward_id']), $input['pb_player_id']);
+
+        if(isset($config['value'])){
+            if ($config['operator'] == '=') {
+                $result = ($point_amount == $config['value']);
+            } elseif ($config['operator'] == '!=') {
+                $result = ($point_amount != $config['value']);
+            } elseif ($config['operator'] == '>') {
+                $result = ($point_amount > $config['value']);
+            } elseif ($config['operator'] == '<') {
+                $result = ($point_amount < $config['value']);
+            } elseif ($config['operator'] == '>=') {
+                $result = ($point_amount >= $config['value']);
+            } elseif ($config['operator'] == '<=') {
+                $result = ($point_amount <= $config['value']);
+            }
+        }
+
+        return $result;
+    }
+
     public function badgeCondition($config, $input, &$exInfo = array())
     {
         assert($config != false);
@@ -1692,6 +1724,19 @@ class jigsaw extends MY_Model
             $this->mongo_db->where_gte('value', $quantity);
         }
         return $this->mongo_db->count('playbasis_reward_to_player');
+    }
+
+    private function getPlayerPoint($site_id, $rewardId, $pb_player_id)
+    {
+        $this->set_site_mongodb($site_id);
+        $this->mongo_db->where(array(
+            'reward_id' => new MongoId($rewardId),
+            'pb_player_id' => $pb_player_id,
+        ));
+        $this->mongo_db->limit(1);
+        $results =  $this->mongo_db->get('playbasis_reward_to_player');
+
+        return $results && isset($results[0]['value']) ? $results[0]['value'] : 0;
     }
 
     private function checkRedeemBadge($site_id, $badgeId, $pb_player_id, $quantity = 0)
