@@ -207,8 +207,7 @@ class jigsaw extends MY_Model
         assert(isset($config['value']));
         $result = false;
 
-        $reward_to_player = $this->getPlayerPoint($input['site_id'], new MongoId($config['reward_id']), $input['pb_player_id']);
-        $point_amount = isset($reward_to_player['value']) ? $reward_to_player['value'] : 0;
+        $point_amount = $this->getPlayerPoint($input['site_id'], new MongoId($config['reward_id']), $input['pb_player_id']);
 
         if(isset($config['value'])){
             if ($config['operator'] == '=') {
@@ -1737,7 +1736,7 @@ class jigsaw extends MY_Model
         $this->mongo_db->limit(1);
         $results =  $this->mongo_db->get('playbasis_reward_to_player');
 
-        return $results ? $results[0] : null;
+        return $results && isset($results[0]['value']) ? $results[0]['value'] : 0;
     }
 
     private function checkRedeemBadge($site_id, $badgeId, $pb_player_id, $quantity = 0)
