@@ -1,63 +1,73 @@
-# Change Log
+## [2.27.0](https://github.com/playbasis/api/tree/2.27.0) (2017-02-16)
+[Full Changelog](https://github.com/playbasis/api/compare/2.26.0...2.27.0)
+
+[Full Changelog](https://github.com/playbasis/api/compare/2.26.3/change_query_to_speedup_get_goods_quantity...HEAD)
+
+**Implemented enhancements:**
+
+- Hotfix/2.26.4/point condition [\#538](https://github.com/playbasis/api/pull/538) ([pongsakorn-ruadsong](https://github.com/pongsakorn-ruadsong))
+
+## [2.26.3/change_query_to_speedup_get_goods_quantity](https://github.com/playbasis/api/tree/2.26.3/change_query_to_speedup_get_goods_quantity) (2017-02-12)
+[Full Changelog](https://github.com/playbasis/api/compare/2.26.2/add_group_in_goods_log...2.26.3/change_query_to_speedup_get_goods_quantity)
+
+**Implemented enhancements:**
+
+- Hotfix/2.26.3/change query to speedup get goods quantity [\#537](https://github.com/playbasis/api/pull/537) ([thanakij-playbasis](https://github.com/thanakij-playbasis))
+
+## [2.26.2/add_group_in_goods_log](https://github.com/playbasis/api/tree/2.26.2/add_group_in_goods_log) (2017-02-10)
+[Full Changelog](https://github.com/playbasis/api/compare/2.26.1/user_tags_condition...2.26.2/add_group_in_goods_log)
+
+**Implemented enhancements:**
+
+- Hotfix/2.26.2/add group in goods log [\#536](https://github.com/playbasis/api/pull/536) ([piya-playbasis](https://github.com/piya-playbasis))
+
+## [2.26.1/user_tags_condition](https://github.com/playbasis/api/tree/2.26.1/user_tags_condition) (2017-02-07)
+[Full Changelog](https://github.com/playbasis/api/compare/2.26.0...2.26.1/user_tags_condition)
+
+**Implemented enhancements:**
+
+- Hotfix/2.26.1/user tags condition [\#535](https://github.com/playbasis/api/pull/535) ([pongsakorn-playbasis](https://github.com/pongsakorn-playbasis))
+
 ## [2.26.0](https://github.com/playbasis/api/tree/2.26.0) (2017-02-02)
-[Full Changelog](https://github.com/playbasis/api/compare/2.25.0...2.26.0)
+[Full Changelog](https://github.com/playbasis/api/compare/2.25.8/fix_reward_event_log...2.26.0)
 
+**Implemented enhancements:**
 
-## [2.25.8/fix_reward_event_log](https://github.com/playbasis/api/tree/2.25.8/fix_reward_event_log) (2017-02-02)
-[Full Changelog](https://github.com/playbasis/api/compare/2.25.7/add_not_equal_operator_in_condition...2.25.8/fix_reward_event_log)
+- Hotfix/2.25.7/add not equal operator in condition [\#533](https://github.com/playbasis/api/pull/533) ([pongsakorn-playbasis](https://github.com/pongsakorn-playbasis))
+- Hotfix/2.25.6/change token to be hashed with sha512 [\#532](https://github.com/playbasis/api/pull/532) ([pongsakorn-playbasis](https://github.com/pongsakorn-playbasis))
+- Hotfix/2.25.5/use token instead of api key in auth revoke [\#530](https://github.com/playbasis/api/pull/530) ([piya-playbasis](https://github.com/piya-playbasis))
+- Hotfix/2.25.4/auth player [\#529](https://github.com/playbasis/api/pull/529) ([pongsakorn-playbasis](https://github.com/pongsakorn-playbasis))
+- Hotfix/2.25.3/support revoke player token [\#528](https://github.com/playbasis/api/pull/528) ([piya-playbasis](https://github.com/piya-playbasis))
+- Hotfix/2.25.2/seperate token expire for client and player [\#527](https://github.com/playbasis/api/pull/527) ([piya-playbasis](https://github.com/piya-playbasis))
+- Hotfix/2.25.1/support player token [\#526](https://github.com/playbasis/api/pull/526) ([piya-playbasis](https://github.com/piya-playbasis))
 
 **Fixed bugs:**
 
 - Hotfix/2.25.8/fix reward event log [\#534](https://github.com/playbasis/api/pull/534) ([piya-playbasis](https://github.com/piya-playbasis))
 
+## [2.25.8/fix_reward_event_log](https://github.com/playbasis/api/tree/2.25.8/fix_reward_event_log) (2017-02-02)
+[Full Changelog](https://github.com/playbasis/api/compare/2.25.7/add_not_equal_operator_in_condition...2.25.8/fix_reward_event_log)
+
 ## [2.25.7/add_not_equal_operator_in_condition](https://github.com/playbasis/api/tree/2.25.7/add_not_equal_operator_in_condition) (2017-01-31)
 [Full Changelog](https://github.com/playbasis/api/compare/2.25.6/change_token_to_be_hashed_with_sha512...2.25.7/add_not_equal_operator_in_condition)
-
-**Implemented enhancements:**
-
-- Hotfix/2.25.7/add not equal operator in condition [\#533](https://github.com/playbasis/api/pull/533) ([pongsakorn-playbasis](https://github.com/pongsakorn-playbasis))
 
 ## [2.25.6/change_token_to_be_hashed_with_sha512](https://github.com/playbasis/api/tree/2.25.6/change_token_to_be_hashed_with_sha512) (2017-01-25)
 [Full Changelog](https://github.com/playbasis/api/compare/2.25.5/use_token_instead_of_api_key_in_auth_revoke...2.25.6/change_token_to_be_hashed_with_sha512)
 
-**Implemented enhancements:**
-
-- Hotfix/2.25.6/change token to be hashed with sha512 [\#532](https://github.com/playbasis/api/pull/532) ([pongsakorn-playbasis](https://github.com/pongsakorn-playbasis))
-
 ## [2.25.5/use_token_instead_of_api_key_in_auth_revoke](https://github.com/playbasis/api/tree/2.25.5/use_token_instead_of_api_key_in_auth_revoke) (2017-01-24)
 [Full Changelog](https://github.com/playbasis/api/compare/2.25.4/auth_player...2.25.5/use_token_instead_of_api_key_in_auth_revoke)
-
-**Implemented enhancements:**
-
-- Hotfix/2.25.5/use token instead of api key in auth revoke [\#530](https://github.com/playbasis/api/pull/530) ([piya-playbasis](https://github.com/piya-playbasis))
 
 ## [2.25.4/auth_player](https://github.com/playbasis/api/tree/2.25.4/auth_player) (2017-01-24)
 [Full Changelog](https://github.com/playbasis/api/compare/2.25.3/support_revoke_player_token...2.25.4/auth_player)
 
-**Implemented enhancements:**
-
-- Hotfix/2.25.4/auth player [\#529](https://github.com/playbasis/api/pull/529) ([pongsakorn-playbasis](https://github.com/pongsakorn-playbasis))
-
 ## [2.25.3/support_revoke_player_token](https://github.com/playbasis/api/tree/2.25.3/support_revoke_player_token) (2017-01-23)
 [Full Changelog](https://github.com/playbasis/api/compare/2.25.2/seperate_token_expire_for_client_and_player...2.25.3/support_revoke_player_token)
-
-**Implemented enhancements:**
-
-- Hotfix/2.25.3/support revoke player token [\#528](https://github.com/playbasis/api/pull/528) ([piya-playbasis](https://github.com/piya-playbasis))
 
 ## [2.25.2/seperate_token_expire_for_client_and_player](https://github.com/playbasis/api/tree/2.25.2/seperate_token_expire_for_client_and_player) (2017-01-23)
 [Full Changelog](https://github.com/playbasis/api/compare/2.25.1/support_player_token...2.25.2/seperate_token_expire_for_client_and_player)
 
-**Implemented enhancements:**
-
-- Hotfix/2.25.2/seperate token expire for client and player [\#527](https://github.com/playbasis/api/pull/527) ([piya-playbasis](https://github.com/piya-playbasis))
-
 ## [2.25.1/support_player_token](https://github.com/playbasis/api/tree/2.25.1/support_player_token) (2017-01-20)
 [Full Changelog](https://github.com/playbasis/api/compare/2.25.0...2.25.1/support_player_token)
-
-**Implemented enhancements:**
-
-- Hotfix/2.25.1/support player token [\#526](https://github.com/playbasis/api/pull/526) ([piya-playbasis](https://github.com/piya-playbasis))
 
 ## [2.25.0](https://github.com/playbasis/api/tree/2.25.0) (2017-01-19)
 [Full Changelog](https://github.com/playbasis/api/compare/2.24.5/fix_special_reward_condition...2.25.0)
@@ -3057,17 +3067,17 @@
 [Full Changelog](https://github.com/playbasis/api/compare/fix_bug_cannot_give_normal_goods_as_reward_of_engine_rule...2.1.38-alpha.1)
 
 ## [fix_bug_cannot_give_normal_goods_as_reward_of_engine_rule](https://github.com/playbasis/api/tree/fix_bug_cannot_give_normal_goods_as_reward_of_engine_rule) (2015-10-07)
-[Full Changelog](https://github.com/playbasis/api/compare/2.1.37...fix_bug_cannot_give_normal_goods_as_reward_of_engine_rule)
+[Full Changelog](https://github.com/playbasis/api/compare/2.1.37-alpha.6...fix_bug_cannot_give_normal_goods_as_reward_of_engine_rule)
 
 **Implemented enhancements:**
 
 - Implementimg new feature for PIN code verification [\#32](https://github.com/playbasis/api/pull/32) ([burachit-playbasis](https://github.com/burachit-playbasis))
 
-## [2.1.37](https://github.com/playbasis/api/tree/2.1.37) (2015-10-02)
-[Full Changelog](https://github.com/playbasis/api/compare/2.1.37-alpha.6...2.1.37)
-
 ## [2.1.37-alpha.6](https://github.com/playbasis/api/tree/2.1.37-alpha.6) (2015-10-02)
-[Full Changelog](https://github.com/playbasis/api/compare/2.1.37-alpha.5...2.1.37-alpha.6)
+[Full Changelog](https://github.com/playbasis/api/compare/2.1.37...2.1.37-alpha.6)
+
+## [2.1.37](https://github.com/playbasis/api/tree/2.1.37) (2015-10-02)
+[Full Changelog](https://github.com/playbasis/api/compare/2.1.37-alpha.5...2.1.37)
 
 **Merged pull requests:**
 
