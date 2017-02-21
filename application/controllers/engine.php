@@ -38,6 +38,7 @@ class Engine extends Quest
         $this->load->model('badge_model');
         $this->load->model('reward_model');
         $this->load->model('location_model');
+        $this->load->model('link_model');
     }
 
     public function getActionConfig_get()
@@ -893,12 +894,19 @@ class Engine extends Quest
                     $input['level'] = $level['level'];
                 }
 
-                // Level condition
+                // Location Area condition
                 if (($input['jigsaw_name']) == 'locationArea') {
-                    //read player information
+                    //read location information
                     $location_info = $this->location_model->getLocation($client_id, $site_id, array('location_id' => $jigsawConfig['location_id']));
                     $jigsawConfig['latitude'] = isset($location_info[0]['latitude']) ? $location_info[0]['latitude'] : null;
                     $jigsawConfig['longitude'] = isset($location_info[0]['longitude']) ? $location_info[0]['longitude'] : null;
+                }
+
+                // Deeplink condition
+                if (($input['jigsaw_name']) == 'deeplink') {
+                    //get link configuration
+                    $conf = $this->link_model->getConfig($client_id, $site_id);
+                    $jigsawConfig['link_config'] = $conf;
                 }
 
                 // User profile condition
