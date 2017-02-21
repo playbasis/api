@@ -638,6 +638,101 @@ class jigsaw extends MY_Model
         return false;
     }
 
+    private function countActionWithSpecificParameter($client_id, $site_id, $action_id, $param_key, $param_value, $pb_player_id=null)
+    {
+        $this->set_site_mongodb($site_id);
+        $this->mongo_db->where(array(
+            'client_id' => $client_id,
+            'site_id' => $site_id,
+            'action_id' => $action_id,
+        ));
+
+        if($pb_player_id){
+            $this->mongo_db->where('pb_player_id', $pb_player_id);
+        }
+
+        $this->mongo_db->where(array('parameters.' . $param_key => $param_value));
+
+
+        $temp = $this->mongo_db->count('playbasis_validated_action_log');
+        return $temp;
+    }
+
+    public function counterParameter($config, $input, &$exInfo = array())
+    {
+        assert($input != false);
+        assert(is_array($input));
+        assert(isset($config['param_key']));
+        assert(isset($config['param_operator']));
+        assert(isset($config['param_amount']));
+        assert(isset($config['global']));
+        $result = false;
+
+        $param_value = isset($config['param_key']) && isset($input[$config['param_key']]) ? $input[$config['param_key']] : null;
+
+        if($param_value) {
+            $action_count = $this->countActionWithSpecificParameter($input['client_id'], $input['site_id'],
+                $input['action_id'], $config['param_key'], $param_value, (isset($config["global"]) && $config["global"] === "true") ? null : $input['pb_player_id']);
+            $action_count = $action_count+1;
+
+            if (isset($config['param_amount'])) {
+                if ($config['param_operator'] == '=') {
+                    $result = ($action_count == $config['param_amount']);
+                } elseif ($config['param_operator'] == '!=') {
+                    $result = ($action_count != $config['param_amount']);
+                } elseif ($config['param_operator'] == '>') {
+                    $result = ($action_count > $config['param_amount']);
+                } elseif ($config['param_operator'] == '<') {
+                    $result = ($action_count < $config['param_amount']);
+                } elseif ($config['param_operator'] == '>=') {
+                    $result = ($action_count >= $config['param_amount']);
+                } elseif ($config['param_operator'] == '<=') {
+                    $result = ($action_count <= $config['param_amount']);
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    private function findByLink($client_id, $site_id, $link)
+    {
+        $this->set_site_mongodb($site_id);
+        $this->mongo_db->where(array(
+            'client_id' => $client_id,
+            'site_id' => $site_id,
+            'status' => true,
+            'deleted' => false,
+            'url' => $link,
+        ));
+
+        $results = $this->mongo_db->get('playbasis_link_to_client');
+        return isset($results[0]['data']) ? $results[0]['data'] : null;
+    }
+
+    public function deeplink($config, &$input, &$exInfo = array())
+    {
+        assert($input != false);
+        assert(is_array($input));
+        assert(isset($config['url_param']));
+        assert(isset($config['deeplink_key']));
+        assert(isset($config['variable']));
+        $result = false;
+
+        $url = isset($config['url_param']) && isset($input[$config['url_param']]) ? $input[$config['url_param']] : null;
+
+        if($url) {
+            $data = $this->findByLink($input['client_id'],$input['site_id'],$url);
+
+            if(isset($data[$config['deeplink_key']])){
+                $input[$config['variable']] = (string)$data[$config['deeplink_key']];
+                $result = true;
+            }
+        }
+
+        return $result;
+    }
+
     public function cooldown($config, $input, &$exInfo = array())
     {
         assert($config != false);
