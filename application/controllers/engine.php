@@ -902,13 +902,6 @@ class Engine extends Quest
                     $jigsawConfig['longitude'] = isset($location_info[0]['longitude']) ? $location_info[0]['longitude'] : null;
                 }
 
-                // Deeplink condition
-                if (($input['jigsaw_name']) == 'deeplink') {
-                    //get link configuration
-                    $conf = $this->link_model->getConfig($client_id, $site_id);
-                    $jigsawConfig['link_config'] = $conf;
-                }
-
                 // User profile condition
                 if (($input['jigsaw_name']) == 'userProfile' || ($input['jigsaw_name']) == 'specialRewardCondition') {
                     //read player information

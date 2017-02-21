@@ -695,6 +695,21 @@ class jigsaw extends MY_Model
         return $result;
     }
 
+    private function findByLink($client_id, $site_id, $link)
+    {
+        $this->set_site_mongodb($site_id);
+        $this->mongo_db->where(array(
+            'client_id' => $client_id,
+            'site_id' => $site_id,
+            'status' => true,
+            'deleted' => false,
+            'url' => $link,
+        ));
+
+        $results = $this->mongo_db->get('playbasis_link_to_client');
+        return isset($results[0]['data']) ? $results[0]['data'] : null;
+    }
+
     public function deeplink($config, &$input, &$exInfo = array())
     {
         assert($input != false);
@@ -702,31 +717,16 @@ class jigsaw extends MY_Model
         assert(isset($config['url_param']));
         assert(isset($config['deeplink_key']));
         assert(isset($config['variable']));
-        assert(isset($config['link_config']));
         $result = false;
 
-        $link_config = $config['link_config'];
-        $branch_key = isset($link_config['key']) && $link_config['key'] ? $link_config['key'] : null;
         $url = isset($config['url_param']) && isset($input[$config['url_param']]) ? $input[$config['url_param']] : null;
 
-        if($url & $branch_key) {
-            $params = array(
-                'branch_key' => $branch_key,
-                'url' => $url
-            );
-            $this->curl->create('https://api.branch.io/v1/url'.($params ? '?'.http_build_query($params, NULL, '&') : ''));
-            $this->curl->ssl(false);
-            $this->curl->http_header('Content-Type', 'application/json');
-            $response = $this->curl->execute();
-            if ($response){
-                $res = json_decode($response);
-                if (isset($res->data)){
-                    $data = (array) $res->data;
-                    if(isset($data[$config['deeplink_key']])){
-                        $input[$config['variable']] = (string)$data[$config['deeplink_key']];
-                        $result = true;
-                    }
-                }
+        if($url) {
+            $data = $this->findByLink($input['client_id'],$input['site_id'],$url);
+
+            if(isset($data[$config['deeplink_key']])){
+                $input[$config['variable']] = (string)$data[$config['deeplink_key']];
+                $result = true;
             }
         }
 
