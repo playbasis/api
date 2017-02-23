@@ -26,6 +26,7 @@ class Quest extends REST2_Controller
         $this->load->model('tool/respond', 'resp');
         $this->load->model('tool/node_stream', 'node');
         $this->load->model('webhook_model');
+        $this->load->model('link_model');
     }
 
     public function QuestProcess($pb_player_id, $validToken, $test_id = null)
@@ -2104,7 +2105,7 @@ class Quest extends REST2_Controller
         }
     }
 
-    protected function processFeedback($type, $input)
+    protected function processFeedback($type, $input, &$output = null)
     {
         switch (strtolower($type)) {
             case 'email':
@@ -2119,10 +2120,51 @@ class Quest extends REST2_Controller
             case 'webhook':
                 $this->processWebhook($input);
                 break;
+            case 'deeplink':
+                $output = $this->processDeeplink($input);
+                break;
             default:
                 log_message('error', 'Unknown feedback type: ' . $type);
                 break;
         }
+    }
+
+    protected function processDeeplink($input)
+    {
+        $data = $input;
+        $data = array_merge($data, array('vendor' => 'playbasis'));
+
+        foreach (array('api_key', 'api_secret', 'token', 'iodocs', 'client_id', 'site_id', 'action_icon' ,'action' ,
+                       'action_id', 'action_log_id', 'jigsaw_category' ,'jigsaw_id' ,'jigsaw_index' ,'node_id' ,'rule_id' ,
+                       'site_name', 'rule_name', 'deeplink_config', 'parameters') as $k){
+            if(isset($data[$k])) {
+                unset($data[$k]);
+            }
+        }
+
+        $conf = $this->link_model->getConfig($input['client_id'], $input['site_id']);
+        if (!$conf) return false;
+        if (!isset($conf['type']) || !in_array($conf['type'], array('branch.io'))) return false;
+        if ($conf['type'] == 'branch.io') {
+            if (!isset($conf['key']) || !$conf['key']) return false;
+        }
+        $message = array(
+            'branch_key' => $conf['key'],
+            'feature' => 'api',
+            'data' => json_encode($data)
+        );
+        $this->curl->create('https://api.branch.io/v1/url');
+        $this->curl->ssl(false);
+        $this->curl->http_header('Content-Type', 'application/json');
+        $this->curl->post(json_encode($message));
+        $response = $this->curl->execute();
+        if (!$response) return false;
+        $res = json_decode($response);
+        if (!isset($res->url)) return false;
+        $link = $res->url;
+        $this->link_model->save($input['client_id'], $input['site_id'], $data, $link);
+
+        return $link;
     }
 
     protected function processEmail($input)
