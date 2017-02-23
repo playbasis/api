@@ -501,7 +501,7 @@ class Goods_model extends MY_Model
                 )
             ),
         ));
-        return $results ? $results['result'] : array();
+        return isset($results['result']) ? $results['result'] : array();
     }
 
     private function checkGoods($client_id, $site_id, $goods, $pb_player_id, $amount, &$msg = array())
