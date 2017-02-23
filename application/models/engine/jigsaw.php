@@ -710,7 +710,7 @@ class jigsaw extends MY_Model
         return isset($results[0]['data']) ? $results[0]['data'] : null;
     }
 
-    public function deeplink($config, &$input, &$exInfo = array())
+    public function variableFromDeeplink($config, &$input, &$exInfo = array())
     {
         assert($input != false);
         assert(is_array($input));
@@ -728,6 +728,25 @@ class jigsaw extends MY_Model
                 $input[$config['variable']] = (string)$data[$config['deeplink_key']];
                 $result = true;
             }
+        }
+
+        return $result;
+    }
+
+    public function variable($config, &$input, &$exInfo = array())
+    {
+        assert(isset($config['variable_name']));
+        assert(isset($config['variable_value']));
+        $result = false;
+
+        $variable_name = isset($config['variable_name']) && $config['variable_name'] ? $config['variable_name'] : null;
+        $variable_value = isset($config['variable_value']) && $config['variable_value'] ? $config['variable_value'] : null;
+
+        if($variable_name && $variable_value) {
+
+            $input[$variable_name] = $variable_value;
+            $result = true;
+
         }
 
         return $result;
