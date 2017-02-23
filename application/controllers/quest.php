@@ -2136,7 +2136,7 @@ class Quest extends REST2_Controller
 
         foreach (array('api_key', 'api_secret', 'token', 'iodocs', 'client_id', 'site_id', 'action_icon' ,'action' ,
                        'action_id', 'action_log_id', 'jigsaw_category' ,'jigsaw_id' ,'jigsaw_index' ,'node_id' ,'rule_id' ,
-                       'site_name', 'rule_name', 'deeplink_config') as $k){
+                       'site_name', 'rule_name', 'deeplink_config', 'parameters') as $k){
             if(isset($data[$k])) {
                 unset($data[$k]);
             }
