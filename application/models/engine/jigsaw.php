@@ -1109,6 +1109,16 @@ class jigsaw extends MY_Model
         return $temp;
     }
 
+    public function deeplink_feedback($config, $input, &$exInfo = array())
+    {
+        $conf = isset($input['deeplink_config']) ? $input['deeplink_config'] : null;
+        if (!$conf) return false;
+        if (!isset($conf['type']) || !in_array($conf['type'], array('branch.io'))) return false;
+        if (($conf['type'] == 'branch.io') && (!isset($conf['key']) || !$conf['key'])) return false;
+
+        return true;
+    }
+
     public function email($config, $input, &$exInfo = array())
     {
         return $this->feedback('email', $config, $input, $exInfo);

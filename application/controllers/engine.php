@@ -894,6 +894,12 @@ class Engine extends Quest
                     $input['level'] = $level['level'];
                 }
 
+                // deepling_feedback
+                if (($input['jigsaw_name']) == 'deeplink' && $input['jigsaw_category'] == 'FEEDBACK') {
+
+                    $input['deeplink_config'] = $this->link_model->getConfig($input['client_id'], $input['site_id']);
+                }
+
                 // Location Area condition
                 if (($input['jigsaw_name']) == 'locationArea') {
                     //read location information
@@ -1344,7 +1350,14 @@ class Engine extends Quest
                         }  // close if(isset($exInfo['dynamic']))
                     } elseif ($jigsawCategory == 'FEEDBACK') {
                         if (!$input["test"]) {
-                            $this->processFeedback($jigsawName, array_merge($input, array('coupon' => $last_coupon)));
+                            $this->processFeedback($jigsawName, array_merge($input, array('coupon' => $last_coupon)),$output);
+                            if($jigsawName == "deeplink" && $output){
+                                $apiResult['events'][] = array(
+                                    'event_type' => 'DEEPLINK_GENERATED',
+                                    'reward_type' => 'deeplink',
+                                    'link_url' => $output,
+                                );
+                            }
                         }
                     } else {
                         //check for completed objective
