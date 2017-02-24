@@ -3237,6 +3237,20 @@
               "Description": "date end in the format YYYY-MM-DD (ex.1982-09-29) to filter goods that valid date start/expire in period"
             },
             {
+              "Name": "sort",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "Specify field to be sorted [ *name*, quantity, description, date_start, date_expire]"
+            },
+            {
+              "Name": "order",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "Specify sorted direction [desc, *asc*]"
+            },
+            {
               "Name": "offset",
               "Required": "N",
               "Default": "0",

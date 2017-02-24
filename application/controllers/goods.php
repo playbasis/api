@@ -162,6 +162,7 @@ class Goods extends REST2_Controller
                             if(isset($m[$goods['name']]['code'])  && $goods['amount'] > 0) $goods['code'] = $m[$goods['name']]['code'];
                         }
                     } else {
+                        $goods['is_group'] = false;
                         if ($player_id !== false) {
                             $goods['amount'] = isset($m[$goods['goods_id']]) ? $m[$goods['goods_id']]['amount'] : 0;
                             if(isset($m[$goods['name']]['code'])  && $goods['amount'] > 0) $goods['code'] = $m[$goods['name']]['code'];
@@ -190,6 +191,28 @@ class Goods extends REST2_Controller
                 }
             }
             $goodsList['goods_list'] = array_values($goodsList['goods_list']); // sort array just in case there were unset
+
+            // Sorting
+            $sort_data = array( 'name', 'quantity', 'description', 'date_start', 'date_expire');
+
+            if ($this->input->get('order') && (mb_strtolower($this->input->get('order')) == 'desc')) {
+                $order = SORT_DESC;
+            } else {
+                $order = SORT_ASC;
+            }
+
+            if ($this->input->get('sort') && in_array($this->input->get('sort'), $sort_data)) {
+                $sort = $this->input->get('sort');
+            } else {
+                $sort = "name";
+            }
+
+            foreach ($goodsList['goods_list'] as $key => $row) {
+                $sorter[$key]  = $row[$sort];
+            }
+
+            array_multisort($sorter, $order,  $goodsList['goods_list']);
+
             $this->response($this->resp->setRespond($goodsList), 200);
         }
     }
