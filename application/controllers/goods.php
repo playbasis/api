@@ -213,9 +213,9 @@ class Goods extends REST2_Controller
                 }
 
                 array_multisort($sorter, $order, $goodsList['goods_list']);
-
-                $this->response($this->resp->setRespond($goodsList), 200);
             }
+
+            $this->response($this->resp->setRespond($goodsList), 200);
         }
     }
 
