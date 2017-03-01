@@ -603,6 +603,7 @@ class Redeem extends REST2_Controller
                     'is_sponsor' => $is_sponsor,
                     'amount' => $amount,
                     'redeem' => $goodsData['redeem'],
+                    'group' => isset($goodsData['group']) ? $goodsData['group'] : null,
                     'action_name' => 'redeem_goods',
                     'action_icon' => 'fa-icon-shopping-cart',
                     'message' => $eventMessage
