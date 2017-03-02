@@ -41,6 +41,11 @@ class Goods_model extends MY_Model
         if (!empty($nin)) {
             $this->mongo_db->where_not_in('_id', $nin);
         }
+
+        if(array_key_exists('specific', $data)){
+            $this->mongo_db->where($data['specific']);
+        }
+        
         if (!empty($data['tags'])){
             $this->mongo_db->where_in('tags', $data['tags']);
         }
@@ -128,6 +133,32 @@ class Goods_model extends MY_Model
             }
         }
         return $goods;
+    }
+
+    public function getGroupsList($site_id, $digi=false)
+    {
+        $this->set_site_mongodb($site_id);
+        if($digi){
+            $this->mongo_db->where_in('site_id', array(new MongoId($site_id), "Digi"));
+        } else {
+            $this->mongo_db->where('site_id', new MongoId($site_id));
+        }
+        $this->mongo_db->where('deleted', false);
+        return $this->mongo_db->distinct('group', 'playbasis_goods_to_client');
+    }
+
+    public function checkGoodsGroupQuantity($site_id, $group, $digi = false)
+    {
+        $this->mongo_db->where('deleted', false);
+        if ($digi){
+            $this->mongo_db->where_in('site_id', array($site_id, "Digi"));
+        } else {
+            $this->mongo_db->where('site_id', $site_id);
+        }
+
+        $this->mongo_db->where('group', $group);
+        $this->mongo_db->where('quantity', 1);
+        return $this->mongo_db->count("playbasis_goods_to_client");
     }
 
     public function getGoodsByGroupAndCode($client_id, $site_id, $group, $code, $fields = array(),$all=false)
