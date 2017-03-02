@@ -19,18 +19,8 @@ class Goods extends REST2_Controller
     public function index_get($goodsId = 0)
     {
         /* process group */
-        $results = $this->goods_model->getGroupsAggregate($this->validToken['site_id']);
-        $ids = array();
-        $group_name = array();
+
         $org_id_list = array();
-        foreach ($results as $i => $result) {
-            $group = $result['_id']['group'];
-            $quantity = $result['quantity'];
-            $list = $result['list'];
-            $first = array_shift($list); // skip first one
-            $group_name[$first->{'$id'}] = array('group' => $group, 'quantity' => $quantity);
-            $ids = array_merge($ids, $list);
-        }
         /* find my goods */
         $player_id = $this->input->get('player_id');
         if ($player_id !== false) {
@@ -57,6 +47,12 @@ class Goods extends REST2_Controller
                 }
             }
 
+        }
+        $group_list = $this->goods_model->getGroupsList($this->site_id);
+        $in_goods = array();
+        foreach ($group_list as $group_name){
+            $goods_group_detail =  $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name,false);
+            array_push($in_goods, new MongoId($goods_group_detail));
         }
         /* main */
         if ($goodsId) // given specified goods_id
@@ -87,12 +83,8 @@ class Goods extends REST2_Controller
             if ($goods['goods']['is_group']) {
                 $group = $goods['goods']['group'];
                 $goods['goods']['name'] = $goods['goods']['group'];
-                foreach ($group_name as $each) {
-                    if ($each['group'] == $group) {
-                        $goods['goods']['quantity'] = $each['quantity'];
-                        break;
-                    }
-                }
+                $goods['goods']['quantity'] = $this->goods_model->checkGoodsGroupQuantity($this->site_id, $goods['group']);
+
                 if ($player_id !== false) {
                     $goods['amount'] = isset($m[$group]) ? $m[$group]['amount'] : 0;
                     if(isset($m[$group]['code']) && $goods['amount'] > 0) $goods['goods']['code'] = $m[$group]['code'];
@@ -147,7 +139,9 @@ class Goods extends REST2_Controller
                 $data['limit'] = 500;
             }
 
-            $goodsList['goods_list'] = $this->goods_model->getAllGoods($data, $ids);
+            $data['specific'] = array('$or' => array(array("group" => array('$exists' => false ) ), array("goods_id" => array('$in' => $in_goods ) ) ));
+
+            $goodsList['goods_list'] = $this->goods_model->getAllGoods($data);
             if (is_array($goodsList['goods_list'])) {
                 foreach ($goodsList['goods_list'] as $key => &$goods) {
                     $goods_id = $goods['_id'];
@@ -155,8 +149,8 @@ class Goods extends REST2_Controller
                     unset($goods['code']);
                     if ($is_group) {
                         $goods['is_group'] = true;
-                        $goods['name'] = $group_name[$goods_id]['group'];
-                        $goods['quantity'] = $group_name[$goods_id]['quantity'];
+                        $goods['name'] = $goods['group'];
+                        $goods['quantity'] = $this->goods_model->checkGoodsGroupQuantity($this->site_id, $goods['group']);
                         if ($player_id !== false) {
                             $goods['amount'] = isset($m[$goods['name']]) ? $m[$goods['name']]['amount'] : 0;
                             if(isset($m[$goods['name']]['code'])  && $goods['amount'] > 0) $goods['code'] = $m[$goods['name']]['code'];
@@ -223,16 +217,11 @@ class Goods extends REST2_Controller
     {
         $validToken_ad = array('client_id' => null, 'site_id' => null);
         /* process group */
-        $results = $this->goods_model->getGroupsAggregate($validToken_ad['site_id']);
-        $ids = array();
-        $group_name = array();
-        foreach ($results as $i => $result) {
-            $group = $result['_id']['group'];
-            $quantity = $result['quantity'];
-            $list = $result['list'];
-            $first = array_shift($list); // skip first one
-            $group_name[$first->{'$id'}] = array('group' => $group, 'quantity' => $quantity);
-            $ids = array_merge($ids, $list);
+        $group_list = $this->goods_model->getGroupsList($this->site_id);
+        $in_goods = array();
+        foreach ($group_list as $group_name){
+            $goods_group_detail =  $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name,false);
+            array_push($in_goods, new MongoId($goods_group_detail));
         }
         /* find my goods */
         $player_id = $this->input->get('player_id');
@@ -257,12 +246,7 @@ class Goods extends REST2_Controller
             $goods['goods']['is_group'] = array_key_exists('group', $goods['goods']);
             if ($goods['goods']['is_group']) {
                 $group = $goods['goods']['group'];
-                foreach ($group_name as $each) {
-                    if ($each['group'] == $group) {
-                        $goods['goods']['quantity'] = $each['quantity'];
-                        break;
-                    }
-                }
+                $goods['goods']['quantity'] = $this->goods_model->checkGoodsGroupQuantity($this->site_id, $goods['group']);
                 if ($player_id !== false) {
                     $goods['amount'] = isset($m[$group]) ? $m[$group]['amount'] : 0;
                 }
@@ -274,15 +258,16 @@ class Goods extends REST2_Controller
             $this->response($this->resp->setRespond($goods), 200);
         } else // list all
         {
-            $goodsList['goods_list'] = $this->goods_model->getAllGoods($validToken_ad, $ids);
+            $validToken_ad['specific'] = array('$or' => array(array("group" => array('$exists' => false ) ), array("goods_id" => array('$in' => $in_goods ) ) ));
+            $goodsList['goods_list'] = $this->goods_model->getAllGoods($validToken_ad);
             if (is_array($goodsList['goods_list'])) {
                 foreach ($goodsList['goods_list'] as &$goods) {
                     $goods_id = $goods['_id'];
                     $is_group = array_key_exists('group', $goods);
                     if ($is_group) {
                         $goods['is_group'] = true;
-                        $goods['name'] = $group_name[$goods_id]['group'];
-                        $goods['quantity'] = $group_name[$goods_id]['quantity'];
+                        $goods['name'] = $goods['group'];
+                        $goods['quantity'] = $this->goods_model->checkGoodsGroupQuantity($this->site_id, $goods['group']);
                         if ($player_id !== false) {
                             $goods['amount'] = isset($m[$goods['name']]) ? $m[$goods['name']]['amount'] : 0;
                         }
@@ -318,29 +303,18 @@ class Goods extends REST2_Controller
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         }
         /* process group */
-        $results = $this->goods_model->getGroupsAggregate($validToken_ad['site_id']);
-        $ids = array();
-        $group_name = array();
-        foreach ($results as $i => $result) {
-            $group = $result['_id']['group'];
-            $quantity = $result['quantity'];
-            $list = $result['list'];
-            $first = array_shift($list); // skip first one
-            $group_name[$first->{'$id'}] = array('group' => $group, 'quantity' => $quantity);
-            $ids = array_merge($ids, $list);
+        $group_list = $this->goods_model->getGroupsList($this->site_id);
+        $in_goods = array();
+        foreach ($group_list as $group_name){
+            $goods_group_detail =  $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name,false);
+            array_push($in_goods, new MongoId($goods_group_detail));
         }
         /* goods list */
-        $goodsList = $this->goods_model->getAllGoods($validToken_ad, $ids);
+        $goodsList = $this->goods_model->getAllGoods($validToken_ad);
         $goods['goods'] = $this->recommend($pb_player_id, $goodsList);
         $goods['goods']['is_group'] = array_key_exists('group', $goods['goods']);
         if ($goods['goods']['is_group']) {
-            $group = $goods['goods']['group'];
-            foreach ($group_name as $each) {
-                if ($each['group'] == $group) {
-                    $goods['goods']['quantity'] = $each['quantity'];
-                    break;
-                }
-            }
+            $goods['goods']['quantity'] = $this->goods_model->checkGoodsGroupQuantity($this->site_id, $goods['group']);
         }
         $this->response($this->resp->setRespond($goods), 200);
     }
