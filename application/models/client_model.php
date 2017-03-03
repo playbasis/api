@@ -767,12 +767,15 @@ class Client_model extends MY_Model
                 'client_id' => new MongoId($client_id),
                 'site_id' => new MongoId($site_id),
                 'goods_id' => new MongoId($goodsId),
-                'group' => isset($goodsInfo['group']) ? $goodsInfo['group'] : "",
                 'is_sponsor' => $is_sponsor,
                 'value' => intval($quantity),
                 'date_added' => $mongoDate,
                 'date_modified' => $mongoDate
             );
+            if(isset($goodsInfo['group']) ){
+                $data['group'] = $goodsInfo['group'];
+            }
+
             if(isset($goodsInfo['date_expired_coupon']) && !empty($goodsInfo['date_expired_coupon'])){
                 $data['date_expire'] = ($goodsInfo['date_expired_coupon']);
             } elseif (isset($goodsInfo['days_expire']) && !empty($goodsInfo['days_expire'])) {
