@@ -1631,9 +1631,9 @@ class Player_model extends MY_Model
             'pb_player_id' => new MongoId($pb_player_id)
 
         ));
-        $this->mongo_db->where(array('$or' => array(array("group" => array('$exists' => false , '$eq' => false , '$eq' => null)))));
-        $goods_data = $this->mongo_db->distinct('goods_id', 'playbasis_goods_log');
 
+        $this->mongo_db->where('$or',  array(array('group' => null), array('group' => array('$exists' => false)), array('group' => false)));
+        $goods_data = $this->mongo_db->distinct('goods_id', 'playbasis_goods_log');
         foreach ($group_data as $group) {
             $this->mongo_db->where(array(
                 'site_id' => new MongoId($site_id),
@@ -1725,7 +1725,6 @@ class Player_model extends MY_Model
                 'name',
                 'description',
                 'code',
-                'group',
                 'tags'
             ));
             $this->mongo_db->select(array(), array('_id'));
