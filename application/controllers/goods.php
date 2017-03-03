@@ -82,8 +82,8 @@ class Goods extends REST2_Controller
             unset($goods['goods']['code']);
             if ($goods['goods']['is_group']) {
                 $group = $goods['goods']['group'];
-                $goods['goods']['name'] = $goods['goods']['group'];
-                $goods['goods']['quantity'] = $this->goods_model->checkGoodsGroupQuantity($this->site_id, $goods['group']);
+                $goods['goods']['name'] = $group;
+                $goods['goods']['quantity'] = $this->goods_model->checkGoodsGroupQuantity($this->site_id, $group);
 
                 if ($player_id !== false) {
                     $goods['amount'] = isset($m[$group]) ? $m[$group]['amount'] : 0;
@@ -246,7 +246,7 @@ class Goods extends REST2_Controller
             $goods['goods']['is_group'] = array_key_exists('group', $goods['goods']);
             if ($goods['goods']['is_group']) {
                 $group = $goods['goods']['group'];
-                $goods['goods']['quantity'] = $this->goods_model->checkGoodsGroupQuantity($this->site_id, $goods['group']);
+                $goods['goods']['quantity'] = $this->goods_model->checkGoodsGroupQuantity($this->site_id, $group);
                 if ($player_id !== false) {
                     $goods['amount'] = isset($m[$group]) ? $m[$group]['amount'] : 0;
                 }
@@ -314,7 +314,7 @@ class Goods extends REST2_Controller
         $goods['goods'] = $this->recommend($pb_player_id, $goodsList);
         $goods['goods']['is_group'] = array_key_exists('group', $goods['goods']);
         if ($goods['goods']['is_group']) {
-            $goods['goods']['quantity'] = $this->goods_model->checkGoodsGroupQuantity($this->site_id, $goods['group']);
+            $goods['goods']['quantity'] = $this->goods_model->checkGoodsGroupQuantity($this->site_id, $goods['goods']['group']);
         }
         $this->response($this->resp->setRespond($goods), 200);
     }
