@@ -48,18 +48,11 @@ class Goods extends REST2_Controller
             }
 
         }
-        $group_list = $this->goods_model->getGroupsList($this->site_id);
-        $in_goods = array();
-        foreach ($group_list as $group_name){
-            $goods_group_detail =  $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name,false);
-            array_push($in_goods, new MongoId($goods_group_detail));
-        }
+
         /* main */
         if ($goodsId) // given specified goods_id
         {
-            $goods['goods'] = $this->goods_model->getGoods(array_merge($this->validToken, array(
-                'goods_id' => new MongoId($goodsId)
-            )));
+            $goods['goods'] = $this->goods_model->getGoods(array_merge($this->validToken, array('goods_id' => new MongoId($goodsId))));
 
             // return an error if
             // 1. good id is set organize and player_id is not in that organize
@@ -139,6 +132,12 @@ class Goods extends REST2_Controller
                 $data['limit'] = 500;
             }
 
+            $group_list = $this->goods_model->getGroupsList($this->site_id);
+            $in_goods = array();
+            foreach ($group_list as $group_name){
+                $goods_group_detail =  $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name,false);
+                array_push($in_goods, new MongoId($goods_group_detail));
+            }
             $data['specific'] = array('$or' => array(array("group" => array('$exists' => false ) ), array("goods_id" => array('$in' => $in_goods ) ) ));
 
             $goodsList['goods_list'] = $this->goods_model->getAllGoods($data);
@@ -217,12 +216,6 @@ class Goods extends REST2_Controller
     {
         $validToken_ad = array('client_id' => null, 'site_id' => null);
         /* process group */
-        $group_list = $this->goods_model->getGroupsList($this->site_id);
-        $in_goods = array();
-        foreach ($group_list as $group_name){
-            $goods_group_detail =  $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name,false);
-            array_push($in_goods, new MongoId($goods_group_detail));
-        }
         /* find my goods */
         $player_id = $this->input->get('player_id');
         if ($player_id !== false) {
@@ -258,6 +251,12 @@ class Goods extends REST2_Controller
             $this->response($this->resp->setRespond($goods), 200);
         } else // list all
         {
+            $group_list = $this->goods_model->getGroupsList($this->site_id);
+            $in_goods = array();
+            foreach ($group_list as $group_name){
+                $goods_group_detail =  $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name,false);
+                array_push($in_goods, new MongoId($goods_group_detail));
+            }
             $validToken_ad['specific'] = array('$or' => array(array("group" => array('$exists' => false ) ), array("goods_id" => array('$in' => $in_goods ) ) ));
             $goodsList['goods_list'] = $this->goods_model->getAllGoods($validToken_ad);
             if (is_array($goodsList['goods_list'])) {
@@ -309,6 +308,7 @@ class Goods extends REST2_Controller
             $goods_group_detail =  $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name,false);
             array_push($in_goods, new MongoId($goods_group_detail));
         }
+        $validToken_ad['specific'] = array('$or' => array(array("group" => array('$exists' => false ) ), array("goods_id" => array('$in' => $in_goods ) ) ));
         /* goods list */
         $goodsList = $this->goods_model->getAllGoods($validToken_ad);
         $goods['goods'] = $this->recommend($pb_player_id, $goodsList);
