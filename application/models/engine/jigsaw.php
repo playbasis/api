@@ -1604,6 +1604,7 @@ class jigsaw extends MY_Model
         if(!$reward){
             return false;
         }else {
+            $result = true;
             if (isset($reward['limit_per_day']) && $reward['limit_per_day']) {
                 $currentYMD = date("Y-m-d");
                 $settingTime = (isset($reward['limit_start_time']) && $reward['limit_start_time']) ? $reward['limit_start_time'] : "00:00";
@@ -1616,11 +1617,16 @@ class jigsaw extends MY_Model
                     $startTimeFilter =  strtotime( "-1 day" , $settingTime ) ;
                 }
 
-                $total = $this->countPointAwardInDay($reward_id, $client_id, $site_id, $startTimeFilter);
+                $point_pool = $this->getCustomPointPool($client_id, $site_id, $reward_id, $quantity); // to avoid concurrency issue.
                 $rejected_point_amount = $this->countRejectedPointInDay($reward_id, $client_id, $site_id, $startTimeFilter);
-                if((($total-$rejected_point_amount) + $quantity) > $reward['limit_per_day']){
+                $total = $this->countPointAwardInDay($reward_id, $client_id, $site_id, $startTimeFilter);
+
+                if((($total-$rejected_point_amount) + $point_pool) > $reward['limit_per_day']){
+
+                    $this->resetCustomPointPool($client_id, $site_id, $reward_id, $quantity);
                     return false;
                 }
+                $this->deductCustomPointPool($client_id, $site_id, $reward_id, $quantity);
             }
             return true;
         }
@@ -1732,6 +1738,57 @@ class jigsaw extends MY_Model
         $total = $results['result'] ? $results['result'][0]['sum'] : 0;
 
         return $total;
+    }
+
+    private function getCustomPointPool($client_id, $site_id, $reward_id, $quantity){
+
+        $this->mongo_db->where(array(
+            'client_id' => $client_id,
+            'site_id' => $site_id,
+            'reward_id' => $reward_id,
+        ));
+
+        $this->mongo_db->limit(1);
+
+        $this->mongo_db->set(array(
+                'client_id' => $client_id,
+                'site_id' => $site_id,
+                'reward_id' => $reward_id,
+        ));
+        $this->mongo_db->inc('quantity',(int)$quantity);
+        $result = $this->mongo_db->findAndModify('playbasis_custom_point_pool',array('upsert' => true, 'new' => true));
+
+        return $total = isset($result['quantity']) ? $result['quantity'] : $quantity;
+    }
+
+    private function deductCustomPointPool($client_id, $site_id, $reward_id, $quantity){
+
+        $this->mongo_db->where(array(
+            'client_id' => $client_id,
+            'site_id' => $site_id,
+            'reward_id' => $reward_id,
+        ));
+
+        $this->mongo_db->limit(1);
+
+        $this->mongo_db->dec('quantity',(int)$quantity);
+        $this->mongo_db->update('playbasis_custom_point_pool');
+
+    }
+
+    private function resetCustomPointPool($client_id, $site_id, $reward_id){
+
+        $this->mongo_db->where(array(
+            'client_id' => $client_id,
+            'site_id' => $site_id,
+            'reward_id' => $reward_id,
+        ));
+
+        $this->mongo_db->limit(1);
+
+        $this->mongo_db->set('quantity',0);
+        $this->mongo_db->update('playbasis_custom_point_pool');
+
     }
 
     private function getRewardInfo($client_id, $site_id, $reward_id)
