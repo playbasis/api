@@ -171,11 +171,42 @@ class Reward_model extends MY_Model
                     $this->mongo_db->set('date_modified', new MongoDate());
                     $this->mongo_db->update('playbasis_reward_to_client');
                 }
+
+                if (isset($reward_data[0]['limit_per_day']) && $reward_data[0]['limit_per_day']) {
+                    $currentYMD = date("Y-m-d");
+                    $settingTime = (isset($reward_data[0]['limit_start_time']) && $reward_data[0]['limit_start_time']) ? $reward_data[0]['limit_start_time'] : "00:00";
+                    $settingTime = strtotime("$currentYMD $settingTime:00");
+                    $currentTime = strtotime($currentYMD . " " . date('H:i:s', $pending_reward['date_added']->sec));
+
+                    if ($settingTime <= $currentTime) { // action has been processed for today !
+                        $startTimeFilter = $settingTime;
+                    } else {
+                        $startTimeFilter = strtotime("-1 day", $settingTime);
+                    }
+                    $this->deductCustomPointCounter($data['client_id'], $data['site_id'], $pending_reward['reward_id'], $startTimeFilter, $pending_reward['value']);
+                }
             }
             return true;
         } else {
             return false;
         }
+    }
+
+    private function deductCustomPointCounter($client_id, $site_id, $reward_id, $startTimeFilter, $quantity){
+
+        $this->mongo_db->where(array(
+            'client_id' => $client_id,
+            'site_id' => $site_id,
+            'reward_id' => $reward_id,
+            'startTimeFilter' => new MongoDate($startTimeFilter),
+        ));
+
+        $this->mongo_db->limit(1);
+
+        $this->mongo_db->dec('counter',(int)$quantity);
+        $this->mongo_db->findAndModify('playbasis_custom_point_counter', array('new' => true));
+
+        return $total = isset($result['counter']) ? $result['counter'] : $quantity;
     }
 
     public function getRewardName($data, $reward_id)

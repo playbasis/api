@@ -316,7 +316,7 @@ class jigsaw extends MY_Model
             $result =  $this->checkReward($config['reward_id'], $input['site_id']);
             if($result == true){
                 $timeNow = isset($input['action_log_time']) ? $input['action_log_time'] : time();
-                $result = $this->checkRewardLimitPerDay($config['reward_id'], $input['client_id'], $input['site_id'], $config['quantity'], $timeNow);
+                $result = $this->checkRewardLimitPerDay($input['pb_player_id'], $config['reward_id'], $input['client_id'], $input['site_id'], $config['quantity'], $timeNow);
                 if($result == true){
                     $result = $this->checkRewardLimitPerUser($config['reward_id'], $input['pb_player_id'], $input['client_id'], $input['site_id'], $config['quantity']);
                 }
@@ -358,7 +358,7 @@ class jigsaw extends MY_Model
         $result =  $this->checkReward($rewardId, $input['site_id']);
         if($result == true){
             $timeNow = isset($input['action_log_time']) ? $input['action_log_time'] : time();
-            $result = $this->checkRewardLimitPerDay($rewardId, $input['client_id'], $input['site_id'], $quantity, $timeNow);
+            $result = $this->checkRewardLimitPerDay($input['pb_player_id'], $rewardId, $input['client_id'], $input['site_id'], $quantity, $timeNow);
             if($result == true){
                 $result = $this->checkRewardLimitPerUser($rewardId, $input['pb_player_id'], $input['client_id'], $input['site_id'], $quantity);
             }
@@ -1598,17 +1598,18 @@ class jigsaw extends MY_Model
         return ($result && isset($result[0]['reward_id']) ? $result[0]['reward_id'] : null);
     }
 
-    private function checkRewardLimitPerDay($reward_id, $client_id,  $site_id, $quantity, $timeNow)
+    private function checkRewardLimitPerDay($player_id, $reward_id, $client_id,  $site_id, $quantity, $timeNow)
     {
         $reward = $this->getRewardInfo($client_id, $site_id, $reward_id);
         if(!$reward){
             return false;
         }else {
+            $result = true;
             if (isset($reward['limit_per_day']) && $reward['limit_per_day']) {
                 $currentYMD = date("Y-m-d");
                 $settingTime = (isset($reward['limit_start_time']) && $reward['limit_start_time']) ? $reward['limit_start_time'] : "00:00";
                 $settingTime = strtotime("$currentYMD $settingTime:00");
-                $currentTime = strtotime($currentYMD." " . date('H:i', $timeNow) . ":00");
+                $currentTime = strtotime($currentYMD." " . date('H:i:s', $timeNow) );
 
                 if ($settingTime <= $currentTime){ // action has been processed for today !
                     $startTimeFilter = $settingTime;
@@ -1616,13 +1617,25 @@ class jigsaw extends MY_Model
                     $startTimeFilter =  strtotime( "-1 day" , $settingTime ) ;
                 }
 
-                $total = $this->countPointAwardInDay($reward_id, $client_id, $site_id, $startTimeFilter);
+                $counter = $this->getCustomPointCounter($client_id, $site_id, $reward_id, $startTimeFilter, $quantity); // to prevent concurrency issue.
                 $rejected_point_amount = $this->countRejectedPointInDay($reward_id, $client_id, $site_id, $startTimeFilter);
-                if((($total-$rejected_point_amount) + $quantity) > $reward['limit_per_day']){
-                    return false;
+
+                $is_reset = false;
+                if( $counter > $reward['limit_per_day']){
+                    $total = $this->deductCustomPointCounter($client_id, $site_id, $reward_id, $startTimeFilter, $quantity);
+
+                    if($total < 0){
+                        $is_reset = true;
+                        $this->resetCustomPointCounter($client_id, $site_id, $reward_id, $startTimeFilter);
+                    }
+                    $result = false;
                 }
+
+                // log point counter for validation
+                $this->logCustomPointCounter($client_id, $site_id, $player_id, $reward_id, $counter, $rejected_point_amount, $result, $startTimeFilter, $currentTime, $is_reset);
+
             }
-            return true;
+            return $result;
         }
     }
 
@@ -1690,7 +1703,7 @@ class jigsaw extends MY_Model
                     'client_id' => $client_id,
                     'site_id' => $site_id,
                     'reward_id' => $reward_id,
-                    'date_modified' => array('$gte' => new MongoDate($startTime)),
+                    'date_added' => array('$gte' => new MongoDate($startTime)),
                     'status' => "reject"
                 ),
             ),
@@ -1732,6 +1745,81 @@ class jigsaw extends MY_Model
         $total = $results['result'] ? $results['result'][0]['sum'] : 0;
 
         return $total;
+    }
+
+    private function getCustomPointCounter($client_id, $site_id, $reward_id, $startTimeFilter, $quantity){
+
+        $this->mongo_db->where(array(
+            'client_id' => $client_id,
+            'site_id' => $site_id,
+            'reward_id' => $reward_id,
+            'startTimeFilter' => new MongoDate($startTimeFilter),
+        ));
+
+        $this->mongo_db->limit(1);
+
+        $this->mongo_db->set(array(
+                'client_id' => $client_id,
+                'site_id' => $site_id,
+                'reward_id' => $reward_id,
+        ));
+        $this->mongo_db->inc('counter',(int)$quantity);
+        $result = $this->mongo_db->findAndModify('playbasis_custom_point_counter',array('upsert' => true, 'new' => true));
+
+        return $total = isset($result['counter']) ? $result['counter'] : $quantity;
+    }
+
+    private function logCustomPointCounter($client_id, $site_id, $player_id, $reward_id, $counter, $total_rejected, $result, $startTimeFilter, $currentTime, $is_reset){
+
+        $mongoDate = new MongoDate(time());
+        $this->mongo_db->insert('playbasis_custom_point_counter_log', array(
+            'client_id' => $client_id,
+            'site_id' => $site_id,
+            'player_id' => $player_id,
+            'reward_id' => $reward_id,
+            'counter' => intval($counter),
+            'total_rejected' => intval($total_rejected),
+            'result' => $result,
+            'startTimeFilter' => new MongoDate($startTimeFilter),
+            'currentTime' => new MongoDate($currentTime),
+            'is_reset' => $is_reset,
+            'date_added' => $mongoDate,
+            'date_modified' => $mongoDate
+        ));
+
+    }
+
+    private function deductCustomPointCounter($client_id, $site_id, $reward_id, $startTimeFilter, $quantity){
+
+        $this->mongo_db->where(array(
+            'client_id' => $client_id,
+            'site_id' => $site_id,
+            'reward_id' => $reward_id,
+            'startTimeFilter' => new MongoDate($startTimeFilter),
+        ));
+
+        $this->mongo_db->limit(1);
+
+        $this->mongo_db->dec('counter',(int)$quantity);
+        $this->mongo_db->findAndModify('playbasis_custom_point_counter', array('new' => true));
+
+        return $total = isset($result['counter']) ? $result['counter'] : $quantity;
+    }
+
+    private function resetCustomPointCounter($client_id, $site_id, $reward_id, $startTimeFilter){
+
+        $this->mongo_db->where(array(
+            'client_id' => $client_id,
+            'site_id' => $site_id,
+            'reward_id' => $reward_id,
+            'startTimeFilter' => new MongoDate($startTimeFilter),
+        ));
+
+        $this->mongo_db->limit(1);
+
+        $this->mongo_db->set('counter',0);
+        $this->mongo_db->update('playbasis_custom_point_counter');
+
     }
 
     private function getRewardInfo($client_id, $site_id, $reward_id)
