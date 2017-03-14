@@ -397,6 +397,8 @@ class Goods_model extends MY_Model
             'group' => $goods_group,
             'pb_player_id' => new MongoID($pb_player_id)
         ));
+
+        $this->mongo_db->where_gt('value' , 0);
         $goods = $this->mongo_db->count('playbasis_goods_to_player');
         return $goods;
     }
