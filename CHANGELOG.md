@@ -1,49 +1,23 @@
 # Change Log
 
+## [2.29.0](https://github.com/playbasis/api/tree/2.29.0) (2017-03-16)
+[Full Changelog](https://github.com/playbasis/api/compare/2.28.0...2.29.0)
+
+**Implemented enhancements:**
+
+- Hotfix/2.28.2/modify goods per user to check amout on hand [\#552](https://github.com/playbasis/api/pull/552) ([pongsakorn-ruadsong](https://github.com/pongsakorn-ruadsong))
+
+**Fixed bugs:**
+
+- Hotfix/2.28.1/avoid concurrency point award [\#551](https://github.com/playbasis/api/pull/551) ([pongsakorn-ruadsong](https://github.com/pongsakorn-ruadsong))
+
 ## [2.28.0](https://github.com/playbasis/api/tree/2.28.0) (2017-03-06)
-[Full Changelog](https://github.com/playbasis/api/compare/2.27.0...2.28.0)
-
-**Fixed bugs:**
-
-- redeem goods with per\_user checking [\#550](https://github.com/playbasis/api/pull/550) ([pongsakorn-ruadsong](https://github.com/pongsakorn-ruadsong))
-
-## [2.27.10/fix_bug_normal_goods_not_return](https://github.com/playbasis/api/tree/2.27.10/fix_bug_normal_goods_not_return) (2017-03-03)
-[Full Changelog](https://github.com/playbasis/api/compare/2.27.9/fix_normal_goods...2.27.10/fix_bug_normal_goods_not_return)
-
-**Fixed bugs:**
-
-- Hotfix/2.27.10/fix bug normal goods not return [\#549](https://github.com/playbasis/api/pull/549) ([piya-playbasis](https://github.com/piya-playbasis))
-
-## [2.27.9/fix_normal_goods](https://github.com/playbasis/api/tree/2.27.9/fix_normal_goods) (2017-03-03)
-[Full Changelog](https://github.com/playbasis/api/compare/2.27.8/goods_quantity_enhancement...2.27.9/fix_normal_goods)
-
-**Fixed bugs:**
-
-- Hotfix/2.27.9/fix normal goods [\#548](https://github.com/playbasis/api/pull/548) ([piya-playbasis](https://github.com/piya-playbasis))
-
-## [2.27.8/goods_quantity_enhancement](https://github.com/playbasis/api/tree/2.27.8/goods_quantity_enhancement) (2017-03-03)
-[Full Changelog](https://github.com/playbasis/api/compare/2.27.7/enhancement_player_goods...2.27.8/goods_quantity_enhancement)
+[Full Changelog](https://github.com/playbasis/api/compare/2.27.10/fix_bug_normal_goods_not_return...2.28.0)
 
 **Implemented enhancements:**
 
 - Hotfix/2.27.8/goods quantity enhancement [\#547](https://github.com/playbasis/api/pull/547) ([piya-playbasis](https://github.com/piya-playbasis))
-
-**Fixed bugs:**
-
-- Hotfix/2.27.7/goods quantity bug [\#546](https://github.com/playbasis/api/pull/546) ([pongsakorn-ruadsong](https://github.com/pongsakorn-ruadsong))
-
-## [2.27.7/enhancement_player_goods](https://github.com/playbasis/api/tree/2.27.7/enhancement_player_goods) (2017-03-02)
-[Full Changelog](https://github.com/playbasis/api/compare/2.27.6/log_group_in_goods_log_when_redeem...2.27.7/enhancement_player_goods)
-
-**Implemented enhancements:**
-
 - Hotfix/2.27.7/enhancement player goods [\#545](https://github.com/playbasis/api/pull/545) ([piya-playbasis](https://github.com/piya-playbasis))
-
-## [2.27.6/log_group_in_goods_log_when_redeem](https://github.com/playbasis/api/tree/2.27.6/log_group_in_goods_log_when_redeem) (2017-03-01)
-[Full Changelog](https://github.com/playbasis/api/compare/2.27.0...2.27.6/log_group_in_goods_log_when_redeem)
-
-**Implemented enhancements:**
-
 - Hotfix/2.27.5/goods list with sort order [\#543](https://github.com/playbasis/api/pull/543) ([pongsakorn-ruadsong](https://github.com/pongsakorn-ruadsong))
 - Hotfix/2.27.3/variable condition [\#541](https://github.com/playbasis/api/pull/541) ([pongsakorn-ruadsong](https://github.com/pongsakorn-ruadsong))
 - Hotfix/2.27.2/deeplink feedback in engine rule [\#540](https://github.com/playbasis/api/pull/540) ([pongsakorn-ruadsong](https://github.com/pongsakorn-ruadsong))
@@ -51,8 +25,27 @@
 
 **Fixed bugs:**
 
+- redeem goods with per\_user checking [\#550](https://github.com/playbasis/api/pull/550) ([pongsakorn-ruadsong](https://github.com/pongsakorn-ruadsong))
+- Hotfix/2.27.10/fix bug normal goods not return [\#549](https://github.com/playbasis/api/pull/549) ([piya-playbasis](https://github.com/piya-playbasis))
+- Hotfix/2.27.9/fix normal goods [\#548](https://github.com/playbasis/api/pull/548) ([piya-playbasis](https://github.com/piya-playbasis))
+- Hotfix/2.27.7/goods quantity bug [\#546](https://github.com/playbasis/api/pull/546) ([pongsakorn-ruadsong](https://github.com/pongsakorn-ruadsong))
 - Hotfix/2.27.6/log group in goods log when redeem [\#544](https://github.com/playbasis/api/pull/544) ([piya-playbasis](https://github.com/piya-playbasis))
 - Hotfix/2.27.4/bug in goods model [\#542](https://github.com/playbasis/api/pull/542) ([pongsakorn-ruadsong](https://github.com/pongsakorn-ruadsong))
+
+## [2.27.10/fix_bug_normal_goods_not_return](https://github.com/playbasis/api/tree/2.27.10/fix_bug_normal_goods_not_return) (2017-03-03)
+[Full Changelog](https://github.com/playbasis/api/compare/2.27.9/fix_normal_goods...2.27.10/fix_bug_normal_goods_not_return)
+
+## [2.27.9/fix_normal_goods](https://github.com/playbasis/api/tree/2.27.9/fix_normal_goods) (2017-03-03)
+[Full Changelog](https://github.com/playbasis/api/compare/2.27.8/goods_quantity_enhancement...2.27.9/fix_normal_goods)
+
+## [2.27.8/goods_quantity_enhancement](https://github.com/playbasis/api/tree/2.27.8/goods_quantity_enhancement) (2017-03-03)
+[Full Changelog](https://github.com/playbasis/api/compare/2.27.7/enhancement_player_goods...2.27.8/goods_quantity_enhancement)
+
+## [2.27.7/enhancement_player_goods](https://github.com/playbasis/api/tree/2.27.7/enhancement_player_goods) (2017-03-02)
+[Full Changelog](https://github.com/playbasis/api/compare/2.27.6/log_group_in_goods_log_when_redeem...2.27.7/enhancement_player_goods)
+
+## [2.27.6/log_group_in_goods_log_when_redeem](https://github.com/playbasis/api/tree/2.27.6/log_group_in_goods_log_when_redeem) (2017-03-01)
+[Full Changelog](https://github.com/playbasis/api/compare/2.27.0...2.27.6/log_group_in_goods_log_when_redeem)
 
 ## [2.27.0](https://github.com/playbasis/api/tree/2.27.0) (2017-02-16)
 [Full Changelog](https://github.com/playbasis/api/compare/2.26.3/change_query_to_speedup_get_goods_quantity...2.27.0)
