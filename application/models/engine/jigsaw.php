@@ -316,9 +316,9 @@ class jigsaw extends MY_Model
             $result =  $this->checkReward($config['reward_id'], $input['site_id']);
             if($result == true){
                 $timeNow = isset($input['action_log_time']) ? $input['action_log_time'] : time();
-                $result = $this->checkRewardLimitPerDay($input['pb_player_id'], $config['reward_id'], $input['client_id'], $input['site_id'], $config['quantity'], $timeNow);
+                $result = $this->checkRewardLimitPerUser($config['reward_id'], $input['pb_player_id'], $input['client_id'], $input['site_id'], $config['quantity']);
                 if($result == true){
-                    $result = $this->checkRewardLimitPerUser($config['reward_id'], $input['pb_player_id'], $input['client_id'], $input['site_id'], $config['quantity']);
+                    $result = $this->checkRewardLimitPerDay($input['pb_player_id'], $config['reward_id'], $input['client_id'], $input['site_id'], $config['quantity'], $timeNow);
                 }
             }
             return $result;
@@ -358,9 +358,9 @@ class jigsaw extends MY_Model
         $result =  $this->checkReward($rewardId, $input['site_id']);
         if($result == true){
             $timeNow = isset($input['action_log_time']) ? $input['action_log_time'] : time();
-            $result = $this->checkRewardLimitPerDay($input['pb_player_id'], $rewardId, $input['client_id'], $input['site_id'], $quantity, $timeNow);
+            $result = $this->checkRewardLimitPerUser($rewardId, $input['pb_player_id'], $input['client_id'], $input['site_id'], $quantity);
             if($result == true){
-                $result = $this->checkRewardLimitPerUser($rewardId, $input['pb_player_id'], $input['client_id'], $input['site_id'], $quantity);
+                $result = $this->checkRewardLimitPerDay($input['pb_player_id'], $rewardId, $input['client_id'], $input['site_id'], $quantity, $timeNow);
             }
         }
         return $result;
