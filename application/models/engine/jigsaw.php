@@ -317,7 +317,7 @@ class jigsaw extends MY_Model
             if($result == true){
                 $timeNow = isset($input['action_log_time']) ? $input['action_log_time'] : time();
                 $result = $this->checkRewardLimitPerUser($config['reward_id'], $input['pb_player_id'], $input['client_id'], $input['site_id'], $config['quantity']);
-                if($result == true){
+                if($result == true && $this->isRewardAvailable($config['reward_id'], $input['site_id'])){
                     $result = $this->checkRewardLimitPerDay($input['pb_player_id'], $config['reward_id'], $input['client_id'], $input['site_id'], $config['quantity'], $timeNow);
                 }
             }
@@ -359,7 +359,7 @@ class jigsaw extends MY_Model
         if($result == true){
             $timeNow = isset($input['action_log_time']) ? $input['action_log_time'] : time();
             $result = $this->checkRewardLimitPerUser($rewardId, $input['pb_player_id'], $input['client_id'], $input['site_id'], $quantity);
-            if($result == true){
+            if($result == true && $this->isRewardAvailable($rewardId, $input['site_id'])){
                 $result = $this->checkRewardLimitPerDay($input['pb_player_id'], $rewardId, $input['client_id'], $input['site_id'], $quantity, $timeNow);
             }
         }
@@ -1583,6 +1583,23 @@ class jigsaw extends MY_Model
         $result = $result[0];
         if (is_null($result['limit'])) return true;
         return $result['limit'] > 0;
+    }
+
+    private function isRewardAvailable($rewardId, $siteId)
+    {
+        $this->set_site_mongodb($siteId);
+        $this->mongo_db->select(array('quantity'));
+        $this->mongo_db->where(array(
+            'reward_id' => $rewardId,
+            'site_id' => $siteId,
+            'status' => true,
+        ));
+        $this->mongo_db->limit(1);
+        $result = $this->mongo_db->get('playbasis_reward_to_client');
+        if (!$result) return false;
+        $result = $result[0];
+
+        return (isset($result['quantity']) && !is_null($result['quantity']) && $result['quantity'] <= 0) ? false : true;
     }
 
     private function getRewardByName($rewardName, $siteId)

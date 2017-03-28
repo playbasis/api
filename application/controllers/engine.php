@@ -1183,7 +1183,7 @@ class Engine extends Quest
                                     'event_type' => isset($reward['reward_status']) && !empty($reward['reward_status']) ? $reward['reward_status'] : 'REWARD_RECEIVED',
                                     'reward_type' => $jigsawConfig['reward_name'],
                                 );
-                                $event['value'] = $event['event_type'] == "REWARD_NOT_AVAILABLE" ? "0" : $jigsawConfig['quantity']."";
+                                $event['value'] = $event['event_type'] == "REWARD_NOT_AVAILABLE" ? "0" : ((isset($reward['reward_amount']) && !empty($reward['reward_amount'])) ? $reward['reward_amount']."" :$jigsawConfig['quantity']."");
 
                                 if (isset($reward['transaction_id']) && !empty($reward['transaction_id'])) {
                                     $event['transaction_id'] = $reward['transaction_id'];
