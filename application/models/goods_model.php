@@ -135,13 +135,16 @@ class Goods_model extends MY_Model
         return $goods;
     }
 
-    public function getGroupsList($site_id, $digi=false)
+    public function getGroupsList($site_id, $digi=false, $name=null)
     {
         $this->set_site_mongodb($site_id);
         if($digi){
             $this->mongo_db->where_in('site_id', array(new MongoId($site_id), "Digi"));
         } else {
             $this->mongo_db->where('site_id', new MongoId($site_id));
+        }
+        if($name) {
+            $this->mongo_db->where('group', array('$regex' => new MongoRegex("/" . preg_quote(mb_strtolower($name)) . "/i")));
         }
         $this->mongo_db->where('deleted', false);
         return $this->mongo_db->distinct('group', 'playbasis_goods_to_client');
@@ -329,6 +332,7 @@ class Goods_model extends MY_Model
             $this->mongo_db->where('group', $good_group);
         }else{
             $this->mongo_db->where('name', $good_name);
+            $this->mongo_db->where_exists('group', false);
         }
         $this->mongo_db->limit(1);
         $results = $this->mongo_db->get("playbasis_goods_to_client");

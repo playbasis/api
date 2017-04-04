@@ -188,6 +188,7 @@ $route['Campaign/active'] = 'campaign/activeCampaign';
 $route['Merchant/availableBranchGoodsGroup'] = 'merchant/availableBranchGoodsGroup';
 $route['Merchant/goodsGroup/verify'] = 'merchant/GoodsGroupVerify';
 $route['Merchant/goodsGroup/redeem'] = 'merchant/GoodsGroupRedeem';
+$route['Merchant/goods/redeem']      = 'merchant/GoodsRedeem';
 //engine API
 $route['Engine/actionConfig']	= 'engine/getActionConfig';
 $route['Engine/rules']	= 'engine/rules';
