@@ -1951,6 +1951,23 @@ class Player_model extends MY_Model
         return $result;
     }
 
+    public function deductNormalGoodsFromPlayer($client_id, $site_id, $pb_player_id, $goods_id, $amount)
+    {
+        $this->set_site_mongodb($site_id);
+
+        $this->mongo_db->where(array(
+            'client_id' => new MongoId($client_id),
+            'site_id' => new MongoId($site_id),
+            'pb_player_id' => new MongoId($pb_player_id),
+            'goods_id' => new MongoId($goods_id)
+        ));
+        $this->mongo_db->dec('value', $amount);
+        $this->mongo_db->set('date_modified', new MongoDate());
+        $result = $this->mongo_db->update('playbasis_goods_to_player');
+
+        return $result;
+    }
+
     private function getActionLogDetail($action_log_id)
     {
         $this->mongo_db->select(array('action_name', 'parameters', 'date_added'));

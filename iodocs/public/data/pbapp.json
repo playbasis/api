@@ -3223,6 +3223,13 @@
               ]
             },
             {
+              "Name": "name",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "name or group name of goods to search"
+            },
+            {
               "Name": "date_start",
               "Required": "N",
               "Default": "",
@@ -3241,7 +3248,7 @@
               "Required": "N",
               "Default": "",
               "Type": "string",
-              "Description": "Specify field to be sorted [ *name*, quantity, description, date_start, date_expire]"
+              "Description": "Specify field to be sorted [ *sort_order*, name, quantity, description, date_start, date_expire]"
             },
             {
               "Name": "order",
@@ -3880,7 +3887,7 @@
         },
         {
           "MethodName": "Merchant Redeem Coupon",
-          "Synopsis": "Marchant Redeem Coupon From Player",
+          "Synopsis": "Merchant Redeem Coupon From Player",
           "HTTPMethod": "POST",
           "URI": "Merchant/goodsGroup/redeem",
           "RequiresOAuth": "N",
@@ -3925,6 +3932,50 @@
             }
           ],
           "responses": {
+            "success": { "-type": "boolean"},
+            "details": { "-type": "any", "-optional": "true"}
+          }
+        },
+        {
+          "MethodName": "Merchant Redeem Normal Goods",
+          "Synopsis": "Merchant Redeem Normal Goods From Player",
+          "HTTPMethod": "POST",
+          "URI": "Merchant/goods/redeem",
+          "RequiresOAuth": "N",
+          "Public": "Y",
+          "PlayerAuthRequired": "Y",
+          "PlayerTokenCheckWith":"player_id",
+          "parameters": [
+            {
+              "Name": "token",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "access token returned from Auth"
+            },
+            {
+              "Name": "goods_name",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "goods name"
+            },
+            {
+              "Name": "player_id",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "amount",
+              "Required": "N",
+              "Default": "",
+              "Type": "integer",
+              "Description": "amount of the goods to redeem from player (default = 1)"
+            }
+          ],
+          "response": {
             "success": { "-type": "boolean"},
             "details": { "-type": "any", "-optional": "true"}
           }
