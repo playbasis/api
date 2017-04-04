@@ -218,4 +218,44 @@ class Merchant extends REST2_Controller
             $this->response($this->error->setError('REDEEM_GOODS_NOT_AVAILABLE'), 200);
         }
     }
+
+    public function GoodsRedeem_post()
+    {
+        // Parameter required
+        /*$required = $this->input->checkParam(array(
+            'goods_name',
+            'player_id',
+        ));
+        if ($required) {
+            $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
+        }*/
+
+        $client_id = $this->validToken['client_id'];
+        $site_id = $this->validToken['site_id'];
+        $goods_name = $this->input->post('goods_name');
+        $cl_player_id = $this->input->post('player_id');
+        $amount = $this->input->post('amount') ? (int)$this->input->post('amount') : 1;
+
+        $pb_player_id = $this->player_model->getPlaybasisId(array(
+            'client_id' => $client_id,
+            'site_id' => $site_id,
+            'cl_player_id' => $cl_player_id,
+        ));
+        if (!$pb_player_id) {
+            $this->response($this->error->setError('USER_NOT_EXIST'), 200);
+        }
+
+        $goods_id = $this->goods_model->getGoodsIDByName($client_id, $site_id, $goods_name);
+        if(!$goods_id){
+            $this->response($this->error->setError('REDEEM_GOODS_NOT_AVAILABLE'), 200);
+        }
+
+        $get_player_goods = $this->goods_model->getPlayerGoods($site_id, $goods_id, $pb_player_id);
+        if(!$get_player_goods || $get_player_goods < $amount){
+            $this->response($this->error->setError('GOODS_FOR_USER_NOT_ENOUGH'), 200);
+        }
+
+        $this->player_model->deductNormalGoodsFromPlayer($client_id, $site_id, $pb_player_id, $goods_id, $amount);
+        $this->response($this->resp->setRespond(array("success" => true)), 200);
+    }
 }

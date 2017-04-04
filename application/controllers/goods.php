@@ -94,31 +94,31 @@ class Goods extends REST2_Controller
         {
             $data = $this->validToken;
 
-            if ($this->input->get('tags')){
+            if ($this->input->get('tags')) {
                 $data['tags'] = explode(',', $this->input->get('tags'));
             }
 
-            if ($this->input->get('selected_field')){
+            if ($this->input->get('selected_field')) {
                 $data['selected_field'] = explode(',', $this->input->get('selected_field'));
-                foreach ($data['selected_field'] as $index => $field){
-                    if(!$field){
+                foreach ($data['selected_field'] as $index => $field) {
+                    if (!$field) {
                         unset($data['selected_field'][$index]);
                     }
                 }
                 $data['selected_field'] = array_values($data['selected_field']);
             }
 
-            if ($this->input->get('active_filter') == "true"){
-                if(!$this->input->get('date_start') && ! $this->input->get('date_end')){
+            if ($this->input->get('active_filter') == "true") {
+                if (!$this->input->get('date_start') && !$this->input->get('date_end')) {
                     $data['date_start'] = new MongoDate();
                 }
             }
 
-            if ($this->input->get('date_start')){
+            if ($this->input->get('date_start')) {
                 $data['date_start'] = new MongoDate(strtotime($this->input->get('date_start')));
             }
 
-            if ($this->input->get('date_end')){
+            if ($this->input->get('date_end')) {
                 if (strpos($this->input->get('date_end'), ':') !== false) {
                     $data['date_end'] = new MongoDate(strtotime($this->input->get('date_end')));
                 } else {
@@ -132,14 +132,18 @@ class Goods extends REST2_Controller
                 $data['limit'] = 500;
             }
 
-            $group_list = $this->goods_model->getGroupsList($this->site_id);
+            $filter_goods_name = $this->input->get('name') ? $this->input->get('name') : null;
+            $group_list = $this->goods_model->getGroupsList($this->site_id,false,$filter_goods_name);
             $in_goods = array();
-            foreach ($group_list as $group_name){
-                $goods_group_detail =  $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name,false);
+            foreach ($group_list as $group_name) {
+                $goods_group_detail = $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name, false);
                 array_push($in_goods, new MongoId($goods_group_detail));
             }
-            $data['specific'] = array('$or' => array(array("group" => array('$exists' => false ) ), array("goods_id" => array('$in' => $in_goods ) ) ));
-
+            if ($filter_goods_name) {
+                $data['specific'] = array('$or' => array(array("group" => array('$exists' => false) , 'name'=> array('$regex' => new MongoRegex("/" . preg_quote(mb_strtolower($filter_goods_name)) . "/i"))), array("goods_id" => array('$in' => $in_goods))));
+            } else {
+                $data['specific'] = array('$or' => array(array("group" => array('$exists' => false)), array("goods_id" => array('$in' => $in_goods))));
+            }
             $goodsList['goods_list'] = $this->goods_model->getAllGoods($data);
             if (is_array($goodsList['goods_list'])) {
                 foreach ($goodsList['goods_list'] as $key => &$goods) {
@@ -198,7 +202,7 @@ class Goods extends REST2_Controller
                 if ($this->input->get('sort') && in_array($this->input->get('sort'), $sort_data)) {
                     $sort = $this->input->get('sort');
                 } else {
-                    $sort = "name";
+                    $sort = "sort_order";
                 }
 
                 foreach ($goodsList['goods_list'] as $key => $row) {
