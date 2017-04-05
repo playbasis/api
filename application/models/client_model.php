@@ -765,6 +765,9 @@ class Client_model extends MY_Model
             $this->mongo_db->set('date_modified', $mongoDate);
             $this->mongo_db->inc('value', intval($quantity));
             $this->mongo_db->update('playbasis_goods_to_player', array("w" => 0, "j" => false));
+            if(isset($goodsInfo['date_expired_coupon']) && !empty($goodsInfo['date_expired_coupon'])){
+                $data['date_expire'] = ($goodsInfo['date_expired_coupon']);
+            }
         } else {
             $data = array(
                 'pb_player_id' => new MongoId($pbPlayerId),
@@ -787,8 +790,8 @@ class Client_model extends MY_Model
                 $data['date_expire'] = new MongoDate(strtotime("+".$goodsInfo['days_expire']. ' day'));
             }
             $this->mongo_db->insert('playbasis_goods_to_player', $data, array("w" => 0, "j" => false));
-            return $data;
         }
+        return $data;
     }
 
     public function getRewardName($input)
