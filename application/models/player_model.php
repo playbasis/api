@@ -1725,6 +1725,7 @@ class Player_model extends MY_Model
                 'name',
                 'description',
                 'code',
+                'date_expired_coupon',
                 'tags'
             ));
             $this->mongo_db->select(array(), array('_id'));
@@ -1761,7 +1762,7 @@ class Player_model extends MY_Model
                 $goods_player = array();
                 $goods_player['value'] = 0;
                 $goods_player['status'] = "expired";
-                $goods_player['date_expire'] = isset($goods_detail['date_expire']) ? datetimeMongotoReadable($goods_detail['date_expire']) : null;
+                $goods_player['date_expire'] = isset($goods_detail['date_expired_coupon']) ? datetimeMongotoReadable($goods_detail['date_expired_coupon']) : null;
             }
 
             if ($status && ($status != $goods_player['status'])){

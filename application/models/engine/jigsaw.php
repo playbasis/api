@@ -1889,6 +1889,7 @@ class jigsaw extends MY_Model
             'image',
             'per_user',
             'quantity',
+            'date_expired_coupon',
             'group',
             'code',
             'tags'
