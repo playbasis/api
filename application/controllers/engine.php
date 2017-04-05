@@ -1542,6 +1542,7 @@ class Engine extends Quest
                 'goods_name' => $goodsData['name'],
                 'is_sponsor' => false,
                 'amount' => $jigsawConfig['quantity'],
+                'date_expire' => isset($goodsData['date_expired_coupon']) ? $goodsData['date_expired_coupon'] : null,
                 'redeem' => null, // cannot pull from goodsData, should pull from "redeem" condition for rule context
                 'action_name' => 'redeem_goods',
                 'action_icon' => 'fa-icon-shopping-cart',
