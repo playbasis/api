@@ -1,5 +1,30 @@
 # Change Log
 
+## [2.30.0](https://github.com/playbasis/api/tree/2.30.0) (2017-04-18)
+[Full Changelog](https://github.com/playbasis/api/compare/2.29.0...2.30.0)
+
+
+[Full Changelog](https://github.com/playbasis/api/compare/2.29.1/fix_bug_per_user_in_per_day...HEAD)
+
+**Implemented enhancements:**
+
+- Hotfix/2.29.2/merchant redeem good [\#555](https://github.com/playbasis/api/pull/555) ([pongsakorn-ruadsong](https://github.com/pongsakorn-ruadsong))
+
+**Fixed bugs:**
+
+- Hotfix/2.30.1/fix counter increase when no custompoint [\#554](https://github.com/playbasis/api/pull/554) ([pongsakorn-ruadsong](https://github.com/pongsakorn-ruadsong))
+
+**Merged pull requests:**
+
+- Hotfix/2.29.3/fix goods expire date [\#556](https://github.com/playbasis/api/pull/556) ([pongsakorn-ruadsong](https://github.com/pongsakorn-ruadsong))
+
+## [2.29.1/fix_bug_per_user_in_per_day](https://github.com/playbasis/api/tree/2.29.1/fix_bug_per_user_in_per_day) (2017-03-20)
+[Full Changelog](https://github.com/playbasis/api/compare/2.29.0...2.29.1/fix_bug_per_user_in_per_day)
+
+**Fixed bugs:**
+
+- Hotfix/2.29.1/fix bug per user in per day [\#553](https://github.com/playbasis/api/pull/553) ([piya-playbasis](https://github.com/piya-playbasis))
+
 ## [2.29.0](https://github.com/playbasis/api/tree/2.29.0) (2017-03-16)
 [Full Changelog](https://github.com/playbasis/api/compare/2.28.0...2.29.0)
 
@@ -2322,16 +2347,16 @@
 - Feature/run rule in bg [\#144](https://github.com/playbasis/api/pull/144) ([narut-playbasis](https://github.com/narut-playbasis))
 
 ## [2.3.0-alpha.5](https://github.com/playbasis/api/tree/2.3.0-alpha.5) (2016-02-05)
-[Full Changelog](https://github.com/playbasis/api/compare/2.2.4...2.3.0-alpha.5)
+[Full Changelog](https://github.com/playbasis/api/compare/Bug_rankPeerByAccAction_wrong_month_type...2.3.0-alpha.5)
+
+## [Bug_rankPeerByAccAction_wrong_month_type](https://github.com/playbasis/api/tree/Bug_rankPeerByAccAction_wrong_month_type) (2016-02-05)
+[Full Changelog](https://github.com/playbasis/api/compare/2.2.4...Bug_rankPeerByAccAction_wrong_month_type)
 
 ## [2.2.4](https://github.com/playbasis/api/tree/2.2.4) (2016-02-05)
 [Full Changelog](https://github.com/playbasis/api/compare/2.3.4...2.2.4)
 
 ## [2.3.4](https://github.com/playbasis/api/tree/2.3.4) (2016-02-05)
-[Full Changelog](https://github.com/playbasis/api/compare/Bug_rankPeerByAccAction_wrong_month_type...2.3.4)
-
-## [Bug_rankPeerByAccAction_wrong_month_type](https://github.com/playbasis/api/tree/Bug_rankPeerByAccAction_wrong_month_type) (2016-02-05)
-[Full Changelog](https://github.com/playbasis/api/compare/2.3.0-alpha.4...Bug_rankPeerByAccAction_wrong_month_type)
+[Full Changelog](https://github.com/playbasis/api/compare/2.3.0-alpha.4...2.3.4)
 
 ## [2.3.0-alpha.4](https://github.com/playbasis/api/tree/2.3.0-alpha.4) (2016-02-03)
 [Full Changelog](https://github.com/playbasis/api/compare/2.3.0-alpha.3...2.3.0-alpha.4)
