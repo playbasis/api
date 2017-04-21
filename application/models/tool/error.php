@@ -286,6 +286,10 @@ class Error extends CI_Model
                 $errorData['message'] = "Coupon is not available";
                 $errorData['error_code'] = '0504';
                 break;
+            case 'GOODS_NOT_EXIST_IN_PLAYER_INVENTORY':
+                $errorData['message'] = "Goods is not found in the player's inventory";
+                $errorData['error_code'] = '0505';
+                break;
             case 'OVER_LIMIT_REDEEM':
                 $errorData['message'] = "User has exceeded redeem limit";
                 $errorData['error_code'] = '0601';

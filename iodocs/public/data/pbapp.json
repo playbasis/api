@@ -2058,10 +2058,56 @@
                 "amount":       { "-type": "number"},
                 "tags":         { "-type": "any" , "-optional": "true"},
                 "date_expire":  { "-type": "string" , "-optional": "true"},
-                "status":       { "-type": "string"}
+                "status":       { "-type": "string"},
+                "is_favorite":  { "-type": "boolean" , "-optional": "true"}
               }
             ]
           }
+        },
+        {
+          "MethodName": "Favorite Goods",
+          "Synopsis": "Set specific goods in player's inventory as favorite.",
+          "HTTPMethod": "POST",
+          "URI": "Player/:id/goods/favorite",
+          "RequiresOAuth": "N",
+          "Public": "Y",
+          "PlayerAuthRequired": "Y",
+          "PlayerTokenCheckWith":"id",
+          "parameters": [
+            {
+              "Name": "token",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "access token returned from Auth"
+            },
+            {
+              "Name": "id",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "goods_id",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "goods id of goods store"
+            },
+            {
+              "Name": "status",
+              "Required": "Y",
+              "Default": "true",
+              "Type": "enumerated",
+              "Description": "Favorite status (true or false)",
+              "EnumeratedList": [
+                "true",
+                "false"
+              ]
+            }
+          ],
+          "response": []
         },
         {
           "MethodName": "Goods Count",
