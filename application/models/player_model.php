@@ -1782,6 +1782,43 @@ class Player_model extends MY_Model
         return $playerGoods;
     }
 
+    public function setFavoriteGoods($client_id, $site_id, $pb_player_id, $goods_id, $status){
+
+        $this->mongo_db->where(array(
+            'client_id' => new MongoId($client_id),
+            'site_id' => new MongoId($site_id),
+            'pb_player_id' => new MongoId($pb_player_id),
+            'goods_id' => new MongoId($goods_id)
+        ));
+
+        $this->mongo_db->limit(1);
+
+        $this->mongo_db->set('status',(bool)$status);
+        $result = $this->mongo_db->findAndModify('playbasis_goods_to_player_favorite', array('upsert' => true));
+
+        return $result;
+    }
+
+    public function getFavoriteGoods($client_id, $site_id, $pb_player_id, $goods_id){
+
+        $this->mongo_db->select(array(
+            'status'
+        ));
+
+        $this->mongo_db->where(array(
+            'client_id' => new MongoId($client_id),
+            'site_id' => new MongoId($site_id),
+            'pb_player_id' => new MongoId($pb_player_id),
+            'goods_id' => new MongoId($goods_id)
+        ));
+
+        $this->mongo_db->limit(1);
+
+        $result = $this->mongo_db->get('playbasis_goods_to_player_favorite');
+
+        return $result ? $result[0]['status'] : false;
+    }
+
     public function getGoodsCount($pb_player_id, $site_id, $tags = null, $status = null)
     {
         $this->set_site_mongodb($site_id);

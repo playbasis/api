@@ -1876,23 +1876,89 @@ class Player extends REST2_Controller
 
         $null_list = array();
         $not_null_list = array();
+        $favorite_null_list = array();
+        $favorite_not_null_list = array();
         $date_expire= array();
+        $favorite_date_expire= array();
         $name = array();
+        $favorite_name = array();
         $name_null = array();
-        foreach ($goodsList['goods'] as $key => $row) {
+        $favorite_name_null = array();
+        foreach ($goodsList['goods'] as $key => &$row) {
+            $isFavorite = $this->player_model->getFavoriteGoods($this->client_id, $this->site_id, $pb_player_id, $row['goods_id']);
+            $row['is_favorite'] = $isFavorite;
             if(isset($row['date_expire']) && !is_null($row['date_expire'])){
-                array_push($not_null_list, $row);
-                $date_expire[$key]  = $row['date_expire'];
-                $name[$key] = $row['name'];
+                if($isFavorite){
+                    array_push($favorite_not_null_list, $row);
+                    $favorite_date_expire[$key]  = $row['date_expire'];
+                    $favorite_name[$key] = $row['name'];
+                }else{
+                    array_push($not_null_list, $row);
+                    $date_expire[$key]  = $row['date_expire'];
+                    $name[$key] = $row['name'];
+                }
+
             } else {
-                $name_null[$key] = $row['name'];
-                array_push($null_list,$row);
+                if($isFavorite){
+                    $favorite_name_null[$key] = $row['name'];
+                    array_push($favorite_null_list, $row);
+                }else {
+                    $name_null[$key] = $row['name'];
+                    array_push($null_list, $row);
+                }
             }
         }
+        array_multisort($favorite_date_expire, SORT_ASC, $favorite_name, SORT_ASC, $favorite_not_null_list);
         array_multisort($date_expire, SORT_ASC, $name, SORT_ASC, $not_null_list);
+        array_multisort($favorite_name_null, SORT_ASC, $favorite_null_list);
         array_multisort($name_null, SORT_ASC, $null_list);
-        $goodsList['goods'] = array_merge($not_null_list,$null_list);
+        $goodsList['goods'] = array_merge($favorite_not_null_list,$favorite_null_list,$not_null_list,$null_list);
         $this->response($this->resp->setRespond($goodsList), 200);
+    }
+
+    public function goods_favorite_post($player_id = '')
+    {
+        if (!$player_id) {
+            $this->response($this->error->setError('PARAMETER_MISSING', array(
+                'player_id'
+            )), 200);
+        }
+        //get playbasis player id
+        $pb_player_id = $this->player_model->getPlaybasisId(array_merge($this->validToken, array(
+            'cl_player_id' => $player_id
+        )));
+        if (!$pb_player_id) {
+            $this->response($this->error->setError('USER_NOT_EXIST'), 200);
+        }
+        $status = $this->input->post('status');
+
+        if ($status == "true"){
+            $status = true;
+        }elseif($status == "false"){
+            $status = false;
+        }
+        else{
+            $this->response($this->error->setError('INVALID_STATUS'), 200);
+        }
+
+        $goods_id = $this->input->post('goods_id');
+        //check player goods
+        $isPlayerGoodsFound = false;
+        $playerGoodsList = $this->player_model->getGoods($pb_player_id, $this->site_id, null, null);
+        foreach($playerGoodsList as $playerGoods){
+            if($playerGoods['goods_id'] == $goods_id){
+                $isPlayerGoodsFound = true;
+                break;
+            }
+        }
+
+        if (!$isPlayerGoodsFound) {
+            $this->response($this->error->setError('GOODS_NOT_EXIST_IN_PLAYER_INVENTORY'), 200);
+        }
+
+        $this->player_model->setFavoriteGoods($this->client_id, $this->site_id, $pb_player_id, $goods_id, $status);
+
+        $this->response($this->resp->setRespond(), 200);
     }
 
     public function goodsCount_get($player_id = '')
