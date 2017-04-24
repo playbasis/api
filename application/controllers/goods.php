@@ -133,18 +133,57 @@ class Goods extends REST2_Controller
             }
 
             $filter_goods_name = $this->input->get('name') ? $this->input->get('name') : null;
-            $group_list = $this->goods_model->getGroupsList($this->site_id,false,$filter_goods_name);
+            if ($this->input->get('custom_param')) {
+                $custom_param = explode(',', $this->input->get('custom_param'));
+                $custom_array = array();
+                foreach ($custom_param as $param) {
+                    $param_data = explode('|', $param);
+                    if ($param_data[2] == '>'){
+                        $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$gt' => $param_data[1]))));
+                    } elseif ($param_data[2] == '>=') {
+                        $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$gte' => $param_data[1]))));
+                    } elseif ($param_data[2] == '<') {
+                        $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$lt' => $param_data[1]))));
+                    } elseif ($param_data[2] == '<=') {
+                        $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$lte' => $param_data[1]))));
+                    } elseif ($param_data[2] == '!=') {
+                        $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$ne' => $param_data[1]))));
+                    } else {
+                        $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$eq' => $param_data[1]))));
+                    }
+                    array_push($custom_array, $custom_param_query);
+                }
+
+                $custom_goods = $this->goods_model->getGroupsCustomParam($this->site_id, $custom_array);
+                $in_group = array();
+                $goods_param_id = array();
+                foreach ($custom_goods as $c_goods){
+                    if($c_goods['is_group']){
+                        array_push($in_group, $c_goods['name']);
+                    } else {
+                        $custom_goods_id =$this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, $c_goods['name']);
+                        array_push($goods_param_id, new MongoId($custom_goods_id));
+                    }
+                }
+
+            }
+            $group_list = $this->goods_model->getGroupsList($this->site_id,$filter_goods_name, $this->input->get('custom_param') ? $in_group : array());
             $in_goods = array();
             foreach ($group_list as $group_name) {
-                $goods_group_detail = $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name, false);
+                $goods_group_detail = $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name['name']);
                 array_push($in_goods, new MongoId($goods_group_detail));
             }
             if ($filter_goods_name) {
-                $data['specific'] = array('$or' => array(array("group" => array('$exists' => false) , 'name'=> array('$regex' => new MongoRegex("/" . preg_quote(mb_strtolower($filter_goods_name)) . "/i"))), array("goods_id" => array('$in' => $in_goods))));
+                $data['specific'] = $this->input->get('custom_param') ?
+                    array('$or' => array(array("group" => array('$exists' => false) , 'goods_id'=> array('$in' => $goods_param_id), 'name'=> array('$regex' => new MongoRegex("/" . preg_quote(mb_strtolower($filter_goods_name)) . "/i"))), array("goods_id" => array('$in' => $in_goods)))) :
+                    array('$or' => array(array("group" => array('$exists' => false) , 'name'=> array('$regex' => new MongoRegex("/" . preg_quote(mb_strtolower($filter_goods_name)) . "/i"))), array("goods_id" => array('$in' => $in_goods))));
             } else {
-                $data['specific'] = array('$or' => array(array("group" => array('$exists' => false)), array("goods_id" => array('$in' => $in_goods))));
+                $data['specific'] = $this->input->get('custom_param') ?
+                    array('$or' => array(array("group" => array('$exists' => false) , 'goods_id'=> array('$in' => $goods_param_id)), array("goods_id" => array('$in' => $in_goods)))) :
+                    array('$or' => array(array("group" => array('$exists' => false)), array("goods_id" => array('$in' => $in_goods))));
             }
-            $goodsList['goods_list'] = $this->goods_model->getAllGoods($data);
+            $goodsList['goods_list'] = $this->input->get('custom_param') && !$custom_goods ? array() : $this->goods_model->getAllGoods($data);
+
             if (is_array($goodsList['goods_list'])) {
                 foreach ($goodsList['goods_list'] as $key => &$goods) {
                     $goods_id = $goods['_id'];
@@ -258,7 +297,7 @@ class Goods extends REST2_Controller
             $group_list = $this->goods_model->getGroupsList($this->site_id);
             $in_goods = array();
             foreach ($group_list as $group_name){
-                $goods_group_detail =  $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name,false);
+                $goods_group_detail =  $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name['name']);
                 array_push($in_goods, new MongoId($goods_group_detail));
             }
             $validToken_ad['specific'] = array('$or' => array(array("group" => array('$exists' => false ) ), array("goods_id" => array('$in' => $in_goods ) ) ));
@@ -309,7 +348,7 @@ class Goods extends REST2_Controller
         $group_list = $this->goods_model->getGroupsList($this->site_id);
         $in_goods = array();
         foreach ($group_list as $group_name){
-            $goods_group_detail =  $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name,false);
+            $goods_group_detail =  $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name['name']);
             array_push($in_goods, new MongoId($goods_group_detail));
         }
         $validToken_ad['specific'] = array('$or' => array(array("group" => array('$exists' => false ) ), array("goods_id" => array('$in' => $in_goods ) ) ));
