@@ -3323,6 +3323,13 @@
               "Default": "",
               "Type": "string",
               "Description": "Specific tag(s) to find (e.g. foo,bar)"
+            },
+            {
+              "Name": "custom_param",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "Specific custom param(s) to find (key|value|operator[<,<=,>,>=,=,!=]  e.g. min|1|>=, max|10|<=) "
             }
           ],
           "responses": {
@@ -3344,6 +3351,7 @@
                   },
                   "custom":             { "-type": "any", "-optional": "true"}
                 },
+                "custom_param":         { "-type": "any", "-optional": "true"},
                 "sponsor":              { "-type": "boolean"},
                 "organize":             { "-type": "string", "-optional": "true"},
                 "organize_id":          { "-type": "string", "-optional": "true"},

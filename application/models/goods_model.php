@@ -21,6 +21,7 @@ class Goods_model extends MY_Model
             'quantity',
             'per_user',
             'redeem',
+            'custom_param',
             'group',
             'tags',
             'date_start',
@@ -135,30 +136,40 @@ class Goods_model extends MY_Model
         return $goods;
     }
 
-    public function getGroupsList($site_id, $digi=false, $name=null)
+    public function getGroupsList($site_id, $filter_group =null, $in_group=array())
     {
-        $this->set_site_mongodb($site_id);
-        if($digi){
-            $this->mongo_db->where_in('site_id', array(new MongoId($site_id), "Digi"));
-        } else {
-            $this->mongo_db->where('site_id', new MongoId($site_id));
+        $this->mongo_db->select(array('name'));
+        $this->mongo_db->where('site_id', new MongoId($site_id));
+        if($in_group){
+            $this->mongo_db->where_in('name', $in_group);
         }
-        if($name) {
-            $this->mongo_db->where('group', array('$regex' => new MongoRegex("/" . preg_quote(mb_strtolower($name)) . "/i")));
+        if($filter_group){
+            $regex = new MongoRegex("/" . preg_quote(utf8_strtolower($filter_group)) . "/i");
+            $this->mongo_db->where('name', $regex);
         }
+        
+        $this->mongo_db->where('is_group', true);
         $this->mongo_db->where('deleted', false);
-        return $this->mongo_db->distinct('group', 'playbasis_goods_to_client');
+        return $this->mongo_db->get('playbasis_goods_distinct_to_client');
     }
 
-    public function checkGoodsGroupQuantity($site_id, $group, $digi = false)
+    public function getGroupsCustomParam($site_id, $custom_param)
     {
-        $this->mongo_db->where('deleted', false);
-        if ($digi){
-            $this->mongo_db->where_in('site_id', array($site_id, "Digi"));
-        } else {
-            $this->mongo_db->where('site_id', $site_id);
+        $this->mongo_db->select(array('name','is_group'));
+        $this->mongo_db->where('site_id', new MongoId($site_id));
+
+        foreach ($custom_param as $param){
+            $this->mongo_db->where($param);
         }
 
+        $this->mongo_db->where('deleted', false);
+        return $this->mongo_db->get('playbasis_goods_distinct_to_client');
+    }
+
+    public function checkGoodsGroupQuantity($site_id, $group)
+    {
+        $this->mongo_db->where('deleted', false);
+        $this->mongo_db->where('site_id', $site_id);
         $this->mongo_db->where('group', $group);
         $this->mongo_db->where('quantity', 1);
         return $this->mongo_db->count("playbasis_goods_to_client");
