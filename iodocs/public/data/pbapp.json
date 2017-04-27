@@ -3329,7 +3329,7 @@
               "Required": "N",
               "Default": "",
               "Type": "string",
-              "Description": "Specific custom param(s) to find (key or key|value|operator[<,<=,>,>=,=,!=]  e.g.  price|1|>=, price|10|<= ) "
+              "Description": "Specific custom param(s) to find (key or key|operator[<,<=,>,>=,=,!=]|value  e.g.  price|>=|1, price|<=|10 ) "
             }
           ],
           "responses": {
