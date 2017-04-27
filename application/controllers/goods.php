@@ -138,18 +138,22 @@ class Goods extends REST2_Controller
                 $custom_array = array();
                 foreach ($custom_param as $param) {
                     $param_data = explode('|', $param);
-                    if ($param_data[2] == '>'){
-                        $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$gt' => $param_data[1]))));
-                    } elseif ($param_data[2] == '>=') {
-                        $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$gte' => $param_data[1]))));
-                    } elseif ($param_data[2] == '<') {
-                        $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$lt' => $param_data[1]))));
-                    } elseif ($param_data[2] == '<=') {
-                        $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$lte' => $param_data[1]))));
-                    } elseif ($param_data[2] == '!=') {
-                        $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$ne' => $param_data[1]))));
+                    if(isset($param_data[0]) && isset($param_data[1]) && isset($param_data[2])){
+                        if ($param_data[1] == '>'){
+                            $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$gt' => $param_data[2]))));
+                        } elseif ($param_data[1] == '>=') {
+                            $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$gte' => $param_data[2]))));
+                        } elseif ($param_data[1] == '<') {
+                            $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$lt' => $param_data[2]))));
+                        } elseif ($param_data[1] == '<=') {
+                            $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$lte' => $param_data[2]))));
+                        } elseif ($param_data[1] == '!=') {
+                            $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$ne' => $param_data[2]))));
+                        } elseif ($param_data[1] == '=') {
+                            $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$eq' => $param_data[2]))));
+                        }
                     } else {
-                        $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$eq' => $param_data[1]))));
+                        $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0])));
                     }
                     array_push($custom_array, $custom_param_query);
                 }
@@ -165,9 +169,11 @@ class Goods extends REST2_Controller
                         array_push($goods_param_id, new MongoId($custom_goods_id));
                     }
                 }
-
+                $group_list = $in_group ? $this->goods_model->getGroupsList($this->site_id,$filter_goods_name, $in_group) : array() ;
+            } else {
+                $group_list = $this->goods_model->getGroupsList($this->site_id,$filter_goods_name);
             }
-            $group_list = $this->goods_model->getGroupsList($this->site_id,$filter_goods_name, $this->input->get('custom_param') ? $in_group : array());
+            
             $in_goods = array();
             foreach ($group_list as $group_name) {
                 $goods_group_detail = $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name['name']);
