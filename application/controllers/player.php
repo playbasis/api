@@ -1556,7 +1556,7 @@ class Player extends REST2_Controller
         }
 
 
-        $status = $this->player_model->giveGift($client_id, $site_id, $sent_pb_player_id, $received_pb_player_id, $received_player_id, $gift_id, $gift_type, $gift_value);
+        $status = $this->player_model->giveGift($client_id, $site_id, $sent_pb_player_id, $received_pb_player_id, $received_player_id, $gift_id, $gift_type, $gift_value,$gift_data);
         $gift_data['after']['gift_name'] = $gift_data['gift']['name'];
         $gift_data['after']['type'] = $gift_type;
         $gift_data['after']['remaining'] = $gift_data['before']['value'] - $gift_value;
@@ -1581,6 +1581,25 @@ class Player extends REST2_Controller
 
             $eventMessage = $this->utility->getEventMessage('gift', $gift_value, $event['gift_data']['name'], $event['gift_data']['name'], '', '',$event['gift_data']['name'], $sent_player_id);
 
+            if ($gift_type == "GOODS"){
+                $validToken = array(
+                    'client_id' =>$client_id,
+                    'site_id' =>$site_id,
+                    'pb_player_id' => $received_pb_player_id,
+                    'goods_id' => $gift_id,
+                    'goods_name' => isset($gift_data['gift']['name']) ? $gift_data['gift']['name'] : "",
+                    'is_sponsor' => isset($gift_data['gift']['sponsor']) ? $gift_data['gift']['sponsor'] : false,
+                    'amount' => intval($gift_value),
+                    'date_expire' => isset($get_redeem_goods['date_expire']) ? $get_redeem_goods['date_expire'] : null,
+                    'redeem' => isset($gift_data['gift']['redeem']) ? $gift_data['gift']['redeem'] : null,
+                    'group' => isset($gift_data['gift']['group']) ? $gift_data['gift']['group'] : null,
+                    'action_name' => 'redeem_goods',
+                    'action_icon' => 'fa-icon-shopping-cart',
+                    'message' => $eventMessage
+                );
+                // log event - goods
+                $this->tracker_model->trackGoods($validToken);
+            }
             //publish to node stream
             $this->node->publish(array(
                 "client_id" => $client_id,
