@@ -192,9 +192,21 @@ class Goods extends REST2_Controller
 
             if (is_array($goodsList['goods_list'])) {
                 foreach ($goodsList['goods_list'] as $key => &$goods) {
-                    $goods_id = $goods['_id'];
+
+                    if($player_id){
+                        $goods_distinct_info = $this->goods_model->getGoodsDistinctByID($this->client_id, $this->site_id, $goods['distinct_id']);
+                        if(isset($goods_distinct_info['whitelist_enable']) && $goods_distinct_info['whitelist_enable'] == true){
+                            $is_in_whitelist = $this->goods_model->checkIfUserInWhitelist($this->client_id, $this->site_id, $goods['distinct_id'], $player_id);
+                            if(!$is_in_whitelist){
+                                unset($goodsList['goods_list'][$key]);
+                                continue;
+                            }
+                        }
+                    }
+
                     $is_group = array_key_exists('group', $goods);
                     unset($goods['code']);
+                    unset($goods['distinct_id']);
                     if ($is_group) {
                         $goods['is_group'] = true;
                         $goods['name'] = $goods['group'];
