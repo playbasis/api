@@ -31,6 +31,8 @@ class Goods_model extends MY_Model
             'organize_id',
             'organize_role'
         );
+
+        $select = isset($select['distinct_id']) ? $select : array_merge($select,array('distinct_id'));
         $this->mongo_db->select($select);
         $this->mongo_db->where(array(
             'client_id' => $data['client_id'],
@@ -749,6 +751,31 @@ class Goods_model extends MY_Model
         $this->mongo_db->where_in('badge_id', $list_badge_id);
         return $this->mongo_db->get('playbasis_reward_to_player');
     }
+
+    public function getGoodsDistinctByID($client_id, $site_id, $distinct_id)
+    {
+        $this->set_site_mongodb($site_id);
+        $this->mongo_db->where('client_id', new MongoId($client_id));
+        $this->mongo_db->where('site_id', new MongoId($site_id));
+        $this->mongo_db->where('_id', new MongoId($distinct_id));
+
+        $result =  $this->mongo_db->get('playbasis_goods_distinct_to_client');
+        return isset($result[0]) ? $result[0] : null;
+    }
+
+    public function checkIfUserInWhitelist($client_id, $site_id, $distinct_id, $cl_player_id)
+    {
+        $this->set_site_mongodb($site_id);
+        $this->mongo_db->where('client_id', new MongoId($client_id));
+        $this->mongo_db->where('site_id', new MongoId($site_id));
+        $this->mongo_db->where('distinct_id', new MongoId($distinct_id));
+        $this->mongo_db->where('cl_player_id', $cl_player_id);
+
+        $result =  $this->mongo_db->get('playbasis_goods_white_list_to_player');
+        return isset($result[0]) ? true : false;
+    }
+
+
 }
 
 ?>
