@@ -142,12 +142,17 @@ class Goods_model extends MY_Model
     {
         $this->mongo_db->select(array('name'));
         $this->mongo_db->where('site_id', new MongoId($site_id));
-        if($in_group){
-            $this->mongo_db->where_in('name', $in_group);
-        }
-        if($filter_group){
+        if ($filter_group && $in_group) {
             $regex = new MongoRegex("/" . preg_quote(utf8_strtolower($filter_group)) . "/i");
-            $this->mongo_db->where('name', $regex);
+            $this->mongo_db->where(array('$and' => array(array('name' => array('$regex' => $regex ,'$in' => $in_group)))));
+        } else {
+            if($in_group){
+                $this->mongo_db->where_in('name', $in_group);
+            }
+            if($filter_group){
+                $regex = new MongoRegex("/" . preg_quote(utf8_strtolower($filter_group)) . "/i");
+                $this->mongo_db->where('name', $regex);
+            }
         }
         
         $this->mongo_db->where('is_group', true);
