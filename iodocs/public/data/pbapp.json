@@ -10626,6 +10626,67 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Timestamp API",
+      "endpoint": ["Timestamp"],
+      "Public": "Y",
+      "methods": [
+        {
+          "MethodName": "Record timestamp",
+          "Synopsis": "Record timestamp",
+          "HTTPMethod": "POST",
+          "URI": "Timestamp",
+          "RequiresOAuth": "N",
+          "Public": "Y",
+          "parameters": [
+            {
+              "Name": "token",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "access token returned from Auth"
+            },
+            {
+              "Name": "player_id",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            }
+          ],
+          "response": {}
+        },
+        {
+          "MethodName": "Retrive timestamp",
+          "Synopsis": "Retrive timestamp",
+          "HTTPMethod": "GET",
+          "URI": "Timestamp",
+          "RequiresOAuth": "N",
+          "Public": "Y",
+          "parameters": [
+            {
+              "Name": "player_id",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "sort_order",
+              "Required": "N",
+              "Default": "desc",
+              "Type": "string",
+              "Description": "Specify sorted direction by time [*desc*, asc]"
+            }
+          ],
+          "response": [
+            {
+              "[a-zA-Z0-9-%_:\\.]+":  { "-type": "any", "-optional": "true"}
+            }
+          ]
+        }
+      ]
     }
   ]
 }
