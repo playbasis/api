@@ -402,6 +402,14 @@ class Error extends CI_Model
                 $errorData['message'] = "Question is time out";
                 $errorData['error_code'] = '1007';
                 break;
+            case 'QUIZ_ANSWER_REQUIRED_FOR_RANGE_OPTION':
+                $errorData['message'] = "Input answer is required for range option type";
+                $errorData['error_code'] = '1008';
+                break;
+            case 'QUIZ_ANSWER_OUT_OF_RANGE':
+                $errorData['message'] = "Input answer is out of range";
+                $errorData['error_code'] = '1008';
+                break;
             case 'RULE_NOT_FOUND':
                 $errorData['message'] = "Rule not available";
                 $errorData['error_code'] = '1101';

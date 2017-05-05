@@ -5926,6 +5926,13 @@
               "Default": "",
               "Type": "string",
               "Description": "option id"
+            },
+            {
+              "Name": "answer",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "Specific answer required for range options"
             }
           ],
           "responses": {
