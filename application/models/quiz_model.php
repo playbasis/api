@@ -160,20 +160,21 @@ class Quiz_model extends MY_Model
         return $results;
     }
     
-    public function insert_answer_timestamp($client_id, $site_id, $pb_player_id, $quiz_id, $question_id, $option_id , $active)
+    public function insert_answer_timestamp($client_id, $site_id, $pb_player_id, $quiz_id, $question_id, $option_id , $active, $answer = null)
     {
+        $answer_info = is_null($answer) ? array('option_id' => $option_id) : array('option_id' => $option_id, 'answer' => $answer);
         $this->mongo_db->insert('playbasis_question_to_player', array(
             'client_id' => $client_id,
             'site_id' => $site_id,
             'quiz_id' => $quiz_id,
             'pb_player_id' => $pb_player_id,
             'questions_id' => $question_id,
-            'answers' => array('option_id' => $option_id),
+            'answers' => $answer_info,
             'answer_timestamp' => new MongoDate(time()),
             'active' => $active
         ));
     }
-    public function update_answer_timestamp($client_id, $site_id, $pb_player_id, $quiz_id, $question_id, $option_id)
+    public function update_answer_timestamp($client_id, $site_id, $pb_player_id, $quiz_id, $question_id, $option_id, $answer = null)
     {
         $this->mongo_db->where('client_id', $client_id);
         $this->mongo_db->where('site_id', $site_id);
@@ -181,7 +182,8 @@ class Quiz_model extends MY_Model
         $this->mongo_db->where('pb_player_id', $pb_player_id);
         $this->mongo_db->where('questions_id', $question_id);
         $this->mongo_db->where('active', true);
-        $this->mongo_db->set('answers', array('option_id' => $option_id));
+        $answer_info = is_null($answer) ? array('option_id' => $option_id) : array('option_id' => $option_id, 'answer' => $answer);
+        $this->mongo_db->set('answers', $answer_info);
         $this->mongo_db->set('answer_timestamp', new MongoDate(time()));
         $results = $this->mongo_db->update('playbasis_question_to_player');
         return $results;
@@ -195,14 +197,17 @@ class Quiz_model extends MY_Model
         $question_id,
         $option_id,
         $score,
-        $grade
+        $grade,
+        $range_answer = null
     ) {
         $d = new MongoDate(time());
         $result = $this->find_quiz_by_quiz_and_player($client_id, $site_id, $quiz_id, $pb_player_id);
         $questions = $result ? $result['questions'] : array();
         $answers = $result ? $result['answers'] : array();
         array_push($questions, $question_id);
-        array_push($answers, array('option_id' => $option_id, 'score' => $score, 'date_added' => $d));
+        $answer_info = array('option_id' => $option_id, 'score' => $score, 'date_added' => $d);
+        if(!is_null($range_answer)) $answer_info['answer'] = $range_answer;
+        array_push($answers, $answer_info);
 
         if (!$result) {
             return $this->mongo_db->insert('playbasis_quiz_to_player', array(

@@ -596,6 +596,8 @@ class Quiz extends REST2_Controller
         }
         $option_id = new MongoId($option_id);
         $option = null;
+        $is_range_option = false;
+        $range_answer = null;
         $max_score = -1;
         foreach ($question['options'] as $o) {
             if ($o['score'] > $max_score) {
@@ -603,6 +605,10 @@ class Quiz extends REST2_Controller
             }
             if ($o['option_id'] == $option_id) {
                 $option = $o;
+                if(isset($o['is_range_option']) && $o['is_range_option'] === true){
+                    $is_range_option = true;
+                    $range_answer = $this->input->post('answer') ;
+                }
             }
         }
         if (!$option) {
@@ -615,6 +621,17 @@ class Quiz extends REST2_Controller
         $completed_questions = $result ? $result['questions'] : array();
         if (in_array($question_id, $completed_questions)) {
             $this->response($this->error->setError('QUIZ_QUESTION_ALREADY_COMPLETED'), 200);
+        }
+
+        //check if answer is out of range
+        if($is_range_option){
+            if(!$this->input->post('answer')){
+                $this->response($this->error->setError('QUIZ_ANSWER_REQUIRED_FOR_RANGE_OPTION'), 200);
+            }else{
+                if(!is_numeric($range_answer) || (int)$range_answer < (int)$option['range_min'] || (int)$range_answer > (int)$option['range_max'] ){
+                    $this->response($this->error->setError('QUIZ_ANSWER_OUT_OF_RANGE'), 200);
+                }
+            }
         }
 
         if (isset($quiz['question_order']) && $quiz['question_order']) {
@@ -672,7 +689,7 @@ class Quiz extends REST2_Controller
         $active_qustions_timestamp = $this->quiz_model->get_active_question_time_stamp($this->client_id, $this->site_id,$pb_player_id , $quiz_id,$question_id );
         $timelimit = (isset($question['timelimit']) && !empty($question['timelimit'])) ? $question['timelimit']: null;
         if($active_qustions_timestamp){
-            $this->quiz_model->update_answer_timestamp($this->client_id, $this->site_id, $pb_player_id, $quiz_id, $question_id, $option_id);
+            $this->quiz_model->update_answer_timestamp($this->client_id, $this->site_id, $pb_player_id, $quiz_id, $question_id, $option_id, $range_answer);
             if($timelimit){
                 $timelimits = explode(':',$timelimit);
                 $limit = (($timelimits[0]*3600) + ($timelimits[1]*60) + ($timelimits[2]));
@@ -685,7 +702,7 @@ class Quiz extends REST2_Controller
                 }
             }
         }else{
-            $this->quiz_model->insert_answer_timestamp($this->client_id, $this->site_id, $pb_player_id, $quiz_id, $question_id, $option_id, true);
+            $this->quiz_model->insert_answer_timestamp($this->client_id, $this->site_id, $pb_player_id, $quiz_id, $question_id, $option_id, true, $range_answer);
         }
 
         /* check to see if grade has any reward associated with it */
@@ -698,8 +715,11 @@ class Quiz extends REST2_Controller
 
         /* update player's score */
         $this->quiz_model->update_player_score($this->client_id, $this->site_id, $quiz_id, $pb_player_id, $question_id,
-            $option_id, $score, $grade);
+            $option_id, $score, $grade, $range_answer);
 
+        if($is_range_option){
+            $option['option'] = $range_answer;
+        }
         $this->tracker_model->trackQuiz(array(
             'client_id' => $this->client_id,
             'site_id' => $this->site_id,
