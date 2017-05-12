@@ -764,7 +764,7 @@ class Client_model extends MY_Model
             ));
             $this->mongo_db->set('date_modified', $mongoDate);
             $this->mongo_db->inc('value', intval($quantity));
-            $this->mongo_db->update('playbasis_goods_to_player', array("w" => 0, "j" => false));
+            $data = $this->mongo_db->update('playbasis_goods_to_player');
             if(isset($goodsInfo['date_expired_coupon']) && !empty($goodsInfo['date_expired_coupon'])){
                 $data['date_expire'] = ($goodsInfo['date_expired_coupon']);
             }
