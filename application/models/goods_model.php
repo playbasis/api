@@ -261,6 +261,7 @@ class Goods_model extends MY_Model
             'description',
             'quantity',
             'per_user',
+            'per_user_include_inactive',
             'redeem',
             'date_start',
             'date_expire',
@@ -399,29 +400,52 @@ class Goods_model extends MY_Model
         return $this->mongo_db->count('playbasis_goods_to_client');
     }
     
-    public function getPlayerGoods($site_id, $goodsId, $pb_player_id)
+    public function getPlayerGoods($site_id, $goodsId, $pb_player_id, $include_inactive = false)
     {
-        $this->mongo_db->select(array('value'));
-        $this->mongo_db->where(array(
-            'site_id' => new MongoID($site_id),
-            'goods_id' => new MongoID($goodsId),
-            'pb_player_id' => new MongoID($pb_player_id)
-        ));
-        $this->mongo_db->limit(1);
-        $goods = $this->mongo_db->get('playbasis_goods_to_player');
-        return isset($goods[0]) ? $goods[0]['value'] : null;
+        if($include_inactive){
+            $this->mongo_db->where(array(
+                'site_id' => new MongoID($site_id),
+                'goods_id' => new MongoID($goodsId),
+                'pb_player_id' => new MongoID($pb_player_id)
+            ));
+
+            $goods = $this->mongo_db->count('playbasis_goods_log');
+        }else{
+            $this->mongo_db->select(array('value'));
+            $this->mongo_db->where(array(
+                'site_id' => new MongoID($site_id),
+                'goods_id' => new MongoID($goodsId),
+                'pb_player_id' => new MongoID($pb_player_id)
+            ));
+            $this->mongo_db->limit(1);
+            $goods = $this->mongo_db->get('playbasis_goods_to_player');
+            $goods = isset($goods[0]) ? $goods[0]['value'] : null;
+        }
+
+        return $goods;
     }
     
-    public function getPlayerGoodsGroup($site_id, $goods_group, $pb_player_id)
+    public function getPlayerGoodsGroup($site_id, $goods_group, $pb_player_id, $include_inactive = false)
     {
-        $this->mongo_db->where(array(
-            'site_id' => new MongoID($site_id),
-            'group' => $goods_group,
-            'pb_player_id' => new MongoID($pb_player_id)
-        ));
+        if($include_inactive){
+            $this->mongo_db->where(array(
+                'site_id' => new MongoID($site_id),
+                'group' => $goods_group,
+                'pb_player_id' => new MongoID($pb_player_id)
+            ));
 
-        $this->mongo_db->where_gt('value' , 0);
-        $goods = $this->mongo_db->count('playbasis_goods_to_player');
+            $goods = $this->mongo_db->count('playbasis_goods_log');
+        }else{
+            $this->mongo_db->where(array(
+                'site_id' => new MongoID($site_id),
+                'group' => $goods_group,
+                'pb_player_id' => new MongoID($pb_player_id)
+            ));
+
+            $this->mongo_db->where_gt('value' , 0);
+            $goods = $this->mongo_db->count('playbasis_goods_to_player');
+        }
+
         return $goods;
     }
 
@@ -437,6 +461,7 @@ class Goods_model extends MY_Model
             'date_expire',
             'quantity',
             'per_user',
+            'per_user_include_inactive',
             'redeem',
             'group',
             'code',

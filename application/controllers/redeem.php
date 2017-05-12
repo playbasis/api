@@ -442,10 +442,11 @@ class Redeem extends REST2_Controller
         }
 
         if ($goods['per_user'] !== null) {
+            $per_user_include_inactive = isset($goods['per_user_include_inactive']) ? $goods['per_user_include_inactive'] : false;
             if($is_group){
-                $get_player_goods = $this->goods_model->getPlayerGoodsGroup($site_id, $goods['group'] , $pb_player_id);
+                $get_player_goods = $this->goods_model->getPlayerGoodsGroup($site_id, $goods['group'] , $pb_player_id, $per_user_include_inactive);
             }else{
-                $get_player_goods = $this->goods_model->getPlayerGoods($site_id, $goods['goods_id'], $pb_player_id);
+                $get_player_goods = $this->goods_model->getPlayerGoods($site_id, $goods['goods_id'], $pb_player_id, $per_user_include_inactive);
             }
 
             if ($get_player_goods && $get_player_goods + $amount > $goods['per_user']) {
