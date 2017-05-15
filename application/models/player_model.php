@@ -1621,108 +1621,16 @@ class Player_model extends MY_Model
         $this->mongo_db->where(array(
             'site_id' => new MongoId($site_id),
             'pb_player_id' => new MongoId($pb_player_id)
-            
-        ));
-        $this->mongo_db->where(array('$and' => array(array("group" => array('$exists' => true , '$ne' => false , '$ne' => null)))));
-        $group_data = $this->mongo_db->distinct('group', 'playbasis_goods_log');
-
-        $this->mongo_db->where(array(
-            'site_id' => new MongoId($site_id),
-            'pb_player_id' => new MongoId($pb_player_id)
 
         ));
 
-        $this->mongo_db->where('$or',  array(array('group' => null), array('group' => array('$exists' => false)), array('group' => false)));
         $goods_data = $this->mongo_db->distinct('goods_id', 'playbasis_goods_log');
-        foreach ($group_data as $group) {
-            $this->mongo_db->where(array(
-                'site_id' => new MongoId($site_id),
-                'pb_player_id' => new MongoId($pb_player_id),
-                'group' => $group
-            ));
-            $goods_list_data = $this->mongo_db->get('playbasis_goods_log');
-            $this->mongo_db->where(array(
-                'site_id' => new MongoId($site_id),
-                'pb_player_id' => new MongoId($pb_player_id),
-                'group' => $group
-            ));
-            $goods_list = $this->mongo_db->distinct('goods_id','playbasis_goods_log');
-            $this->mongo_db->select(array(
-                'image',
-                'name',
-                'description',
-                'code',
-                'group',
-                'tags',
-                'goods_id'
-            ));
-            $this->mongo_db->where('site_id', $site_id);
-            $this->mongo_db->where_in('goods_id', $goods_list);
-            if($tags){
-                $this->mongo_db->where_in('tags',$tags);
-            }
-            $group_detail = $this->mongo_db->get('playbasis_goods_to_client');
-            if (!$group_detail){
-                continue;
-            }
-
-            $this->mongo_db->select(array(
-                'goods_id',
-                'value',
-                'date_expire'
-            ));
-            $this->mongo_db->where('pb_player_id', $pb_player_id);
-            $this->mongo_db->where_in('goods_id', $goods_list);
-            $goods_player = $this->mongo_db->get('playbasis_goods_to_player');
-
-
-            foreach ($goods_list as $each){
-                $insert_data = array();
-                foreach ($group_detail as $each_group){
-                    if($each_group['goods_id'] == $each){
-                        $insert_data['goods_id'] = $each . "";
-                        $insert_data['image'] = $this->config->item('IMG_PATH') . $each_group['image'];
-                        $insert_data['name'] = $each_group['name'];
-                        $insert_data['description'] = $each_group['description'];
-                        $insert_data['group'] = $each_group['group'];
-                        $insert_data['code'] = $each_group['code'];
-                        $insert_data['tags'] = isset($each_group['tags']) && !empty($each_group['tags']) ? $each_group['tags'] : null;
-                        break;
-                    }
-                }
-
-                foreach ($goods_player as $each_goods_player){
-                    if($each_goods_player['goods_id'] == $each){
-                        $insert_data['amount'] = $each_goods_player['value'];
-                        $insert_data['date_expire'] = isset($each_goods_player['date_expire']) ? datetimeMongotoReadable($each_goods_player['date_expire']) : null;
-                        $insert_data['status'] = $each_goods_player['value'] > 0 ? "active" : "used";
-                        break;
-                    }
-                }
-                if(!isset($insert_data['amount'])){
-                    $insert_data['amount'] = 0;
-                    foreach ($goods_list_data as $goods_log_data){
-                        if($goods_log_data['goods_id']== $each){
-                            $insert_data['date_expire'] = isset($goods_log_data['date_expire']) ? datetimeMongotoReadable($goods_log_data['date_expire']) : null;
-                            break;
-                        }
-                    }
-                    $insert_data['status'] = "expired";
-                }
-                if ($status && ($status != $insert_data['status'])){
-                    continue;
-                }
-                if (!isset($insert_data['goods_id'])){
-                    continue;
-                }
-                array_push($playerGoods, $insert_data);
-            }
-        }
 
         foreach ($goods_data as $good){
             $this->mongo_db->select(array(
                 'image',
                 'name',
+                'group',
                 'description',
                 'code',
                 'date_expired_coupon',
@@ -1755,14 +1663,12 @@ class Player_model extends MY_Model
             $goods_player = $this->mongo_db->get('playbasis_goods_to_player');
             if ($goods_player) {
                 $goods_player = $goods_player[0];
-                if(isset($goods_player['date_expire'])) $goods_player['date_expire'] = datetimeMongotoReadable($goods_player['date_expire']);
                 $goods_player['status'] = $goods_player['value'] > 0 ? "active" : "used";
-                $goods_player['date_expire'] = isset($goods_player['date_expire']) ? $goods_player['date_expire'] : null;
+
             } else {
                 $goods_player = array();
                 $goods_player['value'] = 0;
                 $goods_player['status'] = "expired";
-                $goods_player['date_expire'] = isset($goods_detail['date_expired_coupon']) ? datetimeMongotoReadable($goods_detail['date_expired_coupon']) : null;
             }
 
             if ($status && ($status != $goods_player['status'])){
@@ -1774,7 +1680,20 @@ class Player_model extends MY_Model
             $goods_player['description'] = $goods_detail['description'];
             $goods_player['code'] = $goods_detail['code'];
             $goods_player['tags'] = isset($goods_detail['tags']) && !empty($goods_detail['tags']) ? $goods_detail['tags'] : null;
+            if(isset($goods_detail['group']) && $goods_detail['group']) {
+                $goods_player['group'] = $goods_detail['group'];
+                $this->mongo_db->where(array(
+                    'site_id' => new MongoId($site_id),
+                    'pb_player_id' => new MongoId($pb_player_id),
+                    'goods_id' => $good
+                ));
+                $this->mongo_db->limit(1);
+                $goods_log_data = $this->mongo_db->get('playbasis_goods_log');
+                $goods_player['date_expire'] = isset($goods_log_data[0]['date_expire']) ? datetimeMongotoReadable($goods_log_data[0]['date_expire']) : null;;
 
+            }else{
+                $goods_player['date_expire'] = isset($goods_detail['date_expired_coupon']) ? datetimeMongotoReadable($goods_detail['date_expired_coupon']) : null;
+            }
             $goods_player['amount'] = $goods_player['value'];
             unset($goods_player['value']);
             array_push($playerGoods, $goods_player);
