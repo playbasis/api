@@ -1842,6 +1842,7 @@
               "hint":         { "-type": "string"},
               "sponsor":      { "-type": "boolean"},
               "per_user":     { "-type": "integer" , "-optional": "true"},
+              "visible":      { "-type": "boolean" , "-optional": "true"},
               "tags":         { "-type": "any", "-optional": "true"},
               "amount":       { "-type": "number"}
             }
