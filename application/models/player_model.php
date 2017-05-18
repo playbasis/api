@@ -728,7 +728,7 @@ class Player_model extends MY_Model
         return $result;
     }
 
-    public function getBadge($pb_player_id, $site_id, $tags = null)
+    public function getBadge($pb_player_id, $site_id, $tags = null,$exclude_invisible_badge = false)
     {
         $this->set_site_mongodb($site_id);
         $this->mongo_db->select(array(
@@ -759,6 +759,9 @@ class Player_model extends MY_Model
                 'site_id' => $site_id,
 //                'deleted' => false
             ));
+            if($exclude_invisible_badge){
+                $this->mongo_db->where_ne('visible',false);
+            }
             if ($tags){
                 $this->mongo_db->where_in('tags', $tags);
             }

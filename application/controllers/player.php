@@ -232,7 +232,7 @@ class Player extends REST2_Controller
         $player['player']['level_title'] = $level['level_title'];
         $player['player']['level_image'] = $level['level_image'];
 
-        $player['player']['badges'] = $this->player_model->getBadge($pb_player_id, $this->site_id);
+        $player['player']['badges'] = $this->player_model->getBadge($pb_player_id, $this->site_id, null, true);
         $player['player']['goods'] = $this->player_model->getGoods($pb_player_id, $this->site_id);
         $points = $this->player_model->getPlayerPoints($pb_player_id, $this->site_id);
         foreach ($points as &$point) {
@@ -303,7 +303,7 @@ class Player extends REST2_Controller
         $player['player']['level_title'] = $level['level_title'];
         $player['player']['level_image'] = $level['level_image'];
 
-        $player['player']['badges'] = $this->player_model->getBadge($pb_player_id, $this->site_id);
+        $player['player']['badges'] = $this->player_model->getBadge($pb_player_id, $this->site_id, null, true);
         $player['player']['goods'] = $this->player_model->getGoods($pb_player_id, $this->site_id);
         $points = $this->player_model->getPlayerPoints($pb_player_id, $this->site_id);
         foreach ($points as &$point) {
@@ -1647,7 +1647,7 @@ class Player extends REST2_Controller
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         }
         //get player badge
-        $badgeList = $this->player_model->getBadge($pb_player_id, $this->site_id, $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null);
+        $badgeList = $this->player_model->getBadge($pb_player_id, $this->site_id, $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null, true);
         $this->response($this->resp->setRespond($badgeList), 200);
     }
 
