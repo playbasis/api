@@ -20,6 +20,7 @@ class Badge_model extends MY_Model
             'description',
             'quantity',
             'per_user',
+            'visible',
             'hint',
             'sponsor',
             'tags',
@@ -43,6 +44,7 @@ class Badge_model extends MY_Model
         if ($badges) {
             foreach ($badges as &$badge) {
                 $badge['badge_id'] = $badge['badge_id'] . "";
+                $badge['visible'] = isset($badge['visible']) ? $badge['visible'] : true ;
                 $badge['image'] = $this->config->item('IMG_PATH') . $badge['image'];
             }
         }
@@ -60,6 +62,7 @@ class Badge_model extends MY_Model
             'description',
             'quantity',
             'per_user',
+            'visible',
             'hint',
             'sponsor',
             'tags',
@@ -80,6 +83,7 @@ class Badge_model extends MY_Model
         $result = $this->mongo_db->get('playbasis_badge_to_client');
         if ($result) {
             $result[0]['badge_id'] = $result[0]['badge_id'] . "";
+            $result[0]['visible'] = isset($result[0]['visible']) ? $result[0]['visible'] : true ;
             $result[0]['image'] = $this->config->item('IMG_PATH') . $result[0]['image'];
         }
         return $result ? $result[0] : array();
