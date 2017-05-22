@@ -1416,14 +1416,20 @@ class Engine extends Quest
                         break;
                     } // break early, do not process next jigsaw
                 } else {  // jigsaw return false
-                    if ($this->is_reward($jigsawCategory)) { // REWARD, FEEDBACK
+                    if ($this->is_reward($jigsawCategory)) { // REWARD, FEEDBACK, GROUP, REWARD_SEQUENCE
                         if (isset($exInfo['break']) && $exInfo['break']) {
                             break;
                         }
                     } else {
                         // fail, log jigsaw - ACTION or CONDITION
                         if (!$input["test"] && $jigsawCategory != 'REWARD_SEQUENCE' && $input['jigsaw_name'] != 'sequence') {
+                            // In case of sequence reward, it's already logged in the jigsaw to avoid concurrent issue
                             $this->client_model->log($input, $exInfo);
+                        }
+
+                        //Throw error set by jigsaw
+                        if(isset($exInfo['error'])){
+                            throw new Exception($exInfo['error']);
                         }
                         break;
                     }
@@ -1471,7 +1477,7 @@ class Engine extends Quest
 
     private function is_reward($category)
     {
-        return in_array($category, array('REWARD', 'FEEDBACK'));
+        return in_array($category, array('REWARD', 'FEEDBACK', 'GROUP', 'REWARD_SEQUENCE'));
     }
 
     private function giveGoods($jigsawConfig, $input, $validToken, &$event, $fbData, $goodsData)

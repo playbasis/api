@@ -640,6 +640,10 @@ class Error extends CI_Model
                 }
                 $errorData['error_code'] = '4005';
                 break;
+            case 'ENGINE_RULE_EXCEED_COUNTERRANGE_LIMIT':
+                $errorData['message'] = "User has reached the maximum counter limit";
+                $errorData['error_code'] = '5001';
+                break;
             default:
                 $errorData['message'] = "Unknown";
                 $errorData['error_code'] = '9999';
