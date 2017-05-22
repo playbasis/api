@@ -577,7 +577,7 @@ class jigsaw extends MY_Model
         assert($input['pb_player_id']);
         assert($input['rule_id']);
         assert($input['jigsaw_id']);
-        $from = (isset($config['param_from']) && $config['param_from'] ) ? (int)$config['param_from'] : 0; // default is 0
+        $from = (isset($config['param_from']) && $config['param_from'] ) ? (int)$config['param_from'] : 1; // default is 1
         $to = (isset($config['param_to']) && $config['param_to'] ) ? (int)$config['param_to'] : null; // default is infinity
         $jigsaw = $this->getMostRecentJigsaw($input, array('input'));
 
@@ -586,6 +586,9 @@ class jigsaw extends MY_Model
 
         if (!is_null($to)) {
             $result = ($counter >= $from && $counter <= $to);
+            if($counter > $to){
+                $exInfo['error'] = "ENGINE_RULE_EXCEED_COUNTERRANGE_LIMIT";
+            }
         } else {
             $result = $counter >= $from;
         }
@@ -1094,7 +1097,9 @@ class jigsaw extends MY_Model
         if (is_array($data_set)) {
             foreach ($data_set as $param) {
                 $param_name = $param['param_name'];
-                $params[$param_name] = isset($input[$param_name]) ? $input[$param_name] : null;
+                if (isset($input[$param_name])) {
+                    $params[$param_name] = $input[$param_name];
+                }
             }
         }
         $c = $this->countActionWithParams($input['client_id'], $input['site_id'], $input['pb_player_id'],
