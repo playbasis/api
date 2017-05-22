@@ -46,6 +46,10 @@ class Error extends CI_Model
                 $errorData['message'] = "The setting has been disabled";
                 $errorData['error_code'] = '0904';
                 break;
+            case 'REFRESH_TOKEN_INCORRECT':
+                $errorData['message'] = "Refresh Token incorrect";
+                $errorData['error_code'] = '0905';
+                break;
             case 'INTERNAL_ERROR':
                 $errorData['message'] = "There is an internal server error: " . print_r($dataArray, true);
                 $errorData['error_code'] = '0800';
@@ -254,9 +258,9 @@ class Error extends CI_Model
                 $errorData["message"] = "The user has not enough badge";
                 $errorData["error_code"] = "0220";
                 break;
-            case 'REFRESH_TOKEN_INCORRECT':
-                $errorData['message'] = "Refresh Token incorrect";
-                $errorData['error_code'] = '0210';
+            case 'GOODS_FOR_USER_NOT_ENOUGH':
+                $errorData['message'] = "The user has not enough goods to redeem";
+                $errorData['error_code'] = '0221';
                 break;
             case 'ACTION_NOT_FOUND':
                 $errorData['message'] = "Action not available";
@@ -281,6 +285,10 @@ class Error extends CI_Model
             case 'COUPON_NOT_AVAILABLE':
                 $errorData['message'] = "Coupon is not available";
                 $errorData['error_code'] = '0504';
+                break;
+            case 'GOODS_NOT_EXIST_IN_PLAYER_INVENTORY':
+                $errorData['message'] = "Goods is not found in the player's inventory";
+                $errorData['error_code'] = '0505';
                 break;
             case 'OVER_LIMIT_REDEEM':
                 $errorData['message'] = "User has exceeded redeem limit";
@@ -393,6 +401,14 @@ class Error extends CI_Model
             case 'QUIZ_QUESTION_TIME_OUT':
                 $errorData['message'] = "Question is time out";
                 $errorData['error_code'] = '1007';
+                break;
+            case 'QUIZ_ANSWER_REQUIRED_FOR_RANGE_OPTION':
+                $errorData['message'] = "Input answer is required for range option type";
+                $errorData['error_code'] = '1008';
+                break;
+            case 'QUIZ_ANSWER_OUT_OF_RANGE':
+                $errorData['message'] = "Input answer is out of range";
+                $errorData['error_code'] = '1008';
                 break;
             case 'RULE_NOT_FOUND':
                 $errorData['message'] = "Rule not available";
@@ -623,6 +639,10 @@ class Error extends CI_Model
                     $errorData['message'] = "The input item status is not supported: " ;
                 }
                 $errorData['error_code'] = '4005';
+                break;
+            case 'ENGINE_RULE_EXCEED_COUNTERRANGE_LIMIT':
+                $errorData['message'] = "User has reached the maximum counter limit";
+                $errorData['error_code'] = '5001';
                 break;
             case 'FAIL_TOKEN':
                 $errorData['message'] = "There is no token to be rewarded";

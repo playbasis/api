@@ -51,6 +51,7 @@ class Player extends REST2_Controller
             'first_name',
             'last_name',
             'gender',
+            'tags',
             'image',
             'exp',
             'level',
@@ -86,6 +87,7 @@ class Player extends REST2_Controller
             'first_name',
             'last_name',
             'gender',
+            'tags',
             'image',
             'email',
             'phone_number',
@@ -129,7 +131,17 @@ class Player extends REST2_Controller
 
     public function list_post()
     {
-        $list_player_id = explode(",", $this->input->post('list_player_id'));
+        if(isset($_POST['list_player_id']) && $_POST['list_player_id']) {
+            $list_player_id = explode(",", $this->input->post('list_player_id'));
+        }else {
+            $filter['tags'] = explode(",", $this->input->post('tags'));
+            $player_list = $this->player_model->readPlayersWithFilter( $this->site_id, array('cl_player_id'), $filter);
+            $list_player_id = array();
+            foreach($player_list as $player){
+                $list_player_id[] = $player['cl_player_id'];
+            }
+        }
+        $player['player'] = array();
         //read player information
         for ($i = 0; $i < count($list_player_id); $i++) {
             $data = array(
@@ -145,6 +157,7 @@ class Player extends REST2_Controller
                 'first_name',
                 'last_name',
                 'gender',
+                'tags',
                 'image',
                 'email',
                 'phone_number',
@@ -187,6 +200,7 @@ class Player extends REST2_Controller
             'first_name',
             'last_name',
             'gender',
+            'tags',
             'image',
             'exp',
             'level',
@@ -218,7 +232,7 @@ class Player extends REST2_Controller
         $player['player']['level_title'] = $level['level_title'];
         $player['player']['level_image'] = $level['level_image'];
 
-        $player['player']['badges'] = $this->player_model->getBadge($pb_player_id, $this->site_id);
+        $player['player']['badges'] = $this->player_model->getBadge($pb_player_id, $this->site_id, null, true);
         $player['player']['goods'] = $this->player_model->getGoods($pb_player_id, $this->site_id);
         $points = $this->player_model->getPlayerPoints($pb_player_id, $this->site_id);
         foreach ($points as &$point) {
@@ -257,6 +271,7 @@ class Player extends REST2_Controller
             'first_name',
             'last_name',
             'gender',
+            'tags',
             'image',
             'email',
             'phone_number',
@@ -288,7 +303,7 @@ class Player extends REST2_Controller
         $player['player']['level_title'] = $level['level_title'];
         $player['player']['level_image'] = $level['level_image'];
 
-        $player['player']['badges'] = $this->player_model->getBadge($pb_player_id, $this->site_id);
+        $player['player']['badges'] = $this->player_model->getBadge($pb_player_id, $this->site_id, null, true);
         $player['player']['goods'] = $this->player_model->getGoods($pb_player_id, $this->site_id);
         $points = $this->player_model->getPlayerPoints($pb_player_id, $this->site_id);
         foreach ($points as &$point) {
@@ -417,6 +432,7 @@ class Player extends REST2_Controller
                 $this->response($this->error->setError('USER_PHONE_INVALID'), 200);
             }
         }
+        $playerInfo['tags'] = $this->input->post('tags') && !is_null($this->input->post('tags')) ? explode(',', $this->input->post('tags')) : null;
         $facebookId = $this->input->post('facebook_id');
         if ($facebookId) {
             $playerInfo['facebook_id'] = $facebookId;
@@ -719,6 +735,13 @@ class Player extends REST2_Controller
                 $playerInfo['phone_number'] = $phoneNumber;
             } else {
                 $this->response($this->error->setError('USER_PHONE_INVALID'), 200);
+            }
+        }
+        if ($this->input->post('tags')){
+            if(strtolower($this->input->post('tags')) == "null"){
+                $playerInfo['tags'] = null;
+            }else{
+                $playerInfo['tags'] = explode(',', $this->input->post('tags'));
             }
         }
         $facebookId = $this->input->post('facebook_id');
@@ -1533,7 +1556,7 @@ class Player extends REST2_Controller
         }
 
 
-        $status = $this->player_model->giveGift($client_id, $site_id, $sent_pb_player_id, $received_pb_player_id, $received_player_id, $gift_id, $gift_type, $gift_value);
+        $status = $this->player_model->giveGift($client_id, $site_id, $sent_pb_player_id, $received_pb_player_id, $received_player_id, $gift_id, $gift_type, $gift_value,$gift_data);
         $gift_data['after']['gift_name'] = $gift_data['gift']['name'];
         $gift_data['after']['type'] = $gift_type;
         $gift_data['after']['remaining'] = $gift_data['before']['value'] - $gift_value;
@@ -1558,6 +1581,25 @@ class Player extends REST2_Controller
 
             $eventMessage = $this->utility->getEventMessage('gift', $gift_value, $event['gift_data']['name'], $event['gift_data']['name'], '', '',$event['gift_data']['name'], $sent_player_id);
 
+            if ($gift_type == "GOODS"){
+                $validToken = array(
+                    'client_id' =>$client_id,
+                    'site_id' =>$site_id,
+                    'pb_player_id' => $received_pb_player_id,
+                    'goods_id' => $gift_id,
+                    'goods_name' => isset($gift_data['gift']['name']) ? $gift_data['gift']['name'] : "",
+                    'is_sponsor' => isset($gift_data['gift']['sponsor']) ? $gift_data['gift']['sponsor'] : false,
+                    'amount' => intval($gift_value),
+                    'date_expire' => isset($get_redeem_goods['date_expire']) ? $get_redeem_goods['date_expire'] : null,
+                    'redeem' => isset($gift_data['gift']['redeem']) ? $gift_data['gift']['redeem'] : null,
+                    'group' => isset($gift_data['gift']['group']) ? $gift_data['gift']['group'] : null,
+                    'action_name' => 'redeem_goods',
+                    'action_icon' => 'fa-icon-shopping-cart',
+                    'message' => $eventMessage
+                );
+                // log event - goods
+                $this->tracker_model->trackGoods($validToken);
+            }
             //publish to node stream
             $this->node->publish(array(
                 "client_id" => $client_id,
@@ -1605,7 +1647,7 @@ class Player extends REST2_Controller
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         }
         //get player badge
-        $badgeList = $this->player_model->getBadge($pb_player_id, $this->site_id, $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null);
+        $badgeList = $this->player_model->getBadge($pb_player_id, $this->site_id, $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null, true);
         $this->response($this->resp->setRespond($badgeList), 200);
     }
 
@@ -1853,23 +1895,89 @@ class Player extends REST2_Controller
 
         $null_list = array();
         $not_null_list = array();
+        $favorite_null_list = array();
+        $favorite_not_null_list = array();
         $date_expire= array();
+        $favorite_date_expire= array();
         $name = array();
+        $favorite_name = array();
         $name_null = array();
-        foreach ($goodsList['goods'] as $key => $row) {
+        $favorite_name_null = array();
+        foreach ($goodsList['goods'] as $key => &$row) {
+            $isFavorite = $this->player_model->getFavoriteGoods($this->client_id, $this->site_id, $pb_player_id, $row['goods_id']);
+            $row['is_favorite'] = $isFavorite;
             if(isset($row['date_expire']) && !is_null($row['date_expire'])){
-                array_push($not_null_list, $row);
-                $date_expire[$key]  = $row['date_expire'];
-                $name[$key] = $row['name'];
+                if($isFavorite){
+                    array_push($favorite_not_null_list, $row);
+                    $favorite_date_expire[$key]  = $row['date_expire'];
+                    $favorite_name[$key] = $row['name'];
+                }else{
+                    array_push($not_null_list, $row);
+                    $date_expire[$key]  = $row['date_expire'];
+                    $name[$key] = $row['name'];
+                }
+
             } else {
-                $name_null[$key] = $row['name'];
-                array_push($null_list,$row);
+                if($isFavorite){
+                    $favorite_name_null[$key] = $row['name'];
+                    array_push($favorite_null_list, $row);
+                }else {
+                    $name_null[$key] = $row['name'];
+                    array_push($null_list, $row);
+                }
             }
         }
+        array_multisort($favorite_date_expire, SORT_ASC, $favorite_name, SORT_ASC, $favorite_not_null_list);
         array_multisort($date_expire, SORT_ASC, $name, SORT_ASC, $not_null_list);
+        array_multisort($favorite_name_null, SORT_ASC, $favorite_null_list);
         array_multisort($name_null, SORT_ASC, $null_list);
-        $goodsList['goods'] = array_merge($not_null_list,$null_list);
+        $goodsList['goods'] = array_merge($favorite_not_null_list,$favorite_null_list,$not_null_list,$null_list);
         $this->response($this->resp->setRespond($goodsList), 200);
+    }
+
+    public function goods_favorite_post($player_id = '')
+    {
+        if (!$player_id) {
+            $this->response($this->error->setError('PARAMETER_MISSING', array(
+                'player_id'
+            )), 200);
+        }
+        //get playbasis player id
+        $pb_player_id = $this->player_model->getPlaybasisId(array_merge($this->validToken, array(
+            'cl_player_id' => $player_id
+        )));
+        if (!$pb_player_id) {
+            $this->response($this->error->setError('USER_NOT_EXIST'), 200);
+        }
+        $status = $this->input->post('status');
+
+        if ($status == "true"){
+            $status = true;
+        }elseif($status == "false"){
+            $status = false;
+        }
+        else{
+            $this->response($this->error->setError('INVALID_STATUS'), 200);
+        }
+
+        $goods_id = $this->input->post('goods_id');
+        //check player goods
+        $isPlayerGoodsFound = false;
+        $playerGoodsList = $this->player_model->getGoods($pb_player_id, $this->site_id, null, null);
+        foreach($playerGoodsList as $playerGoods){
+            if($playerGoods['goods_id'] == $goods_id){
+                $isPlayerGoodsFound = true;
+                break;
+            }
+        }
+
+        if (!$isPlayerGoodsFound) {
+            $this->response($this->error->setError('GOODS_NOT_EXIST_IN_PLAYER_INVENTORY'), 200);
+        }
+
+        $this->player_model->setFavoriteGoods($this->client_id, $this->site_id, $pb_player_id, $goods_id, $status);
+
+        $this->response($this->resp->setRespond(), 200);
     }
 
     public function goodsCount_get($player_id = '')

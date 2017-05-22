@@ -279,11 +279,11 @@ class Redeem extends REST2_Controller
                 /* actual redemption */
                 try {
                     $redeemResult = $this->redeem($validToken['site_id'], $pb_player_id, $goods, $amount, $validToken,
-                        false);
+                        false, false, true);
                     $this->response($this->resp->setRespond($redeemResult), 200);
                 } catch (Exception $e) {
                     if ($e->getMessage() == 'OVER_LIMIT_REDEEM') {
-                        continue;
+                        $this->response($this->error->setError('OVER_LIMIT_REDEEM'), 200);
                     } // this goods_id has been assigned to this player too often!, try next one
                     else {
                         if ($e->getMessage() == 'GOODS_NOT_ENOUGH') {
@@ -369,11 +369,11 @@ class Redeem extends REST2_Controller
                 /* actual redemption */
                 try {
                     $redeemResult = $this->redeem($validToken['site_id'], $pb_player_id, $goods, $amount, $validToken,
-                        false, true);
+                        false, true, true);
                     $this->response($this->resp->setRespond($redeemResult), 200);
                 } catch (Exception $e) {
                     if ($e->getMessage() == 'OVER_LIMIT_REDEEM') {
-                        continue;
+                        $this->response($this->error->setError('OVER_LIMIT_REDEEM'), 200);
                     } // this goods_id has been assigned to this player too often!, try next one
                     else {
                         if ($e->getMessage() == 'GOODS_NOT_ENOUGH') {
@@ -434,16 +434,22 @@ class Redeem extends REST2_Controller
         $amount,
         $validToken,
         $validate = true,
-        $is_sponsor = false
+        $is_sponsor = false,
+        $is_group = false
     ) {
         if (!$goods) {
             throw new Exception('GOODS_NOT_FOUND');
         }
 
         if ($goods['per_user'] !== null) {
-            $get_player_goods = $this->player_model->getGoodsByGoodsId($pb_player_id, $is_sponsor ? null : $site_id,
-                $goods['goods_id']);
-            if (isset($get_player_goods['amount']) && $get_player_goods['amount'] >= $goods['per_user']) {
+            $per_user_include_inactive = isset($goods['per_user_include_inactive']) ? $goods['per_user_include_inactive'] : false;
+            if($is_group){
+                $get_player_goods = $this->goods_model->getPlayerGoodsGroup($site_id, $goods['group'] , $pb_player_id, $per_user_include_inactive);
+            }else{
+                $get_player_goods = $this->goods_model->getPlayerGoods($site_id, $goods['goods_id'], $pb_player_id, $per_user_include_inactive);
+            }
+
+            if ($get_player_goods && $get_player_goods + $amount > $goods['per_user']) {
                 throw new Exception('OVER_LIMIT_REDEEM');
             }
         }
@@ -580,43 +586,49 @@ class Redeem extends REST2_Controller
                     $amount
                 );
 
+                $get_redeem_goods = array();
+
                 /* give goods reward, if exists */
-                $this->getRedeemGoods($pb_player_id, $goodsData, $amount, $validToken, $is_sponsor);
-                $event = array(
-                    'event_type' => 'GOODS_RECEIVED',
-                    'goods_data' => $goodsData,
-                    'value' => $amount
-                );
-                array_push($redeemResult['events'], $event);
+                $this->getRedeemGoods($pb_player_id, $goodsData, $amount, $validToken, $is_sponsor,$get_redeem_goods);
+                if($get_redeem_goods) {
+                    $event = array(
+                        'event_type' => 'GOODS_RECEIVED',
+                        'goods_data' => $goodsData,
+                        'value' => $amount
+                    );
+                    array_push($redeemResult['events'], $event);
 
-                /* obtain coupon code */
-                $log_id = $this->redeem_model->exerciseCode('goods', $validToken['client_id'], $validToken['site_id'],
-                    $pb_player_id, array_key_exists('code', $goodsData) ? $goodsData['code'] : null);
-                $redeemResult = array_merge($redeemResult, array('log_id' => $log_id->{'$id'}));
+                    /* obtain coupon code */
+                    $log_id = $this->redeem_model->exerciseCode('goods', $validToken['client_id'], $validToken['site_id'],
+                        $pb_player_id, array_key_exists('code', $goodsData) ? $goodsData['code'] : null);
+                    $redeemResult = array_merge($redeemResult, array('log_id' => $log_id->{'$id'}));
 
-                // publish to node stream
-                $eventMessage = $this->utility->getEventMessage('goods', '', '', '', '', '', $goodsData['name']);
-                $validToken = array_merge($validToken, array(
-                    'pb_player_id' => $pb_player_id,
-                    'goods_id' => new MongoId($goodsData['goods_id']),
-                    'goods_name' => $goodsData['name'],
-                    'is_sponsor' => $is_sponsor,
-                    'amount' => $amount,
-                    'redeem' => $goodsData['redeem'],
-                    'action_name' => 'redeem_goods',
-                    'action_icon' => 'fa-icon-shopping-cart',
-                    'message' => $eventMessage
-                ));
+                    // publish to node stream
+                    $eventMessage = $this->utility->getEventMessage('goods', '', '', '', '', '', $goodsData['name']);
+                    $validToken = array_merge($validToken, array(
+                        'pb_player_id' => $pb_player_id,
+                        'goods_id' => new MongoId($goodsData['goods_id']),
+                        'goods_name' => $goodsData['name'],
+                        'is_sponsor' => $is_sponsor,
+                        'amount' => $amount,
+                        'date_expire' => isset($get_redeem_goods['date_expire']) ? $get_redeem_goods['date_expire'] : null,
+                        'redeem' => $goodsData['redeem'],
+                        'group' => isset($goodsData['group']) ? $goodsData['group'] : null,
+                        'action_name' => 'redeem_goods',
+                        'action_icon' => 'fa-icon-shopping-cart',
+                        'message' => $eventMessage
+                    ));
 
-                // log event - goods
-                $this->tracker_model->trackGoods($validToken);
+                    // log event - goods
+                    $this->tracker_model->trackGoods($validToken);
 
-                $this->node->publish(array_merge($validToken, array(
-                    'action_name' => 'redeem_goods',
-                    'action_icon' => 'fa-gift',
-                    'message' => $eventMessage,
-                    'goods' => $event['goods_data']
-                )), $validToken['site_name'], $validToken['site_id']);
+                    $this->node->publish(array_merge($validToken, array(
+                        'action_name' => 'redeem_goods',
+                        'action_icon' => 'fa-gift',
+                        'message' => $eventMessage,
+                        'goods' => $event['goods_data']
+                    )), $validToken['site_name'], $validToken['site_id']);
+                }
             } catch (Exception $e) {
                 if ($e->getMessage() == "LIMIT_EXCEED") {
                     $this->response($this->error->setError(
@@ -659,13 +671,13 @@ class Redeem extends REST2_Controller
         return (int)$goods['quantity'] >= (int)$amount;
     }
 
-    private function getRedeemGoods($pb_player_id, $goods, $amount, $validToken, $is_sponsor)
+    private function getRedeemGoods($pb_player_id, $goods, $amount, $validToken, $is_sponsor,&$get_redeem_goods=array())
     {
         $this->load->model('client_model');
 
         $goods_id = new MongoId($goods['goods_id']);
         try {
-            $this->client_model->updateplayerGoods($goods_id, $amount, $pb_player_id, $validToken['cl_player_id'],
+            $get_redeem_goods = $this->client_model->updateplayerGoods($goods_id, $amount, $pb_player_id, $validToken['cl_player_id'],
                 $validToken['client_id'], $validToken['site_id'], $is_sponsor);
         } catch (Exception $e){}
         if (isset($goods['redeem']['point']["point_value"]) && ($goods['redeem']['point']["point_value"] > 0)) {

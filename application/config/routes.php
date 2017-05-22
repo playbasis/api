@@ -126,6 +126,7 @@ $route['Player/'.ANY_STRING.'/badgeAll'] = 'player/badgeAll/$1';
 $route['Player/badgeAll'] = 'player/badgeAll';
 
 $route['Player/'.ANY_STRING.'/goods'] = 'player/goods/$1';
+$route['Player/'.ANY_STRING.'/goods/favorite'] = 'player/goods_favorite/$1';
 $route['Player/'.ANY_STRING.'/goods/count'] = 'player/goodsCount/$1';
 
 $route['Player/quest'] = 'quest/questOfPlayer';
@@ -188,6 +189,7 @@ $route['Campaign/active'] = 'campaign/activeCampaign';
 $route['Merchant/availableBranchGoodsGroup'] = 'merchant/availableBranchGoodsGroup';
 $route['Merchant/goodsGroup/verify'] = 'merchant/GoodsGroupVerify';
 $route['Merchant/goodsGroup/redeem'] = 'merchant/GoodsGroupRedeem';
+$route['Merchant/goods/redeem']      = 'merchant/GoodsRedeem';
 //engine API
 $route['Engine/actionConfig']	= 'engine/getActionConfig';
 $route['Engine/rules']	= 'engine/rules';
@@ -399,6 +401,9 @@ $route['test']	= 'notification/index';
 $route['fb'] = 'playbasis/fb';
 $route['login'] = 'playbasis/login';
 $route['memtest'] = 'playbasis/memtest';
+
+//Timestamp API
+$route['Timestamp']	= 'timestamp/index';
 
 //dummy
 //$route['dummy/dummyPlayer/'.ANY_NUMBER.'/'.ANY_NUMBER]	= 'dummy/dummyPlayer/$1/$2/$3';

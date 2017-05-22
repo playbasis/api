@@ -19,18 +19,8 @@ class Goods extends REST2_Controller
     public function index_get($goodsId = 0)
     {
         /* process group */
-        $results = $this->goods_model->getGroupsAggregate($this->validToken['site_id']);
-        $ids = array();
-        $group_name = array();
+
         $org_id_list = array();
-        foreach ($results as $i => $result) {
-            $group = $result['_id']['group'];
-            $quantity = $result['quantity'];
-            $list = $result['list'];
-            $first = array_shift($list); // skip first one
-            $group_name[$first->{'$id'}] = array('group' => $group, 'quantity' => $quantity);
-            $ids = array_merge($ids, $list);
-        }
         /* find my goods */
         $player_id = $this->input->get('player_id');
         if ($player_id !== false) {
@@ -58,12 +48,11 @@ class Goods extends REST2_Controller
             }
 
         }
+
         /* main */
         if ($goodsId) // given specified goods_id
         {
-            $goods['goods'] = $this->goods_model->getGoods(array_merge($this->validToken, array(
-                'goods_id' => new MongoId($goodsId)
-            )));
+            $goods['goods'] = $this->goods_model->getGoods(array_merge($this->validToken, array('goods_id' => new MongoId($goodsId))));
 
             // return an error if
             // 1. good id is set organize and player_id is not in that organize
@@ -86,13 +75,9 @@ class Goods extends REST2_Controller
             unset($goods['goods']['code']);
             if ($goods['goods']['is_group']) {
                 $group = $goods['goods']['group'];
-                $goods['goods']['name'] = $goods['goods']['group'];
-                foreach ($group_name as $each) {
-                    if ($each['group'] == $group) {
-                        $goods['goods']['quantity'] = $each['quantity'];
-                        break;
-                    }
-                }
+                $goods['goods']['name'] = $group;
+                $goods['goods']['quantity'] = $this->goods_model->checkGoodsGroupQuantity($this->site_id, $group);
+
                 if ($player_id !== false) {
                     $goods['amount'] = isset($m[$group]) ? $m[$group]['amount'] : 0;
                     if(isset($m[$group]['code']) && $goods['amount'] > 0) $goods['goods']['code'] = $m[$group]['code'];
@@ -109,31 +94,31 @@ class Goods extends REST2_Controller
         {
             $data = $this->validToken;
 
-            if ($this->input->get('tags')){
+            if ($this->input->get('tags')) {
                 $data['tags'] = explode(',', $this->input->get('tags'));
             }
 
-            if ($this->input->get('selected_field')){
+            if ($this->input->get('selected_field')) {
                 $data['selected_field'] = explode(',', $this->input->get('selected_field'));
-                foreach ($data['selected_field'] as $index => $field){
-                    if(!$field){
+                foreach ($data['selected_field'] as $index => $field) {
+                    if (!$field) {
                         unset($data['selected_field'][$index]);
                     }
                 }
                 $data['selected_field'] = array_values($data['selected_field']);
             }
 
-            if ($this->input->get('active_filter') == "true"){
-                if(!$this->input->get('date_start') && ! $this->input->get('date_end')){
+            if ($this->input->get('active_filter') == "true") {
+                if (!$this->input->get('date_start') && !$this->input->get('date_end')) {
                     $data['date_start'] = new MongoDate();
                 }
             }
 
-            if ($this->input->get('date_start')){
+            if ($this->input->get('date_start')) {
                 $data['date_start'] = new MongoDate(strtotime($this->input->get('date_start')));
             }
 
-            if ($this->input->get('date_end')){
+            if ($this->input->get('date_end')) {
                 if (strpos($this->input->get('date_end'), ':') !== false) {
                     $data['date_end'] = new MongoDate(strtotime($this->input->get('date_end')));
                 } else {
@@ -147,21 +132,91 @@ class Goods extends REST2_Controller
                 $data['limit'] = 500;
             }
 
-            $goodsList['goods_list'] = $this->goods_model->getAllGoods($data, $ids);
+            $filter_goods_name = $this->input->get('name') ? $this->input->get('name') : null;
+            if ($this->input->get('custom_param')) {
+                $custom_param = explode(',', $this->input->get('custom_param'));
+                $custom_array = array();
+                foreach ($custom_param as $param) {
+                    $param_data = explode('|', $param);
+                    if(isset($param_data[0]) && isset($param_data[1]) && isset($param_data[2])){
+                        if ($param_data[1] == '>'){
+                            $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$gt' => $param_data[2]))));
+                        } elseif ($param_data[1] == '>=') {
+                            $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$gte' => $param_data[2]))));
+                        } elseif ($param_data[1] == '<') {
+                            $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$lt' => $param_data[2]))));
+                        } elseif ($param_data[1] == '<=') {
+                            $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$lte' => $param_data[2]))));
+                        } elseif ($param_data[1] == '!=') {
+                            $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$ne' => $param_data[2]))));
+                        } elseif ($param_data[1] == '=') {
+                            $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$eq' => $param_data[2]))));
+                        }
+                    } else {
+                        $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0])));
+                    }
+                    array_push($custom_array, $custom_param_query);
+                }
+
+                $custom_goods = $this->goods_model->getGroupsCustomParam($this->site_id, $custom_array);
+                $in_group = array();
+                $goods_param_id = array();
+                foreach ($custom_goods as $c_goods){
+                    if($c_goods['is_group']){
+                        array_push($in_group, $c_goods['name']);
+                    } else {
+                        $custom_goods_id =$this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, $c_goods['name']);
+                        array_push($goods_param_id, new MongoId($custom_goods_id));
+                    }
+                }
+                $group_list = $in_group ? $this->goods_model->getGroupsList($this->site_id,$filter_goods_name, $in_group) : array() ;
+            } else {
+                $group_list = $this->goods_model->getGroupsList($this->site_id,$filter_goods_name);
+            }
+            
+            $in_goods = array();
+            foreach ($group_list as $group_name) {
+                $goods_group_detail = $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name['name']);
+                array_push($in_goods, new MongoId($goods_group_detail));
+            }
+            if ($filter_goods_name) {
+                $data['specific'] = $this->input->get('custom_param') ?
+                    array('$or' => array(array("group" => array('$exists' => false) , 'goods_id'=> array('$in' => $goods_param_id), 'name'=> array('$regex' => new MongoRegex("/" . preg_quote(mb_strtolower($filter_goods_name)) . "/i"))), array("goods_id" => array('$in' => $in_goods)))) :
+                    array('$or' => array(array("group" => array('$exists' => false) , 'name'=> array('$regex' => new MongoRegex("/" . preg_quote(mb_strtolower($filter_goods_name)) . "/i"))), array("goods_id" => array('$in' => $in_goods))));
+            } else {
+                $data['specific'] = $this->input->get('custom_param') ?
+                    array('$or' => array(array("group" => array('$exists' => false) , 'goods_id'=> array('$in' => $goods_param_id)), array("goods_id" => array('$in' => $in_goods)))) :
+                    array('$or' => array(array("group" => array('$exists' => false)), array("goods_id" => array('$in' => $in_goods))));
+            }
+            $goodsList['goods_list'] = $this->input->get('custom_param') && !$custom_goods ? array() : $this->goods_model->getAllGoods($data);
+
             if (is_array($goodsList['goods_list'])) {
                 foreach ($goodsList['goods_list'] as $key => &$goods) {
-                    $goods_id = $goods['_id'];
+
+                    if($player_id){
+                        $goods_distinct_info = $this->goods_model->getGoodsDistinctByID($this->client_id, $this->site_id, $goods['distinct_id']);
+                        if(isset($goods_distinct_info['whitelist_enable']) && $goods_distinct_info['whitelist_enable'] == true){
+                            $is_in_whitelist = $this->goods_model->checkIfUserInWhitelist($this->client_id, $this->site_id, $goods['distinct_id'], $player_id);
+                            if(!$is_in_whitelist){
+                                unset($goodsList['goods_list'][$key]);
+                                continue;
+                            }
+                        }
+                    }
+
                     $is_group = array_key_exists('group', $goods);
                     unset($goods['code']);
+                    unset($goods['distinct_id']);
                     if ($is_group) {
                         $goods['is_group'] = true;
-                        $goods['name'] = $group_name[$goods_id]['group'];
-                        $goods['quantity'] = $group_name[$goods_id]['quantity'];
+                        $goods['name'] = $goods['group'];
+                        $goods['quantity'] = $this->goods_model->checkGoodsGroupQuantity($this->site_id, $goods['group']);
                         if ($player_id !== false) {
                             $goods['amount'] = isset($m[$goods['name']]) ? $m[$goods['name']]['amount'] : 0;
                             if(isset($m[$goods['name']]['code'])  && $goods['amount'] > 0) $goods['code'] = $m[$goods['name']]['code'];
                         }
                     } else {
+                        $goods['is_group'] = false;
                         if ($player_id !== false) {
                             $goods['amount'] = isset($m[$goods['goods_id']]) ? $m[$goods['goods_id']]['amount'] : 0;
                             if(isset($m[$goods['name']]['code'])  && $goods['amount'] > 0) $goods['code'] = $m[$goods['name']]['code'];
@@ -190,6 +245,30 @@ class Goods extends REST2_Controller
                 }
             }
             $goodsList['goods_list'] = array_values($goodsList['goods_list']); // sort array just in case there were unset
+
+            if ($this->input->get('sort')) {
+                // Sorting
+                $sort_data = array('name', 'quantity', 'description', 'date_start', 'date_expire', 'sort_order');
+
+                if ($this->input->get('order') && (mb_strtolower($this->input->get('order')) == 'desc')) {
+                    $order = SORT_DESC;
+                } else {
+                    $order = SORT_ASC;
+                }
+
+                if ($this->input->get('sort') && in_array($this->input->get('sort'), $sort_data)) {
+                    $sort = $this->input->get('sort');
+                } else {
+                    $sort = "sort_order";
+                }
+
+                foreach ($goodsList['goods_list'] as $key => $row) {
+                    $sorter[$key] = $row[$sort];
+                }
+
+                array_multisort($sorter, $order, $goodsList['goods_list']);
+            }
+
             $this->response($this->resp->setRespond($goodsList), 200);
         }
     }
@@ -198,17 +277,6 @@ class Goods extends REST2_Controller
     {
         $validToken_ad = array('client_id' => null, 'site_id' => null);
         /* process group */
-        $results = $this->goods_model->getGroupsAggregate($validToken_ad['site_id']);
-        $ids = array();
-        $group_name = array();
-        foreach ($results as $i => $result) {
-            $group = $result['_id']['group'];
-            $quantity = $result['quantity'];
-            $list = $result['list'];
-            $first = array_shift($list); // skip first one
-            $group_name[$first->{'$id'}] = array('group' => $group, 'quantity' => $quantity);
-            $ids = array_merge($ids, $list);
-        }
         /* find my goods */
         $player_id = $this->input->get('player_id');
         if ($player_id !== false) {
@@ -232,12 +300,7 @@ class Goods extends REST2_Controller
             $goods['goods']['is_group'] = array_key_exists('group', $goods['goods']);
             if ($goods['goods']['is_group']) {
                 $group = $goods['goods']['group'];
-                foreach ($group_name as $each) {
-                    if ($each['group'] == $group) {
-                        $goods['goods']['quantity'] = $each['quantity'];
-                        break;
-                    }
-                }
+                $goods['goods']['quantity'] = $this->goods_model->checkGoodsGroupQuantity($this->site_id, $group);
                 if ($player_id !== false) {
                     $goods['amount'] = isset($m[$group]) ? $m[$group]['amount'] : 0;
                 }
@@ -249,15 +312,22 @@ class Goods extends REST2_Controller
             $this->response($this->resp->setRespond($goods), 200);
         } else // list all
         {
-            $goodsList['goods_list'] = $this->goods_model->getAllGoods($validToken_ad, $ids);
+            $group_list = $this->goods_model->getGroupsList($this->site_id);
+            $in_goods = array();
+            foreach ($group_list as $group_name){
+                $goods_group_detail =  $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name['name']);
+                array_push($in_goods, new MongoId($goods_group_detail));
+            }
+            $validToken_ad['specific'] = array('$or' => array(array("group" => array('$exists' => false ) ), array("goods_id" => array('$in' => $in_goods ) ) ));
+            $goodsList['goods_list'] = $this->goods_model->getAllGoods($validToken_ad);
             if (is_array($goodsList['goods_list'])) {
                 foreach ($goodsList['goods_list'] as &$goods) {
                     $goods_id = $goods['_id'];
                     $is_group = array_key_exists('group', $goods);
                     if ($is_group) {
                         $goods['is_group'] = true;
-                        $goods['name'] = $group_name[$goods_id]['group'];
-                        $goods['quantity'] = $group_name[$goods_id]['quantity'];
+                        $goods['name'] = $goods['group'];
+                        $goods['quantity'] = $this->goods_model->checkGoodsGroupQuantity($this->site_id, $goods['group']);
                         if ($player_id !== false) {
                             $goods['amount'] = isset($m[$goods['name']]) ? $m[$goods['name']]['amount'] : 0;
                         }
@@ -293,29 +363,19 @@ class Goods extends REST2_Controller
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         }
         /* process group */
-        $results = $this->goods_model->getGroupsAggregate($validToken_ad['site_id']);
-        $ids = array();
-        $group_name = array();
-        foreach ($results as $i => $result) {
-            $group = $result['_id']['group'];
-            $quantity = $result['quantity'];
-            $list = $result['list'];
-            $first = array_shift($list); // skip first one
-            $group_name[$first->{'$id'}] = array('group' => $group, 'quantity' => $quantity);
-            $ids = array_merge($ids, $list);
+        $group_list = $this->goods_model->getGroupsList($this->site_id);
+        $in_goods = array();
+        foreach ($group_list as $group_name){
+            $goods_group_detail =  $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name['name']);
+            array_push($in_goods, new MongoId($goods_group_detail));
         }
+        $validToken_ad['specific'] = array('$or' => array(array("group" => array('$exists' => false ) ), array("goods_id" => array('$in' => $in_goods ) ) ));
         /* goods list */
-        $goodsList = $this->goods_model->getAllGoods($validToken_ad, $ids);
+        $goodsList = $this->goods_model->getAllGoods($validToken_ad);
         $goods['goods'] = $this->recommend($pb_player_id, $goodsList);
         $goods['goods']['is_group'] = array_key_exists('group', $goods['goods']);
         if ($goods['goods']['is_group']) {
-            $group = $goods['goods']['group'];
-            foreach ($group_name as $each) {
-                if ($each['group'] == $group) {
-                    $goods['goods']['quantity'] = $each['quantity'];
-                    break;
-                }
-            }
+            $goods['goods']['quantity'] = $this->goods_model->checkGoodsGroupQuantity($this->site_id, $goods['goods']['group']);
         }
         $this->response($this->resp->setRespond($goods), 200);
     }

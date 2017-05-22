@@ -38,6 +38,7 @@ class Engine extends Quest
         $this->load->model('badge_model');
         $this->load->model('reward_model');
         $this->load->model('location_model');
+        $this->load->model('link_model');
     }
 
     public function getActionConfig_get()
@@ -893,9 +894,15 @@ class Engine extends Quest
                     $input['level'] = $level['level'];
                 }
 
-                // Level condition
+                // deepling_feedback
+                if (($input['jigsaw_name']) == 'deeplink' && $input['jigsaw_category'] == 'FEEDBACK') {
+
+                    $input['deeplink_config'] = $this->link_model->getConfig($input['client_id'], $input['site_id']);
+                }
+
+                // Location Area condition
                 if (($input['jigsaw_name']) == 'locationArea') {
-                    //read player information
+                    //read location information
                     $location_info = $this->location_model->getLocation($client_id, $site_id, array('location_id' => $jigsawConfig['location_id']));
                     $jigsawConfig['latitude'] = isset($location_info[0]['latitude']) ? $location_info[0]['latitude'] : null;
                     $jigsawConfig['longitude'] = isset($location_info[0]['longitude']) ? $location_info[0]['longitude'] : null;
@@ -905,7 +912,7 @@ class Engine extends Quest
                 if (($input['jigsaw_name']) == 'userProfile' || ($input['jigsaw_name']) == 'specialRewardCondition') {
                     //read player information
                     $player_profile = $this->player_model->readPlayer($input['pb_player_id'], $this->site_id, array(
-                        'exp','gender','birth_date'
+                        'exp','gender','birth_date','tags'
                     ));
 
                     $level = $this->level_model->getLevelByExp($player_profile['exp'], $this->validToken['client_id'],
@@ -1077,7 +1084,7 @@ class Engine extends Quest
                             if (!$input["test"] && !$anonymousUser) {
                                 $eventMessage = $this->utility->getEventMessage(
                                     'point',
-                                    $jigsawConfig['quantity'],
+                                    intval($event['value']),
                                     $jigsawConfig['reward_name']);
 
                                 //log event - reward, custom point
@@ -1087,14 +1094,14 @@ class Engine extends Quest
                                     array_merge($input, array(
                                         'reward_id' => $jigsawConfig['reward_id'],
                                         'reward_name' => $jigsawConfig['reward_name'],
-                                        'amount' => $jigsawConfig['quantity'],
+                                        'amount' => intval($event['value']),
                                         'transaction_id' => isset($event['transaction_id']) && $event['transaction_id']? $event['transaction_id'] : null
                                     )));
 
                                 //publish to node stream
                                 $this->node->publish(array_merge($input, array(
                                     'message' => $eventMessage,
-                                    'amount' => $jigsawConfig['quantity'],
+                                    'amount' => intval($event['value']),
                                     'point' => $jigsawConfig['reward_name']
                                 )), $site_name, $site_id);
 
@@ -1176,7 +1183,7 @@ class Engine extends Quest
                                     'event_type' => isset($reward['reward_status']) && !empty($reward['reward_status']) ? $reward['reward_status'] : 'REWARD_RECEIVED',
                                     'reward_type' => $jigsawConfig['reward_name'],
                                 );
-                                $event['value'] = $event['event_type'] == "REWARD_NOT_AVAILABLE" ? "0" : $jigsawConfig['quantity']."";
+                                $event['value'] = $event['event_type'] == "REWARD_NOT_AVAILABLE" ? "0" : ((isset($reward['reward_amount']) && !empty($reward['reward_amount'])) ? $reward['reward_amount']."" :$jigsawConfig['quantity']."");
 
                                 if (isset($reward['transaction_id']) && !empty($reward['transaction_id'])) {
                                     $event['transaction_id'] = $reward['transaction_id'];
@@ -1187,7 +1194,7 @@ class Engine extends Quest
                                 if (!$input["test"]) {
                                     $eventMessage = $this->utility->getEventMessage(
                                         'point',
-                                        $jigsawConfig['quantity'],
+                                        intval($event['value']),
                                         $jigsawConfig['reward_name']);
                                     //log event - reward, non-custom point
                                     $this->tracker_model->trackEvent(
@@ -1196,13 +1203,13 @@ class Engine extends Quest
                                         array_merge($input, array(
                                             'reward_id' => $jigsawConfig['reward_id'],
                                             'reward_name' => $jigsawConfig['reward_name'],
-                                            'amount' => $jigsawConfig['quantity'],
+                                            'amount' => intval($event['value']),
                                             'transaction_id' => isset($event['transaction_id']) && $event['transaction_id']? $event['transaction_id'] : null
                                         )));
                                     //publish to node stream
                                     $this->node->publish(array_merge($input, array(
                                         'message' => $eventMessage,
-                                        'amount' => $jigsawConfig['quantity'],
+                                        'amount' => intval($event['value']),
                                         'point' => $jigsawConfig['reward_name']
                                     )), $site_name, $site_id);
                                     //publish to facebook notification
@@ -1343,7 +1350,14 @@ class Engine extends Quest
                         }  // close if(isset($exInfo['dynamic']))
                     } elseif ($jigsawCategory == 'FEEDBACK') {
                         if (!$input["test"]) {
-                            $this->processFeedback($jigsawName, array_merge($input, array('coupon' => $last_coupon)));
+                            $this->processFeedback($jigsawName, array_merge($input, array('coupon' => $last_coupon)),$output);
+                            if($jigsawName == "deeplink" && $output){
+                                $apiResult['events'][] = array(
+                                    'event_type' => 'DEEPLINK_GENERATED',
+                                    'reward_type' => 'deeplink',
+                                    'link_url' => $output,
+                                );
+                            }
                         }
                     } else {
                         //check for completed objective
@@ -1402,14 +1416,20 @@ class Engine extends Quest
                         break;
                     } // break early, do not process next jigsaw
                 } else {  // jigsaw return false
-                    if ($this->is_reward($jigsawCategory)) { // REWARD, FEEDBACK
+                    if ($this->is_reward($jigsawCategory)) { // REWARD, FEEDBACK, GROUP, REWARD_SEQUENCE
                         if (isset($exInfo['break']) && $exInfo['break']) {
                             break;
                         }
                     } else {
                         // fail, log jigsaw - ACTION or CONDITION
                         if (!$input["test"] && $jigsawCategory != 'REWARD_SEQUENCE' && $input['jigsaw_name'] != 'sequence') {
+                            // In case of sequence reward, it's already logged in the jigsaw to avoid concurrent issue
                             $this->client_model->log($input, $exInfo);
+                        }
+
+                        //Throw error set by jigsaw
+                        if(isset($exInfo['error'])){
+                            throw new Exception($exInfo['error']);
                         }
                         break;
                     }
@@ -1457,7 +1477,7 @@ class Engine extends Quest
 
     private function is_reward($category)
     {
-        return in_array($category, array('REWARD', 'FEEDBACK'));
+        return in_array($category, array('REWARD', 'FEEDBACK', 'GROUP', 'REWARD_SEQUENCE'));
     }
 
     private function giveGoods($jigsawConfig, $input, $validToken, &$event, $fbData, $goodsData)
@@ -1475,7 +1495,8 @@ class Engine extends Quest
                 $id_array = array();
                 $code_array = array();
                 foreach($rand_goods as $index){
-                    $player_goods = $this->goods_model->getPlayerGoodsGroup($validToken['site_id'], $goodsData['group'] , $input['pb_player_id']);
+                    $per_user_include_inactive = isset($goods_group_rewards[$index]['per_user_include_inactive']) ? $goods_group_rewards[$index]['per_user_include_inactive'] : false;
+                    $player_goods = $this->goods_model->getPlayerGoodsGroup($validToken['site_id'], $goodsData['group'] , $input['pb_player_id'], $per_user_include_inactive);
                     if(($goods_group_rewards[$index]['per_user'] > $player_goods) || ($goods_group_rewards[$index]['per_user'] == null)) {
                         try {
                             $return_data = $this->client_model->updateplayerGoods($goods_group_rewards[$index]['goods_id'], 1,
@@ -1510,7 +1531,8 @@ class Engine extends Quest
                 $event['log_id'] = null;
             }
         } else {
-            $player_goods = $this->goods_model->getPlayerGoods($validToken['site_id'], $goodsData['goods_id'], $input['pb_player_id']);
+            $per_user_include_inactive = isset($goodsData['per_user_include_inactive']) ? $goodsData['per_user_include_inactive'] : false;
+            $player_goods = $this->goods_model->getPlayerGoods($validToken['site_id'], $goodsData['goods_id'], $input['pb_player_id'], $per_user_include_inactive);
             if(isset($goodsData['per_user']) && (int)$goodsData['per_user'] > 0){
                 $quantity = ((int)$jigsawConfig['quantity'] + (int)$player_goods) > (int)$goodsData['per_user'] ? (int)$goodsData['per_user'] - (int)$player_goods : $jigsawConfig['quantity'];
             }
@@ -1528,6 +1550,7 @@ class Engine extends Quest
                 'goods_name' => $goodsData['name'],
                 'is_sponsor' => false,
                 'amount' => $jigsawConfig['quantity'],
+                'date_expire' => isset($goodsData['date_expired_coupon']) ? $goodsData['date_expired_coupon'] : null,
                 'redeem' => null, // cannot pull from goodsData, should pull from "redeem" condition for rule context
                 'action_name' => 'redeem_goods',
                 'action_icon' => 'fa-icon-shopping-cart',

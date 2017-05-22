@@ -134,7 +134,7 @@
               "Required": "Y",
               "Default": "",
               "Type": "string",
-              "Description": "access token returned from Auth"
+              "Description": "api key issued by Playbasis"
             },
             {
               "Name": "player_id",
@@ -177,6 +177,13 @@
               "Default": "",
               "Type": "string",
               "Description": "+66xxyyyzzzz"
+            },
+            {
+              "Name": "tags",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "Specific tag(s) to find (e.g. foo,bar)"
             },
             {
               "Name": "facebook_id",
@@ -286,7 +293,7 @@
               "Required": "Y",
               "Default": "",
               "Type": "string",
-              "Description": "access token returned from Auth"
+              "Description": "api key issued by Playbasis"
             }
           ],
           "responses": {
@@ -352,6 +359,7 @@
               "first_name":   { "-type": "string"},
               "last_name":    { "-type": "string"},
               "gender":       { "-type": "integer"},
+              "tags":         { "-type": "any", "-optional": "true"},
               "birth_date":   { "-type": "string"},
               "registered":   { "-type": "string"},
               "last_login":   { "-type": "string"},
@@ -396,6 +404,7 @@
               "first_name":   { "-type": "string"},
               "last_name":    { "-type": "string"},
               "gender":       { "-type": "integer"},
+              "tags":         { "-type": "any", "-optional": "true"},
               "birth_date":   { "-type": "string"},
               "registered":   { "-type": "string"},
               "last_login":   { "-type": "string"},
@@ -409,6 +418,7 @@
           "HTTPMethod": "POST",
           "URI": "Player/list",
           "RequiresOAuth": "N",
+          "parameters_or" : [["list_player_id","tags"]],
           "Public": "Y",
           "parameters": [
             {
@@ -420,10 +430,17 @@
             },
             {
               "Name": "list_player_id",
-              "Required": "Y",
+              "Required": "OR",
               "Default": "",
               "Type": "string",
-              "Description": "player id as used in client's website separate with ',' example '1,2,3'"
+              "Description": "player id as used in client's website separate with ',' example '1,2,3' (either list_player_id or tags is required)"
+            },
+            {
+              "Name": "tags",
+              "Required": "OR",
+              "Default": "",
+              "Type": "string",
+              "Description": "Specific tag(s) to find (either list_player_id or tags is required)"
             }
           ],
           "response": {
@@ -440,6 +457,7 @@
                 "first_name":   { "-type": "string"},
                 "last_name":    { "-type": "string"},
                 "gender":       { "-type": "integer"},
+                "tags":         { "-type": "any", "-optional": "true"},
                 "birth_date":   { "-type": "string"},
                 "registered":   { "-type": "string"},
                 "last_login":   { "-type": "string"},
@@ -464,6 +482,13 @@
               "Default": "",
               "Type": "string",
               "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "token",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "access token returned from Player Auth"
             }
           ],
           "response": {
@@ -475,6 +500,7 @@
               "first_name":       { "-type": "string"},
               "last_name":        { "-type": "string"},
               "gender":           { "-type": "integer"},
+              "tags":             { "-type": "any", "-optional": "true"},
               "birth_date":       { "-type": "string"},
               "registered":       { "-type": "string"},
               "percent_of_level": { "-type": "number"},
@@ -549,6 +575,7 @@
               "first_name":       { "-type": "string"},
               "last_name":        { "-type": "string"},
               "gender":           { "-type": "integer"},
+              "tags":             { "-type": "any", "-optional": "true"},
               "birth_date":       { "-type": "string"},
               "registered":       { "-type": "string"},
               "percent_of_level": { "-type": "double"},
@@ -766,6 +793,13 @@
               ]
             },
             {
+              "Name": "tags",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "Specific tag(s) to find (e.g. foo,bar)"
+            },
+            {
               "Name": "birth_date",
               "Required": "N",
               "Default": "",
@@ -957,6 +991,13 @@
                 "1",
                 "2"
               ]
+            },
+            {
+              "Name": "tags",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "Specific tag(s) for finding (set as 'null' to clear)"
             },
             {
               "Name": "birth_date",
@@ -1766,6 +1807,7 @@
               "hint":         { "-type": "string"},
               "sponsor":      { "-type": "boolean"},
               "per_user":     { "-type": "integer" , "-optional": "true"},
+              "visible":      { "-type": "boolean" , "-optional": "true"},
               "tags":         { "-type": "any", "-optional": "true"},
               "amount":       { "-type": "number"}
             }
@@ -1982,10 +2024,56 @@
                 "amount":       { "-type": "number"},
                 "tags":         { "-type": "any" , "-optional": "true"},
                 "date_expire":  { "-type": "string" , "-optional": "true"},
-                "status":       { "-type": "string"}
+                "status":       { "-type": "string"},
+                "is_favorite":  { "-type": "boolean" , "-optional": "true"}
               }
             ]
           }
+        },
+        {
+          "MethodName": "Favorite Goods",
+          "Synopsis": "Set specific goods in player's inventory as favorite.",
+          "HTTPMethod": "POST",
+          "URI": "Player/:id/goods/favorite",
+          "RequiresOAuth": "N",
+          "Public": "Y",
+          "PlayerAuthRequired": "Y",
+          "PlayerTokenCheckWith":"id",
+          "parameters": [
+            {
+              "Name": "token",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "access token returned from Auth"
+            },
+            {
+              "Name": "id",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "goods_id",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "goods id of goods store"
+            },
+            {
+              "Name": "status",
+              "Required": "Y",
+              "Default": "true",
+              "Type": "enumerated",
+              "Description": "Favorite status (true or false)",
+              "EnumeratedList": [
+                "true",
+                "false"
+              ]
+            }
+          ],
+          "response": []
         },
         {
           "MethodName": "Goods Count",
@@ -3147,6 +3235,13 @@
               ]
             },
             {
+              "Name": "name",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "name or group name of goods to search"
+            },
+            {
               "Name": "date_start",
               "Required": "N",
               "Default": "",
@@ -3159,6 +3254,20 @@
               "Default": "",
               "Type": "string",
               "Description": "date end in the format YYYY-MM-DD (ex.1982-09-29) to filter goods that valid date start/expire in period"
+            },
+            {
+              "Name": "sort",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "Specify field to be sorted [ *sort_order*, name, quantity, description, date_start, date_expire]"
+            },
+            {
+              "Name": "order",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "Specify sorted direction [desc, *asc*]"
             },
             {
               "Name": "offset",
@@ -3180,6 +3289,13 @@
               "Default": "",
               "Type": "string",
               "Description": "Specific tag(s) to find (e.g. foo,bar)"
+            },
+            {
+              "Name": "custom_param",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "Specific custom param(s) to find (key or key|operator[<,<=,>,>=,=,!=]|value  e.g.  price|>=|1, price|<=|10 ) "
             }
           ],
           "responses": {
@@ -3201,6 +3317,7 @@
                   },
                   "custom":             { "-type": "any", "-optional": "true"}
                 },
+                "custom_param":         { "-type": "any", "-optional": "true"},
                 "sponsor":              { "-type": "boolean"},
                 "organize":             { "-type": "string", "-optional": "true"},
                 "organize_id":          { "-type": "string", "-optional": "true"},
@@ -3790,7 +3907,7 @@
         },
         {
           "MethodName": "Merchant Redeem Coupon",
-          "Synopsis": "Marchant Redeem Coupon From Player",
+          "Synopsis": "Merchant Redeem Coupon From Player",
           "HTTPMethod": "POST",
           "URI": "Merchant/goodsGroup/redeem",
           "RequiresOAuth": "N",
@@ -3835,6 +3952,50 @@
             }
           ],
           "responses": {
+            "success": { "-type": "boolean"},
+            "details": { "-type": "any", "-optional": "true"}
+          }
+        },
+        {
+          "MethodName": "Merchant Redeem Normal Goods",
+          "Synopsis": "Merchant Redeem Normal Goods From Player",
+          "HTTPMethod": "POST",
+          "URI": "Merchant/goods/redeem",
+          "RequiresOAuth": "N",
+          "Public": "Y",
+          "PlayerAuthRequired": "Y",
+          "PlayerTokenCheckWith":"player_id",
+          "parameters": [
+            {
+              "Name": "token",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "access token returned from Auth"
+            },
+            {
+              "Name": "goods_name",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "goods name"
+            },
+            {
+              "Name": "player_id",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "amount",
+              "Required": "N",
+              "Default": "",
+              "Type": "integer",
+              "Description": "amount of the goods to redeem from player (default = 1)"
+            }
+          ],
+          "response": {
             "success": { "-type": "boolean"},
             "details": { "-type": "any", "-optional": "true"}
           }
@@ -5731,6 +5892,13 @@
               "Default": "",
               "Type": "string",
               "Description": "option id"
+            },
+            {
+              "Name": "answer",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "Specific answer required for range options"
             }
           ],
           "responses": {
@@ -10427,6 +10595,67 @@
               "tags":          {"-type": "any", "-optional": "true"},
               "date_added":    {"-type": "string", "-optional": "true"},
               "date_modified": {"-type": "string", "-optional": "true"}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Timestamp API",
+      "endpoint": ["Timestamp"],
+      "Public": "Y",
+      "methods": [
+        {
+          "MethodName": "Record timestamp",
+          "Synopsis": "Record timestamp",
+          "HTTPMethod": "POST",
+          "URI": "Timestamp",
+          "RequiresOAuth": "N",
+          "Public": "Y",
+          "parameters": [
+            {
+              "Name": "token",
+              "Required": "Y",
+              "Default": "",
+              "Type": "string",
+              "Description": "access token returned from Auth"
+            },
+            {
+              "Name": "player_id",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            }
+          ],
+          "response": {}
+        },
+        {
+          "MethodName": "Retrive timestamp",
+          "Synopsis": "Retrive timestamp",
+          "HTTPMethod": "GET",
+          "URI": "Timestamp",
+          "RequiresOAuth": "N",
+          "Public": "Y",
+          "parameters": [
+            {
+              "Name": "player_id",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "sort_order",
+              "Required": "N",
+              "Default": "desc",
+              "Type": "string",
+              "Description": "Specify sorted direction by time [*desc*, asc]"
+            }
+          ],
+          "response": [
+            {
+              "[a-zA-Z0-9-%_:\\.]+":  { "-type": "any", "-optional": "true"}
             }
           ]
         }

@@ -267,6 +267,7 @@ class Client_model extends MY_Model
                         }
                         $transaction_id = $this->mongo_db->insert('playbasis_reward_status_to_player', $inset_data);
                         $status['reward_status'] = "REWARD_PENDING";
+                        $status['reward_amount'] = $inset_data['value'];
                         $status['transaction_id'] = $transaction_id;
                     } else {
                         //update player reward table
@@ -286,8 +287,10 @@ class Client_model extends MY_Model
                             } else {
                                 if (is_null($quantity) || (intval($quantity) >= intval($amount))){
                                     $this->mongo_db->inc('value', intval($amount));
+                                    $status['reward_amount'] = intval($amount);
                                 } else {
                                     $this->mongo_db->inc('value', intval($quantity));
+                                    $status['reward_amount'] = intval($quantity);
                                 }
                             }
                             $this->mongo_db->update('playbasis_reward_to_player');
@@ -304,8 +307,10 @@ class Client_model extends MY_Model
                             );
                             if (is_null($quantity) || (intval($quantity) >= intval($amount))){
                                 $insert_reward['value'] = intval($amount);
+                                $status['reward_amount'] = intval($amount);
                             } else {
                                 $insert_reward['value'] = intval($quantity);
+                                $status['reward_amount'] = intval($quantity);
                             }
                             $this->mongo_db->insert('playbasis_reward_to_player', $insert_reward);
                         }
@@ -335,7 +340,7 @@ class Client_model extends MY_Model
             assert($result);
             $result = $result[0];
             if (is_null($result['limit'])) {
-                return;
+                return $status;
             }
             $this->mongo_db->where(array(
                 'reward_id' => $rewardId,
@@ -759,7 +764,10 @@ class Client_model extends MY_Model
             ));
             $this->mongo_db->set('date_modified', $mongoDate);
             $this->mongo_db->inc('value', intval($quantity));
-            $this->mongo_db->update('playbasis_goods_to_player', array("w" => 0, "j" => false));
+            $data = $this->mongo_db->update('playbasis_goods_to_player');
+            if(isset($goodsInfo['date_expired_coupon']) && !empty($goodsInfo['date_expired_coupon'])){
+                $data['date_expire'] = ($goodsInfo['date_expired_coupon']);
+            }
         } else {
             $data = array(
                 'pb_player_id' => new MongoId($pbPlayerId),
@@ -767,20 +775,23 @@ class Client_model extends MY_Model
                 'client_id' => new MongoId($client_id),
                 'site_id' => new MongoId($site_id),
                 'goods_id' => new MongoId($goodsId),
-                'group' => isset($goodsInfo['group']) ? $goodsInfo['group'] : "",
                 'is_sponsor' => $is_sponsor,
                 'value' => intval($quantity),
                 'date_added' => $mongoDate,
                 'date_modified' => $mongoDate
             );
+            if(isset($goodsInfo['group']) ){
+                $data['group'] = $goodsInfo['group'];
+            }
+
             if(isset($goodsInfo['date_expired_coupon']) && !empty($goodsInfo['date_expired_coupon'])){
                 $data['date_expire'] = ($goodsInfo['date_expired_coupon']);
             } elseif (isset($goodsInfo['days_expire']) && !empty($goodsInfo['days_expire'])) {
                 $data['date_expire'] = new MongoDate(strtotime("+".$goodsInfo['days_expire']. ' day'));
             }
             $this->mongo_db->insert('playbasis_goods_to_player', $data, array("w" => 0, "j" => false));
-            return $data;
         }
+        return $data;
     }
 
     public function getRewardName($input)
