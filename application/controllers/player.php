@@ -1664,7 +1664,7 @@ class Player extends REST2_Controller
         }
         $badges = $this->badge_model->getAllBadges(array_merge($this->validToken, array(
             'tags' => $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null
-        )));
+        )), true);
         if ($badges && $pb_player_id) {
             foreach ($badges as &$badge) {
                 $c = $this->player_model->getBadgeCount($this->site_id, $pb_player_id, new MongoId($badge['badge_id']));
