@@ -9,7 +9,7 @@ class Badge_model extends MY_Model
         $this->config->load('playbasis');
     }
 
-    public function getAllBadges($data)
+    public function getAllBadges($data,$exclude_invisible_badge = false)
     {
         //get badge ids
         $this->set_site_mongodb($data['site_id']);
@@ -40,6 +40,11 @@ class Badge_model extends MY_Model
         if (isset($data['tags'])) {
             $this->mongo_db->where_in('tags', $data['tags']);
         }
+
+        if($exclude_invisible_badge){
+            $this->mongo_db->where_ne('visible',false);
+        }
+
         $badges = $this->mongo_db->get('playbasis_badge_to_client');
         if ($badges) {
             foreach ($badges as &$badge) {
