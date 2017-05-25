@@ -160,15 +160,22 @@ class Goods_model extends MY_Model
         return $this->mongo_db->get('playbasis_goods_distinct_to_client');
     }
 
-    public function getGroupsCustomParam($site_id, $custom_param)
+    public function getGroupsCustomParam($site_id, $custom_param=array())
     {
         $this->mongo_db->select(array('name','is_group'));
         $this->mongo_db->where('site_id', new MongoId($site_id));
 
-        foreach ($custom_param as $param){
-            $this->mongo_db->where($param);
-        }
+        $query_array = array();
+        foreach ($custom_param as $key => $value){
+            if(!is_null($value)){
+                array_push($query_array, array('custom_param' =>array('$elemMatch' => array('key' => $key , 'value' => $value))));
+            } else {
+                array_push($query_array, array('custom_param' =>array('$elemMatch' => array('key' => $key))));
+            }
 
+        }
+        $this->mongo_db->where(array('$and' => $query_array)) ;
+        
         $this->mongo_db->where('deleted', false);
         return $this->mongo_db->get('playbasis_goods_distinct_to_client');
     }
