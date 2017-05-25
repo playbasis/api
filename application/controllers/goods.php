@@ -139,25 +139,46 @@ class Goods extends REST2_Controller
                 foreach ($custom_param as $param) {
                     $param_data = explode('|', $param);
                     if(isset($param_data[0]) && isset($param_data[1]) && isset($param_data[2])){
-                        if ($param_data[1] == '>'){
-                            $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$gt' => $param_data[2]))));
-                        } elseif ($param_data[1] == '>=') {
-                            $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$gte' => $param_data[2]))));
-                        } elseif ($param_data[1] == '<') {
-                            $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$lt' => $param_data[2]))));
-                        } elseif ($param_data[1] == '<=') {
-                            $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$lte' => $param_data[2]))));
-                        } elseif ($param_data[1] == '!=') {
-                            $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$ne' => $param_data[2]))));
-                        } elseif ($param_data[1] == '=') {
-                            $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0] , 'value' => array('$eq' => $param_data[2]))));
+                        $param_data[0] = is_numeric($param_data[2]) ? $param_data[0].'_numeric' : $param_data[0];
+                        if(isset($custom_array[$param_data[0]])) {
+                            if ($param_data[1] == '!=') {
+                                $custom_array[$param_data[0]]['$ne'] = is_numeric($param_data[2]) ? floatval($param_data[2]) : $param_data[2];
+                            } elseif (($param_data[1] == '>') && is_numeric($param_data[2])) {
+                                $custom_array[$param_data[0]]['$gt'] = floatval($param_data[2]);
+                            } elseif (($param_data[1] == '>=') && is_numeric($param_data[2])) {
+                                $custom_array[$param_data[0]]['$gte'] = floatval($param_data[2]);
+                            } elseif (($param_data[1] == '<') && is_numeric($param_data[2])) {
+                                $custom_array[$param_data[0]]['$lt'] = floatval($param_data[2]);
+                            } elseif (($param_data[1] == '<=') && is_numeric($param_data[2])) {
+                                $custom_array[$param_data[0]]['$lte'] = floatval($param_data[2]);
+                            } else {
+                                $custom_array[$param_data[0]]['$eq'] = is_numeric($param_data[2]) ? floatval($param_data[2]) : $param_data[2];
+                            }
+                        } else {
+                            if ($param_data[1] == '!=') {
+                                $custom_array[$param_data[0]] = array('$ne' => is_numeric($param_data[2]) ? floatval($param_data[2]) : $param_data[2]);
+                            } elseif (($param_data[1] == '>') && is_numeric($param_data[2])) {
+                                $custom_array[$param_data[0]] = array('$gt' => floatval($param_data[2]));
+                            } elseif (($param_data[1] == '>=') && is_numeric($param_data[2])) {
+                                $custom_array[$param_data[0]] = array('$gte' => floatval($param_data[2]));
+                            } elseif (($param_data[1] == '<') && is_numeric($param_data[2])) {
+                                $custom_array[$param_data[0]] = array('$lt' => floatval($param_data[2]));
+                            } elseif (($param_data[1] == '<=') && is_numeric($param_data[2])) {
+                                $custom_array[$param_data[0]] = array('$lte' => floatval($param_data[2]));
+                            } else {
+                                $custom_array[$param_data[0]] = array('$eq' => is_numeric($param_data[2]) ? floatval($param_data[2]) : $param_data[2]);
+                            }
                         }
                     } else {
-                        $custom_param_query = array('custom_param' => array('$elemMatch' => array('key' => $param_data[0])));
+                        if(isset($custom_array[$param_data[0]])) {
+                            $custom_array[$param_data[0]] = $custom_array[$param_data[0]];
+                        } else {
+                            $custom_array[$param_data[0]] = null;
+                        }
                     }
-                    array_push($custom_array, $custom_param_query);
                 }
 
+                
                 $custom_goods = $this->goods_model->getGroupsCustomParam($this->site_id, $custom_array);
                 $in_group = array();
                 $goods_param_id = array();
