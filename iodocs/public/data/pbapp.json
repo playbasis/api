@@ -913,7 +913,9 @@
               "Description": "referral code of another player for invitation system"
             }
           ],
-          "response": []
+          "response": {
+            "referrer_id": { "-type": "string", "-optional": "true"}
+          }
         },
         {
           "MethodName": "Update",
