@@ -619,6 +619,7 @@ class Player extends REST2_Controller
                     $action_count = $this->player_model->getActionCount($pb_player_id_B, $action_id, $site_id);
                     if ($action_count && isset($action_count['count']) && $action_count['count'] < 1){
                         $platform = $this->auth_model->getOnePlatform($client_id, $site_id);
+
                         // [rule] A invite B
                         $this->utility->request('engine', 'json', http_build_query(array(
                             'api_key' => $platform['api_key'],
@@ -634,6 +635,9 @@ class Player extends REST2_Controller
                             'action' => ACTION_INVITED,
                             'pb_player_id-2' => $playerA['_id'] . ''
                         )));
+                        $this->response($this->resp->setRespond(array('referrer_id' => $playerA['cl_player_id'])), 200);
+                    }else{
+                        $this->response($this->error->setError('REFERRAL_PLAYER_ALREADY_BE_INVITED'), 200);
                     }
                 }
             } else {
