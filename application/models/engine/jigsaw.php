@@ -1554,7 +1554,7 @@ class jigsaw extends MY_Model
         if (!$quantity) {
             return true;
         }
-        $goods = $this->getGoods($client_id, $site_id, $goodsId);
+        $goods = $this->getGoods($site_id, $goodsId);
         if (!$goods) {
             return false;
         }
@@ -1927,9 +1927,9 @@ class jigsaw extends MY_Model
 
     }
 
-    public function getGoods($client_id, $site_id, $goodsId)
+    public function getGoods($site_id, $goodsId)
     {
-        $group = $this->getGroupByID($client_id, $site_id, $goodsId);
+        $group = $this->getGroupByID($site_id, $goodsId);
         $this->set_site_mongodb($site_id);
         $d = new MongoDate();
         $this->mongo_db->select(array(
@@ -1952,7 +1952,6 @@ class jigsaw extends MY_Model
         }
 
         $this->mongo_db->where(array(
-            'client_id' => $client_id,
             'site_id' => $site_id,
             '$and' => array(
                 array(
