@@ -442,6 +442,10 @@ class Error extends CI_Model
                 $errorData['message'] = "Referral code is invalid";
                 $errorData['error_code'] = '2201';
                 break;
+            case 'REFERRAL_PLAYER_ALREADY_BE_INVITED':
+                $errorData['message'] = "The user has already been invited by other referrer";
+                $errorData['error_code'] = '2202';
+                break;
             case 'ANONYMOUS_NOT_FOUND':
                 $errorData['message'] = "Anonymous not available";
                 $errorData['error_code'] = '1102';
