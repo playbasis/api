@@ -764,9 +764,17 @@ class Client_model extends MY_Model
             ));
             $this->mongo_db->set('date_modified', $mongoDate);
             $this->mongo_db->inc('value', intval($quantity));
-            $data = $this->mongo_db->update('playbasis_goods_to_player');
+            $this->mongo_db->update('playbasis_goods_to_player');
+
+            $this->mongo_db->where(array(
+                'pb_player_id' => new MongoId($pbPlayerId),
+                'goods_id' => new MongoId($goodsId)
+            ));
+            $data = $this->mongo_db->get('playbasis_goods_to_player');
+
+            $data = $data ? $data[0] : array();
             if(isset($goodsInfo['date_expired_coupon']) && !empty($goodsInfo['date_expired_coupon'])){
-                $data['date_expire'] = ($goodsInfo['date_expired_coupon']);
+                $data['date_expire'] = $goodsInfo['date_expired_coupon'];
             }
         } else {
             $data = array(
