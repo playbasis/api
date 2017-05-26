@@ -1554,7 +1554,7 @@ class jigsaw extends MY_Model
         if (!$quantity) {
             return true;
         }
-        $goods = $this->getGoods($site_id, $goodsId);
+        $goods = $this->getGoods($client_id, $site_id, $goodsId);
         if (!$goods) {
             return false;
         }
@@ -1884,8 +1884,52 @@ class jigsaw extends MY_Model
         return $ret;
     }
 
-    public function getGoods($site_id, $goodsId)
+    public function getGoodsByGroup($site_id, $group)
     {
+        $this->set_site_mongodb($site_id);
+        $this->mongo_db->select(array(
+            'goods_id',
+            'name',
+            'description',
+            'image',
+            'date_start',
+            'date_expire',
+            'quantity',
+            'per_user',
+            'per_user_include_inactive',
+            'redeem',
+            'group',
+            'code',
+            'organize_id',
+            'organize_role',
+            'tags'
+        ));
+        $this->mongo_db->where(array(
+            'site_id' => $site_id,
+            'group' => $group,
+            'deleted' => false,
+            'status' => true
+        ));
+        $this->mongo_db->where_gt('quantity', 0);
+
+        $this->mongo_db->where('$or',  array(array('date_expired_coupon' => array('$exists' => false)), array('date_expired_coupon' => array('$gt' => new MongoDate()))));
+        return $this->mongo_db->get('playbasis_goods_to_client');
+    }
+    public function getGroupByID($site_id, $goodsId){
+        $this->mongo_db->where(array(
+            'site_id' => $site_id,
+            'goods_id' => $goodsId,
+            'deleted' => false,
+            'status' => true
+        ));
+        $result = $this->mongo_db->get('playbasis_goods_to_client');
+        return isset($result[0]['group']) ? $result[0]['group'] : null;
+
+    }
+
+    public function getGoods($client_id, $site_id, $goodsId)
+    {
+        $group = $this->getGroupByID($client_id, $site_id, $goodsId);
         $this->set_site_mongodb($site_id);
         $d = new MongoDate();
         $this->mongo_db->select(array(
@@ -1901,9 +1945,15 @@ class jigsaw extends MY_Model
             'code',
             'tags'
         ));
+        if(is_null($group)){
+            $this->mongo_db->where('goods_id', $goodsId);
+        } else {
+            $this->mongo_db->where('group', $group);
+        }
+
         $this->mongo_db->where(array(
+            'client_id' => $client_id,
             'site_id' => $site_id,
-            'goods_id' => $goodsId,
             '$and' => array(
                 array(
                     '$or' => array(

@@ -394,13 +394,28 @@ class Goods_model extends MY_Model
     public function getTotalGoodsByGroup($client_id, $site_id, $group)
     {
         $this->set_site_mongodb($site_id);
+        $d = new MongoDate();
         $this->mongo_db->select(array('goods_id', 'date_start', 'date_expire', 'quantity', 'per_user', 'redeem'));
         $this->mongo_db->where(array(
             'client_id' => $client_id,
             'site_id' => $site_id,
             'group' => $group,
             'deleted' => false,
-            'status' => true
+            'status' => true,
+            '$and' => array(
+                array(
+                    '$or' => array(
+                        array('date_start' => array('$lte' => $d)),
+                        array('date_start' => null)
+                    )
+                ),
+                array(
+                    '$or' => array(
+                        array('date_expire' => array('$gte' => $d)),
+                        array('date_expire' => null)
+                    )
+                )
+            ),
         ));
         $this->mongo_db->where_gt('quantity', 0);
         $this->mongo_db->where('$or',  array(array('date_expired_coupon' => array('$exists' => false)), array('date_expired_coupon' => array('$gt' => new MongoDate()))));
@@ -459,6 +474,7 @@ class Goods_model extends MY_Model
     public function getGoodsByGroup($client_id, $site_id, $group, $offset = null, $limit = null , $quantity = null)
     {
         $this->set_site_mongodb($site_id);
+        $d = new MongoDate();
         $this->mongo_db->select(array(
             'goods_id',
             'name',
@@ -481,9 +497,24 @@ class Goods_model extends MY_Model
             'site_id' => $site_id,
             'group' => $group,
             'deleted' => false,
-            'status' => true
+            'status' => true,
+            '$and' => array(
+                array(
+                    '$or' => array(
+                        array('date_start' => array('$lte' => $d)),
+                        array('date_start' => null)
+                    )
+                ),
+                array(
+                    '$or' => array(
+                        array('date_expire' => array('$gte' => $d)),
+                        array('date_expire' => null)
+                    )
+                )
+            )
         ));
         $this->mongo_db->where_gt('quantity', 0);
+
         if ($offset !== null) {
             $this->mongo_db->offset($offset);
         }
@@ -494,7 +525,7 @@ class Goods_model extends MY_Model
             $this->mongo_db->where('quantity', (int)$quantity);
         }
 
-        $this->mongo_db->where('$or',  array(array('date_expired_coupon' => array('$exists' => false)), array('date_expired_coupon' => array('$gt' => new MongoDate()))));
+        $this->mongo_db->where('$or',  array(array('date_expired_coupon' => array('$exists' => false)), array('date_expired_coupon' => array('$gt' => $d))));
         return $this->mongo_db->get('playbasis_goods_to_client');
     }
 
