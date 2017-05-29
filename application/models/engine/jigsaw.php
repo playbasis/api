@@ -235,28 +235,30 @@ class jigsaw extends MY_Model
         assert(isset($config['badge_id']));
         assert(isset($config['value']));
         $result = false;
-
+        $amount = 0;
         foreach ($input['player_badge'] as $key => $badge) {
             if (($badge['badge_id'] == $config['badge_id']) ) {
-                if(isset($config['param_operator'])){
-                    if ($config['param_operator'] == '=') {
-                        $result = ($badge['amount'] == $config['value']);
-                    } elseif ($config['param_operator'] == '!=') {
-                        $result = ($badge['amount'] != $config['value']);
-                    } elseif ($config['param_operator'] == '>') {
-                        $result = ($badge['amount'] > $config['value']);
-                    } elseif ($config['param_operator'] == '<') {
-                        $result = ($badge['amount'] < $config['value']);
-                    } elseif ($config['param_operator'] == '>=') {
-                        $result = ($badge['amount'] >= $config['value']);
-                    } elseif ($config['param_operator'] == '<=') {
-                        $result = ($badge['amount'] <= $config['value']);
-                    }
-                }else{
-                    $result = $badge['amount'] >= $config['value'];
-                }
+                $amount = $badge['amount'];
                 break;
             }
+        }
+
+        if(isset($config['param_operator'])){
+            if ($config['param_operator'] == '=') {
+                $result = ($amount == $config['value']);
+            } elseif ($config['param_operator'] == '!=') {
+                $result = ($amount != $config['value']);
+            } elseif ($config['param_operator'] == '>') {
+                $result = ($amount > $config['value']);
+            } elseif ($config['param_operator'] == '<') {
+                $result = ($amount < $config['value']);
+            } elseif ($config['param_operator'] == '>=') {
+                $result = ($amount >= $config['value']);
+            } elseif ($config['param_operator'] == '<=') {
+                $result = ($amount <= $config['value']);
+            }
+        }else{
+            $result = $badge['amount'] >= $config['value'];
         }
         return $result;
     }
@@ -1970,6 +1972,7 @@ class jigsaw extends MY_Model
             'status' => true,
             'deleted' => false
         ));
+        $this->mongo_db->where('$or',  array(array('date_expired_coupon' => array('$exists' => false)), array('date_expired_coupon' => array('$gt' => new MongoDate()))));
         $this->mongo_db->limit(1);
         $ret = $this->mongo_db->get("playbasis_goods_to_client");
         return $ret && isset($ret[0]) ? $ret[0] : array();
