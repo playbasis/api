@@ -1910,6 +1910,8 @@ class Player extends REST2_Controller
         foreach ($goodsList['goods'] as $key => &$row) {
             $isFavorite = $this->player_model->getFavoriteGoods($this->client_id, $this->site_id, $pb_player_id, $row['goods_id']);
             $row['is_favorite'] = $isFavorite;
+            $row['is_group'] = array_key_exists('group', $row);
+
             if(isset($row['date_expire']) && !is_null($row['date_expire'])){
                 if($isFavorite){
                     array_push($favorite_not_null_list, $row);

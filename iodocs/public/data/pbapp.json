@@ -2062,7 +2062,8 @@
                 "tags":         { "-type": "any" , "-optional": "true"},
                 "date_expire":  { "-type": "string" , "-optional": "true"},
                 "status":       { "-type": "string"},
-                "is_favorite":  { "-type": "boolean" , "-optional": "true"}
+                "is_favorite":  { "-type": "boolean" , "-optional": "true"},
+                "is_group":     { "-type": "boolean" , "-optional": "true"}
               }
             ]
           }
