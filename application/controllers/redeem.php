@@ -646,17 +646,22 @@ class Redeem extends REST2_Controller
 
     private function checkGoodsTime($goods)
     {
+        $datetimecheck = new DateTime('now');
         if (isset($goods['date_start']) && $goods['date_start']) {
-            $datetimecheck = new DateTime('now');
             $datetimestart = new DateTime($goods['date_start']);
             if ($datetimecheck < $datetimestart) {
                 return false;
             }
         }
         if (isset($goods['date_expire']) && $goods['date_expire']) {
-            $datetimecheck = new DateTime('now');
             $datetimeexpire = new DateTime($goods['date_expire']);
             if ($datetimecheck > $datetimeexpire) {
+                return false;
+            }
+        }
+        if (isset($goods['date_expired_coupon']) && $goods['date_expired_coupon']) {
+            $datetimeexpireCoupon = new DateTime($goods['date_expired_coupon']);
+            if ($datetimecheck > $datetimeexpireCoupon) {
                 return false;
             }
         }
