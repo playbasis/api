@@ -258,7 +258,7 @@ class jigsaw extends MY_Model
                 $result = ($amount <= $config['value']);
             }
         }else{
-            $result = $badge['amount'] >= $config['value'];
+            $result = $amount >= $config['value'];
         }
         return $result;
     }
