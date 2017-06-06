@@ -446,6 +446,10 @@ class Error extends CI_Model
                 $errorData['message'] = "The user has already been invited by other referrer";
                 $errorData['error_code'] = '2202';
                 break;
+            case 'REFERRAL_ACTION_INVITE_OR_INVITED_NOT_AVAILABLE':
+                $errorData['message'] = "This method required action 'INVITE' and 'INVITED' to be available";
+                $errorData['error_code'] = '2203';
+                break;
             case 'ANONYMOUS_NOT_FOUND':
                 $errorData['message'] = "Anonymous not available";
                 $errorData['error_code'] = '1102';

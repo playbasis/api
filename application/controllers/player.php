@@ -611,40 +611,43 @@ class Player extends REST2_Controller
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         }
 
-        if ($referral_code) {
-            $playerA = $this->player_model->findPlayerByCode($site_id, $referral_code, array('cl_player_id'));
-            if ($playerA && ($playerA['_id'] != $pb_player_id_B)) {
-                $action_id = $this->action_model->findAction(array_merge($this->validToken, array('action_name' => ACTION_INVITED)));
-                if ($action_id) {
-                    $action_count = $this->player_model->getActionCount($pb_player_id_B, $action_id, $site_id);
-                    if ($action_count && isset($action_count['count']) && $action_count['count'] < 1){
-                        $platform = $this->auth_model->getOnePlatform($client_id, $site_id);
-
-                        // [rule] A invite B
-                        $this->utility->request('engine', 'json', http_build_query(array(
-                            'api_key' => $platform['api_key'],
-                            'pb_player_id' => $playerA['_id'] . '',
-                            'action' => ACTION_INVITE,
-                            'pb_player_id-2' => $pb_player_id_B . ''
-                        )));
-
-                        // [rule] B invited by A
-                        $this->utility->request('engine', 'json', http_build_query(array(
-                            'api_key' => $platform['api_key'],
-                            'pb_player_id' => $pb_player_id_B . '',
-                            'action' => ACTION_INVITED,
-                            'pb_player_id-2' => $playerA['_id'] . ''
-                        )));
-                        $this->response($this->resp->setRespond(array('referrer_id' => $playerA['cl_player_id'])), 200);
-                    }else{
-                        $this->response($this->error->setError('REFERRAL_PLAYER_ALREADY_BE_INVITED'), 200);
-                    }
-                }
-            } else {
-                $this->response($this->error->setError('REFERRAL_CODE_INVALID'), 200);
-            }
+        $action_id_invited = $this->action_model->findAction(array_merge($this->validToken, array('action_name' => ACTION_INVITED)));
+        $action_id_invite = $this->action_model->findAction(array_merge($this->validToken, array('action_name' => ACTION_INVITE)));
+        if (!$action_id_invited || !$action_id_invite) {
+            $this->response($this->error->setError('REFERRAL_ACTION_INVITE_OR_INVITED_NOT_AVAILABLE'), 200);
         }
-        $this->response($this->resp->setRespond(), 200);
+
+        $playerA = $this->player_model->findPlayerByCode($site_id, $referral_code, array('cl_player_id'));
+        if ($playerA && ($playerA['_id'] != $pb_player_id_B)) {
+
+            $action_count = $this->player_model->getActionCount($pb_player_id_B, $action_id_invited, $site_id);
+            if ($action_count && isset($action_count['count']) && $action_count['count'] < 1){
+                $platform = $this->auth_model->getOnePlatform($client_id, $site_id);
+
+                // [rule] A invite B
+                $this->utility->request('engine', 'json', http_build_query(array(
+                    'api_key' => $platform['api_key'],
+                    'pb_player_id' => $playerA['_id'] . '',
+                    'action' => ACTION_INVITE,
+                    'pb_player_id-2' => $pb_player_id_B . ''
+                )));
+
+                // [rule] B invited by A
+                $this->utility->request('engine', 'json', http_build_query(array(
+                    'api_key' => $platform['api_key'],
+                    'pb_player_id' => $pb_player_id_B . '',
+                    'action' => ACTION_INVITED,
+                    'pb_player_id-2' => $playerA['_id'] . ''
+                )));
+                $this->response($this->resp->setRespond(array('referrer_id' => $playerA['cl_player_id'])), 200);
+            }else{
+                $this->response($this->error->setError('REFERRAL_PLAYER_ALREADY_BE_INVITED'), 200);
+            }
+
+        } else {
+            $this->response($this->error->setError('REFERRAL_CODE_INVALID'), 200);
+        }
+
     }
     
     public function registerBatch_post()
