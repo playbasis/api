@@ -1864,26 +1864,41 @@ class jigsaw extends MY_Model
     private function getGroupQuantity($client_id, $site_id, $group, $quantity=1)
     {
         $this->set_site_mongodb($site_id);
-        $this->mongo_db->where(array(
-            'client_id' => $client_id,
-            'site_id' => $site_id,
-            'deleted' => false,
-            'group' => $group,
-        ));
-        $this->mongo_db->limit(1);
-        $result = $this->mongo_db->get('playbasis_goods_to_client');
-        $date_expired_coupon = $result && isset($result[0]['date_expired_coupon']) ? $result[0]['date_expired_coupon'] : null;
-        if ($date_expired_coupon && ($date_expired_coupon->sec <= time())) return 0;
+
+        $d = new MongoDate();
 
         $this->mongo_db->where(array(
             'client_id' => $client_id,
             'site_id' => $site_id,
-            'deleted' => false,
             'group' => $group,
+            '$and' => array(
+                array(
+                    '$or' => array(
+                        array('date_start' => array('$lte' => $d)),
+                        array('date_start' => null)
+                    )
+                ),
+                array(
+                    '$or' => array(
+                        array('date_expire' => array('$gte' => $d)),
+                        array('date_expire' => null)
+                    )
+                )
+            ),
+            '$or' => array(
+                array(
+                    'date_expired_coupon' => array('$exists' => false)
+                ),
+                array(
+                    'date_expired_coupon' => array('$gt' => $d)
+                )
+            ),
+            'status' => true,
+            'deleted' => false
         ));
         $this->mongo_db->where_gte('quantity', (int)$quantity);
-        $ret = $this->mongo_db->count('playbasis_goods_to_client');
-        return $ret;
+
+        return $this->mongo_db->count('playbasis_goods_to_client');
     }
 
     public function getGoodsByGroup($site_id, $group)
