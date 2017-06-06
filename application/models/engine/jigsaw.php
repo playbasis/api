@@ -1897,9 +1897,8 @@ class jigsaw extends MY_Model
             'deleted' => false
         ));
         $this->mongo_db->where_gte('quantity', (int)$quantity);
-        $ret = $this->mongo_db->count('playbasis_goods_to_client');
 
-        return $ret;
+        return $this->mongo_db->count('playbasis_goods_to_client');
     }
 
     public function getGoodsByGroup($site_id, $group)
