@@ -3092,8 +3092,10 @@ class Player_model extends MY_Model
     public function generateCode($pb_player_id)
     {
         $code = null;
+        $length = defined('REFERRAL_CODE_LENGTH') ? REFERRAL_CODE_LENGTH : 8;
+
         for ($i = 0; $i < 2; $i++) {
-            $code = get_random_password(8, 8, true, true);
+            $code = get_random_password($length, $length, true, true);
             if (!$this->existsCode($code)) {
                 break;
             }
