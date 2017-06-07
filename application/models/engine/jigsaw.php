@@ -1736,31 +1736,6 @@ class jigsaw extends MY_Model
         return $total;
     }
 
-    private function countPointAwardInDay($reward_id, $client_id, $site_id, $startTime){
-
-        $results = $this->mongo_db->aggregate('playbasis_custom_point_log', array(
-            array(
-                '$match' => array(
-                    'client_id' => $client_id,
-                    'site_id' => $site_id,
-                    'reward_id' => $reward_id,
-                    'date_added' => array('$gte' => new MongoDate($startTime)),
-                ),
-            ),
-
-            array(
-                '$group' => array(
-                    '_id' => null,
-                    'sum' => array('$sum' => '$quantity')
-                )
-            ),
-        ));
-
-        $total = $results['result'] ? $results['result'][0]['sum'] : 0;
-
-        return $total;
-    }
-
     private function countRejectedPointInDay($reward_id, $client_id, $site_id, $startTime){
 
         $results = $this->mongo_db->aggregate('playbasis_reward_status_to_player', array(
