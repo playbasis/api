@@ -625,21 +625,35 @@ class Player extends REST2_Controller
                 $platform = $this->auth_model->getOnePlatform($client_id, $site_id);
 
                 // [rule] A invite B
-                $this->utility->request('engine', 'json', http_build_query(array(
+                $playerA_result = $this->utility->request('engine', 'json', http_build_query(array(
                     'api_key' => $platform['api_key'],
                     'pb_player_id' => $playerA['_id'] . '',
                     'action' => ACTION_INVITE,
                     'pb_player_id-2' => $pb_player_id_B . ''
-                )));
+                )), true);
+                $playerA_result = json_decode($playerA_result[0]);
 
                 // [rule] B invited by A
-                $this->utility->request('engine', 'json', http_build_query(array(
+                $playerB_result = $this->utility->request('engine', 'json', http_build_query(array(
                     'api_key' => $platform['api_key'],
                     'pb_player_id' => $pb_player_id_B . '',
                     'action' => ACTION_INVITED,
                     'pb_player_id-2' => $playerA['_id'] . ''
-                )));
-                $this->response($this->resp->setRespond(array('referrer_id' => $playerA['cl_player_id'])), 200);
+                )), true);
+                $playerB_result = json_decode($playerB_result[0]);
+
+                $this->response($this->resp->setRespond(array(
+                    'inviter_response' => array(
+                        'player_id' => $playerA['cl_player_id'],
+                        'response' => $playerA_result->response
+
+                    ),
+                    'invitee_response' => array(
+                        'player_id' => $cl_player_id_B,
+                        'response' => $playerB_result->response
+                    )
+                )), 200);
+
             }else{
                 $this->response($this->error->setError('REFERRAL_PLAYER_ALREADY_BE_INVITED'), 200);
             }
