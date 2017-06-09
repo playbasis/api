@@ -277,15 +277,21 @@ class Utility extends CI_Model
     {
         return ($input || $input === "0");
     }
-    public function request($class, $method, $arg)
+
+    public function request($class, $method, $arg, $acknowledge = false)
     {
         $base_url = $this->config->base_url();
         $cmd = "curl -k '$base_url$class/$method?$arg'";
-        if (EXEC_BACKGROUND) {
+        if (EXEC_BACKGROUND && !$acknowledge) {
             $cmd .= ' > /dev/null 2>&1 &';
         }
         exec($cmd, $output, $exit);
-        return $exit == 0;
+        if($acknowledge){
+            return $output;
+        }else{
+            return $exit == 0;
+        }
+
     }
 }
 
