@@ -408,7 +408,11 @@ class Error extends CI_Model
                 break;
             case 'QUIZ_ANSWER_OUT_OF_RANGE':
                 $errorData['message'] = "Input answer is out of range";
-                $errorData['error_code'] = '1008';
+                $errorData['error_code'] = '1009';
+                break;
+            case 'QUIZ_ANSWER_REQUIRED_FOR_TEXT_OPTION':
+                $errorData['message'] = "Input answer is required for text option type";
+                $errorData['error_code'] = '1010';
                 break;
             case 'RULE_NOT_FOUND':
                 $errorData['message'] = "Rule not available";
