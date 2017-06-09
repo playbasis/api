@@ -914,7 +914,8 @@
             }
           ],
           "response": {
-            "referrer_id": { "-type": "string", "-optional": "true"}
+            "inviter_response": { "-type": "array", "-optional": "true"},
+            "invitee_response": { "-type": "array", "-optional": "true"}
           }
         },
         {
