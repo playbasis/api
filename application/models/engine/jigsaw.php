@@ -947,14 +947,19 @@ class jigsaw extends MY_Model
         $timeNow = isset($input['action_log_time']) ? $input['action_log_time'] : time();
         $currentYMD = date("Y-m-d");
 
-        $settingTime = $config['time_of_day'];
+        $settingTime = (isset($config['time_of_day']) && $config['time_of_day']) ? $config['time_of_day'] : "00:00";
         $settingTime = strtotime("$currentYMD $settingTime:00");
         $currentTime = strtotime($currentYMD." " . date('H:i', $timeNow) . ":00");
 
-        if ($settingTime < $lastTime->sec){ // action has been processed for today !
-            return false;
+        if ($settingTime > $currentTime){
+            $settingTime =  strtotime( "-1 day" , $settingTime ) ;
         }
-        return $currentTime > $settingTime;
+
+        if ($lastTime->sec > $settingTime){
+            return false;
+        }else{
+            return true;
+        }
     }
 
     public function weekly($config, $input, &$exInfo = array())
