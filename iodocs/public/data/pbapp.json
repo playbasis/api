@@ -847,8 +847,30 @@
           "response": []
         },
         {
+          "MethodName": "Player Referral Code",
+          "Synopsis": "Returns generated referral code of player",
+          "HTTPMethod": "GET",
+          "URI": "Player/:id/code",
+          "RequiresOAuth": "N",
+          "Public": "Y",
+          "PlayerAuthRequired": "Y",
+          "PlayerTokenCheckWith":"id",
+          "parameters": [
+            {
+              "Name": "id",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            }
+          ],
+          "response": {
+            "code":  { "-type": "string"}
+          }
+        },
+        {
           "MethodName": "Referral",
-          "Synopsis": "To add Referral code another player for invitation system",
+          "Synopsis": "To perform invitation system (specific player to be invited by referral code of another player)",
           "HTTPMethod": "POST",
           "URI": "Player/referral",
           "RequiresOAuth": "N",
@@ -878,7 +900,10 @@
               "Description": "referral code of another player for invitation system"
             }
           ],
-          "response": []
+          "response": {
+            "inviter_response": { "-type": "array", "-optional": "true"},
+            "invitee_response": { "-type": "array", "-optional": "true"}
+          }
         },
         {
           "MethodName": "Update",
@@ -2022,10 +2047,12 @@
                 "code":         { "-type": "string"},
                 "group":        { "-type": "string" , "-optional": "true"},
                 "amount":       { "-type": "number"},
+                "custom_param": { "-type": "any", "-optional": "true"},
                 "tags":         { "-type": "any" , "-optional": "true"},
                 "date_expire":  { "-type": "string" , "-optional": "true"},
                 "status":       { "-type": "string"},
-                "is_favorite":  { "-type": "boolean" , "-optional": "true"}
+                "is_favorite":  { "-type": "boolean" , "-optional": "true"},
+                "is_group":     { "-type": "boolean" , "-optional": "true"}
               }
             ]
           }
@@ -2817,28 +2844,6 @@
             "gift_name":  { "-type": "string"},
             "type":       { "-type": "string"},
             "remaining":  { "-type": "number"}
-          }
-        },
-        {
-          "MethodName": "Player Referral Code",
-          "Synopsis": "Returns generated referral code of player",
-          "HTTPMethod": "GET",
-          "URI": "Player/:id/code",
-          "RequiresOAuth": "N",
-          "Public": "Y",
-          "PlayerAuthRequired": "Y",
-          "PlayerTokenCheckWith":"id",
-          "parameters": [
-            {
-              "Name": "id",
-              "Required": "URI",
-              "Default": "",
-              "Type": "string",
-              "Description": "player id as used in client's website"
-            }
-          ],
-          "response": {
-            "code":  { "-type": "string"}
           }
         },
         {

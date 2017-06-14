@@ -611,36 +611,71 @@ class Player extends REST2_Controller
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         }
 
-        if ($referral_code) {
-            $playerA = $this->player_model->findPlayerByCode($site_id, $referral_code, array('cl_player_id'));
-            if ($playerA && ($playerA['_id'] != $pb_player_id_B)) {
-                $action_id = $this->action_model->findAction(array_merge($this->validToken, array('action_name' => ACTION_INVITED)));
-                if ($action_id) {
-                    $action_count = $this->player_model->getActionCount($pb_player_id_B, $action_id, $site_id);
-                    if ($action_count && isset($action_count['count']) && $action_count['count'] < 1){
-                        $platform = $this->auth_model->getOnePlatform($client_id, $site_id);
-                        // [rule] A invite B
-                        $this->utility->request('engine', 'json', http_build_query(array(
-                            'api_key' => $platform['api_key'],
-                            'pb_player_id' => $playerA['_id'] . '',
-                            'action' => ACTION_INVITE,
-                            'pb_player_id-2' => $pb_player_id_B . ''
-                        )));
+        $action_id_invited = $this->action_model->findAction(array_merge($this->validToken, array('action_name' => ACTION_INVITED)));
+        $action_id_invite = $this->action_model->findAction(array_merge($this->validToken, array('action_name' => ACTION_INVITE)));
+        if (!$action_id_invited || !$action_id_invite) {
+            $this->response($this->error->setError('REFERRAL_ACTION_INVITE_OR_INVITED_NOT_AVAILABLE'), 200);
+        }
 
-                        // [rule] B invited by A
-                        $this->utility->request('engine', 'json', http_build_query(array(
-                            'api_key' => $platform['api_key'],
-                            'pb_player_id' => $pb_player_id_B . '',
-                            'action' => ACTION_INVITED,
-                            'pb_player_id-2' => $playerA['_id'] . ''
-                        )));
+        $playerA = $this->player_model->findPlayerByCode($site_id, $referral_code, array('cl_player_id'));
+        if ($playerA && ($playerA['_id'] != $pb_player_id_B)) {
+
+            $action_count = $this->player_model->getActionCount($pb_player_id_B, $action_id_invited, $site_id);
+            if ($action_count && isset($action_count['count']) && $action_count['count'] < 1){
+                $platform = $this->auth_model->getOnePlatform($client_id, $site_id);
+
+
+                $parameter_A = array(
+                    'api_key' => $platform['api_key'],
+                    'pb_player_id' => $playerA['_id'] . '',
+                    'action' => ACTION_INVITE,
+                    'pb_player_id-2' => $pb_player_id_B . ''
+                );
+
+                $parameter_B = array(
+                    'api_key' => $platform['api_key'],
+                    'pb_player_id' => $pb_player_id_B . '',
+                    'action' => ACTION_INVITED,
+                    'pb_player_id-2' => $playerA['_id'] . ''
+                );
+
+                $custom_params = $this->input->post();
+                $private_datas = array('player_id', 'referral_code', 'token', 'XDEBUG_SESSION_START', 'XDEBUG_TRACE');
+                foreach($custom_params as $key => $value) {
+                    if (!in_array($key,$private_datas)) {
+                        $parameter_A[$key] = $value;
+                        $parameter_B[$key] = $value;
                     }
                 }
-            } else {
-                $this->response($this->error->setError('REFERRAL_CODE_INVALID'), 200);
+
+                // [rule] A invite B
+                $playerA_result = $this->utility->request('engine', 'json', http_build_query($parameter_A), true);
+                $playerA_result = json_decode($playerA_result[0]);
+
+                // [rule] B invited by A
+                $playerB_result = $this->utility->request('engine', 'json', http_build_query($parameter_B), true);
+                $playerB_result = json_decode($playerB_result[0]);
+
+                $this->response($this->resp->setRespond(array(
+                    'inviter_response' => array(
+                        'player_id' => $playerA['cl_player_id'],
+                        'response' => $playerA_result->response
+
+                    ),
+                    'invitee_response' => array(
+                        'player_id' => $cl_player_id_B,
+                        'response' => $playerB_result->response
+                    )
+                )), 200);
+
+            }else{
+                $this->response($this->error->setError('REFERRAL_PLAYER_ALREADY_BE_INVITED'), 200);
             }
+
+        } else {
+            $this->response($this->error->setError('REFERRAL_CODE_INVALID'), 200);
         }
-        $this->response($this->resp->setRespond(), 200);
+
     }
     
     public function registerBatch_post()
@@ -1664,7 +1699,7 @@ class Player extends REST2_Controller
         }
         $badges = $this->badge_model->getAllBadges(array_merge($this->validToken, array(
             'tags' => $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null
-        )));
+        )), true);
         if ($badges && $pb_player_id) {
             foreach ($badges as &$badge) {
                 $c = $this->player_model->getBadgeCount($this->site_id, $pb_player_id, new MongoId($badge['badge_id']));
@@ -1906,6 +1941,8 @@ class Player extends REST2_Controller
         foreach ($goodsList['goods'] as $key => &$row) {
             $isFavorite = $this->player_model->getFavoriteGoods($this->client_id, $this->site_id, $pb_player_id, $row['goods_id']);
             $row['is_favorite'] = $isFavorite;
+            $row['is_group'] = array_key_exists('group', $row);
+
             if(isset($row['date_expire']) && !is_null($row['date_expire'])){
                 if($isFavorite){
                     array_push($favorite_not_null_list, $row);

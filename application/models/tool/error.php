@@ -408,7 +408,11 @@ class Error extends CI_Model
                 break;
             case 'QUIZ_ANSWER_OUT_OF_RANGE':
                 $errorData['message'] = "Input answer is out of range";
-                $errorData['error_code'] = '1008';
+                $errorData['error_code'] = '1009';
+                break;
+            case 'QUIZ_ANSWER_REQUIRED_FOR_TEXT_OPTION':
+                $errorData['message'] = "Input answer is required for text option type";
+                $errorData['error_code'] = '1010';
                 break;
             case 'RULE_NOT_FOUND':
                 $errorData['message'] = "Rule not available";
@@ -441,6 +445,14 @@ class Error extends CI_Model
             case 'REFERRAL_CODE_INVALID':
                 $errorData['message'] = "Referral code is invalid";
                 $errorData['error_code'] = '2201';
+                break;
+            case 'REFERRAL_PLAYER_ALREADY_BE_INVITED':
+                $errorData['message'] = "The user has already been invited by other referrer";
+                $errorData['error_code'] = '2202';
+                break;
+            case 'REFERRAL_ACTION_INVITE_OR_INVITED_NOT_AVAILABLE':
+                $errorData['message'] = "This method required action 'INVITE' and 'INVITED' to be available";
+                $errorData['error_code'] = '2203';
                 break;
             case 'ANONYMOUS_NOT_FOUND':
                 $errorData['message'] = "Anonymous not available";

@@ -1636,6 +1636,7 @@ class Player_model extends MY_Model
                 'group',
                 'description',
                 'code',
+                'custom_param',
                 'date_expired_coupon',
                 'tags'
             ));
@@ -1682,6 +1683,7 @@ class Player_model extends MY_Model
             $goods_player['name'] = $goods_detail['name'];
             $goods_player['description'] = $goods_detail['description'];
             $goods_player['code'] = $goods_detail['code'];
+            $goods_player['custom_param'] = isset($goods_detail['custom_param']) ? $goods_detail['custom_param'] : array();
             $goods_player['tags'] = isset($goods_detail['tags']) && !empty($goods_detail['tags']) ? $goods_detail['tags'] : null;
             if(isset($goods_detail['group']) && $goods_detail['group']) {
                 $goods_player['group'] = $goods_detail['group'];
@@ -3092,8 +3094,10 @@ class Player_model extends MY_Model
     public function generateCode($pb_player_id)
     {
         $code = null;
+        $length = defined('REFERRAL_CODE_LENGTH') ? REFERRAL_CODE_LENGTH : 8;
+
         for ($i = 0; $i < 2; $i++) {
-            $code = get_random_password(8, 8, true, true);
+            $code = get_random_password($length, $length, true, true);
             if (!$this->existsCode($code)) {
                 break;
             }

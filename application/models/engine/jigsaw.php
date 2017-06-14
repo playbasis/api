@@ -235,28 +235,30 @@ class jigsaw extends MY_Model
         assert(isset($config['badge_id']));
         assert(isset($config['value']));
         $result = false;
-
+        $amount = 0;
         foreach ($input['player_badge'] as $key => $badge) {
             if (($badge['badge_id'] == $config['badge_id']) ) {
-                if(isset($config['param_operator'])){
-                    if ($config['param_operator'] == '=') {
-                        $result = ($badge['amount'] == $config['value']);
-                    } elseif ($config['param_operator'] == '!=') {
-                        $result = ($badge['amount'] != $config['value']);
-                    } elseif ($config['param_operator'] == '>') {
-                        $result = ($badge['amount'] > $config['value']);
-                    } elseif ($config['param_operator'] == '<') {
-                        $result = ($badge['amount'] < $config['value']);
-                    } elseif ($config['param_operator'] == '>=') {
-                        $result = ($badge['amount'] >= $config['value']);
-                    } elseif ($config['param_operator'] == '<=') {
-                        $result = ($badge['amount'] <= $config['value']);
-                    }
-                }else{
-                    $result = $badge['amount'] >= $config['value'];
-                }
+                $amount = $badge['amount'];
                 break;
             }
+        }
+
+        if(isset($config['param_operator'])){
+            if ($config['param_operator'] == '=') {
+                $result = ($amount == $config['value']);
+            } elseif ($config['param_operator'] == '!=') {
+                $result = ($amount != $config['value']);
+            } elseif ($config['param_operator'] == '>') {
+                $result = ($amount > $config['value']);
+            } elseif ($config['param_operator'] == '<') {
+                $result = ($amount < $config['value']);
+            } elseif ($config['param_operator'] == '>=') {
+                $result = ($amount >= $config['value']);
+            } elseif ($config['param_operator'] == '<=') {
+                $result = ($amount <= $config['value']);
+            }
+        }else{
+            $result = $amount >= $config['value'];
         }
         return $result;
     }
@@ -945,14 +947,19 @@ class jigsaw extends MY_Model
         $timeNow = isset($input['action_log_time']) ? $input['action_log_time'] : time();
         $currentYMD = date("Y-m-d");
 
-        $settingTime = $config['time_of_day'];
+        $settingTime = (isset($config['time_of_day']) && $config['time_of_day']) ? $config['time_of_day'] : "00:00";
         $settingTime = strtotime("$currentYMD $settingTime:00");
         $currentTime = strtotime($currentYMD." " . date('H:i', $timeNow) . ":00");
 
-        if ($settingTime < $lastTime->sec){ // action has been processed for today !
-            return false;
+        if ($settingTime > $currentTime){
+            $settingTime =  strtotime( "-1 day" , $settingTime ) ;
         }
-        return $currentTime > $settingTime;
+
+        if ($lastTime->sec > $settingTime){
+            return false;
+        }else{
+            return true;
+        }
     }
 
     public function weekly($config, $input, &$exInfo = array())
@@ -1670,22 +1677,38 @@ class jigsaw extends MY_Model
         }else {
 
             if(isset($reward['per_user']) && $reward['per_user']){
-                /* get current reward value */
-                $reward_to_player = $this->reward_model->getPlayerReward($client_id, $site_id, $pb_player_id, $reward_id);
-                if(isset($reward_to_player['value']) && $reward_to_player['value']){
-                    $total = $reward_to_player['value'];
-                }else{
-                    $total = 0;
-                }
+                if(isset($reward['per_user_include_deducted']) && $reward['per_user_include_deducted']){
+                    /* get total reward value in log*/
+                    $total = $this->countPlayerPointAward($client_id, $site_id, $pb_player_id, $reward_id);
 
-                if(isset($reward['pending']) && !empty($reward['pending']) && $reward['pending'] != false){
-                    $pending_point_amount = $this->countPendingPointToPlayer($reward_id, $pb_player_id, $client_id, $site_id);
-                }else{
-                    $pending_point_amount = 0;
-                }
+                    if(isset($reward['pending']) && !empty($reward['pending']) && $reward['pending'] != false){
+                        $rejected_point_amount = $this->countRejectedPointOfPlayer($reward_id, $pb_player_id, $client_id, $site_id);
+                    }else{
+                        $rejected_point_amount = 0;
+                    }
 
-                if((($total + $pending_point_amount) + $quantity) > $reward['per_user']){
-                    return false;
+                    if((($total - $rejected_point_amount) + $quantity) > $reward['per_user']){
+                        return false;
+                    }
+
+                }else{
+                    /* get current reward value */
+                    $reward_to_player = $this->reward_model->getPlayerReward($client_id, $site_id, $pb_player_id, $reward_id);
+                    if(isset($reward_to_player['value']) && $reward_to_player['value']){
+                        $total = $reward_to_player['value'];
+                    }else{
+                        $total = 0;
+                    }
+
+                    if(isset($reward['pending']) && !empty($reward['pending']) && $reward['pending'] != false){
+                        $pending_point_amount = $this->countPendingPointToPlayer($reward_id, $pb_player_id, $client_id, $site_id);
+                    }else{
+                        $pending_point_amount = 0;
+                    }
+
+                    if((($total + $pending_point_amount) + $quantity) > $reward['per_user']){
+                        return false;
+                    }
                 }
             }
             return true;
@@ -1693,7 +1716,7 @@ class jigsaw extends MY_Model
 
     }
 
-    private function countPointAwardInDay($reward_id, $client_id, $site_id, $startTime){
+    private function countPlayerPointAward($client_id, $site_id, $pb_player_id, $reward_id){
 
         $results = $this->mongo_db->aggregate('playbasis_custom_point_log', array(
             array(
@@ -1701,7 +1724,7 @@ class jigsaw extends MY_Model
                     'client_id' => $client_id,
                     'site_id' => $site_id,
                     'reward_id' => $reward_id,
-                    'date_added' => array('$gte' => new MongoDate($startTime)),
+                    'pb_player_id' => $pb_player_id,
                 ),
             ),
 
@@ -1710,7 +1733,7 @@ class jigsaw extends MY_Model
                     '_id' => null,
                     'sum' => array('$sum' => '$quantity')
                 )
-            ),
+            )
         ));
 
         $total = $results['result'] ? $results['result'][0]['sum'] : 0;
@@ -1727,6 +1750,32 @@ class jigsaw extends MY_Model
                     'site_id' => $site_id,
                     'reward_id' => $reward_id,
                     'date_added' => array('$gte' => new MongoDate($startTime)),
+                    'status' => "reject"
+                ),
+            ),
+
+            array(
+                '$group' => array(
+                    '_id' => null,
+                    'sum' => array('$sum' => '$value')
+                )
+            ),
+        ));
+
+        $total = $results['result'] ? $results['result'][0]['sum'] : 0;
+
+        return $total;
+    }
+
+    private function countRejectedPointOfPlayer($reward_id, $pb_player_id, $client_id, $site_id){
+
+        $results = $this->mongo_db->aggregate('playbasis_reward_status_to_player', array(
+            array(
+                '$match' => array(
+                    'client_id' => $client_id,
+                    'site_id' => $site_id,
+                    'reward_id' => $reward_id,
+                    'pb_player_id' => $pb_player_id,
                     'status' => "reject"
                 ),
             ),
@@ -1862,30 +1911,89 @@ class jigsaw extends MY_Model
     private function getGroupQuantity($client_id, $site_id, $group, $quantity=1)
     {
         $this->set_site_mongodb($site_id);
-        $this->mongo_db->where(array(
-            'client_id' => $client_id,
-            'site_id' => $site_id,
-            'deleted' => false,
-            'group' => $group,
-        ));
-        $this->mongo_db->limit(1);
-        $result = $this->mongo_db->get('playbasis_goods_to_client');
-        $date_expired_coupon = $result && isset($result[0]['date_expired_coupon']) ? $result[0]['date_expired_coupon'] : null;
-        if ($date_expired_coupon && ($date_expired_coupon->sec <= time())) return 0;
+
+        $d = new MongoDate();
 
         $this->mongo_db->where(array(
             'client_id' => $client_id,
             'site_id' => $site_id,
-            'deleted' => false,
             'group' => $group,
+            '$and' => array(
+                array(
+                    '$or' => array(
+                        array('date_start' => array('$lte' => $d)),
+                        array('date_start' => null)
+                    )
+                ),
+                array(
+                    '$or' => array(
+                        array('date_expire' => array('$gte' => $d)),
+                        array('date_expire' => null)
+                    )
+                )
+            ),
+            '$or' => array(
+                array(
+                    'date_expired_coupon' => array('$exists' => false)
+                ),
+                array(
+                    'date_expired_coupon' => array('$gt' => $d)
+                )
+            ),
+            'status' => true,
+            'deleted' => false
         ));
         $this->mongo_db->where_gte('quantity', (int)$quantity);
-        $ret = $this->mongo_db->count('playbasis_goods_to_client');
-        return $ret;
+
+        return $this->mongo_db->count('playbasis_goods_to_client');
+    }
+
+    public function getGoodsByGroup($site_id, $group)
+    {
+        $this->set_site_mongodb($site_id);
+        $this->mongo_db->select(array(
+            'goods_id',
+            'name',
+            'description',
+            'image',
+            'date_start',
+            'date_expire',
+            'quantity',
+            'per_user',
+            'per_user_include_inactive',
+            'redeem',
+            'group',
+            'code',
+            'organize_id',
+            'organize_role',
+            'tags'
+        ));
+        $this->mongo_db->where(array(
+            'site_id' => $site_id,
+            'group' => $group,
+            'deleted' => false,
+            'status' => true
+        ));
+        $this->mongo_db->where_gt('quantity', 0);
+
+        $this->mongo_db->where('$or',  array(array('date_expired_coupon' => array('$exists' => false)), array('date_expired_coupon' => array('$gt' => new MongoDate()))));
+        return $this->mongo_db->get('playbasis_goods_to_client');
+    }
+    public function getGroupByID($site_id, $goodsId){
+        $this->mongo_db->where(array(
+            'site_id' => $site_id,
+            'goods_id' => $goodsId,
+            'deleted' => false,
+            'status' => true
+        ));
+        $result = $this->mongo_db->get('playbasis_goods_to_client');
+        return isset($result[0]['group']) ? $result[0]['group'] : null;
+
     }
 
     public function getGoods($site_id, $goodsId)
     {
+        $group = $this->getGroupByID($site_id, $goodsId);
         $this->set_site_mongodb($site_id);
         $d = new MongoDate();
         $this->mongo_db->select(array(
@@ -1901,9 +2009,14 @@ class jigsaw extends MY_Model
             'code',
             'tags'
         ));
+        if(is_null($group)){
+            $this->mongo_db->where('goods_id', $goodsId);
+        } else {
+            $this->mongo_db->where('group', $group);
+        }
+
         $this->mongo_db->where(array(
             'site_id' => $site_id,
-            'goods_id' => $goodsId,
             '$and' => array(
                 array(
                     '$or' => array(
@@ -1921,6 +2034,7 @@ class jigsaw extends MY_Model
             'status' => true,
             'deleted' => false
         ));
+        $this->mongo_db->where('$or',  array(array('date_expired_coupon' => array('$exists' => false)), array('date_expired_coupon' => array('$gt' => new MongoDate()))));
         $this->mongo_db->limit(1);
         $ret = $this->mongo_db->get("playbasis_goods_to_client");
         return $ret && isset($ret[0]) ? $ret[0] : array();
