@@ -624,22 +624,36 @@ class Player extends REST2_Controller
             if ($action_count && isset($action_count['count']) && $action_count['count'] < 1){
                 $platform = $this->auth_model->getOnePlatform($client_id, $site_id);
 
-                // [rule] A invite B
-                $playerA_result = $this->utility->request('engine', 'json', http_build_query(array(
+
+                $parameter_A = array(
                     'api_key' => $platform['api_key'],
                     'pb_player_id' => $playerA['_id'] . '',
                     'action' => ACTION_INVITE,
                     'pb_player_id-2' => $pb_player_id_B . ''
-                )), true);
-                $playerA_result = json_decode($playerA_result[0]);
+                );
 
-                // [rule] B invited by A
-                $playerB_result = $this->utility->request('engine', 'json', http_build_query(array(
+                $parameter_B = array(
                     'api_key' => $platform['api_key'],
                     'pb_player_id' => $pb_player_id_B . '',
                     'action' => ACTION_INVITED,
                     'pb_player_id-2' => $playerA['_id'] . ''
-                )), true);
+                );
+
+                $custom_params = $this->input->post();
+                $private_datas = array('player_id', 'referral_code', 'token', 'XDEBUG_SESSION_START', 'XDEBUG_TRACE');
+                foreach($custom_params as $key => $value) {
+                    if (!in_array($key,$private_datas)) {
+                        $parameter_A[$key] = $value;
+                        $parameter_B[$key] = $value;
+                    }
+                }
+
+                // [rule] A invite B
+                $playerA_result = $this->utility->request('engine', 'json', http_build_query($parameter_A), true);
+                $playerA_result = json_decode($playerA_result[0]);
+
+                // [rule] B invited by A
+                $playerB_result = $this->utility->request('engine', 'json', http_build_query($parameter_B), true);
                 $playerB_result = json_decode($playerB_result[0]);
 
                 $this->response($this->resp->setRespond(array(

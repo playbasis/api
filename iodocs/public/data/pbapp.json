@@ -882,8 +882,30 @@
           "response": []
         },
         {
+          "MethodName": "Player Referral Code",
+          "Synopsis": "Returns generated referral code of player",
+          "HTTPMethod": "GET",
+          "URI": "Player/:id/code",
+          "RequiresOAuth": "N",
+          "Public": "Y",
+          "PlayerAuthRequired": "Y",
+          "PlayerTokenCheckWith":"id",
+          "parameters": [
+            {
+              "Name": "id",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            }
+          ],
+          "response": {
+            "code":  { "-type": "string"}
+          }
+        },
+        {
           "MethodName": "Referral",
-          "Synopsis": "To add Referral code another player for invitation system",
+          "Synopsis": "To perform invitation system (specific player to be invited by referral code of another player)",
           "HTTPMethod": "POST",
           "URI": "Player/referral",
           "RequiresOAuth": "N",
@@ -2857,28 +2879,6 @@
             "gift_name":  { "-type": "string"},
             "type":       { "-type": "string"},
             "remaining":  { "-type": "number"}
-          }
-        },
-        {
-          "MethodName": "Player Referral Code",
-          "Synopsis": "Returns generated referral code of player",
-          "HTTPMethod": "GET",
-          "URI": "Player/:id/code",
-          "RequiresOAuth": "N",
-          "Public": "Y",
-          "PlayerAuthRequired": "Y",
-          "PlayerTokenCheckWith":"id",
-          "parameters": [
-            {
-              "Name": "id",
-              "Required": "URI",
-              "Default": "",
-              "Type": "string",
-              "Description": "player id as used in client's website"
-            }
-          ],
-          "response": {
-            "code":  { "-type": "string"}
           }
         },
         {
