@@ -1625,7 +1625,7 @@ class Player extends REST2_Controller
                     'goods_name' => isset($gift_data['gift']['name']) ? $gift_data['gift']['name'] : "",
                     'is_sponsor' => isset($gift_data['gift']['sponsor']) ? $gift_data['gift']['sponsor'] : false,
                     'amount' => intval($gift_value),
-                    'date_expire' => isset($get_redeem_goods['date_expire']) ? $get_redeem_goods['date_expire'] : null,
+                    'date_expire' => isset($gift_data['before']['date_expire']) ? $gift_data['before']['date_expire']: null,
                     'redeem' => isset($gift_data['gift']['redeem']) ? $gift_data['gift']['redeem'] : null,
                     'group' => isset($gift_data['gift']['group']) ? $gift_data['gift']['group'] : null,
                     'action_name' => 'redeem_goods',
