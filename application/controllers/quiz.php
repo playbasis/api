@@ -304,7 +304,7 @@ class Quiz extends REST2_Controller
         $completed_questions = $result ? $result['questions'] : array();
         $question = null;
         $index = -1;
-        $remain_count = count($completed_questions) - count($quiz['questions']);
+        $remain_count = count($completed_questions) > count($quiz['questions']) ? count($completed_questions) - count($quiz['questions']) : count($quiz['questions']) - count($completed_questions);
         foreach ($quiz['questions'] as $i => $q) {
             if($this->input->get('question_id')){
                 if($q['question_id'] == $this->input->get('question_id')){
@@ -325,7 +325,11 @@ class Quiz extends REST2_Controller
                                 if ($expect_times < $qustions_timestamp[0]['questions_timestamp']) {
                                     $question = $q; // get the first question in the quiz that the player has not submitted an answer
                                     $index = $i;
-                                    if (($remain_count != 0) && (rand() % $remain_count == 0)) {
+                                    if ($random){
+                                        if (($remain_count != 0) && (rand() % $remain_count == 0)) {
+                                            break;
+                                        }
+                                    } else {
                                         break;
                                     }
                                 } else {
@@ -339,14 +343,22 @@ class Quiz extends REST2_Controller
                         } else {
                             $question = $q; // get the first question in the quiz that the player has not submitted an answer
                             $index = $i;
-                            if (($remain_count != 0) && (rand() % $remain_count == 0)) {
+                            if ($random){
+                                if (($remain_count != 0) && (rand() % $remain_count == 0)) {
+                                    break;
+                                }
+                            } else {
                                 break;
                             }
                         }
                     } else {
                         $question = $q; // get the first question in the quiz that the player has not submitted an answer
                         $index = $i;
-                        if (($remain_count != 0) && (rand() % $remain_count == 0)) {
+                        if ($random){
+                            if (($remain_count != 0) && (rand() % $remain_count == 0)) {
+                                break;
+                            }
+                        } else {
                             break;
                         }
                     }
@@ -468,7 +480,11 @@ class Quiz extends REST2_Controller
                                 if ($expect_times < $qustions_timestamp[0]['questions_timestamp']) {
                                     $question = $q; // get the first question in the quiz that the player has not submitted an answer
                                     $index = $i;
-                                    if (($remain_count != 0) && (rand() % $remain_count == 0)) {
+                                    if ($random){
+                                        if (($remain_count != 0) && (rand() % $remain_count == 0)) {
+                                            break;
+                                        }
+                                    } else {
                                         break;
                                     }
                                 } else {
@@ -482,14 +498,22 @@ class Quiz extends REST2_Controller
                         } else {
                             $question = $q; // get the first question in the quiz that the player has not submitted an answer
                             $index = $i;
-                            if (($remain_count != 0) && (rand() % $remain_count == 0)) {
+                            if ($random){
+                                if (($remain_count != 0) && (rand() % $remain_count == 0)) {
+                                    break;
+                                }
+                            } else {
                                 break;
                             }
                         }
                     } else {
                         $question = $q; // get the first question in the quiz that the player has not submitted an answer
                         $index = $i;
-                        if (($remain_count != 0) && (rand() % $remain_count == 0)) {
+                        if ($random){
+                            if (($remain_count != 0) && (rand() % $remain_count == 0)) {
+                                break;
+                            }
+                        } else {
                             break;
                         }
                     }
