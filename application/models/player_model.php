@@ -1657,7 +1657,8 @@ class Player_model extends MY_Model
             $this->mongo_db->select(array(
                 'goods_id',
                 'value',
-                'date_expire'
+                'date_expire',
+                'gifted'
             ));
             $this->mongo_db->select(array(), array('_id'));
             $this->mongo_db->where(array(
@@ -1667,8 +1668,15 @@ class Player_model extends MY_Model
             $goods_player = $this->mongo_db->get('playbasis_goods_to_player');
             if ($goods_player) {
                 $goods_player = $goods_player[0];
-                $goods_player['status'] = $goods_player['value'] > 0 ? "active" : "used";
-
+                if($goods_player['value'] > 0){
+                    $goods_player['status'] = "active";
+                }else{
+                    if(isset($goods_player['gifted']) && $goods_player['gifted']){
+                        $goods_player['status'] = "gifted";
+                    }else{
+                        $goods_player['status'] = "used";
+                    }
+                }
             } else {
                 $goods_player = array();
                 $goods_player['value'] = 0;
@@ -1798,6 +1806,7 @@ class Player_model extends MY_Model
                 $this->mongo_db->select(array(
                     'goods_id',
                     'value',
+                    'gifted',
                     'date_expire'
                 ));
                 $this->mongo_db->select(array(), array('_id'));
@@ -1809,7 +1818,15 @@ class Player_model extends MY_Model
                 if ($goods_data) {
                     $goods_data = $goods_data[0];
                     if(isset($goods_data['date_expire'])) $goods_data['date_expire'] = datetimeMongotoReadable($goods_data['date_expire']);
-                    $goods_data['status'] = $goods_data['value'] > 0 ? "active" : "used";
+                    if($goods_data['value'] > 0){
+                        $goods_data['status'] = "active";
+                    }else{
+                        if(isset($goods_data['gifted']) && $goods_data['gifted']){
+                            $goods_data['status'] = "gifted";
+                        }else{
+                            $goods_data['status'] = "used";
+                        }
+                    }
                     $goods_data['date_expire'] = isset($goods_data['date_expire']) ? $goods_data['date_expire'] : null;
                 } else {
                     $goods_data = array();
@@ -2594,6 +2611,7 @@ class Player_model extends MY_Model
         } elseif ($gift_type == "GOODS") {
             $this->mongo_db->where('goods_id', $gift_id);
             if($gift_data['before']['value'] == intval($value)) {
+                $this->mongo_db->set('gifted', true);
                 $this->mongo_db->unset_field("date_expire");
             }
             $sent_rewardInfo = $this->mongo_db->update('playbasis_goods_to_player');
@@ -2630,6 +2648,7 @@ class Player_model extends MY_Model
                 $receive_rewardInfo = $this->mongo_db->update('playbasis_reward_to_player');
             } elseif ($gift_type == "GOODS") {
                 $this->mongo_db->where('goods_id', $gift_id);
+                $this->mongo_db->set('gifted', false);
                 if(isset($gift_data['before']['date_expire'])) $this->mongo_db->set('date_expire', $gift_data['before']['date_expire']);
                 $receive_rewardInfo = $this->mongo_db->update('playbasis_goods_to_player');
             }
@@ -2653,6 +2672,7 @@ class Player_model extends MY_Model
             } elseif ($gift_type == "GOODS") {
                 $data['goods_id'] = $gift_id;
                 $data['is_sponsor'] = $gift_data['gift']['sponsor'];
+                $data['gifted'] = false;
                 if(isset($gift_data['gift']['group'])) $data['group'] = $gift_data['gift']['group'];
                 if(isset($gift_data['before']['date_expire'])) $data['date_expire'] = $gift_data['before']['date_expire'];
                 $receive_rewardInfo = $this->mongo_db->insert('playbasis_goods_to_player', $data);

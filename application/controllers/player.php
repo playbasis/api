@@ -1917,7 +1917,7 @@ class Player extends REST2_Controller
         }
         $status = $this->input->get('status');
         if($status){
-            if ($status != "all" && $status != "active" && $status != "used" && $status != "expired") {
+            if ($status != "all" && $status != "active" && $status != "used" && $status != "expired" && $status != "gifted") {
                 $this->response($this->error->setError('INVALID_STATUS'), 200);
             }
             $status = ($status == "all") ? null : $status;
@@ -2033,7 +2033,7 @@ class Player extends REST2_Controller
         }
         $status = $this->input->get('status');
         if($status){
-            if ($status != "all" && $status != "active" && $status != "used" && $status != "expired") {
+            if ($status != "all" && $status != "active" && $status != "used" && $status != "expired" && $status != "gifted") {
                 $this->response($this->error->setError('INVALID_STATUS'), 200);
             }
             $status = ($status == "all") ? null : $status;
