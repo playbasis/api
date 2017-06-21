@@ -5445,6 +5445,17 @@
               "Default": "",
               "Type": "string",
               "Description": "Specific tag(s) to find (e.g. foo,bar)"
+            },
+            {
+              "Name": "get_status",
+              "Required": "N",
+              "Default": "false",
+              "Type": "enumerated",
+              "Description": "Return quiz status of specific player",
+              "EnumeratedList": [
+                "true",
+                "false"
+              ]
             }
           ],
           "responses": {
