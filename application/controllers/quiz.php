@@ -75,7 +75,7 @@ class Quiz extends REST2_Controller
 
         /* param "player_id" */
         $player_id = $this->input->get('player_id');
-        $nin = null;
+        $nin = array();
         if ($player_id !== false) {
             $pb_player_id = $this->player_model->getPlaybasisId(array(
                 'client_id' => $this->client_id,
@@ -91,7 +91,17 @@ class Quiz extends REST2_Controller
 
         $type = $this->input->get('type');
         $tags = $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null;
-        $results = $this->quiz_model->find($this->client_id, $this->site_id, $nin, $type, $tags);
+        $get_status = $this->input->get('get_status');
+        if($get_status == "true" && $player_id !== false){
+            $results = $this->quiz_model->find($this->client_id, $this->site_id, null, $type, $tags);
+            foreach($results as &$result){
+                $result['completed'] = (in_array($result['_id'], $nin)) ? true : false;
+            }
+        }else{
+            $results = $this->quiz_model->find($this->client_id, $this->site_id, $nin, $type, $tags);
+        }
+
+
         $results = array_map('convert_MongoId_id', $results);
         array_walk_recursive($results, array($this, "convert_mongo_object_and_image_path"));
 

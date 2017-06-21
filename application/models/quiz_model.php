@@ -32,6 +32,7 @@ class Quiz_model extends MY_Model
         if ($tags) {
             $this->mongo_db->where_in('tags', $tags);
         }
+        $this->mongo_db->order_by(array('name' => 1));
         $result = $this->mongo_db->get('playbasis_quiz_to_client');
 
         return $result;
