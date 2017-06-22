@@ -58,6 +58,8 @@ class Quiz_model extends MY_Model
             'questions',
             'answers',
             'grade',
+            'completed',
+            'next_question',
             'date_added',
             'date_modified'
         ));
@@ -73,8 +75,9 @@ class Quiz_model extends MY_Model
     public function find_quiz_by_player($client_id, $site_id, $pb_player_id, $limit = -1)
     {
         $this->set_site_mongodb($site_id);
-        $this->mongo_db->select(array('quiz_id', 'value', 'questions', 'grade'));
+        $this->mongo_db->select(array('quiz_id', 'value', 'questions', 'grade', 'completed'));
         $this->mongo_db->select(array(), array('_id'));
+        $this->mongo_db->where('site_id', $site_id);
         $this->mongo_db->where('pb_player_id', $pb_player_id);
         $this->mongo_db->order_by(array('date_modified' => -1));
         if ($limit > 0) {
@@ -95,8 +98,10 @@ class Quiz_model extends MY_Model
                 $quiz = $this->find_by_id($client_id, $site_id, $quiz_id);
                 $total_questions = count($quiz['questions']);
                 $completed_questions = count($result['questions']);
-                $pending = $completed_questions < $total_questions;
+                $pending = (isset($result['completed']) && ($result['completed'] == true)) ? false : ($completed_questions < $total_questions);
                 $result['total_completed_questions'] = $completed_questions;
+                $result['name'] = $quiz['name'];
+                $result['weight'] = $quiz['weight'];
                 if ($pending) {
                     $result['total_pending_questions'] = $total_questions - $completed_questions;
                 }
@@ -199,7 +204,9 @@ class Quiz_model extends MY_Model
         $option_id,
         $score,
         $grade,
-        $range_answer = null
+        $range_answer = null,
+        $is_last_question = false,
+        $next_question = null
     ) {
         $d = new MongoDate(time());
         $result = $this->find_quiz_by_quiz_and_player($client_id, $site_id, $quiz_id, $pb_player_id);
@@ -220,6 +227,8 @@ class Quiz_model extends MY_Model
                 'questions' => array($question_id),
                 'answers' => $answers,
                 'grade' => $grade,
+                'completed' => (bool)$is_last_question,
+                'next_question' => $next_question,
                 'date_added' => $d,
                 'date_modified' => $d
             ));
@@ -232,6 +241,8 @@ class Quiz_model extends MY_Model
             $this->mongo_db->set('answers', $answers);
             $this->mongo_db->set('value', $score + $result['value']);
             $this->mongo_db->set('grade', $grade);
+            $this->mongo_db->set('completed', (bool)$is_last_question);
+            $this->mongo_db->set('next_question', $next_question);
             $this->mongo_db->set('date_modified', $d);
             return $this->mongo_db->update('playbasis_quiz_to_player');
         }
