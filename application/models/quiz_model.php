@@ -100,6 +100,8 @@ class Quiz_model extends MY_Model
                 $completed_questions = count($result['questions']);
                 $pending = (isset($result['completed']) && ($result['completed'] == true)) ? false : ($completed_questions < $total_questions);
                 $result['total_completed_questions'] = $completed_questions;
+                $result['name'] = $quiz['name'];
+                $result['weight'] = $quiz['weight'];
                 if ($pending) {
                     $result['total_pending_questions'] = $total_questions - $completed_questions;
                 }

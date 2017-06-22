@@ -307,6 +307,13 @@ class Quiz extends REST2_Controller
         $result = $this->quiz_model->find_quiz_by_quiz_and_player($this->client_id, $this->site_id, $quiz_id,
             $pb_player_id);
 
+        // check if the quiz is completed by the player (check "conpleted" flag)
+        if (isset($result['completed']) && ($result['completed'] == true)) {
+            $this->benchmark->mark('end');
+            $t = $this->benchmark->elapsed_time('start', 'end');
+            $this->response($this->resp->setRespond(array('result' => null, 'processing_time' => $t)), 200);
+        }
+
         if (isset($quiz['question_order']) && $quiz['question_order']) {
             if ($random) {
                 $this->response($this->error->setError('QUIZ_QUESTION_NOT_ALLOW_RANDOM'), 200);
@@ -467,6 +474,13 @@ class Quiz extends REST2_Controller
         $result = $this->quiz_model->find_quiz_by_quiz_and_player($this->client_id, $this->site_id, $quiz_id,
             $pb_player_id);
 
+        // check if the quiz is completed by the player (check "conpleted" flag)
+        if (isset($result['completed']) && ($result['completed'] == true)) {
+            $this->benchmark->mark('end');
+            $t = $this->benchmark->elapsed_time('start', 'end');
+            $this->response($this->resp->setRespond(array('result' => null, 'processing_time' => $t)), 200);
+        }
+        
         if (isset($quiz['question_order']) && $quiz['question_order']) {
             if ($random) {
                 $this->response($this->error->setError('QUIZ_QUESTION_NOT_ALLOW_RANDOM'), 200);
@@ -481,6 +495,11 @@ class Quiz extends REST2_Controller
         foreach ($quiz['questions'] as $i => $q) {
             if($this->input->post('question_id')){
                 if($q['question_id'] == $this->input->post('question_id')){
+                    $question = $q;
+                    $index = $i;
+                }
+            } elseif(isset($result['next_question']) && $result['next_question'] ){
+                if($q['question_number'] == $result['next_question']){
                     $question = $q;
                     $index = $i;
                 }
