@@ -281,6 +281,9 @@ class Quiz extends REST2_Controller
         if ($quiz === null) {
             $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
         }
+
+        $quiz['questions'] = isset($quiz['questions']) ? $quiz['questions'] : array();
+
         $total_max_score = 0;
         if (is_array($quiz['questions'])) foreach ($quiz['questions'] as $questions) {
             $total_max_score += $this->get_max_score_of_question($questions['options']);
@@ -304,6 +307,13 @@ class Quiz extends REST2_Controller
         $result = $this->quiz_model->find_quiz_by_quiz_and_player($this->client_id, $this->site_id, $quiz_id,
             $pb_player_id);
 
+        // check if the quiz is completed by the player (check "conpleted" flag)
+        if (isset($result['completed']) && ($result['completed'] == true)) {
+            $this->benchmark->mark('end');
+            $t = $this->benchmark->elapsed_time('start', 'end');
+            $this->response($this->resp->setRespond(array('result' => null, 'processing_time' => $t)), 200);
+        }
+
         if (isset($quiz['question_order']) && $quiz['question_order']) {
             if ($random) {
                 $this->response($this->error->setError('QUIZ_QUESTION_NOT_ALLOW_RANDOM'), 200);
@@ -321,8 +331,12 @@ class Quiz extends REST2_Controller
                     $question = $q;
                     $index = $i;
                 }
-
-            } else {
+            } elseif(isset($result['next_question']) && $result['next_question'] ){
+                if($q['question_number'] == $result['next_question']){
+                    $question = $q;
+                    $index = $i;
+                }
+            }else {
                 if (!in_array($q['question_id'], $completed_questions)) {
                     $qustions_timestamp = $this->quiz_model->get_active_question_time_stamp($this->client_id, $this->site_id, $pb_player_id, $quiz_id, $q['question_id']);
                     $time_limit = (isset($q['timelimit']) && !empty($q['timelimit'])) ? $q['timelimit'] : null;
@@ -460,6 +474,13 @@ class Quiz extends REST2_Controller
         $result = $this->quiz_model->find_quiz_by_quiz_and_player($this->client_id, $this->site_id, $quiz_id,
             $pb_player_id);
 
+        // check if the quiz is completed by the player (check "conpleted" flag)
+        if (isset($result['completed']) && ($result['completed'] == true)) {
+            $this->benchmark->mark('end');
+            $t = $this->benchmark->elapsed_time('start', 'end');
+            $this->response($this->resp->setRespond(array('result' => null, 'processing_time' => $t)), 200);
+        }
+        
         if (isset($quiz['question_order']) && $quiz['question_order']) {
             if ($random) {
                 $this->response($this->error->setError('QUIZ_QUESTION_NOT_ALLOW_RANDOM'), 200);
@@ -474,6 +495,11 @@ class Quiz extends REST2_Controller
         foreach ($quiz['questions'] as $i => $q) {
             if($this->input->post('question_id')){
                 if($q['question_id'] == $this->input->post('question_id')){
+                    $question = $q;
+                    $index = $i;
+                }
+            } elseif(isset($result['next_question']) && $result['next_question'] ){
+                if($q['question_number'] == $result['next_question']){
                     $question = $q;
                     $index = $i;
                 }
@@ -634,6 +660,9 @@ class Quiz extends REST2_Controller
         $is_text_option = false;
         $range_answer = null;
         $text_answer = null;
+        $is_last_question = false;
+        $is_terminate_answer = false;
+        $next_question = null;
         $max_score = -1;
         foreach ($question['options'] as $o) {
             if ($o['score'] > $max_score) {
@@ -648,6 +677,12 @@ class Quiz extends REST2_Controller
                 if(isset($o['is_text_option']) && $o['is_text_option'] === true){
                     $is_text_option = true;
                     $text_answer = $this->input->post('answer') ;
+                }
+                if(isset($o['terminate']) && $o['terminate'] === true){
+                    $is_terminate_answer = true;
+                }
+                if(isset($o['goto']) && is_numeric($o['goto'])){
+                    $next_question = $o['goto'];
                 }
             }
         }
@@ -708,7 +743,8 @@ class Quiz extends REST2_Controller
 
         /* if this is the last question, then grade the player's score */
         $grade = array();
-        if (count($completed_questions) + 1 >= count($quiz['questions'])) {
+        if (((count($completed_questions) + 1) >= count($quiz['questions'])) || $is_terminate_answer) {
+            $is_last_question = true;
             $percent = $total_max_score ? ($total_score * 1.0) / $total_max_score * 100 : 100;
             if (isset($quiz['grades'])) {
                 foreach ($quiz['grades'] as $g) {
@@ -762,7 +798,7 @@ class Quiz extends REST2_Controller
 
         /* update player's score */
         $this->quiz_model->update_player_score($this->client_id, $this->site_id, $quiz_id, $pb_player_id, $question_id,
-            $option_id, $score, $grade, $range_answer);
+            $option_id, $score, $grade, $range_answer, $is_terminate_answer, $next_question);
 
         if($is_range_option){
             $option['option'] = $range_answer;
@@ -851,7 +887,8 @@ class Quiz extends REST2_Controller
             'total_score' => $total_score,
             'total_max_score' => $total_max_score,
             'grade' => $grade,
-            'rewards' => $rewards
+            'rewards' => $rewards,
+            'is_last_question' => $is_last_question
         );
         array_walk_recursive($data, array($this, "convert_mongo_object_and_image_path"));
 
