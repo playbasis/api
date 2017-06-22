@@ -332,9 +332,10 @@ class Quiz extends REST2_Controller
                     $index = $i;
                 }
             } elseif(isset($result['next_question']) && $result['next_question'] ){
-                if($q['question_number'] == $result['next_question']){
+                if($q['question_number'] == $result['next_question'] && !in_array($q['question_id'], $completed_questions)){
                     $question = $q;
                     $index = $i;
+                    break;
                 }
             }else {
                 if (!in_array($q['question_id'], $completed_questions)) {
@@ -499,9 +500,10 @@ class Quiz extends REST2_Controller
                     $index = $i;
                 }
             } elseif(isset($result['next_question']) && $result['next_question'] ){
-                if($q['question_number'] == $result['next_question']){
+                if($q['question_number'] == $result['next_question'] && !in_array($q['question_id'], $completed_questions)){
                     $question = $q;
                     $index = $i;
+                    break;
                 }
             } else {
                 if (!in_array($q['question_id'], $completed_questions)) {
