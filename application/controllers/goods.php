@@ -107,8 +107,9 @@ class Goods extends REST2_Controller
                 }
                 $data['selected_field'] = array_values($data['selected_field']);
             }
-
-            if ($this->input->get('active_filter') == "true") {
+            
+            $active_filter = $this->input->get('active_filter') == "true" ? true : false;
+            if ($active_filter) {
                 if (!$this->input->get('date_start') && !$this->input->get('date_end')) {
                     $data['date_start'] = new MongoDate();
                 }
@@ -186,7 +187,7 @@ class Goods extends REST2_Controller
                     if($c_goods['is_group']){
                         array_push($in_group, $c_goods['name']);
                     } else {
-                        $custom_goods_id =$this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, $c_goods['name']);
+                        $custom_goods_id =$this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, $c_goods['name'], null, $active_filter);
                         array_push($goods_param_id, new MongoId($custom_goods_id));
                     }
                 }
@@ -197,7 +198,7 @@ class Goods extends REST2_Controller
             
             $in_goods = array();
             foreach ($group_list as $group_name) {
-                $goods_group_detail = $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name['name']);
+                $goods_group_detail = $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name['name'], $active_filter);
                 array_push($in_goods, new MongoId($goods_group_detail));
             }
             if ($filter_goods_name) {
