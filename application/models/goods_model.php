@@ -344,7 +344,7 @@ class Goods_model extends MY_Model
         return $result ? $result[0] : array();
     }
 
-    public function getGoodsIDByName($client_id, $site_id, $good_name, $good_group=null)
+    public function getGoodsIDByName($client_id, $site_id, $good_name, $good_group=null, $active_filter = false)
     {
         $this->set_site_mongodb($this->session->userdata('site_id'));
         $this->mongo_db->select(array('goods_id'));
@@ -360,6 +360,13 @@ class Goods_model extends MY_Model
             $this->mongo_db->where('name', $good_name);
             $this->mongo_db->where_exists('group', false);
         }
+
+        if ($active_filter){
+            $d = new MongoDate();
+            $this->mongo_db->where(array('$and' => array( array('$or' => array(array("date_start" => null), array("date_start" => array('$lte'=> $d)))),
+                                                          array('$or' => array(array("date_expire" => null), array("date_expire" => array('$gte'=> $d)))))));
+        }
+
         $this->mongo_db->limit(1);
         $results = $this->mongo_db->get("playbasis_goods_to_client");
 
