@@ -351,20 +351,20 @@ class Goods_model extends MY_Model
 
         $this->mongo_db->where('client_id', new MongoId($client_id));
         $this->mongo_db->where('site_id', new MongoId($site_id));
-        $this->mongo_db->where('deleted', false);
-        $this->mongo_db->where('status', true);
 
         if($good_group){
             $this->mongo_db->where('group', $good_group);
         }else{
-            $this->mongo_db->where('name', $good_name);
             $this->mongo_db->where_exists('group', false);
+            $this->mongo_db->where('name', $good_name);
         }
+        $this->mongo_db->where('deleted', false);
+        $this->mongo_db->where('status', true);
 
-        if ($active_filter){
+        if ($good_group && $active_filter){
             $d = new MongoDate();
             $this->mongo_db->where(array('$and' => array( array('$or' => array(array("date_start" => null), array("date_start" => array('$lte'=> $d)))),
-                                                          array('$or' => array(array("date_expire" => null), array("date_expire" => array('$gte'=> $d)))))));
+                array('$or' => array(array("date_expire" => null), array("date_expire" => array('$gte'=> $d)))))));
         }
 
         $this->mongo_db->limit(1);
