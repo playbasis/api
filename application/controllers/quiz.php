@@ -674,11 +674,11 @@ class Quiz extends REST2_Controller
                 $option = $o;
                 if(isset($o['is_range_option']) && $o['is_range_option'] === true){
                     $is_range_option = true;
-                    $range_answer = $this->input->post('answer') ;
+                    $range_answer = $this->input->post('answer');
                 }
                 if(isset($o['is_text_option']) && $o['is_text_option'] === true){
                     $is_text_option = true;
-                    $text_answer = $this->input->post('answer') ;
+                    $text_answer = $this->input->post('answer');
                 }
                 if(isset($o['terminate']) && $o['terminate'] === true){
                     $is_terminate_answer = true;
@@ -702,7 +702,7 @@ class Quiz extends REST2_Controller
 
         //check if answer is out of range
         if($is_range_option){
-            if(!$this->input->post('answer')){
+            if($this->input->post('answer') === false){
                 $this->response($this->error->setError('QUIZ_ANSWER_REQUIRED_FOR_RANGE_OPTION'), 200);
             }else{
                 if(!is_numeric($range_answer) || (int)$range_answer < (int)$option['range_min'] || (int)$range_answer > (int)$option['range_max'] ){
