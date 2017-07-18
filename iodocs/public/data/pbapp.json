@@ -10715,63 +10715,67 @@
       ]
     },
     {
-      "name": "INSURANCE CALCULATOR API",
-      "endpoint": ["Timestamp"],
-      "Public": "N",
+      "name": "Insurance Calculator API",
+      "endpoint": ["Insurance"],
+      "Public": "Y",
       "methods": [
         {
-          "MethodName": "Record timestamp",
-          "Synopsis": "Record timestamp",
-          "HTTPMethod": "POST",
-          "URI": "Timestamp",
+          "MethodName": "Get Suggest Insurance",
+          "Synopsis": "To get suggerst insurance cover.",
+          "HTTPMethod": "GET",
+          "URI": "Insurance/getSuggestInsurance",
           "RequiresOAuth": "N",
           "Public": "Y",
           "parameters": [
             {
-              "Name": "token",
+              "Name": "player_id",
               "Required": "Y",
               "Default": "",
               "Type": "string",
-              "Description": "access token returned from Auth"
-            },
-            {
-              "Name": "player_id",
-              "Required": "N",
-              "Default": "",
-              "Type": "string",
-              "Description": "player id as used in client's website"
-            }
-          ],
-          "response": {}
-        },
-        {
-          "MethodName": "Retrive timestamp",
-          "Synopsis": "Retrive timestamp",
-          "HTTPMethod": "GET",
-          "URI": "Timestamp",
-          "RequiresOAuth": "N",
-          "Public": "Y",
-          "parameters": [
-            {
-              "Name": "player_id",
-              "Required": "N",
-              "Default": "",
-              "Type": "string",
               "Description": "player id as used in client's website"
             },
             {
-              "Name": "sort_order",
-              "Required": "N",
-              "Default": "desc",
+              "Name": "product_type",
+              "Required": "Y",
+              "Default": "",
               "Type": "string",
-              "Description": "Specify sorted direction by time [*desc*, asc]"
+              "Description": "insurance product"
             }
           ],
-          "response": [
-            {
-              "[a-zA-Z0-9-%_:\\.]+":  { "-type": "any", "-optional": "true"}
+          "responses": {
+            "information": {
+              "product":                {"-type": "string"},
+              "age":                    {"-type": "string"},
+              "gender":                 {"-type": "string"},
+              "non_smoker":             {"-type": "string"},
+              "loan":                   {"-type": "string"},
+              "income":                 {"-type": "string"},
+              "premium_rate":           {"-type": "integer"}
+            },
+            "insurance":{
+              "upper_bound":{
+                "maxlimit":             { "-type": "integer"},
+                "multiple":             { "-type": "integer"},
+                "sum_assure":           { "-type": "integer"},
+                "annual_premium":       { "-type": "integer"},
+                "monthly_premium":      { "-type": "integer"}
+              },
+              "suggest_cover":{
+                "maxlimit":             { "-type": "integer"},
+                "multiple":             { "-type": "integer"},
+                "sum_assure":           { "-type": "integer"},
+                "annual_premium":       { "-type": "integer"},
+                "monthly_premium":      { "-type": "integer"}
+              },
+              "lower_bound":{
+                "maxlimit":             { "-type": "integer"},
+                "multiple":             { "-type": "integer"},
+                "sum_assure":           { "-type": "integer"},
+                "annual_premium":       { "-type": "integer"},
+                "monthly_premium":      { "-type": "integer"}
+              }
             }
-          ]
+          }
         }
       ]
     }

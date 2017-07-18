@@ -92,7 +92,11 @@ class Insurance extends REST2_Controller
                    isset($swissre_config['insurance']) && is_array($swissre_config['insurance']))
                 {
                     $premium_rate = $swissre_config[$product_type][$answer['gender']][$answer['non_smoker']][intval($answer['age'])];
+                    $answer['product'] = $product_type;
+                    $answer['premium_rate'] = $premium_rate;
                     foreach($swissre_config['insurance'] as $key => $val){
+                        $response[$key]['maxlimit'] = $val['max_limit'];
+                        $response[$key]['multiple'] = $val['multiple'];
                         $response[$key]['sum_assure'] = min(($answer['loan'] + ($answer['income'] * $val['multiple'])),$val['max_limit']);
                         $response[$key]['annual_premium'] = round(($response[$key]['sum_assure'] * $premium_rate) / 1000, 1);
                         $response[$key]['monthly_premium'] = round($response[$key]['annual_premium'] / 12, 1);;
@@ -110,9 +114,7 @@ class Insurance extends REST2_Controller
             $this->response($this->error->setError('INSURANCE_PLAYER_INFO_MISSING'), 200);
         }
 
-        $this->response($this->resp->setRespond(array('answer' => $answer, 'response' => $response)), 200);
-
-
+        $this->response($this->resp->setRespond(array('information' => $answer, 'insurance' => $response)), 200);
     }
 }
 
