@@ -42,13 +42,18 @@ class Insurance extends REST2_Controller
         $swissre_config = $this->insurance_model->getInsuranceConfig($client_id, $site_id);
         foreach ($swissre_config as $key => $value){
             if (strpos($key, 'quiz_id')){
-                if(!isset($swissre_quiz_id[$value.""])){
+                if(!isset($swissre_quiz_id[$value.""]) && !is_null($value)){
                     $swissre_quiz_id[$value.""]=array();
                 }
             }
             elseif (strpos($key, 'question_id')){
                 $type = explode('_question_id', $key);
-                $swissre_quiz_id[$swissre_config[$type[0]."_quiz_id"].""][$type[0]] = $value."";
+                $quiz_id = is_null($swissre_config[$type[0]."_quiz_id"]) ? null : $swissre_config[$type[0]."_quiz_id"]."";
+                if(!is_null($quiz_id)){
+                    $swissre_quiz_id[$swissre_config[$type[0]."_quiz_id"].""][$type[0]] = is_null($value) ? null : $value."";
+                } else {
+                    $answer['non_smoker'] = 'non_smoker';
+                }
             }
         }
 
@@ -82,7 +87,7 @@ class Insurance extends REST2_Controller
 
         $response = array();
         if(isset($answer['age']) && !is_null($answer['age']) &&
-           isset($answer['gender']) && !is_null($answer['gender']) &&
+           isset($answer['gender']) && !is_null($answer['gender']) && 
            isset($answer['non_smoker']) && !is_null($answer['non_smoker']) &&
            isset($answer['loan']) && !is_null($answer['loan']) &&
            isset($answer['income']) && !is_null($answer['income']))
