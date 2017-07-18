@@ -656,6 +656,18 @@ class Error extends CI_Model
                 $errorData['message'] = "User has reached the maximum counter limit";
                 $errorData['error_code'] = '5001';
                 break;
+            case 'INSURANCE_CALCULATOR_NOT_SET':
+                $errorData['message'] = "Insurance calculator has not been set in dashboard";
+                $errorData['error_code'] = '5001';
+                break;
+            case 'INSURANCE_PRODUCT_NOT_FOUND':
+                $errorData['message'] = "Insurance product is not found";
+                $errorData['error_code'] = '5001';
+                break;
+            case 'INSURANCE_PLAYER_INFO_MISSING':
+                $errorData['message'] = "Insurance player information is missing";
+                $errorData['error_code'] = '5001';
+                break;
             default:
                 $errorData['message'] = "Unknown";
                 $errorData['error_code'] = '9999';
