@@ -92,11 +92,11 @@ class Insurance extends REST2_Controller
            isset($answer['loan']) && !is_null($answer['loan']) &&
            isset($answer['income']) && !is_null($answer['income']))
         {
-            if(isset($swissre_config[$product_type])){
-                if(isset($swissre_config[$product_type][$answer['gender']][$answer['non_smoker']][intval($answer['age'])]) &&
+            if(isset($swissre_config['product'][$product_type])){
+                if(isset($swissre_config['product'][$product_type][$answer['gender']][$answer['non_smoker']][intval($answer['age'])]) &&
                    isset($swissre_config['insurance']) && is_array($swissre_config['insurance']))
                 {
-                    $premium_rate = $swissre_config[$product_type][$answer['gender']][$answer['non_smoker']][intval($answer['age'])];
+                    $premium_rate = $swissre_config['product'][$product_type][$answer['gender']][$answer['non_smoker']][intval($answer['age'])];
                     $answer['product'] = $product_type;
                     $answer['premium_rate'] = $premium_rate;
                     foreach($swissre_config['insurance'] as $key => $val){
