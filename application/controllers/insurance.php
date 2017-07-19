@@ -62,7 +62,7 @@ class Insurance extends REST2_Controller
             $quiz_player[$quiz_id] = $this->quiz_model->find_quiz_by_quiz_and_player($client_id, $site_id, new MongoId($quiz_id), $pb_player_id);
             foreach ($value as $key => $val){
                 $q_index = array_search(new MongoId($val), $quiz_player[$quiz_id]['questions']);
-                if(isset($quiz_player[$quiz_id]['answers'][$q_index])){
+                if(isset($quiz_player[$quiz_id]['answers'][$q_index]) && $q_index !== false){
                     if(isset($quiz_player[$quiz_id]['answers'][$q_index]['answer'])){
                         $answer[$key] = $quiz_player[$quiz_id]['answers'][$q_index]['answer'];
                     } else {
@@ -86,12 +86,16 @@ class Insurance extends REST2_Controller
         }
 
         $response = array();
-        if(isset($answer['age']) && !is_null($answer['age']) &&
+        if((isset($answer['age_man']) && !is_null($answer['age_man']) ||
+           isset($answer['age_woman']) && !is_null($answer['age_woman'])) &&
            isset($answer['gender']) && !is_null($answer['gender']) && 
            isset($answer['non_smoker']) && !is_null($answer['non_smoker']) &&
            isset($answer['loan']) && !is_null($answer['loan']) &&
            isset($answer['income']) && !is_null($answer['income']))
         {
+            $answer['age'] = $answer['gender'] == 'male' ? $answer['age_man'] : $answer['age_woman'];
+            unset($answer['age_man']);
+            unset($answer['age_woman']);
             if(isset($swissre_config['product'][$product_type])){
                 if(isset($swissre_config['product'][$product_type][$answer['gender']][$answer['non_smoker']][intval($answer['age'])]) &&
                    isset($swissre_config['insurance']) && is_array($swissre_config['insurance']))
