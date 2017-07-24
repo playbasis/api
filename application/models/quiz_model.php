@@ -166,7 +166,7 @@ class Quiz_model extends MY_Model
         return $results;
     }
     
-    public function insert_answer_timestamp($client_id, $site_id, $pb_player_id, $quiz_id, $question_id, $option_id , $active, $answer = null)
+    public function insert_answer_timestamp($client_id, $site_id, $pb_player_id, $quiz_id, $question_id, $option_id , $active, $answer = null, $is_multiple_choice = false)
     {
         $answer_info = is_null($answer) ? array('option_id' => $option_id) : array('option_id' => $option_id, 'answer' => $answer);
         $this->mongo_db->insert('playbasis_question_to_player', array(
@@ -177,10 +177,11 @@ class Quiz_model extends MY_Model
             'questions_id' => $question_id,
             'answers' => $answer_info,
             'answer_timestamp' => new MongoDate(time()),
+            'is_multiple_choice' => $is_multiple_choice,
             'active' => $active
         ));
     }
-    public function update_answer_timestamp($client_id, $site_id, $pb_player_id, $quiz_id, $question_id, $option_id, $answer = null)
+    public function update_answer_timestamp($client_id, $site_id, $pb_player_id, $quiz_id, $question_id, $option_id, $answer = null, $is_multiple_choice = false)
     {
         $this->mongo_db->where('client_id', $client_id);
         $this->mongo_db->where('site_id', $site_id);
@@ -191,6 +192,7 @@ class Quiz_model extends MY_Model
         $answer_info = is_null($answer) ? array('option_id' => $option_id) : array('option_id' => $option_id, 'answer' => $answer);
         $this->mongo_db->set('answers', $answer_info);
         $this->mongo_db->set('answer_timestamp', new MongoDate(time()));
+        $this->mongo_db->set('is_multiple_choice', $is_multiple_choice);
         $results = $this->mongo_db->update('playbasis_question_to_player');
         return $results;
     }
@@ -204,17 +206,18 @@ class Quiz_model extends MY_Model
         $option_id,
         $score,
         $grade,
-        $range_answer = null,
+        $answer = null,
         $is_last_question = false,
-        $next_question = null
+        $next_question = null,
+        $is_multiple_choice = false
     ) {
         $d = new MongoDate(time());
         $result = $this->find_quiz_by_quiz_and_player($client_id, $site_id, $quiz_id, $pb_player_id);
         $questions = $result ? $result['questions'] : array();
         $answers = $result ? $result['answers'] : array();
         array_push($questions, $question_id);
-        $answer_info = array('option_id' => $option_id, 'score' => $score, 'date_added' => $d);
-        if(!is_null($range_answer)) $answer_info['answer'] = $range_answer;
+        $answer_info = array('option_id' => $option_id, 'score' => $score, 'date_added' => $d, 'is_multiple_choice' => $is_multiple_choice);
+        if(!is_null($answer)) $answer_info['answer'] = $answer;
         array_push($answers, $answer_info);
 
         if (!$result) {
@@ -255,14 +258,15 @@ class Quiz_model extends MY_Model
         $pb_player_id,
         $question_id,
         $max_score,
-        $total_max
+        $total_max,
+        $is_multiple_choice = false
     ) {
         $d = new MongoDate(time());
         $result = $this->find_quiz_by_quiz_and_player($client_id, $site_id, $quiz_id, $pb_player_id);
         $questions = $result ? $result['questions'] : array();
         $answers = $result ? $result['answers'] : array();
         array_push($questions, $question_id);
-        array_push($answers, array('option_id' => Null, 'score' => 0, 'date_added' => $d));
+        array_push($answers, array('option_id' => Null, 'score' => 0, 'date_added' => $d, 'is_multiple_choice' => $is_multiple_choice));
 
         if (!$result) {
             return $this->mongo_db->insert('playbasis_quiz_to_player', array(
@@ -324,14 +328,50 @@ class Quiz_model extends MY_Model
                     foreach ($each['answers'] as $i => $value) {
                         if (isset($each['questions'][$i])) {
                             $question = strval($each['questions'][$i]);
-                            $answer = strval($value['option_id']);
-                            if (!isset($stat[$question])) {
-                                $stat[$question] = array();
+                            if(isset($value['is_multiple_choice']) && $value['is_multiple_choice']){
+                                foreach ($value['option_id'] as $key => $option){
+                                    $option_id = strval($option);
+                                    $answer = isset($value['answer']) ? $value['answer'] : false;
+                                    if (!isset($stat[$question])) {
+                                        $stat[$question] = array();
+                                    }
+                                    if($answer){
+                                        if (!isset($stat[$question][$option_id])) {
+                                            $stat[$question][$option_id] = array();
+                                        }
+                                        if (!isset($stat[$question][$option_id][$answer[$key]])) {
+                                            $stat[$question][$option_id][$answer[$key]] = 0;
+                                        }
+                                        $stat[$question][$option_id][$answer[$key]]++;
+                                    } else {
+                                        if (!isset($stat[$question][$option_id])) {
+                                            $stat[$question][$option_id] = 0;
+                                        }
+                                        $stat[$question][$option_id]++;
+                                    }
+                                }
+                            } else {
+                                $option_id = strval($value['option_id']);
+                                $answer = isset($value['answer']) ? $value['answer'] : false;
+                                if (!isset($stat[$question])) {
+                                    $stat[$question] = array();
+                                }
+                                if($answer){
+                                    if (!isset($stat[$question][$option_id])) {
+                                        $stat[$question][$option_id] = array();
+                                    }
+                                    if (!isset($stat[$question][$option_id][$answer])) {
+                                        $stat[$question][$option_id][$answer] = 0;
+                                    }
+                                    $stat[$question][$option_id][$answer]++;
+                                } else {
+                                    if (!isset($stat[$question][$option_id])) {
+                                        $stat[$question][$option_id] = 0;
+                                    }
+                                    $stat[$question][$option_id]++;
+                                }
                             }
-                            if (!isset($stat[$question][$answer])) {
-                                $stat[$question][$answer] = 0;
-                            }
-                            $stat[$question][$answer]++;
+
                         }
                     }
                 }
