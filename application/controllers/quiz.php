@@ -870,7 +870,6 @@ class Quiz extends REST2_Controller
                 'quiz_id' => $quiz_id,
                 'quiz_name' => $quiz['name'],
                 'grade' => $grade,
-                'is_multiple_choice' => $is_multiple_choice,
                 'quiz_completed' => true,
             ));
         }
