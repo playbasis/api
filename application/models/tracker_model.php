@@ -338,6 +338,7 @@ class Tracker_model extends MY_Model
             'option' => (isset($input['option'])) ? $input['option'] : null,
             'grade' => (isset($input['grade'])) ? $input['grade'] : null,
             'quiz_completed' => (isset($input['quiz_completed'])) ? $input['quiz_completed'] : false,
+            'is_multiple_choice' => (isset($input['is_multiple_choice'])) ? $input['is_multiple_choice'] : false,
             'date_added' => $mongoDate,
             'date_modified' => $mongoDate
         ), array("w" => 0, "j" => false));
