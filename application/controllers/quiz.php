@@ -666,7 +666,7 @@ class Quiz extends REST2_Controller
             if ($is_multiple_choice){
                 $max_score += $o['score'];
                 foreach ($option_id as $key => &$optionId){
-                    $optionId = new MongoId($optionId);
+                    $optionId = new MongoId(trim($optionId));
                     if ($o['option_id'] == $optionId) {
                         $option[$key] = $o;
                     }
@@ -682,7 +682,7 @@ class Quiz extends REST2_Controller
             }
 
         }
-        if (!$option) {
+        if (!$option || ($is_multiple_choice && (count($option) < count($option_id)))) {
             $this->response($this->error->setError('QUIZ_OPTION_NOT_FOUND'), 200);
         }
 
@@ -754,19 +754,21 @@ class Quiz extends REST2_Controller
         }
 
         /* get score from answering that option */
+        $goto = null;
         if($is_multiple_choice){
             $score = 0;
             $explanation = array();
             $is_terminate = false;
-            $goto = false;
+
             foreach ($option as $key => $value){
                 $score += intval($value['score']);
                 $explanation[$key] = $value['explanation'];
                 $is_terminate = $value['terminate'] ? $value['terminate'] : $is_terminate;
-                $goto = $value['terminate'] ? $value['terminate'] : $goto;
+                $goto = $value['goto'] ? $value['goto'] : $goto;
             }
             
         } else {
+            $goto = $option['goto'];
             $score = intval($option['score']);
             $explanation = $option['explanation'];
             $is_terminate = $option['terminate'];
