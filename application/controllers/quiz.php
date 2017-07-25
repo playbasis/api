@@ -763,7 +763,7 @@ class Quiz extends REST2_Controller
                 $score += intval($value['score']);
                 $explanation[$key] = $value['explanation'];
                 $is_terminate = $value['terminate'] ? $value['terminate'] : $is_terminate;
-                $goto = $value['next_question'] ? $value['next_question'] : $goto;
+                $goto = $value['goto'] ? $value['goto'] : $goto;
             }
             
         } else {
