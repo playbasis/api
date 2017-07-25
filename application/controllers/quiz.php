@@ -682,7 +682,7 @@ class Quiz extends REST2_Controller
             }
 
         }
-        if (!$option) {
+        if (!$option || ($is_multiple_choice && (count($option) < count($option_id)))) {
             $this->response($this->error->setError('QUIZ_OPTION_NOT_FOUND'), 200);
         }
 
@@ -754,11 +754,12 @@ class Quiz extends REST2_Controller
         }
 
         /* get score from answering that option */
+        $goto = null;
         if($is_multiple_choice){
             $score = 0;
             $explanation = array();
             $is_terminate = false;
-            $goto = null;
+
             foreach ($option as $key => $value){
                 $score += intval($value['score']);
                 $explanation[$key] = $value['explanation'];
@@ -767,6 +768,7 @@ class Quiz extends REST2_Controller
             }
             
         } else {
+            $goto = $option['goto'];
             $score = intval($option['score']);
             $explanation = $option['explanation'];
             $is_terminate = $option['terminate'];
