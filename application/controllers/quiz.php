@@ -666,7 +666,7 @@ class Quiz extends REST2_Controller
             if ($is_multiple_choice){
                 $max_score += $o['score'];
                 foreach ($option_id as $key => &$optionId){
-                    $optionId = new MongoId($optionId);
+                    $optionId = new MongoId(trim($optionId));
                     if ($o['option_id'] == $optionId) {
                         $option[$key] = $o;
                     }
@@ -763,7 +763,7 @@ class Quiz extends REST2_Controller
                 $score += intval($value['score']);
                 $explanation[$key] = $value['explanation'];
                 $is_terminate = $value['terminate'] ? $value['terminate'] : $is_terminate;
-                $goto = $value['terminate'] ? $value['terminate'] : $goto;
+                $goto = $value['next_question'] ? $value['next_question'] : $goto;
             }
             
         } else {
