@@ -758,7 +758,7 @@ class Quiz extends REST2_Controller
             $score = 0;
             $explanation = array();
             $is_terminate = false;
-            $goto = false;
+            $goto = null;
             foreach ($option as $key => $value){
                 $score += intval($value['score']);
                 $explanation[$key] = $value['explanation'];
