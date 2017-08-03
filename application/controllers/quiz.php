@@ -656,7 +656,7 @@ class Quiz extends REST2_Controller
             $this->response($this->error->setError('PARAMETER_MISSING', array('option_id')), 200);
         }
 
-        $is_multiple_choice = $question['is_multiple_choices'];
+        $is_multiple_choice = isset($question['is_multiple_choices']) ? $question['is_multiple_choices'] : false;
         $option_id = $is_multiple_choice ? explode(',',$option_id) : new MongoId($option_id);
         $answer = $is_multiple_choice ? explode(',',$this->input->post('answer')) : $this->input->post('answer');
         $ans = null;
