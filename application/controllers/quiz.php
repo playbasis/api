@@ -659,6 +659,7 @@ class Quiz extends REST2_Controller
         $is_multiple_choice = $question['is_multiple_choices'];
         $option_id = $is_multiple_choice ? explode(',',$option_id) : new MongoId($option_id);
         $answer = $is_multiple_choice ? explode(',',$this->input->post('answer')) : $this->input->post('answer');
+        $ans = null;
         $option = $is_multiple_choice ? array() : null;
         $is_last_question = false;
         $max_score = 0;
@@ -669,6 +670,12 @@ class Quiz extends REST2_Controller
                     $optionId = new MongoId(trim($optionId));
                     if ($o['option_id'] == $optionId) {
                         $option[$key] = $o;
+                        if(isset($o['is_range_option']) && $o['is_range_option'] === true){
+                            $ans = $answer;
+                        }
+                        if(isset($o['is_text_option']) && $o['is_text_option'] === true) {
+                            $ans = $answer;
+                        }
                     }
                 }
             } else {
@@ -678,6 +685,12 @@ class Quiz extends REST2_Controller
 
                 if ($o['option_id'] == $option_id) {
                     $option = $o;
+                    if(isset($o['is_range_option']) && $o['is_range_option'] === true){
+                        $ans = $answer;
+                    }
+                    if(isset($o['is_text_option']) && $o['is_text_option'] === true) {
+                        $ans = $answer;
+                    }
                 }
             }
 
@@ -807,7 +820,7 @@ class Quiz extends REST2_Controller
         $active_qustions_timestamp = $this->quiz_model->get_active_question_time_stamp($this->client_id, $this->site_id,$pb_player_id , $quiz_id,$question_id );
         $timelimit = (isset($question['timelimit']) && !empty($question['timelimit'])) ? $question['timelimit']: null;
         if($active_qustions_timestamp){
-            $this->quiz_model->update_answer_timestamp($this->client_id, $this->site_id, $pb_player_id, $quiz_id, $question_id, $option_id, $answer);
+            $this->quiz_model->update_answer_timestamp($this->client_id, $this->site_id, $pb_player_id, $quiz_id, $question_id, $option_id, $ans);
             if($timelimit){
                 $timelimits = explode(':',$timelimit);
                 $limit = (($timelimits[0]*3600) + ($timelimits[1]*60) + ($timelimits[2]));
@@ -820,7 +833,7 @@ class Quiz extends REST2_Controller
                 }
             }
         }else{
-            $this->quiz_model->insert_answer_timestamp($this->client_id, $this->site_id, $pb_player_id, $quiz_id, $question_id, $option_id, true, $answer);
+            $this->quiz_model->insert_answer_timestamp($this->client_id, $this->site_id, $pb_player_id, $quiz_id, $question_id, $option_id, true, $ans);
         }
 
         /* check to see if grade has any reward associated with it */
@@ -832,7 +845,7 @@ class Quiz extends REST2_Controller
         $grade['total_max_score'] = $total_max_score;
 
         /* update player's score */
-        $this->quiz_model->update_player_score($this->client_id, $this->site_id, $quiz_id, $pb_player_id, $question_id, $option_id, $score, $grade, $answer, $is_terminate, $goto, $is_multiple_choice);
+        $this->quiz_model->update_player_score($this->client_id, $this->site_id, $quiz_id, $pb_player_id, $question_id, $option_id, $score, $grade, $ans, $is_terminate, $goto, $is_multiple_choice);
 
         if($is_multiple_choice){
             foreach ($option as $key => &$value){
