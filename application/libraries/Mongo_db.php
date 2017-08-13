@@ -120,13 +120,13 @@ class Mongo_db
 	private $_read_preference_primary = MongoClient::RP_PRIMARY;
 	private $_read_preference_secondary = MongoClient::RP_PRIMARY;
 
-    /**
+	/**
 	 * Query safety value.
 	 * 
 	 * @var string
 	 * @access private
 	 */
-	private $_query_safety = 'w';
+	private $_query_safety = 'safe';
 
 	/**
 	 * Selects array.
@@ -214,10 +214,8 @@ class Mongo_db
 			$this->_ci = NULL;
 		}
 
-		/* MongoCursor::$timeout = -1; */
-		//MongoCursor::$timeout = 2*60000; // prevent MongoCursorTimeoutException, set timeout to be (default = 30000 milli secs, -1 = no timeout)
         if(!defined("MONGO_SUPPORTS_STREAMS")){
-            MongoCursor::$timeout = 2*60000;
+            MongoCursor::$timeout = 5*60000;
         }
 
 		$this->load();
@@ -549,12 +547,12 @@ class Mongo_db
 		return $this;
 	}
 
-    public function where_exists($field = '', $value = true)
-    {
-        $this->_where_init($field);
-        $this->wheres[$field]['$exists'] = $value;
-        return $this;
-    }
+	public function where_exists($field = '', $value = true)
+	{
+		$this->_where_init($field);
+		$this->wheres[$field]['$exists'] = $value;
+		return $this;
+	}
 
 	/**
 	 * where_gt
@@ -1070,7 +1068,7 @@ class Mongo_db
 
 		$options = array_merge(
 					array(
-						/* $this->_query_safety => TRUE */
+						$this->_query_safety => TRUE
 					),
 					$options
 				);
@@ -1099,12 +1097,12 @@ class Mongo_db
 	}
 
 	/**
-	 * Insert.
+	 * Batch insert.
 	 *
-	 * Insert a new document
+	 * Insert a set of documents
 	 *
 	 * <code>
-	 * $this->mongo_db->insert('foo', array('foo'=>'bar'));
+	 * $this->mongo_db->batch_insert('foo', array('foo'=>'bar'));
 	 * </code>
 	 *
 	 * @param string $collection Name of the collection
@@ -1128,7 +1126,7 @@ class Mongo_db
 
 		$options = array_merge(
 					array(
-						/* $this->_query_safety => TRUE */
+						$this->_query_safety => TRUE
 					),
 					$options
 				);
@@ -1143,58 +1141,6 @@ class Mongo_db
 		catch (MongoCursorException $exception)
 		{
 			$this->_show_error('Insert of data into MongoDB failed: ' . $exception->getMessage(), 500);
-		}
-	}
-
-    public function aggregate($collection='',$query = array()){
-        try
-        {
-            return $this->_dbhandle
-                ->{$collection}
-                ->aggregate($query);
-        }
-
-        catch (MongoCursorException $exception)
-        {
-            $this->_show_error('Insert of data into MongoDB failed: ' . $exception->getMessage(), 500);
-        }
-    }
-
-	/**
-	 * FindAndModify a document.
-	 *
-	 * FindAndModify a document
-	 *
-	 * <code>
-	 * $this->mongo_db->findAndModify('foo', $data = array());
-	 * </code>
-	 *
-	 * @param string $collection Name of the collection
-	 * @param array  $options    Array of update options
-	 *
-	 * @access public
-	 * @return boolean
-	 */
-	public function findAndModify($collection = '', $options = array())
-	{
-		if (empty($collection))
-		{
-			$this->_show_error('No Mongo collection selected to update', 500);
-		}
-
-		try
-		{
-			/* $options = array_merge(array($this->_query_safety => TRUE, 'multiple' => FALSE), $options); */
-			$options = array_merge(array('multiple' => FALSE), $options);
-			$result = $this->_dbhandle->{$collection}->findAndModify($this->wheres, $this->updates, null, $options);
-			$this->_clear($collection, 'findAndModify');
-
-			return $result;
-		}
-
-		catch (MongoCursorException $exception)
-		{
-			$this->_show_error('FindAndModify of data into MongoDB failed: ' . $exception->getMessage(), 500);
 		}
 	}
 
@@ -1227,8 +1173,7 @@ class Mongo_db
 
 		try
 		{
-			/* $options = array_merge(array($this->_query_safety => TRUE, 'multiple' => FALSE), $options); */
-			$options = array_merge(array('multiple' => FALSE), $options);
+			$options = array_merge(array($this->_query_safety => TRUE, 'multiple' => FALSE), $options);
 			$result = $this->_dbhandle->{$collection}->update($this->wheres, $this->updates, $options);
 			$this->_clear($collection, 'update');
 
@@ -1276,8 +1221,7 @@ class Mongo_db
 
 		try
 		{
-			/* $options = array_merge(array($this->_query_safety => TRUE, 'multiple' => TRUE), $options); */
-			$options = array_merge(array('multiple' => TRUE), $options);
+			$options = array_merge(array($this->_query_safety => TRUE, 'multiple' => TRUE), $options);
 			$result = $this->_dbhandle->{$collection}->update($this->wheres, $this->updates, $options);
 			$this->_clear($collection, 'update_all');
 
@@ -1608,8 +1552,7 @@ class Mongo_db
 
 		try
 		{
-			/* $this->_dbhandle->{$collection}->remove($this->wheres, array($this->_query_safety => TRUE, 'justOne' => TRUE)); */
-			$this->_dbhandle->{$collection}->remove($this->wheres, array('justOne' => TRUE));
+			$this->_dbhandle->{$collection}->remove($this->wheres, array($this->_query_safety => TRUE, 'justOne' => TRUE));
 			$this->_clear($collection, 'delete');
 			return TRUE;
 		}
@@ -1648,8 +1591,7 @@ class Mongo_db
 
 		try
 		{
-			/* $this->_dbhandle->{$collection}->remove($this->wheres, array($this->_query_safety => TRUE, 'justOne' => FALSE)); */
-			$this->_dbhandle->{$collection}->remove($this->wheres, array('justOne' => FALSE));
+			$this->_dbhandle->{$collection}->remove($this->wheres, array($this->_query_safety => TRUE, 'justOne' => FALSE));
 			$this->_clear($collection, 'delete_all');
 			return TRUE;
 		}
@@ -1720,6 +1662,18 @@ class Mongo_db
 		catch (MongoCursorException $exception)
 		{
 			$this->_show_error('MongoDB command failed to execute: ' . $exception->getMessage(), 500);
+		}
+	}
+
+	public function aggregate($collection='',$query = array()){
+		try
+		{
+			return $this->_dbhandle->{$collection}->aggregate($query);
+		}
+
+		catch (MongoCursorException $exception)
+		{
+			$this->_show_error('Insert of data into MongoDB failed: ' . $exception->getMessage(), 500);
 		}
 	}
 
@@ -1989,7 +1943,7 @@ class Mongo_db
 
         if(defined("MONGO_SUPPORTS_STREAMS")){
             $options['connectTimeoutMS'] = -1;
-            $options['socketTimeoutMS'] = 2*60000;
+            $options['socketTimeoutMS'] = 5*60000;
         }
 
 		if ($this->_persist === TRUE)
@@ -2009,7 +1963,7 @@ class Mongo_db
 			if ($this->_replica_set !== FALSE) {
 				$this->_read_preference_primary = MongoClient::RP_PRIMARY_PREFERRED;
 				$this->_read_preference_secondary = MongoClient::RP_SECONDARY_PREFERRED;
-				$this->setReadPreference($this->_read_preference_primary); // instead of MongoClient::RP_PRIMARY (primary only) as a default
+				$this->setReadPreference($this->_read_preference_secondary); // instead of MongoClient::RP_PRIMARY (primary only) as a default
 				if (isset($this->_config_data['mongo_collection_to_secondary'])) { // direct requests to selected collections to secondary
 					if (is_array($this->_config_data['mongo_collection_to_secondary'])) foreach ($this->_config_data['mongo_collection_to_secondary'] as $collection) {
 						$this->_dbhandle->{$collection}->setReadPreference($this->_read_preference_secondary);
