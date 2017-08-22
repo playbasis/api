@@ -198,11 +198,14 @@ class Goods extends REST2_Controller
             
             $in_goods = array();
             foreach ($group_list as $group_name) {
+                $check = $active_filter;
                 if($active_filter && isset($group_name['batch_name']) && sizeof($group_name['batch_name']) <= 1){
-                    $active_filter = false;
+                    $check = false;
                 }
-                $goods_group_detail = $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, "", $group_name['name'], $active_filter);
-                array_push($in_goods, new MongoId($goods_group_detail));
+                $goods_group_detail = $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, null, $group_name['name'], $check);
+                if(!is_null($goods_group_detail)){
+                    array_push($in_goods, new MongoId($goods_group_detail));
+                }
             }
             if ($filter_goods_name) {
                 $data['specific'] = $this->input->get('custom_param') ?
