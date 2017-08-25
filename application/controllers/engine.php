@@ -1350,13 +1350,17 @@ class Engine extends Quest
                         }  // close if(isset($exInfo['dynamic']))
                     } elseif ($jigsawCategory == 'FEEDBACK') {
                         if (!$input["test"]) {
-                            $this->processFeedback($jigsawName, array_merge($input, array('coupon' => $last_coupon)),$output);
-                            if($jigsawName == "deeplink" && $output){
-                                $apiResult['events'][] = array(
-                                    'event_type' => 'DEEPLINK_GENERATED',
-                                    'reward_type' => 'deeplink',
-                                    'link_url' => $output,
-                                );
+                            if($jigsawName != "data") {
+                                $this->processFeedback($jigsawName, array_merge($input, array('coupon' => $last_coupon)), $output);
+                                if ($jigsawName == "deeplink" && $output) {
+                                    $apiResult['events'][] = array(
+                                        'event_type' => 'DEEPLINK_GENERATED',
+                                        'reward_type' => 'deeplink',
+                                        'link_url' => $output,
+                                    );
+                                }
+                            }else{
+                                $apiResult['events_data'][$exInfo['feedback_key']] =  $exInfo['feedback_value'];
                             }
                         }
                     } else {
