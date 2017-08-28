@@ -742,7 +742,6 @@ class jigsaw extends MY_Model
     {
         assert(isset($config['variable_name']));
         assert(isset($config['param_value']));
-        $status = true;
         $result = false;
 
         $variable_name = isset($config['variable_name']) && $config['variable_name'] ? $config['variable_name'] : null;
@@ -758,7 +757,7 @@ class jigsaw extends MY_Model
             $input[$variable_name] = $result ? $result."" :$variable_value;
         }
 
-        return $status;
+        return true;
     }
 
     public function data($config, $input, &$exInfo = array())
