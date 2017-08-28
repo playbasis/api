@@ -741,20 +741,32 @@ class jigsaw extends MY_Model
     public function variable($config, &$input, &$exInfo = array())
     {
         assert(isset($config['variable_name']));
-        assert(isset($config['variable_value']));
+        assert(isset($config['param_value']));
         $result = false;
 
         $variable_name = isset($config['variable_name']) && $config['variable_name'] ? $config['variable_name'] : null;
-        $variable_value = isset($config['variable_value']) && $config['variable_value'] ? $config['variable_value'] : null;
+        $variable_value = isset($config['param_value']) && $config['param_value'] ? $config['param_value'] : null;
 
         if($variable_name && $variable_value) {
 
-            $input[$variable_name] = $variable_value;
-            $result = true;
+            ob_start();
+            eval('$result = '.$config['param_value'].';');
+            $ret = ob_get_contents();//do nothing for now
+            ob_end_clean();
 
+            $input[$variable_name] = $result ? $result."" :$variable_value;
         }
 
-        return $result;
+        return true;
+    }
+
+    public function data($config, $input, &$exInfo = array())
+    {
+        assert(isset($config['key']));
+        assert(isset($config['param_value']));
+        $exInfo['feedback_key'] = $config['key'];
+        $exInfo['feedback_value'] =  $config['param_value'];
+        return true;
     }
 
     public function cooldown($config, $input, &$exInfo = array())
