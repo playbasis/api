@@ -134,53 +134,99 @@ class Goods extends REST2_Controller
             }
 
             $filter_goods_name = $this->input->get('name') ? $this->input->get('name') : null;
-            if ($this->input->get('custom_param')) {
-                $custom_param = explode(',', $this->input->get('custom_param'));
+            if ($this->input->get('custom_param') || $this->input->get('not_custom_param')) {
                 $custom_array = array();
-                foreach ($custom_param as $param) {
-                    $param_data = explode('|', $param);
-                    if(isset($param_data[0]) && isset($param_data[1]) && isset($param_data[2])){
-                        $param_data[0] = is_numeric($param_data[2]) ? $param_data[0].'_numeric' : $param_data[0];
-                        if(isset($custom_array[$param_data[0]])) {
-                            if ($param_data[1] == '!=') {
-                                $custom_array[$param_data[0]]['$ne'] = is_numeric($param_data[2]) ? floatval($param_data[2]) : $param_data[2];
-                            } elseif (($param_data[1] == '>') && is_numeric($param_data[2])) {
-                                $custom_array[$param_data[0]]['$gt'] = floatval($param_data[2]);
-                            } elseif (($param_data[1] == '>=') && is_numeric($param_data[2])) {
-                                $custom_array[$param_data[0]]['$gte'] = floatval($param_data[2]);
-                            } elseif (($param_data[1] == '<') && is_numeric($param_data[2])) {
-                                $custom_array[$param_data[0]]['$lt'] = floatval($param_data[2]);
-                            } elseif (($param_data[1] == '<=') && is_numeric($param_data[2])) {
-                                $custom_array[$param_data[0]]['$lte'] = floatval($param_data[2]);
+                $not_custom_array = array();
+
+                if($this->input->get('custom_param')) {
+                    $custom_param = explode(',', $this->input->get('custom_param'));
+                    foreach ($custom_param as $param) {
+                        $param_data = explode('|', $param);
+                        if (isset($param_data[0]) && isset($param_data[1]) && isset($param_data[2])) {
+                            $param_data[0] = is_numeric($param_data[2]) ? $param_data[0] . '_numeric' : $param_data[0];
+                            if (isset($custom_array[$param_data[0]])) {
+                                if ($param_data[1] == '!=') {
+                                    $custom_array[$param_data[0]]['$ne'] = is_numeric($param_data[2]) ? floatval($param_data[2]) : $param_data[2];
+                                } elseif (($param_data[1] == '>') && is_numeric($param_data[2])) {
+                                    $custom_array[$param_data[0]]['$gt'] = floatval($param_data[2]);
+                                } elseif (($param_data[1] == '>=') && is_numeric($param_data[2])) {
+                                    $custom_array[$param_data[0]]['$gte'] = floatval($param_data[2]);
+                                } elseif (($param_data[1] == '<') && is_numeric($param_data[2])) {
+                                    $custom_array[$param_data[0]]['$lt'] = floatval($param_data[2]);
+                                } elseif (($param_data[1] == '<=') && is_numeric($param_data[2])) {
+                                    $custom_array[$param_data[0]]['$lte'] = floatval($param_data[2]);
+                                } else {
+                                    $custom_array[$param_data[0]]['$eq'] = is_numeric($param_data[2]) ? floatval($param_data[2]) : $param_data[2];
+                                }
                             } else {
-                                $custom_array[$param_data[0]]['$eq'] = is_numeric($param_data[2]) ? floatval($param_data[2]) : $param_data[2];
+                                if ($param_data[1] == '!=') {
+                                    $custom_array[$param_data[0]] = array('$ne' => is_numeric($param_data[2]) ? floatval($param_data[2]) : $param_data[2]);
+                                } elseif (($param_data[1] == '>') && is_numeric($param_data[2])) {
+                                    $custom_array[$param_data[0]] = array('$gt' => floatval($param_data[2]));
+                                } elseif (($param_data[1] == '>=') && is_numeric($param_data[2])) {
+                                    $custom_array[$param_data[0]] = array('$gte' => floatval($param_data[2]));
+                                } elseif (($param_data[1] == '<') && is_numeric($param_data[2])) {
+                                    $custom_array[$param_data[0]] = array('$lt' => floatval($param_data[2]));
+                                } elseif (($param_data[1] == '<=') && is_numeric($param_data[2])) {
+                                    $custom_array[$param_data[0]] = array('$lte' => floatval($param_data[2]));
+                                } else {
+                                    $custom_array[$param_data[0]] = array('$eq' => is_numeric($param_data[2]) ? floatval($param_data[2]) : $param_data[2]);
+                                }
                             }
                         } else {
-                            if ($param_data[1] == '!=') {
-                                $custom_array[$param_data[0]] = array('$ne' => is_numeric($param_data[2]) ? floatval($param_data[2]) : $param_data[2]);
-                            } elseif (($param_data[1] == '>') && is_numeric($param_data[2])) {
-                                $custom_array[$param_data[0]] = array('$gt' => floatval($param_data[2]));
-                            } elseif (($param_data[1] == '>=') && is_numeric($param_data[2])) {
-                                $custom_array[$param_data[0]] = array('$gte' => floatval($param_data[2]));
-                            } elseif (($param_data[1] == '<') && is_numeric($param_data[2])) {
-                                $custom_array[$param_data[0]] = array('$lt' => floatval($param_data[2]));
-                            } elseif (($param_data[1] == '<=') && is_numeric($param_data[2])) {
-                                $custom_array[$param_data[0]] = array('$lte' => floatval($param_data[2]));
+                            if (isset($custom_array[$param_data[0]])) {
+                                $custom_array[$param_data[0]] = $custom_array[$param_data[0]];
                             } else {
-                                $custom_array[$param_data[0]] = array('$eq' => is_numeric($param_data[2]) ? floatval($param_data[2]) : $param_data[2]);
+                                $custom_array[$param_data[0]] = null;
                             }
-                        }
-                    } else {
-                        if(isset($custom_array[$param_data[0]])) {
-                            $custom_array[$param_data[0]] = $custom_array[$param_data[0]];
-                        } else {
-                            $custom_array[$param_data[0]] = null;
                         }
                     }
                 }
-
-                
-                $custom_goods = $this->goods_model->getGroupsCustomParam($this->site_id, $custom_array);
+                if($this->input->get('not_custom_param')) {
+                    $not_custom_param = explode(',', $this->input->get('not_custom_param'));
+                    foreach ($not_custom_param as $not_param) {
+                        $not_param_data = explode('|', $not_param);
+                        if (isset($not_param_data[0]) && isset($not_param_data[1]) && isset($not_param_data[2])) {
+                            $not_param_data[0] = is_numeric($not_param_data[2]) ? $not_param_data[0] . '_numeric' : $not_param_data[0];
+                            if (isset($not_custom_array[$not_param_data[0]])) {
+                                if ($not_param_data[1] == '!=') {
+                                    $not_custom_array[$not_param_data[0]]['$ne'] = is_numeric($not_param_data[2]) ? floatval($not_param_data[2]) : $not_param_data[2];
+                                } elseif (($not_param_data[1] == '>') && is_numeric($not_param_data[2])) {
+                                    $not_custom_array[$not_param_data[0]]['$gt'] = floatval($not_param_data[2]);
+                                } elseif (($not_param_data[1] == '>=') && is_numeric($not_param_data[2])) {
+                                    $not_custom_array[$not_param_data[0]]['$gte'] = floatval($not_param_data[2]);
+                                } elseif (($not_param_data[1] == '<') && is_numeric($not_param_data[2])) {
+                                    $not_custom_array[$not_param_data[0]]['$lt'] = floatval($not_param_data[2]);
+                                } elseif (($not_param_data[1] == '<=') && is_numeric($not_param_data[2])) {
+                                    $not_custom_array[$not_param_data[0]]['$lte'] = floatval($not_param_data[2]);
+                                } else {
+                                    $not_custom_array[$not_param_data[0]]['$eq'] = is_numeric($not_param_data[2]) ? floatval($not_param_data[2]) : $not_param_data[2];
+                                }
+                            } else {
+                                if ($not_param_data[1] == '!=') {
+                                    $not_custom_array[$not_param_data[0]] = array('$ne' => is_numeric($not_param_data[2]) ? floatval($not_param_data[2]) : $not_param_data[2]);
+                                } elseif (($not_param_data[1] == '>') && is_numeric($not_param_data[2])) {
+                                    $not_custom_array[$not_param_data[0]] = array('$gt' => floatval($not_param_data[2]));
+                                } elseif (($not_param_data[1] == '>=') && is_numeric($not_param_data[2])) {
+                                    $not_custom_array[$not_param_data[0]] = array('$gte' => floatval($not_param_data[2]));
+                                } elseif (($not_param_data[1] == '<') && is_numeric($not_param_data[2])) {
+                                    $not_custom_array[$not_param_data[0]] = array('$lt' => floatval($not_param_data[2]));
+                                } elseif (($not_param_data[1] == '<=') && is_numeric($not_param_data[2])) {
+                                    $not_custom_array[$not_param_data[0]] = array('$lte' => floatval($not_param_data[2]));
+                                } else {
+                                    $not_custom_array[$not_param_data[0]] = array('$eq' => is_numeric($not_param_data[2]) ? floatval($not_param_data[2]) : $not_param_data[2]);
+                                }
+                            }
+                        } else {
+                            if (isset($not_custom_array[$not_param_data[0]])) {
+                                $not_custom_array[$not_param_data[0]] = $not_custom_array[$not_param_data[0]];
+                            } else {
+                                $not_custom_array[$not_param_data[0]] = null;
+                            }
+                        }
+                    }
+                }
+                $custom_goods = $this->goods_model->getGroupsCustomParam($this->site_id, $custom_array, $not_custom_array);
                 $in_group = array();
                 $goods_param_id = array();
                 foreach ($custom_goods as $c_goods){
