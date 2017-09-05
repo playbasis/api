@@ -254,11 +254,11 @@ class Goods extends REST2_Controller
                 }
             }
             if ($filter_goods_name) {
-                $data['specific'] = $this->input->get('custom_param') ?
+                $data['specific'] = $this->input->get('custom_param') || $this->input->get('not_custom_param') ?
                     array('$or' => array(array("group" => array('$exists' => false) , 'goods_id'=> array('$in' => $goods_param_id), 'name'=> array('$regex' => new MongoRegex("/" . preg_quote(mb_strtolower($filter_goods_name)) . "/i"))), array("goods_id" => array('$in' => $in_goods)))) :
                     array('$or' => array(array("group" => array('$exists' => false) , 'name'=> array('$regex' => new MongoRegex("/" . preg_quote(mb_strtolower($filter_goods_name)) . "/i"))), array("goods_id" => array('$in' => $in_goods))));
             } else {
-                $data['specific'] = $this->input->get('custom_param') ?
+                $data['specific'] = $this->input->get('custom_param') || $this->input->get('not_custom_param') ?
                     array('$or' => array(array("group" => array('$exists' => false) , 'goods_id'=> array('$in' => $goods_param_id)), array("goods_id" => array('$in' => $in_goods)))) :
                     array('$or' => array(array("group" => array('$exists' => false)), array("goods_id" => array('$in' => $in_goods))));
             }
