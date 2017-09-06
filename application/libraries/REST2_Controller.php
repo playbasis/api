@@ -75,24 +75,26 @@ abstract class REST2_Controller extends REST_Controller
         $this->app_enable = $this->setting_model->appStatus($this->client_id, $this->site_id);
         $client_setting = $this->setting_model->retrieveSetting($this->client_id,$this->site_id);
         $this->player_auth_enable = isset($client_setting['player_authentication_enable']) ? $client_setting['player_authentication_enable'] : false;
-        $this->log_id = $this->rest_model->logRequest(array(
-            'client_id' => $this->client_id,
-            'site_id' => $this->site_id,
-            'api_key' => !empty($api_key) ? $api_key : null,
-            'token' => !empty($token) ? $token : null,
-            'class_name' => null,
-            'class_method' => null,
-            'method' => $this->request->method,
-            'scheme' => isset($_SERVER['REQUEST_SCHEME']) && $_SERVER['REQUEST_SCHEME'] ? $_SERVER['REQUEST_SCHEME'] : (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] ? 'https' : 'http'),
-            'uri' => $this->uri->uri_string(),
-            'query' => isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : null,
-            'request' => !empty($this->request->body) ? $this->request->body : $_POST,
-            'response' => null,
-            'format' => null,
-            'ip' => $this->input->ip_address(),
-            'agent' => array_key_exists('HTTP_USER_AGENT', $_SERVER) ? $_SERVER['HTTP_USER_AGENT'] : null,
-            'server' => isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : null
-        ));
+        if($this->request->method == "post" || (isset($this->_args["debug"]) && $this->_args["debug"] == DEBUG_KEY)) {
+            $this->log_id = $this->rest_model->logRequest(array(
+                'client_id' => $this->client_id,
+                'site_id' => $this->site_id,
+                'api_key' => !empty($api_key) ? $api_key : null,
+                'token' => !empty($token) ? $token : null,
+                'class_name' => null,
+                'class_method' => null,
+                'method' => $this->request->method,
+                'scheme' => isset($_SERVER['REQUEST_SCHEME']) && $_SERVER['REQUEST_SCHEME'] ? $_SERVER['REQUEST_SCHEME'] : (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] ? 'https' : 'http'),
+                'uri' => $this->uri->uri_string(),
+                'query' => isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : null,
+                'request' => !empty($this->request->body) ? $this->request->body : $_POST,
+                'response' => null,
+                'format' => null,
+                'ip' => $this->input->ip_address(),
+                'agent' => array_key_exists('HTTP_USER_AGENT', $_SERVER) ? $_SERVER['HTTP_USER_AGENT'] : null,
+                'server' => isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : null
+            ));
+        }
 
         /* 1.2 Client-Site Limit Requests */
         if (!$this->client_id || !$this->site_id) {
@@ -185,10 +187,12 @@ abstract class REST2_Controller extends REST_Controller
     {
         /* 1.2 Log class_name and method */
         $class_name = get_class($this);
-        $this->rest_model->logResponse($this->log_id, $this->site_id, array(
-            'class_name' => $class_name,
-            'class_method' => $method[1],
-        ));
+        if($this->request->method == "post" || (isset($this->_args["debug"]) && $this->_args["debug"] == DEBUG_KEY)) {
+            $this->rest_model->logResponse($this->log_id, $this->site_id, array(
+                'class_name' => $class_name,
+                'class_method' => $method[1],
+            ));
+        }
         try {
             if (in_array($class_name, array('Auth', 'Quest', 'Quiz', 'Engine', 'Redeem', 'Game', 'Merchant')) && $this->app_enable === false && $this->request->method === "post"){
                 $this->response($this->error->setError('SETTING_DISABLE'), 200);
@@ -328,11 +332,13 @@ abstract class REST2_Controller extends REST_Controller
             log_message('error', $msg);
             /* 3.2 Log response (exception) */
             $data = $this->error->setError('INTERNAL_ERROR', $msg);
-            $this->rest_model->logResponse($this->log_id, $this->site_id, array(
-                'response' => $data,
-                'format' => $this->response->format,
-                'error' => $e->getTraceAsString(),
-            ));
+            if($this->request->method == "post" || (isset($this->_args["debug"]) && $this->_args["debug"] == DEBUG_KEY)) {
+                $this->rest_model->logResponse($this->log_id, $this->site_id, array(
+                    'response' => $data,
+                    'format' => $this->response->format,
+                    'error' => $e->getTraceAsString(),
+                ));
+            }
             $this->response($data, 200);
         }
     }
@@ -510,11 +516,12 @@ abstract class REST2_Controller extends REST_Controller
         }
         /* 3.1 Log response (actual output) */
          ini_set('mongo.allow_empty_keys', TRUE); // allow empty keys to be inserted in MongoDB (for example, insight needs this)
-        $this->rest_model->logResponse($this->log_id, $this->site_id, array(
-            'response' => $data,
-            'format' => $this->response->format,
-        ));
-
+        if($this->request->method == "post" || (isset($this->_args["debug"]) && $this->_args["debug"] == DEBUG_KEY)) {
+            $this->rest_model->logResponse($this->log_id, $this->site_id, array(
+                'response' => $data,
+                'format' => $this->response->format,
+            ));
+        }
         exit($output);
     }
 }
