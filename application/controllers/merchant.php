@@ -8,6 +8,7 @@ class Merchant extends REST2_Controller
     {
         parent::__construct();
         $this->load->model('goods_model');
+        $this->load->model('tracker_model');
         $this->load->model('merchant_model');
         $this->load->model('reward_model');
         $this->load->model('player_model');
@@ -204,6 +205,7 @@ class Merchant extends REST2_Controller
                         $result = $this->merchant_model->getMerchantRedeemLogByLogId($client_id, $site_id, new MongoId($log_result));
                         if ($result) {
                             $this->player_model->markUsedGoodsFromPlayer($client_id, $site_id, $pb_player_id, new MongoId($player_goods['goods_id']));
+                            $this->tracker_model->trackGoodsStatus($client_id, $site_id, $pb_player_id, new MongoId($player_goods['goods_id']), "used");
                         }
                         $this->response($this->resp->setRespond(array("success" => true)), 200);
                     } else {
@@ -211,6 +213,7 @@ class Merchant extends REST2_Controller
                     }
                 } else {
                     $this->player_model->markUsedGoodsFromPlayer($client_id, $site_id, $pb_player_id, new MongoId($player_goods['goods_id']));
+                    $this->tracker_model->trackGoodsStatus($client_id, $site_id, $pb_player_id, new MongoId($player_goods['goods_id']), "used");
                     $this->response($this->resp->setRespond(array("success" => true)), 200);
                 }
             }
@@ -256,6 +259,7 @@ class Merchant extends REST2_Controller
         }
 
         $this->player_model->deductNormalGoodsFromPlayer($client_id, $site_id, $pb_player_id, $goods_id, $amount);
+        $this->tracker_model->trackGoodsStatus($client_id, $site_id, $pb_player_id, new MongoId($goods_id), "used");
         $this->response($this->resp->setRespond(array("success" => true)), 200);
     }
 }

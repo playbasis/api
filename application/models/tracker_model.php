@@ -126,6 +126,17 @@ class Tracker_model extends MY_Model
             array_merge($input, array('goods_log_id' => $goods_log_id)), $async);
     }
 
+    public function trackGoodsStatus($client_id, $site_id, $pb_player_id, $goods_id, $status)
+    {
+        $this->mongo_db->where('client_id', $client_id);
+        $this->mongo_db->where('site_id', $site_id);
+        $this->mongo_db->where('pb_player_id', $pb_player_id);
+        $this->mongo_db->where('goods_id', $goods_id);
+        $this->mongo_db->where('status', array('$exists' => false));
+        $this->mongo_db->set('status', $status);
+        $this->mongo_db->update('playbasis_goods_log');
+    }
+
     public function trackBadge($input, $async = true)
     {
         $this->set_site_mongodb($input['site_id']);
