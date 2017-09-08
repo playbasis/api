@@ -1634,6 +1634,7 @@ class Player extends REST2_Controller
                 );
                 // log event - goods
                 $this->tracker_model->trackGoods($validToken);
+                $this->tracker_model->trackGoodsStatus($client_id, $site_id, $sent_pb_player_id, $gift_id, "gifted");
             }
             //publish to node stream
             $this->node->publish(array(
