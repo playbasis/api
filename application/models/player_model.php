@@ -651,6 +651,31 @@ class Player_model extends MY_Model
         return $result;
     }
 
+    public function getActionHistoryDetail($data)
+    {
+        $this->mongo_db->select(array(
+            'action_name',
+            'parameters',
+            'date_added'
+        ));
+        $this->mongo_db->where('client_id', new MongoID($data['client_id']));
+        $this->mongo_db->where('site_id', new MongoID($data['site_id']));
+        $this->mongo_db->where('cl_player_id', $data['cl_player_id']);
+        if(isset($data['action_name'])){
+            $this->mongo_db->where('action_name', $data['action_name']);
+        }
+        if(isset($data['date_added'])){
+            $this->mongo_db->where('date_added', $data['date_added']);
+        }
+        if(isset($data['offset'])){
+            $this->mongo_db->offset((int)$data['offset']);
+        }
+        if(isset($data['limit'])){
+            $this->mongo_db->limit((int)$data['limit']);
+        }
+        return $this->mongo_db->get('playbasis_validated_action_log');
+    }
+    
     public function getActionSumFromDatetime(
         $pb_player_id,
         $action_id,

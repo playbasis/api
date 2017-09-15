@@ -1549,6 +1549,60 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($actions), 200);
     }
 
+    public function action_history_get($player_id = '')
+    {
+        if (!$player_id) {
+            $this->response($this->error->setError('PARAMETER_MISSING', array(
+                'player_id'
+            )), 200);
+        }
+
+        //get playbasis player id
+        $pb_player_id = $this->player_model->getPlaybasisId(array_merge($this->validToken, array(
+            'cl_player_id' => $player_id
+        )));
+        if (!$pb_player_id) {
+            $this->response($this->error->setError('USER_NOT_EXIST'), 200);
+        }
+        
+        
+        $data = array(
+            'client_id' => new MongoId($this->validToken['client_id']),
+            'site_id' => new MongoId($this->validToken['site_id']),
+            'cl_player_id' => $player_id,
+        );
+        if($this->input->get('action_name')){
+            $action_name = $this->input->get('action_name');
+            $action_id = $this->action_model->findAction(array_merge($this->validToken, array(
+                'action_name' => $action_name
+            )));
+            if (!$action_id) {
+                $this->response($this->error->setError('ACTION_NOT_FOUND'), 200);
+            }
+            $data['action_name'] = $action_name;
+        }
+        
+        if($this->input->get('date_start')){
+            $data['date_added']['$gte'] = new MongoDate(strtotime($this->input->get('date_start')));
+        }
+        if($this->input->get('date_end')){
+            $data['date_added']['$lte'] = new MongoDate(strtotime($this->input->get('date_end') . " 23:59:59"));
+        }
+        if($this->input->get('offset')){
+            $data['offset'] = $this->input->get('offset');
+        }
+        if($this->input->get('limit')){
+            $data['limit'] = $this->input->get('limit');
+        }
+        
+        $result = $this->player_model->getActionHistoryDetail($data);
+        foreach ($result as &$value){
+            unset($value['_id']);
+            $value['date_added'] = datetimeMongotoReadable($value['date_added']);
+        }
+        $this->response($this->resp->setRespond($result), 200);
+    }
+
     public function giveGift_post($sent_player_id, $gift_type){
         $client_id = new MongoId($this->validToken['client_id']);
         $site_id = new MongoId($this->validToken['site_id']);
