@@ -1752,6 +1752,67 @@
           }
         },
         {
+          "MethodName": "Action History",
+          "Synopsis": "Returns list of action that a player performed.",
+          "HTTPMethod": "GET",
+          "URI": "Player/:id/action_history",
+          "RequiresOAuth": "N",
+          "Public": "Y",
+          "PlayerAuthRequired": "Y",
+          "PlayerTokenCheckWith":"id",
+          "parameters": [
+            {
+              "Name": "id",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "action_name",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "name of the action to query"
+            },
+            {
+              "Name": "date_start",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "date start in the format YYYY-MM-DD (ex.1982-09-29) to filter action log that valid date start/expire in period"
+            },
+            {
+              "Name": "date_end",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "date end in the format YYYY-MM-DD (ex.1982-09-29) to filter action log that valid date start/expire in period"
+            },
+            {
+              "Name": "limit",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "Specify paging limit [default = unlimited]"
+            },
+            {
+              "Name": "offset",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "Specify paging offset [default = 0]"
+            }
+          ],
+          "response": [
+            {
+              "action_name": { "-type": "string"},
+              "parameters": {"-type": "any"},
+              "date_added": {"-type": "string"}
+            }
+          ]
+        },
+        {
           "MethodName": "Level",
           "Synopsis": "Returns detail of level.",
           "HTTPMethod": "GET",
@@ -1912,6 +1973,37 @@
               "[a-zA-Z0-9-%_:\\.]+":  { "-type": "number"}
             }
           ]
+        },
+        {
+          "MethodName": "User Rank",
+          "Synopsis": "Returns player rank",
+          "HTTPMethod": "GET",
+          "URI": "Player/rankuser/:id/:rank_by",
+          "RequiresOAuth": "N",
+          "Public": "Y",
+          "parameters": [
+            {
+              "Name": "id",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "player id as used in client's website"
+            },
+            {
+              "Name": "rank_by",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "name of point-based reward to rank players by"
+            }
+          ],
+          "response":
+            {
+              "player_id":            { "-type": "string"},
+              "rank":                 { "-type": "integer"},
+              "ranked_by":            { "-type": "string"},
+              "ranked_value":         { "-type": "integer"}
+            }
         },
         {
           "MethodName": "DEPRECATED - Level",
