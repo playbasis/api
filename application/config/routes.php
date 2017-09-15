@@ -119,6 +119,7 @@ $route['Player/action/'.ANY_STRING.'/count'] = 'player/action/0/$1/count';
 $route['Player/'.ANY_STRING.'/action/time'] = 'player/action/$1/0/time';
 $route['Player/'.ANY_STRING.'/action/count'] = 'player/action/$1/0/count';
 $route['Player/action'] = 'player/action/';
+$route['Player/'.ANY_STRING.'/action_history'] = 'player/action_history/$1';
 
 $route['Player/'.ANY_STRING.'/badge'] = 'player/badge/$1';
 $route['Player/badge'] = 'player/badge/0';
@@ -201,7 +202,7 @@ $route['Engine/json/'.ANY_STRING] = 'engine/json/$1';
 $route['Engine/json']	= 'engine/json/0';
 
 //redeem API
-$route['Redeem/goods/'.ANY_STRING] = 'redeem/goods/$1';
+                $route['Redeem/goods/'.ANY_STRING] = 'redeem/goods/$1';
 $route['Redeem/goods'] = 'redeem/goods/0';
 $route['Redeem/goodsGroup'] = 'redeem/goodsGroup';
 $route['Redeem/sponsor/'.ANY_STRING] = 'redeem/sponsor/$1';
