@@ -796,9 +796,13 @@ class Engine extends Quest
                     }
                 }
             }
-            $input['action_log_id'] = $this->tracker_model->trackAction($input, $time); //track action
-            $input['action_log_time'] = $this->action_model->findActionLogTime($validToken['site_id'],
-                $input['action_log_id']);
+            $current_time = time();
+            if ($time && $time > $current_time) {
+                $time = $current_time;
+            } // cannot be something from the future
+            $mongoDate = new MongoDate($time ? $time : $current_time);
+            $input['action_log_id'] = $this->tracker_model->trackAction($input, $mongoDate); //track action
+            $input['action_log_time'] = $mongoDate->sec;
         }
 
         $client_id = $validToken['client_id'];

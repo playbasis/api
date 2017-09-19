@@ -11,15 +11,7 @@ class Tracker_model extends MY_Model
     public function trackAction($input, $action_time = null)
     {
         $this->set_site_mongodb($input['site_id']);
-        $current_time = time();
-        if ($action_time && $action_time > $current_time) {
-            $action_time = $current_time;
-        } // cannot be something from the future
-        $mongoDate = new MongoDate($action_time ? $action_time : $current_time);
-        $d = strtotime(date('Y-m-d', $mongoDate->sec));
-        //$this->computeDau($input, $d);
-        //$this->updateLatestProcessActionLogTime($mongoDate);
-        //$this->computeMau($input, $d);
+        $mongoDate = $action_time ? $action_time : new MongoDate();
         $action_log_id = $this->mongo_db->insert('playbasis_action_log', array(
             'pb_player_id' => $input['pb_player_id'],
             'pb_player_id-2' => isset($input['pb_player_id-2']) ? $input['pb_player_id-2'] : null,
