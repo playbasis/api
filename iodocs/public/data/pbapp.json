@@ -3868,8 +3868,8 @@
           ]
         },
         {
-          "MethodName": "Retrieve Remaing Points",
-          "Synopsis": "Return remaing for each points",
+          "MethodName": "Retrieve Remaining Points",
+          "Synopsis": "Return remaining for each points",
           "HTTPMethod": "GET",
           "URI": "Point/custom/remaining",
           "RequiresOAuth": "N",
@@ -3886,7 +3886,7 @@
           "response": [
             {
               "name":             { "-type": "string"},
-              "quantity":         { "-type": "integer", "-optional": "true"}
+              "quantity":         { "-type": "number", "-optional": "true"}
             }
           ]
         },
