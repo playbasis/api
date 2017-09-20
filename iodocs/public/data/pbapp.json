@@ -1773,7 +1773,7 @@
               "Required": "URI",
               "Default": "",
               "Type": "string",
-              "Description": "name of the action to query"
+              "Description": "name of the action to query (ex. comment,click)"
             },
             {
               "Name": "date_start",
