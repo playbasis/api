@@ -661,8 +661,8 @@ class Player_model extends MY_Model
         $this->mongo_db->where('client_id', new MongoID($data['client_id']));
         $this->mongo_db->where('site_id', new MongoID($data['site_id']));
         $this->mongo_db->where('cl_player_id', $data['cl_player_id']);
-        if(isset($data['action_name'])){
-            $this->mongo_db->where('action_name', $data['action_name']);
+        if(isset($data['action_name']) && is_array($data['action_name'])){
+            $this->mongo_db->where_in('action_name', $data['action_name']);
         }
         if(isset($data['date_added'])){
             $this->mongo_db->where('date_added', $data['date_added']);
