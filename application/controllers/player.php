@@ -1572,13 +1572,16 @@ class Player extends REST2_Controller
             'cl_player_id' => $player_id,
         );
         if($this->input->get('action_name')){
-            $action_name = $this->input->get('action_name');
-            $action_id = $this->action_model->findAction(array_merge($this->validToken, array(
-                'action_name' => $action_name
-            )));
-            if (!$action_id) {
-                $this->response($this->error->setError('ACTION_NOT_FOUND'), 200);
+            $action_name = explode(',',$this->input->get('action_name'));
+            foreach ($action_name as $item) {
+                $action_id = $this->action_model->findAction(array_merge($this->validToken, array(
+                    'action_name' => $item
+                )));
+                if (!$action_id) {
+                    $this->response($this->error->setError('ACTION_NOT_FOUND'), 200);
+                }
             }
+            
             $data['action_name'] = $action_name;
         }
         
