@@ -130,6 +130,7 @@ class Tracker_model extends MY_Model
         if($receiver){
             $this->mongo_db->set('receiver_id', new MongoId($receiver));
         }
+        $this->mongo_db->set('date_modified', new MongoDate());
         $this->mongo_db->update('playbasis_goods_log');
     }
 
