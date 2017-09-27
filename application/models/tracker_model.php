@@ -107,6 +107,7 @@ class Tracker_model extends MY_Model
             'goods_id' => $input['goods_id'],
             'goods_name' => $input['goods_name'],
             'group' => (isset($input['group'])) ? $input['group'] : null,
+            'status' => (isset($input['status'])) ? $input['status'] : null,
             'is_sponsor' => (isset($input['is_sponsor'])) ? $input['is_sponsor'] : false,
             'redeem' => $input['redeem'],
             'amount' => $input['amount'],
@@ -118,7 +119,7 @@ class Tracker_model extends MY_Model
             array_merge($input, array('goods_log_id' => $goods_log_id)), $async);
     }
 
-    public function trackGoodsStatus($client_id, $site_id, $pb_player_id, $goods_id, $status)
+    public function trackGoodsStatus($client_id, $site_id, $pb_player_id, $goods_id, $status, $receiver = false)
     {
         $this->mongo_db->where('client_id', $client_id);
         $this->mongo_db->where('site_id', $site_id);
@@ -126,6 +127,9 @@ class Tracker_model extends MY_Model
         $this->mongo_db->where('goods_id', $goods_id);
         $this->mongo_db->where('status', array('$exists' => false));
         $this->mongo_db->set('status', $status);
+        if($receiver){
+            $this->mongo_db->set('receiver_id', new MongoId($receiver));
+        }
         $this->mongo_db->update('playbasis_goods_log');
     }
 

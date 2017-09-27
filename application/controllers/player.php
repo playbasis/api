@@ -1687,11 +1687,12 @@ class Player extends REST2_Controller
                     'group' => isset($gift_data['gift']['group']) ? $gift_data['gift']['group'] : null,
                     'action_name' => 'redeem_goods',
                     'action_icon' => 'fa-icon-shopping-cart',
-                    'message' => $eventMessage
+                    'message' => $eventMessage,
+                    'status' => 'receiver'
                 );
                 // log event - goods
                 $this->tracker_model->trackGoods($validToken);
-                $this->tracker_model->trackGoodsStatus($client_id, $site_id, $sent_pb_player_id, $gift_id, "gifted");
+                $this->tracker_model->trackGoodsStatus($client_id, $site_id, $sent_pb_player_id, $gift_id, "sender", $received_pb_player_id);
             }
             //publish to node stream
             $this->node->publish(array(
