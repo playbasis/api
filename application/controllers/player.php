@@ -1688,7 +1688,8 @@ class Player extends REST2_Controller
                     'action_name' => 'redeem_goods',
                     'action_icon' => 'fa-icon-shopping-cart',
                     'message' => $eventMessage,
-                    'status' => 'receiver'
+                    'status' => 'receiver',
+                    'sender_id' => $sent_pb_player_id
                 );
                 // log event - goods
                 $this->tracker_model->trackGoods($validToken);

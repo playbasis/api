@@ -100,21 +100,27 @@ class Tracker_model extends MY_Model
     {
         $this->set_site_mongodb($input['site_id']);
         $mongoDate = new MongoDate();
-        $goods_log_id = $this->mongo_db->insert('playbasis_goods_log', array(
+        $data = array(
             'pb_player_id' => $input['pb_player_id'],
             'client_id' => $input['client_id'],
             'site_id' => $input['site_id'],
             'goods_id' => $input['goods_id'],
             'goods_name' => $input['goods_name'],
             'group' => (isset($input['group'])) ? $input['group'] : null,
-            'status' => (isset($input['status'])) ? $input['status'] : null,
             'is_sponsor' => (isset($input['is_sponsor'])) ? $input['is_sponsor'] : false,
             'redeem' => $input['redeem'],
             'amount' => $input['amount'],
             'date_expire' => isset($input['date_expire']) ? $input['date_expire'] : null,
             'date_added' => $mongoDate,
             'date_modified' => $mongoDate
-        ));
+        );
+        if (isset($input['status'])) {
+            $data['status'] = $input['status'];
+        }
+        if (isset($input['sender_id'])){
+            $data['sender_id'] = $input['sender_id'];
+        }
+        $goods_log_id = $this->mongo_db->insert('playbasis_goods_log', $data);
         return $this->trackEvent('REDEEM', $input['message'],
             array_merge($input, array('goods_log_id' => $goods_log_id)), $async);
     }
