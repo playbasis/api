@@ -1668,6 +1668,9 @@ class Player extends REST2_Controller
                 'gift_name' => $event['gift_data']['name'],
                 'gift_value' => $gift_value,
             );
+            if(isset($gift_data['gift']['group'])){
+                $data_reward['group'] = $gift_data['gift']['group'];
+            }
 
             $this->trackGift($sent_pb_player_id, $sent_player_id, $received_pb_player_id, $client_id, $site_id, $data_reward);
 
@@ -1724,6 +1727,9 @@ class Player extends REST2_Controller
             'amount' => $data_reward['gift_value'],
             'message' => $eventMessage
         );
+        if(isset($data_reward['group'])){
+            $data['group'] = $data_reward['group'];
+        }
         $this->tracker_model->trackGift($data);
     }
 

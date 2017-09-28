@@ -131,7 +131,7 @@ class Tracker_model extends MY_Model
         $this->mongo_db->where('site_id', $site_id);
         $this->mongo_db->where('pb_player_id', $pb_player_id);
         $this->mongo_db->where('goods_id', $goods_id);
-        $this->mongo_db->where('status', array('$exists' => false));
+        $this->mongo_db->where('$or', array(array('status' => array('$exists' => false)), array('status' => 'receiver')));
         $this->mongo_db->set('status', $status);
         if($receiver){
             $this->mongo_db->set('receiver_id', new MongoId($receiver));
@@ -162,7 +162,7 @@ class Tracker_model extends MY_Model
         $this->set_site_mongodb($input['site_id']);
         $mongoDate = new MongoDate();
         $options = $async ? array("w" => 0, "j" => false) : array();
-        $id = $this->mongo_db->insert('playbasis_gift_log', array(
+        $data = array(
             'pb_player_id' => $input['pb_player_id'],
             'client_id' => $input['client_id'],
             'site_id' => $input['site_id'],
@@ -173,7 +173,11 @@ class Tracker_model extends MY_Model
             'sender' => $input['sent_pb_player_id'],
             'date_added' => $mongoDate,
             'date_modified' => $mongoDate
-        ), $options);
+        );
+        if(isset($input['group'])){
+            $data['group'] = $input['group'];
+        }
+        $id = $this->mongo_db->insert('playbasis_gift_log', $data , $options);
 
         $input['gift_log_id'] = $id;
         if ($input['reward_type'] == 'BADGE') {
