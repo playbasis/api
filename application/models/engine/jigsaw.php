@@ -409,7 +409,7 @@ class jigsaw extends MY_Model
         $goods_list = $this->getPlayerAllGoods($client_id, $site_id, $pb_player_id);
         foreach ($goods_list as $goods) {
             $goods_info = $this->getGoodsInfo($client_id, $site_id, $goods['goods_id']);
-            if($goods_info['name'] == $goods_name && !isset($goods_info['group'])){
+            if(isset($goods_info['name']) && ($goods_info['name'] == $goods_name) && !isset($goods_info['group'])){
                 $value += $goods['value'];
                 $found_goods = true;
             }
