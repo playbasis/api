@@ -175,13 +175,19 @@ class Reward_model extends MY_Model
                 if (isset($reward_data[0]['limit_per_day']) && $reward_data[0]['limit_per_day']) {
                     $currentYMD = date("Y-m-d");
                     $settingTime = (isset($reward_data[0]['limit_start_time']) && $reward_data[0]['limit_start_time']) ? $reward_data[0]['limit_start_time'] : "00:00";
-                    $settingTime = strtotime("$currentYMD $settingTime:00");
-                    $currentTime = strtotime($currentYMD . " " . date('H:i:s', $pending_reward['date_added']->sec));
+                    $settingTimeReference = strtotime("$currentYMD $settingTime:00");
+                    $transactionTime = strtotime( date('Y-m-d H:i:s', $pending_reward['date_added']->sec));
+                    $transactionTimeReference = date("Y-m-d",$pending_reward['date_added']->sec);
+                    $transactionTimeReference = strtotime( "$transactionTimeReference $settingTime:00");
 
-                    if ($settingTime <= $currentTime) { // action has been processed for today !
-                        $startTimeFilter = $settingTime;
+                    if ($settingTimeReference <= $transactionTime) { // action has been processed for today !
+                        $startTimeFilter = $settingTimeReference;
                     } else {
-                        $startTimeFilter = strtotime("-1 day", $settingTime);
+                        if ($transactionTimeReference <= $transactionTime) { // action has been processed for the day the transaction has happened !
+                            $startTimeFilter = $transactionTimeReference;
+                        } else {
+                            $startTimeFilter = strtotime("-1 day", $transactionTimeReference);
+                        }
                     }
                     $this->deductCustomPointCounter($data['client_id'], $data['site_id'], $pending_reward['reward_id'], $startTimeFilter, $pending_reward['value']);
                 }
