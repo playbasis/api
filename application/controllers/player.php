@@ -640,7 +640,7 @@ class Player extends REST2_Controller
                 );
 
                 $custom_params = $this->input->post();
-                $private_datas = array('player_id', 'referral_code', 'token', 'XDEBUG_SESSION_START', 'XDEBUG_TRACE');
+                $private_datas = array('player_id', 'token', 'XDEBUG_SESSION_START', 'XDEBUG_TRACE');
                 foreach($custom_params as $key => $value) {
                     if (!in_array($key,$private_datas)) {
                         $parameter_A[$key] = $value;
