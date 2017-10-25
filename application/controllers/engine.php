@@ -39,6 +39,7 @@ class Engine extends Quest
         $this->load->model('reward_model');
         $this->load->model('location_model');
         $this->load->model('link_model');
+        $this->load->model('custom_reward_model');
     }
 
     public function getActionConfig_get()
@@ -946,6 +947,46 @@ class Engine extends Quest
                     $input['player_badge'] = $badge;
                 }
 
+                // Reward by custom parameter file
+                if (($input['jigsaw_category']) == 'REWARD_CUSTOM' ) {
+                    $file_data = $this->custom_reward_model->retrieveCustomRewardByID($client_id, $site_id, $jigsawConfig['file_id']);
+                    if(isset($input[$jigsawConfig['parameter_name']]) && isset($file_data['custom_reward_data'][$input[$jigsawConfig['parameter_name']]])){
+                        $reward_name = $file_data['custom_reward_data'][$input[$jigsawConfig['parameter_name']]][0]['reward_name'];
+                        $reward_type = $file_data['custom_reward_data'][$input[$jigsawConfig['parameter_name']]][0]['reward_type'];
+                        if($reward_type == "badge"){
+                            $jigsawConfig['reward_name'] = "badge";
+                            $jigsawConfig['reward_id'] = $this->reward_model->findByName(array(
+                                'client_id' => $this->client_id,
+                                'site_id' => $this->site_id
+                            ), "badge");
+                            $jigsawConfig['item_id'] = new MongoID($this->badge_model->getBadgeIDByName($this->client_id, $this->site_id, $reward_name));
+
+                        }elseif($reward_type == "goods"){
+                            $jigsawConfig['reward_name'] = "goods";
+                            $jigsawConfig['reward_id'] = "goods";
+                            $jigsawConfig['item_id'] = new MongoID($this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, $reward_name, null, false));
+                        }elseif($reward_type == "goods_group"){
+                            $jigsawConfig['reward_name'] = "goods";
+                            $jigsawConfig['reward_id'] = "goods";
+                            $jigsawConfig['item_id'] = new MongoID($this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, null, $reward_name, false));
+                        }else{
+                            $jigsawConfig['reward_name'] = $reward_name;
+                            $jigsawConfig['reward_id'] = $this->reward_model->findByName(array(
+                                'client_id' => $this->client_id,
+                                'site_id' => $this->site_id
+                            ), $reward_name);
+                            $jigsawConfig['item_id'] = null;
+                        }
+                        $jigsawConfig['quantity'] = 1;
+                    }else{
+                        //no custom parameter found
+                        $jigsawConfig['reward_name'] = null;
+                        $jigsawConfig['reward_id'] = null;
+                        $jigsawConfig['item_id'] = null;
+                        $jigsawConfig['quantity'] = 0;
+                    }
+                }
+
                 // support formula-based quantity
                 foreach ( array('quantity', 'param_value') as $config_key){
                     if (isset($jigsawConfig[$config_key]) && strpos($jigsawConfig[$config_key], '{') !== false) {
@@ -1057,7 +1098,7 @@ class Engine extends Quest
                     }
 
                     /* process 'REWARD' or 'FEEDBACK' */
-                    if ($jigsawCategory == 'REWARD' || $jigsawCategory == 'REWARD_SEQUENCE') {
+                    if ($jigsawCategory == 'REWARD' || $jigsawCategory == 'REWARD_SEQUENCE' || $jigsawCategory == 'REWARD_CUSTOM') {
                         if (isset($exInfo['dynamic'])) {
                             //reward is a custom point
                             assert('$exInfo["dynamic"]["reward_name"]');
@@ -1485,7 +1526,7 @@ class Engine extends Quest
 
     private function is_reward($category)
     {
-        return in_array($category, array('REWARD', 'FEEDBACK', 'GROUP', 'REWARD_SEQUENCE'));
+        return in_array($category, array('REWARD', 'FEEDBACK', 'GROUP', 'REWARD_SEQUENCE', 'REWARD_CUSTOM'));
     }
 
     private function giveGoods($jigsawConfig, $input, $validToken, &$event, $fbData, $goodsData)
