@@ -542,6 +542,9 @@ class Player_model extends MY_Model
         $this->mongo_db->limit(1);
         $result = $this->mongo_db->get('playbasis_action_log');
         if (!$result) {
+            if($site_id == new MongoId("57aab56572d3e1e0418b456a") || $site_id == new MongoId("5825a0d5be120b84688b4c17")){
+                $result['time'] = datetimeMongotoReadable(new MongoDate(strtotime("-1 days")));
+            }
             return $result;
         }
         $result = $result[0];
