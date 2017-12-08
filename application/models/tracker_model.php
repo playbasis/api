@@ -11,15 +11,7 @@ class Tracker_model extends MY_Model
     public function trackAction($input, $action_time = null)
     {
         $this->set_site_mongodb($input['site_id']);
-        $current_time = time();
-        if ($action_time && $action_time > $current_time) {
-            $action_time = $current_time;
-        } // cannot be something from the future
-        $mongoDate = new MongoDate($action_time ? $action_time : $current_time);
-        $d = strtotime(date('Y-m-d', $mongoDate->sec));
-        //$this->computeDau($input, $d);
-        //$this->updateLatestProcessActionLogTime($mongoDate);
-        //$this->computeMau($input, $d);
+        $mongoDate = $action_time ? $action_time : new MongoDate();
         $action_log_id = $this->mongo_db->insert('playbasis_action_log', array(
             'pb_player_id' => $input['pb_player_id'],
             'pb_player_id-2' => isset($input['pb_player_id-2']) ? $input['pb_player_id-2'] : null,
@@ -108,7 +100,7 @@ class Tracker_model extends MY_Model
     {
         $this->set_site_mongodb($input['site_id']);
         $mongoDate = new MongoDate();
-        $goods_log_id = $this->mongo_db->insert('playbasis_goods_log', array(
+        $data = array(
             'pb_player_id' => $input['pb_player_id'],
             'client_id' => $input['client_id'],
             'site_id' => $input['site_id'],
@@ -121,9 +113,31 @@ class Tracker_model extends MY_Model
             'date_expire' => isset($input['date_expire']) ? $input['date_expire'] : null,
             'date_added' => $mongoDate,
             'date_modified' => $mongoDate
-        ));
+        );
+        if (isset($input['status'])) {
+            $data['status'] = $input['status'];
+        }
+        if (isset($input['sender_id'])){
+            $data['sender_id'] = $input['sender_id'];
+        }
+        $goods_log_id = $this->mongo_db->insert('playbasis_goods_log', $data);
         return $this->trackEvent('REDEEM', $input['message'],
             array_merge($input, array('goods_log_id' => $goods_log_id)), $async);
+    }
+
+    public function trackGoodsStatus($client_id, $site_id, $pb_player_id, $goods_id, $status, $receiver = false)
+    {
+        $this->mongo_db->where('client_id', $client_id);
+        $this->mongo_db->where('site_id', $site_id);
+        $this->mongo_db->where('pb_player_id', $pb_player_id);
+        $this->mongo_db->where('goods_id', $goods_id);
+        $this->mongo_db->where('$or', array(array('status' => array('$exists' => false)), array('status' => 'receiver')));
+        $this->mongo_db->set('status', $status);
+        if($receiver){
+            $this->mongo_db->set('receiver_id', new MongoId($receiver));
+        }
+        $this->mongo_db->set('date_modified', new MongoDate());
+        $this->mongo_db->update('playbasis_goods_log');
     }
 
     public function trackBadge($input, $async = true)
@@ -148,7 +162,7 @@ class Tracker_model extends MY_Model
         $this->set_site_mongodb($input['site_id']);
         $mongoDate = new MongoDate();
         $options = $async ? array("w" => 0, "j" => false) : array();
-        $id = $this->mongo_db->insert('playbasis_gift_log', array(
+        $data = array(
             'pb_player_id' => $input['pb_player_id'],
             'client_id' => $input['client_id'],
             'site_id' => $input['site_id'],
@@ -159,7 +173,11 @@ class Tracker_model extends MY_Model
             'sender' => $input['sent_pb_player_id'],
             'date_added' => $mongoDate,
             'date_modified' => $mongoDate
-        ), $options);
+        );
+        if(isset($input['group'])){
+            $data['group'] = $input['group'];
+        }
+        $id = $this->mongo_db->insert('playbasis_gift_log', $data , $options);
 
         $input['gift_log_id'] = $id;
         if ($input['reward_type'] == 'BADGE') {
@@ -338,6 +356,7 @@ class Tracker_model extends MY_Model
             'option' => (isset($input['option'])) ? $input['option'] : null,
             'grade' => (isset($input['grade'])) ? $input['grade'] : null,
             'quiz_completed' => (isset($input['quiz_completed'])) ? $input['quiz_completed'] : false,
+            'is_multiple_choice' => (isset($input['is_multiple_choice'])) ? $input['is_multiple_choice'] : false,
             'date_added' => $mongoDate,
             'date_modified' => $mongoDate
         ), array("w" => 0, "j" => false));

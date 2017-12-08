@@ -140,7 +140,7 @@ class Goods_model extends MY_Model
 
     public function getGroupsList($site_id, $filter_group =null, $in_group=array())
     {
-        $this->mongo_db->select(array('name'));
+        $this->mongo_db->select(array('name','batch_name'));
         $this->mongo_db->where('site_id', new MongoId($site_id));
         if ($filter_group && $in_group) {
             $regex = new MongoRegex("/" . preg_quote(utf8_strtolower($filter_group)) . "/i");
@@ -160,7 +160,7 @@ class Goods_model extends MY_Model
         return $this->mongo_db->get('playbasis_goods_distinct_to_client');
     }
 
-    public function getGroupsCustomParam($site_id, $custom_param=array())
+    public function getGroupsCustomParam($site_id, $custom_param=array(), $not_custom_param=array())
     {
         $this->mongo_db->select(array('name','is_group'));
         $this->mongo_db->where('site_id', new MongoId($site_id));
@@ -172,7 +172,13 @@ class Goods_model extends MY_Model
             } else {
                 array_push($query_array, array('custom_param' =>array('$elemMatch' => array('key' => $key))));
             }
-
+        }
+        foreach ($not_custom_param as $key => $value){
+            if(!is_null($value)){
+                array_push($query_array, array('custom_param' => array('$not' => array('$elemMatch' => array('key' => $key , 'value' => $value)))));
+            } else {
+                array_push($query_array, array('custom_param' => array('$not' => array('$elemMatch' => array('key' => $key)))));
+            }
         }
         $this->mongo_db->where(array('$and' => $query_array)) ;
         
@@ -344,21 +350,25 @@ class Goods_model extends MY_Model
         return $result ? $result[0] : array();
     }
 
-    public function getGoodsIDByName($client_id, $site_id, $good_name, $good_group=null)
+    public function getGoodsIDByName($client_id, $site_id, $good_name, $good_group=null, $active_filter = false)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
-        $this->mongo_db->select(array('goods_id'));
-
         $this->mongo_db->where('client_id', new MongoId($client_id));
         $this->mongo_db->where('site_id', new MongoId($site_id));
-        $this->mongo_db->where('deleted', false);
-        $this->mongo_db->where('status', true);
 
         if($good_group){
             $this->mongo_db->where('group', $good_group);
         }else{
-            $this->mongo_db->where('name', $good_name);
             $this->mongo_db->where_exists('group', false);
+            $this->mongo_db->where('name', $good_name);
+        }
+        $this->mongo_db->where('deleted', false);
+        $this->mongo_db->where('status', true);
+        if ($active_filter && $good_group){
+            $d = new MongoDate();
+            $this->mongo_db->where(array('$and' => array( array('$or' => array(array("date_start" => null), array("date_start" => array('$lte'=> $d)))),
+                                                        array('$or' => array(array("date_expire" => null), array("date_expire" => array('$gte'=> $d)))))));
+            $this->mongo_db->where('$or',  array(array('date_expired_coupon' => array('$exists' => false)), array('date_expired_coupon' => array('$gt' => $d))));
+            $this->mongo_db->where('quantity', 1);
         }
         $this->mongo_db->limit(1);
         $results = $this->mongo_db->get("playbasis_goods_to_client");

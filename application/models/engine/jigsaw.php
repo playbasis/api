@@ -79,6 +79,44 @@ class jigsaw extends MY_Model
         return $result;
     }
 
+    private function getCustomParameterFile($client_id, $site_id, $file_id)
+    {
+        $this->set_site_mongodb($site_id);
+        $this->mongo_db->select(array('custom_param_condition_data'));
+        $this->mongo_db->where(array(
+            'client_id' => new MongoId($client_id),
+            'site_id' => new MongoId($site_id),
+            '_id' => new MongoId($file_id)
+        ));
+        $this->mongo_db->limit(1);
+        $sequence_list = $this->mongo_db->get('playbasis_custom_param_condition_to_client');
+        if (isset($sequence_list[0]['custom_param_condition_data']) && $sequence_list[0]['custom_param_condition_data']) {
+            return $sequence_list[0]['custom_param_condition_data'];
+        } else {
+            return false;
+        }
+    }
+
+    public function customParameterFile($config, $input, &$exInfo = array())
+    {
+        assert($config != false);
+        assert(is_array($config));
+        assert(isset($config['param_name']));
+        assert(isset($config['param_operation']));
+        assert(isset($config['file_id']));
+
+        $result = false;
+        $custom_param_list = $this->getCustomParameterFile($input['client_id'],$input['site_id'],$config['file_id']);
+        if($custom_param_list &&  (isset($input[$config['param_name']]))){
+            if (((in_array($input[$config['param_name']], $custom_param_list)) && $config['param_operation'] == "in" )||
+                (!(in_array($input[$config['param_name']], $custom_param_list)) && $config['param_operation'] == "notIn" ) ){
+                $result = true;
+            }
+
+        }
+        return $result;
+    }
+
     public function level($config, $input, &$exInfo = array())
     {
         assert($config != false);
@@ -285,8 +323,8 @@ class jigsaw extends MY_Model
     {
         assert($config != false);
         assert(is_array($config));
-        assert(isset($config['reward_id']));
-        assert(isset($config['reward_name']));
+        assert($config["reward_id"] == null ||isset($config['reward_id']));
+        assert($config["reward_name"] == null ||isset($config['reward_name']));
         assert($config["item_id"] == null || isset($config["item_id"]));
         assert(isset($config['quantity']) || isset($config['sequence_id']));
         assert($input != false);
@@ -409,7 +447,7 @@ class jigsaw extends MY_Model
         $goods_list = $this->getPlayerAllGoods($client_id, $site_id, $pb_player_id);
         foreach ($goods_list as $goods) {
             $goods_info = $this->getGoodsInfo($client_id, $site_id, $goods['goods_id']);
-            if($goods_info['name'] == $goods_name && !isset($goods_info['group'])){
+            if(isset($goods_info['name']) && ($goods_info['name'] == $goods_name) && !isset($goods_info['group'])){
                 $value += $goods['value'];
                 $found_goods = true;
             }
@@ -741,20 +779,32 @@ class jigsaw extends MY_Model
     public function variable($config, &$input, &$exInfo = array())
     {
         assert(isset($config['variable_name']));
-        assert(isset($config['variable_value']));
+        assert(isset($config['param_value']));
         $result = false;
 
         $variable_name = isset($config['variable_name']) && $config['variable_name'] ? $config['variable_name'] : null;
-        $variable_value = isset($config['variable_value']) && $config['variable_value'] ? $config['variable_value'] : null;
+        $variable_value = isset($config['param_value']) && $config['param_value'] ? $config['param_value'] : null;
 
         if($variable_name && $variable_value) {
 
-            $input[$variable_name] = $variable_value;
-            $result = true;
+            ob_start();
+            eval('$result = '.$config['param_value'].';');
+            $ret = ob_get_contents();//do nothing for now
+            ob_end_clean();
 
+            $input[$variable_name] = $result ? $result."" :$variable_value;
         }
 
-        return $result;
+        return true;
+    }
+
+    public function data($config, $input, &$exInfo = array())
+    {
+        assert(isset($config['key']));
+        assert(isset($config['param_value']));
+        $exInfo['feedback_key'] = $config['key'];
+        $exInfo['feedback_value'] =  $config['param_value'];
+        return true;
     }
 
     public function cooldown($config, $input, &$exInfo = array())
@@ -1239,6 +1289,7 @@ class jigsaw extends MY_Model
         $index = $this->getSequenceIndex($input, array('input'),count($config['group_container']) - 1,$global,$loop);
 
         if($index === false){
+            $exInfo['break'] = true;
             return false;
         }else{
             $exInfo['index'] = $index;

@@ -764,6 +764,9 @@ class Client_model extends MY_Model
             ));
             $this->mongo_db->set('date_modified', $mongoDate);
             $this->mongo_db->inc('value', intval($quantity));
+            if(intval($quantity) > 0){
+                $this->mongo_db->set('gifted', false);
+            }
             $this->mongo_db->update('playbasis_goods_to_player');
 
             $this->mongo_db->where(array(

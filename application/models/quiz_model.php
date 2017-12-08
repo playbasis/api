@@ -32,6 +32,7 @@ class Quiz_model extends MY_Model
         if ($tags) {
             $this->mongo_db->where_in('tags', $tags);
         }
+        $this->mongo_db->order_by(array('name' => 1));
         $result = $this->mongo_db->get('playbasis_quiz_to_client');
 
         return $result;
@@ -57,6 +58,8 @@ class Quiz_model extends MY_Model
             'questions',
             'answers',
             'grade',
+            'completed',
+            'next_question',
             'date_added',
             'date_modified'
         ));
@@ -72,8 +75,9 @@ class Quiz_model extends MY_Model
     public function find_quiz_by_player($client_id, $site_id, $pb_player_id, $limit = -1)
     {
         $this->set_site_mongodb($site_id);
-        $this->mongo_db->select(array('quiz_id', 'value', 'questions', 'grade'));
+        $this->mongo_db->select(array('quiz_id', 'value', 'questions', 'grade', 'completed'));
         $this->mongo_db->select(array(), array('_id'));
+        $this->mongo_db->where('site_id', $site_id);
         $this->mongo_db->where('pb_player_id', $pb_player_id);
         $this->mongo_db->order_by(array('date_modified' => -1));
         if ($limit > 0) {
@@ -94,8 +98,10 @@ class Quiz_model extends MY_Model
                 $quiz = $this->find_by_id($client_id, $site_id, $quiz_id);
                 $total_questions = count($quiz['questions']);
                 $completed_questions = count($result['questions']);
-                $pending = $completed_questions < $total_questions;
+                $pending = (isset($result['completed']) && ($result['completed'] == true)) ? false : ($completed_questions < $total_questions);
                 $result['total_completed_questions'] = $completed_questions;
+                $result['name'] = $quiz['name'];
+                $result['weight'] = $quiz['weight'];
                 if ($pending) {
                     $result['total_pending_questions'] = $total_questions - $completed_questions;
                 }
@@ -160,7 +166,7 @@ class Quiz_model extends MY_Model
         return $results;
     }
     
-    public function insert_answer_timestamp($client_id, $site_id, $pb_player_id, $quiz_id, $question_id, $option_id , $active, $answer = null)
+    public function insert_answer_timestamp($client_id, $site_id, $pb_player_id, $quiz_id, $question_id, $option_id , $active, $answer = null, $is_multiple_choice = false)
     {
         $answer_info = is_null($answer) ? array('option_id' => $option_id) : array('option_id' => $option_id, 'answer' => $answer);
         $this->mongo_db->insert('playbasis_question_to_player', array(
@@ -171,10 +177,11 @@ class Quiz_model extends MY_Model
             'questions_id' => $question_id,
             'answers' => $answer_info,
             'answer_timestamp' => new MongoDate(time()),
+            'is_multiple_choice' => $is_multiple_choice,
             'active' => $active
         ));
     }
-    public function update_answer_timestamp($client_id, $site_id, $pb_player_id, $quiz_id, $question_id, $option_id, $answer = null)
+    public function update_answer_timestamp($client_id, $site_id, $pb_player_id, $quiz_id, $question_id, $option_id, $answer = null, $is_multiple_choice = false)
     {
         $this->mongo_db->where('client_id', $client_id);
         $this->mongo_db->where('site_id', $site_id);
@@ -185,6 +192,7 @@ class Quiz_model extends MY_Model
         $answer_info = is_null($answer) ? array('option_id' => $option_id) : array('option_id' => $option_id, 'answer' => $answer);
         $this->mongo_db->set('answers', $answer_info);
         $this->mongo_db->set('answer_timestamp', new MongoDate(time()));
+        $this->mongo_db->set('is_multiple_choice', $is_multiple_choice);
         $results = $this->mongo_db->update('playbasis_question_to_player');
         return $results;
     }
@@ -198,15 +206,18 @@ class Quiz_model extends MY_Model
         $option_id,
         $score,
         $grade,
-        $range_answer = null
+        $answer = null,
+        $is_last_question = false,
+        $next_question = null,
+        $is_multiple_choice = false
     ) {
         $d = new MongoDate(time());
         $result = $this->find_quiz_by_quiz_and_player($client_id, $site_id, $quiz_id, $pb_player_id);
         $questions = $result ? $result['questions'] : array();
         $answers = $result ? $result['answers'] : array();
         array_push($questions, $question_id);
-        $answer_info = array('option_id' => $option_id, 'score' => $score, 'date_added' => $d);
-        if(!is_null($range_answer)) $answer_info['answer'] = $range_answer;
+        $answer_info = array('option_id' => $option_id, 'score' => $score, 'date_added' => $d, 'is_multiple_choice' => $is_multiple_choice);
+        if(!is_null($answer)) $answer_info['answer'] = $answer;
         array_push($answers, $answer_info);
 
         if (!$result) {
@@ -219,6 +230,8 @@ class Quiz_model extends MY_Model
                 'questions' => array($question_id),
                 'answers' => $answers,
                 'grade' => $grade,
+                'completed' => (bool)$is_last_question,
+                'next_question' => $next_question,
                 'date_added' => $d,
                 'date_modified' => $d
             ));
@@ -231,6 +244,8 @@ class Quiz_model extends MY_Model
             $this->mongo_db->set('answers', $answers);
             $this->mongo_db->set('value', $score + $result['value']);
             $this->mongo_db->set('grade', $grade);
+            $this->mongo_db->set('completed', (bool)$is_last_question);
+            $this->mongo_db->set('next_question', $next_question);
             $this->mongo_db->set('date_modified', $d);
             return $this->mongo_db->update('playbasis_quiz_to_player');
         }
@@ -243,14 +258,15 @@ class Quiz_model extends MY_Model
         $pb_player_id,
         $question_id,
         $max_score,
-        $total_max
+        $total_max,
+        $is_multiple_choice = false
     ) {
         $d = new MongoDate(time());
         $result = $this->find_quiz_by_quiz_and_player($client_id, $site_id, $quiz_id, $pb_player_id);
         $questions = $result ? $result['questions'] : array();
         $answers = $result ? $result['answers'] : array();
         array_push($questions, $question_id);
-        array_push($answers, array('option_id' => Null, 'score' => 0, 'date_added' => $d));
+        array_push($answers, array('option_id' => Null, 'score' => 0, 'date_added' => $d, 'is_multiple_choice' => $is_multiple_choice));
 
         if (!$result) {
             return $this->mongo_db->insert('playbasis_quiz_to_player', array(
@@ -312,14 +328,50 @@ class Quiz_model extends MY_Model
                     foreach ($each['answers'] as $i => $value) {
                         if (isset($each['questions'][$i])) {
                             $question = strval($each['questions'][$i]);
-                            $answer = strval($value['option_id']);
-                            if (!isset($stat[$question])) {
-                                $stat[$question] = array();
+                            if(isset($value['is_multiple_choice']) && $value['is_multiple_choice']){
+                                foreach ($value['option_id'] as $key => $option){
+                                    $option_id = strval($option);
+                                    $answer = isset($value['answer']) ? $value['answer'] : false;
+                                    if (!isset($stat[$question])) {
+                                        $stat[$question] = array();
+                                    }
+                                    if($answer){
+                                        if (!isset($stat[$question][$option_id])) {
+                                            $stat[$question][$option_id] = array();
+                                        }
+                                        if (!isset($stat[$question][$option_id][$answer[$key]])) {
+                                            $stat[$question][$option_id][$answer[$key]] = 0;
+                                        }
+                                        $stat[$question][$option_id][$answer[$key]]++;
+                                    } else {
+                                        if (!isset($stat[$question][$option_id])) {
+                                            $stat[$question][$option_id] = 0;
+                                        }
+                                        $stat[$question][$option_id]++;
+                                    }
+                                }
+                            } else {
+                                $option_id = strval($value['option_id']);
+                                $answer = isset($value['answer']) ? $value['answer'] : false;
+                                if (!isset($stat[$question])) {
+                                    $stat[$question] = array();
+                                }
+                                if($answer){
+                                    if (!isset($stat[$question][$option_id])) {
+                                        $stat[$question][$option_id] = array();
+                                    }
+                                    if (!isset($stat[$question][$option_id][$answer])) {
+                                        $stat[$question][$option_id][$answer] = 0;
+                                    }
+                                    $stat[$question][$option_id][$answer]++;
+                                } else {
+                                    if (!isset($stat[$question][$option_id])) {
+                                        $stat[$question][$option_id] = 0;
+                                    }
+                                    $stat[$question][$option_id]++;
+                                }
                             }
-                            if (!isset($stat[$question][$answer])) {
-                                $stat[$question][$answer] = 0;
-                            }
-                            $stat[$question][$answer]++;
+
                         }
                     }
                 }

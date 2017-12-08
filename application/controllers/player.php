@@ -640,7 +640,7 @@ class Player extends REST2_Controller
                 );
 
                 $custom_params = $this->input->post();
-                $private_datas = array('player_id', 'referral_code', 'token', 'XDEBUG_SESSION_START', 'XDEBUG_TRACE');
+                $private_datas = array('player_id', 'token', 'XDEBUG_SESSION_START', 'XDEBUG_TRACE');
                 foreach($custom_params as $key => $value) {
                     if (!in_array($key,$private_datas)) {
                         $parameter_A[$key] = $value;
@@ -1549,6 +1549,63 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($actions), 200);
     }
 
+    public function action_history_get($player_id = '')
+    {
+        if (!$player_id) {
+            $this->response($this->error->setError('PARAMETER_MISSING', array(
+                'player_id'
+            )), 200);
+        }
+
+        //get playbasis player id
+        $pb_player_id = $this->player_model->getPlaybasisId(array_merge($this->validToken, array(
+            'cl_player_id' => $player_id
+        )));
+        if (!$pb_player_id) {
+            $this->response($this->error->setError('USER_NOT_EXIST'), 200);
+        }
+        
+        
+        $data = array(
+            'client_id' => new MongoId($this->validToken['client_id']),
+            'site_id' => new MongoId($this->validToken['site_id']),
+            'cl_player_id' => $player_id,
+        );
+        if($this->input->get('action_name')){
+            $action_name = explode(',',$this->input->get('action_name'));
+            foreach ($action_name as $item) {
+                $action_id = $this->action_model->findAction(array_merge($this->validToken, array(
+                    'action_name' => $item
+                )));
+                if (!$action_id) {
+                    $this->response($this->error->setError('ACTION_NOT_FOUND'), 200);
+                }
+            }
+            
+            $data['action_name'] = $action_name;
+        }
+        
+        if($this->input->get('date_start')){
+            $data['date_added']['$gte'] = new MongoDate(strtotime($this->input->get('date_start')));
+        }
+        if($this->input->get('date_end')){
+            $data['date_added']['$lte'] = new MongoDate(strtotime($this->input->get('date_end') . " 23:59:59"));
+        }
+        if($this->input->get('offset')){
+            $data['offset'] = $this->input->get('offset');
+        }
+        if($this->input->get('limit')){
+            $data['limit'] = $this->input->get('limit');
+        }
+        
+        $result = $this->player_model->getActionHistoryDetail($data);
+        foreach ($result as &$value){
+            unset($value['_id']);
+            $value['date_added'] = datetimeMongotoReadable($value['date_added']);
+        }
+        $this->response($this->resp->setRespond($result), 200);
+    }
+
     public function giveGift_post($sent_player_id, $gift_type){
         $client_id = new MongoId($this->validToken['client_id']);
         $site_id = new MongoId($this->validToken['site_id']);
@@ -1611,6 +1668,9 @@ class Player extends REST2_Controller
                 'gift_name' => $event['gift_data']['name'],
                 'gift_value' => $gift_value,
             );
+            if(isset($gift_data['gift']['group'])){
+                $data_reward['group'] = $gift_data['gift']['group'];
+            }
 
             $this->trackGift($sent_pb_player_id, $sent_player_id, $received_pb_player_id, $client_id, $site_id, $data_reward);
 
@@ -1625,15 +1685,18 @@ class Player extends REST2_Controller
                     'goods_name' => isset($gift_data['gift']['name']) ? $gift_data['gift']['name'] : "",
                     'is_sponsor' => isset($gift_data['gift']['sponsor']) ? $gift_data['gift']['sponsor'] : false,
                     'amount' => intval($gift_value),
-                    'date_expire' => isset($get_redeem_goods['date_expire']) ? $get_redeem_goods['date_expire'] : null,
+                    'date_expire' => isset($gift_data['before']['date_expire']) ? $gift_data['before']['date_expire']: null,
                     'redeem' => isset($gift_data['gift']['redeem']) ? $gift_data['gift']['redeem'] : null,
                     'group' => isset($gift_data['gift']['group']) ? $gift_data['gift']['group'] : null,
                     'action_name' => 'redeem_goods',
                     'action_icon' => 'fa-icon-shopping-cart',
-                    'message' => $eventMessage
+                    'message' => $eventMessage,
+                    'status' => 'receiver',
+                    'sender_id' => $sent_pb_player_id
                 );
                 // log event - goods
                 $this->tracker_model->trackGoods($validToken);
+                $this->tracker_model->trackGoodsStatus($client_id, $site_id, $sent_pb_player_id, $gift_id, "sender", $received_pb_player_id);
             }
             //publish to node stream
             $this->node->publish(array(
@@ -1664,6 +1727,9 @@ class Player extends REST2_Controller
             'amount' => $data_reward['gift_value'],
             'message' => $eventMessage
         );
+        if(isset($data_reward['group'])){
+            $data['group'] = $data_reward['group'];
+        }
         $this->tracker_model->trackGift($data);
     }
 
@@ -1917,7 +1983,7 @@ class Player extends REST2_Controller
         }
         $status = $this->input->get('status');
         if($status){
-            if ($status != "all" && $status != "active" && $status != "used" && $status != "expired") {
+            if ($status != "all" && $status != "active" && $status != "used" && $status != "expired" && $status != "gifted") {
                 $this->response($this->error->setError('INVALID_STATUS'), 200);
             }
             $status = ($status == "all") ? null : $status;
@@ -2033,7 +2099,7 @@ class Player extends REST2_Controller
         }
         $status = $this->input->get('status');
         if($status){
-            if ($status != "all" && $status != "active" && $status != "used" && $status != "expired") {
+            if ($status != "all" && $status != "active" && $status != "used" && $status != "expired" && $status != "gifted") {
                 $this->response($this->error->setError('INVALID_STATUS'), 200);
             }
             $status = ($status == "all") ? null : $status;

@@ -542,6 +542,9 @@ class Player_model extends MY_Model
         $this->mongo_db->limit(1);
         $result = $this->mongo_db->get('playbasis_action_log');
         if (!$result) {
+            if($site_id == new MongoId("57aab56572d3e1e0418b456a") || $site_id == new MongoId("5825a0d5be120b84688b4c17")){
+                $result['time'] = datetimeMongotoReadable(new MongoDate(strtotime("-1 days")));
+            }
             return $result;
         }
         $result = $result[0];
@@ -651,6 +654,31 @@ class Player_model extends MY_Model
         return $result;
     }
 
+    public function getActionHistoryDetail($data)
+    {
+        $this->mongo_db->select(array(
+            'action_name',
+            'parameters',
+            'date_added'
+        ));
+        $this->mongo_db->where('client_id', new MongoID($data['client_id']));
+        $this->mongo_db->where('site_id', new MongoID($data['site_id']));
+        $this->mongo_db->where('cl_player_id', $data['cl_player_id']);
+        if(isset($data['action_name']) && is_array($data['action_name'])){
+            $this->mongo_db->where_in('action_name', $data['action_name']);
+        }
+        if(isset($data['date_added'])){
+            $this->mongo_db->where('date_added', $data['date_added']);
+        }
+        if(isset($data['offset'])){
+            $this->mongo_db->offset((int)$data['offset']);
+        }
+        if(isset($data['limit'])){
+            $this->mongo_db->limit((int)$data['limit']);
+        }
+        return $this->mongo_db->get('playbasis_validated_action_log');
+    }
+    
     public function getActionSumFromDatetime(
         $pb_player_id,
         $action_id,
@@ -1657,7 +1685,8 @@ class Player_model extends MY_Model
             $this->mongo_db->select(array(
                 'goods_id',
                 'value',
-                'date_expire'
+                'date_expire',
+                'gifted'
             ));
             $this->mongo_db->select(array(), array('_id'));
             $this->mongo_db->where(array(
@@ -1667,8 +1696,15 @@ class Player_model extends MY_Model
             $goods_player = $this->mongo_db->get('playbasis_goods_to_player');
             if ($goods_player) {
                 $goods_player = $goods_player[0];
-                $goods_player['status'] = $goods_player['value'] > 0 ? "active" : "used";
-
+                if($goods_player['value'] > 0){
+                    $goods_player['status'] = "active";
+                }else{
+                    if(isset($goods_player['gifted']) && $goods_player['gifted']){
+                        $goods_player['status'] = "gifted";
+                    }else{
+                        $goods_player['status'] = "used";
+                    }
+                }
             } else {
                 $goods_player = array();
                 $goods_player['value'] = 0;
@@ -1798,6 +1834,7 @@ class Player_model extends MY_Model
                 $this->mongo_db->select(array(
                     'goods_id',
                     'value',
+                    'gifted',
                     'date_expire'
                 ));
                 $this->mongo_db->select(array(), array('_id'));
@@ -1809,7 +1846,15 @@ class Player_model extends MY_Model
                 if ($goods_data) {
                     $goods_data = $goods_data[0];
                     if(isset($goods_data['date_expire'])) $goods_data['date_expire'] = datetimeMongotoReadable($goods_data['date_expire']);
-                    $goods_data['status'] = $goods_data['value'] > 0 ? "active" : "used";
+                    if($goods_data['value'] > 0){
+                        $goods_data['status'] = "active";
+                    }else{
+                        if(isset($goods_data['gifted']) && $goods_data['gifted']){
+                            $goods_data['status'] = "gifted";
+                        }else{
+                            $goods_data['status'] = "used";
+                        }
+                    }
                     $goods_data['date_expire'] = isset($goods_data['date_expire']) ? $goods_data['date_expire'] : null;
                 } else {
                     $goods_data = array();
@@ -2594,6 +2639,7 @@ class Player_model extends MY_Model
         } elseif ($gift_type == "GOODS") {
             $this->mongo_db->where('goods_id', $gift_id);
             if($gift_data['before']['value'] == intval($value)) {
+                $this->mongo_db->set('gifted', true);
                 $this->mongo_db->unset_field("date_expire");
             }
             $sent_rewardInfo = $this->mongo_db->update('playbasis_goods_to_player');
@@ -2630,6 +2676,7 @@ class Player_model extends MY_Model
                 $receive_rewardInfo = $this->mongo_db->update('playbasis_reward_to_player');
             } elseif ($gift_type == "GOODS") {
                 $this->mongo_db->where('goods_id', $gift_id);
+                $this->mongo_db->set('gifted', false);
                 if(isset($gift_data['before']['date_expire'])) $this->mongo_db->set('date_expire', $gift_data['before']['date_expire']);
                 $receive_rewardInfo = $this->mongo_db->update('playbasis_goods_to_player');
             }
@@ -2653,6 +2700,7 @@ class Player_model extends MY_Model
             } elseif ($gift_type == "GOODS") {
                 $data['goods_id'] = $gift_id;
                 $data['is_sponsor'] = $gift_data['gift']['sponsor'];
+                $data['gifted'] = false;
                 if(isset($gift_data['gift']['group'])) $data['group'] = $gift_data['gift']['group'];
                 if(isset($gift_data['before']['date_expire'])) $data['date_expire'] = $gift_data['before']['date_expire'];
                 $receive_rewardInfo = $this->mongo_db->insert('playbasis_goods_to_player', $data);
