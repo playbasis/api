@@ -266,6 +266,90 @@ class jigsaw extends MY_Model
         return $result;
     }
 
+    public function pointInDay($config, $input, &$exInfo = array())
+    {
+        assert($config != false);
+        assert(is_array($config));
+        assert(isset($config['reward_id']));
+        assert(isset($config['amount']));
+        assert(isset($config['time_of_day']));
+        $result = false;
+
+        $timeNow = isset($input['action_log_time']) ? $input['action_log_time'] : time();
+        $currentYMD = date("Y-m-d");
+        $settingTime = (isset($config['time_of_day']) && $config['time_of_day']) ? $config['time_of_day'] : "00:00";
+        $settingTime = strtotime("$currentYMD $settingTime:00");
+        $currentTime = strtotime($currentYMD." " . date('H:i:s', $timeNow) );
+
+        if ($settingTime <= $currentTime){ // action has been processed for today !
+            $startTimeFilter = $settingTime;
+        }else{
+            $startTimeFilter =  strtotime( "-1 day" , $settingTime ) ;
+        }
+
+        $total = $this->countPlayerPointAwardInDay($input['client_id'], $input['site_id'], $input['pb_player_id'], $config['reward_id'], $startTimeFilter);
+        $reject = $this->countPlayerRejectedPointInDay($input['client_id'], $input['site_id'], $input['pb_player_id'], $config['reward_id'], $startTimeFilter);
+
+        if(($total - $reject) < $config['amount']){
+            $result = true;
+        }
+
+        return $result;
+    }
+
+    private function countPlayerPointAwardInDay($client_id, $site_id, $pb_player_id, $reward_id, $startTime){
+
+        $results = $this->mongo_db->aggregate('playbasis_custom_point_log', array(
+            array(
+                '$match' => array(
+                    'client_id' => $client_id,
+                    'site_id' => $site_id,
+                    'pb_player_id' => $pb_player_id,
+                    'reward_id' => $reward_id,
+                    'date_added' => array('$gte' => new MongoDate($startTime)),
+                ),
+            ),
+
+            array(
+                '$group' => array(
+                    '_id' => null,
+                    'sum' => array('$sum' => '$quantity')
+                )
+            )
+        ));
+
+        $total = $results['result'] ? $results['result'][0]['sum'] : 0;
+
+        return $total;
+    }
+
+    private function countPlayerRejectedPointInDay($client_id, $site_id, $pb_player_id, $reward_id, $startTime){
+
+        $results = $this->mongo_db->aggregate('playbasis_reward_status_to_player', array(
+            array(
+                '$match' => array(
+                    'client_id' => $client_id,
+                    'site_id' => $site_id,
+                    'pb_player_id' => $pb_player_id,
+                    'reward_id' => $reward_id,
+                    'date_added' => array('$gte' => new MongoDate($startTime)),
+                    'status' => "reject"
+                ),
+            ),
+
+            array(
+                '$group' => array(
+                    '_id' => null,
+                    'sum' => array('$sum' => '$value')
+                )
+            ),
+        ));
+
+        $total = $results['result'] ? $results['result'][0]['sum'] : 0;
+
+        return $total;
+    }
+
     public function badgeCondition($config, $input, &$exInfo = array())
     {
         assert($config != false);
@@ -732,6 +816,56 @@ class jigsaw extends MY_Model
                 } elseif ($config['param_operator'] == '<=') {
                     $result = ($action_count <= $config['param_amount']);
                 }
+            }
+        }
+
+        return $result;
+    }
+
+    private function countActionWithSpecificParameterInDay($client_id, $site_id, $action_id, $param_key, $param_value, $pb_player_id, $startTime)
+    {
+        $this->set_site_mongodb($site_id);
+        $this->mongo_db->where(array(
+            'client_id' => $client_id,
+            'site_id' => $site_id,
+            'action_id' => $action_id,
+            'pb_player_id'=> $pb_player_id,
+            'date_added' => array('$gte' => new MongoDate($startTime)),
+        ));
+
+        $this->mongo_db->where(array('parameters.' . $param_key => $param_value));
+
+        $temp = $this->mongo_db->count('playbasis_validated_action_log');
+        return $temp;
+    }
+
+    public function countParamValueInDay($config, $input, &$exInfo = array())
+    {
+        assert($input != false);
+        assert(is_array($input));
+        assert(isset($config['param_key']));
+        assert(isset($config['param_amount']));
+        $result = false;
+
+        $param_value = isset($config['param_key']) && isset($input[$config['param_key']]) ? $input[$config['param_key']] : null;
+
+        if($param_value && $config['param_amount']) {
+            $timeNow = isset($input['action_log_time']) ? $input['action_log_time'] : time();
+            $currentYMD = date("Y-m-d");
+            $settingTime = (isset($config['time_of_day']) && $config['time_of_day']) ? $config['time_of_day'] : "00:00";
+            $settingTime = strtotime("$currentYMD $settingTime:00");
+            $currentTime = strtotime($currentYMD." " . date('H:i:s', $timeNow) );
+
+            if ($settingTime <= $currentTime){ // action has been processed for today !
+                $startTimeFilter = $settingTime;
+            }else{
+                $startTimeFilter =  strtotime( "-1 day" , $settingTime ) ;
+            }
+            $action_count = $this->countActionWithSpecificParameterInDay($input['client_id'], $input['site_id'], $input['action_id'],
+                                                                         $config['param_key'], $param_value,  $input['pb_player_id'], $startTimeFilter);
+
+            if($action_count < $config['param_amount']){
+                $result = true;
             }
         }
 
