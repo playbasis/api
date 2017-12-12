@@ -37,7 +37,7 @@ class Custom extends REST2_Controller
         $receiver_id = $this->input->post('receiver_id');
         $amount = $this->input->post('amount');
         $token = $this->input->post('token');
-        $existingFriend = $this->input->post('ExistingFriend') === 'false' ? false : true;
+        $existingFriend = $this->input->post('ExistingFriend') === 'false' ? 'false' : 'true';
  
         $action_count = 0;
         $action_count2 = 0;
