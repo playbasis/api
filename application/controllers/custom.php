@@ -37,6 +37,7 @@ class Custom extends REST2_Controller
         $receiver_id = $this->input->post('receiver_id');
         $amount = $this->input->post('amount');
         $token = $this->input->post('token');
+        $existingFriend = $this->input->post('ExistingFriend');
  
         $action_count = 0;
         $action_count2 = 0;
@@ -105,7 +106,8 @@ class Custom extends REST2_Controller
             'token' => $token,
             'player_id' => $player_id,
             'receiver_id' => $receiver_id,
-            'action' => ACTION_GIVETOKEN));
+            'action' => ACTION_GIVETOKEN,
+            'ExistingFriend' => $existingFriend));
         $response = json_decode($response);
 
         if($response->success === false){
@@ -136,7 +138,8 @@ class Custom extends REST2_Controller
             'to' => $receiver_id,
             'amount' => $amount,
             'campaign_name' => $campaign['name'],
-            'action' => ACTION_TRANSFER));
+            'action' => ACTION_TRANSFER,
+            'ExistingFriend' => $existingFriend));
 
         //has pending?
         $pending_list = $this->reward_model->listPendingRewards(array('client_id' => $this->client_id, 'site_id' => $this->site_id, 'player_list' => array($player_id), 'status' => 'pending'));
