@@ -256,6 +256,7 @@ class Client_model extends MY_Model
                             'client_id' => $clientId,
                             'site_id' => $siteId,
                             'reward_id' => $rewardId,
+                            'reward_name' => isset($result['name']) ?  $result['name'] : "",
                             'status' => 'pending',
                             'date_added' => $mongoDate,
                             'date_modified' => $mongoDate

@@ -766,6 +766,11 @@ class Engine extends Quest
                     $input['pb_player_id'], $validToken['site_id']);
             }
         }
+
+        if (isset($input['pb_player_id-2'])) {
+            $input['player_id-2'] = $this->player_model->getClientPlayerId($input['pb_player_id-2'], $validToken['site_id']);
+        }
+
         if (!$input["test"] && !isset($input['node_id'])) {
             $node = $this->store_org_model->retrieveNodeByPBPlayerID($validToken['client_id'], $validToken['site_id'],
                 $input['pb_player_id']);
@@ -1138,6 +1143,7 @@ class Engine extends Quest
                                     $eventMessage,
                                     array_merge($input, array(
                                         'reward_id' => $jigsawConfig['reward_id'],
+                                        'reward_type' => 'POINT',
                                         'reward_name' => $jigsawConfig['reward_name'],
                                         'amount' => intval($event['value']),
                                         'transaction_id' => isset($event['transaction_id']) && $event['transaction_id']? $event['transaction_id'] : null
@@ -1247,6 +1253,7 @@ class Engine extends Quest
                                         $eventMessage,
                                         array_merge($input, array(
                                             'reward_id' => $jigsawConfig['reward_id'],
+                                            'reward_type' => 'POINT',
                                             'reward_name' => $jigsawConfig['reward_name'],
                                             'amount' => intval($event['value']),
                                             'transaction_id' => isset($event['transaction_id']) && $event['transaction_id']? $event['transaction_id'] : null
@@ -1313,6 +1320,7 @@ class Engine extends Quest
                                             $this->tracker_model->trackEvent('REWARD', $eventMessage,
                                                 array_merge($input, array(
                                                     'reward_id' => $jigsawConfig['reward_id'],
+                                                    'reward_type' => 'BADGE',
                                                     'reward_name' => $jigsawConfig['reward_name'],
                                                     'item_id' => $jigsawConfig['item_id'],
                                                     'amount' => $jigsawConfig['quantity']
@@ -1553,9 +1561,11 @@ class Engine extends Quest
                         } catch (Exception $e){}
                         $this->tracker_model->trackGoods(array_merge($validToken, array(
                             'pb_player_id' => $input['pb_player_id'],
+                            'cl_player_id' => $input['player_id'],
                             'goods_id' => new MongoId($goods_group_rewards[$index]['goods_id']),
                             'goods_name' => $goods_group_rewards[$index]['name'],
                             'group' => $goods_group_rewards[$index]['group'],
+                            'code' => array_key_exists('code', $goods_group_rewards[$index]) ? $goods_group_rewards[$index]['code'] : null,
                             'date_expire' => isset($return_data['date_expire']) ? $return_data['date_expire'] : null,
                             'is_sponsor' => false,
                             'amount' => $goods_group_rewards[$index]['quantity'],
@@ -1595,8 +1605,10 @@ class Engine extends Quest
             // log event - goods
             $this->tracker_model->trackGoods(array_merge($validToken, array(
                 'pb_player_id' => $input['pb_player_id'],
+                'cl_player_id' => $input['player_id'],
                 'goods_id' => new MongoId($goodsData['goods_id']),
                 'goods_name' => $goodsData['name'],
+                'code' => array_key_exists('code', $goodsData) ? $goodsData['code'] : null,
                 'is_sponsor' => false,
                 'amount' => $jigsawConfig['quantity'],
                 'date_expire' => isset($goodsData['date_expired_coupon']) ? $goodsData['date_expired_coupon'] : null,
