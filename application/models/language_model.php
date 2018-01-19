@@ -13,7 +13,7 @@ class Language_model extends MY_Model
     {
         $this->set_site_mongodb($site_id);
 
-        $this->mongo_db->select(array(), array('_id'));
+        $this->mongo_db->select(array('language', 'abbreviation'));
         $this->mongo_db->where(array(
             'client_id' => $client_id,
             'site_id' => $site_id,

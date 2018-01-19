@@ -14,11 +14,9 @@ class Language extends REST2_Controller
 
     public function list_get()
     {
-        $location_info = $this->language_model->getLanguage($this->client_id, $this->site_id);
-        
-        array_walk_recursive($location_info, array($this, "convert_mongo_object"));
+        $language_info = $this->language_model->getLanguage($this->client_id, $this->site_id);
 
-        $this->response($this->resp->setRespond($location_info), 200);
+        $this->response($this->resp->setRespond($language_info), 200);
     }
 
 
