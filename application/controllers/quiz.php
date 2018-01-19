@@ -285,7 +285,9 @@ class Quiz extends REST2_Controller
 
         $total_max_score = 0;
         if (is_array($quiz['questions'])) foreach ($quiz['questions'] as $questions) {
-            $total_max_score += $this->get_max_score_of_question($questions['options'], isset($questions['is_multiple_choices']) ? $questions['is_multiple_choices'] : false);
+            if(isset($questions['options'])) {
+                $total_max_score += $this->get_max_score_of_question($questions['options'], isset($questions['is_multiple_choices']) ? $questions['is_multiple_choices'] : false);
+            }
         }
 
         /* param "player_id" */

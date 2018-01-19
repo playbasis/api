@@ -8628,6 +8628,29 @@
       ]
     },
     {
+      "name": "Language API",
+      "endpoint": ["Language"],
+      "Public": "Y",
+      "methods": [
+        {
+          "MethodName": "Retrieve Language",
+          "Synopsis": "Retrieve Language List",
+          "HTTPMethod": "GET",
+          "URI": "Language",
+          "RequiresOAuth": "N",
+          "Public": "Y",
+          "parameters": [
+          ],
+          "response": [
+            {
+              "language":          {"-type": "string"},
+              "abbreviation":      {"-type": "string"}
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Content API",
       "endpoint": ["Content"],
       "Public": "Y",

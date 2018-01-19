@@ -9,6 +9,23 @@ class Language_model extends MY_Model
         $this->config->load('playbasis');
     }
 
+    public function getLanguage($client_id, $site_id)
+    {
+        $this->set_site_mongodb($site_id);
+
+        $this->mongo_db->select(array(), array('_id'));
+        $this->mongo_db->where(array(
+            'client_id' => $client_id,
+            'site_id' => $site_id,
+            'status'=> true,
+            'deleted' => false
+        ));
+
+        $result = $this->mongo_db->get('playbasis_language_to_client');
+
+        return $result ? $result : array();
+    }
+
     public function retrieveLanguageByName($client_id, $site_id, $language)
     {
         $this->set_site_mongodb($site_id);
