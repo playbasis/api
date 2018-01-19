@@ -393,6 +393,9 @@ $route['Style'] = 'custom_style/list';
 //Location API
 $route['Location'] = 'location/list';
 
+//Language API
+$route['Language'] = 'language/list';
+
 //misc
 //$route['test']	= 'playbasis/test';
 $route['test']	= 'notification/index';
