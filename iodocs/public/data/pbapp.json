@@ -10630,6 +10630,13 @@
               "Default": "",
               "Type": "string",
               "Description": "Specific campaign of game to retrieve campaign details"
+            },
+            {
+              "Name": "tags",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "Specific tag(s) to find (e.g. foo,bar)"
             }
           ],
           "response": [
@@ -10638,7 +10645,8 @@
               "image":         {"-type": "string"},
               "weight":        {"-type": "integer"},
               "date_start":    {"-type": "string", "-optional": "true"},
-              "date_end":      {"-type": "string", "-optional": "true"}
+              "date_end":      {"-type": "string", "-optional": "true"},
+              "tags":          {"-type": "any", "-optional": "true"}
             }
           ]
         },
@@ -10655,7 +10663,8 @@
             "image":         {"-type": "string"},
             "weight":        {"-type": "integer"},
             "date_start":    {"-type": "string", "-optional": "true"},
-            "date_end":      {"-type": "string", "-optional": "true"}
+            "date_end":      {"-type": "string", "-optional": "true"},
+            "tags":          {"-type": "any", "-optional": "true"}
           }
         }
       ]
