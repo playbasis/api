@@ -1671,8 +1671,11 @@ class Player extends REST2_Controller
             if(isset($gift_data['gift']['group'])){
                 $data_reward['group'] = $gift_data['gift']['group'];
             }
+            if(isset($gift_data['gift']['code'])){
+                $data_reward['code'] = $gift_data['gift']['code'];
+            }
 
-            $this->trackGift($sent_pb_player_id, $sent_player_id, $received_pb_player_id, $client_id, $site_id, $data_reward);
+            $this->trackGift($sent_pb_player_id, $sent_player_id, $received_pb_player_id, $client_id, $site_id, $data_reward, $received_player_id);
 
             $eventMessage = $this->utility->getEventMessage('gift', $gift_value, $event['gift_data']['name'], $event['gift_data']['name'], '', '',$event['gift_data']['name'], $sent_player_id);
 
@@ -1681,8 +1684,10 @@ class Player extends REST2_Controller
                     'client_id' =>$client_id,
                     'site_id' =>$site_id,
                     'pb_player_id' => $received_pb_player_id,
+                    'cl_player_id' => $received_player_id,
                     'goods_id' => $gift_id,
                     'goods_name' => isset($gift_data['gift']['name']) ? $gift_data['gift']['name'] : "",
+                    'code' => isset($gift_data['gift']['code']) ? $gift_data['gift']['code'] : null,
                     'is_sponsor' => isset($gift_data['gift']['sponsor']) ? $gift_data['gift']['sponsor'] : false,
                     'amount' => intval($gift_value),
                     'date_expire' => isset($gift_data['before']['date_expire']) ? $gift_data['before']['date_expire']: null,
@@ -1713,12 +1718,14 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($gift_data['after']), 200);
     }
 
-    private function trackGift($sent_pb_player_id, $sent_player_id, $received_pb_player_id, $client_id, $site_id, $data_reward)
+    private function trackGift($sent_pb_player_id, $sent_player_id, $received_pb_player_id, $client_id, $site_id, $data_reward, $received_player_id)
     {
         $eventMessage = $this->utility->getEventMessage('gift', $data_reward['gift_value'], $data_reward['gift_name'],$data_reward['gift_name'], '', '',$data_reward['gift_name'], $sent_player_id);
         $data = array(
             'sent_pb_player_id' => $sent_pb_player_id,
+            'sent_cl_player_id' => $sent_player_id,
             'pb_player_id' => $received_pb_player_id,
+            'cl_player_id' => $received_player_id,
             'client_id' => $client_id,
             'site_id' => $site_id,
             'reward_type' => $data_reward['gift_type'],
@@ -1729,6 +1736,9 @@ class Player extends REST2_Controller
         );
         if(isset($data_reward['group'])){
             $data['group'] = $data_reward['group'];
+        }
+        if(isset($data_reward['code'])){
+            $data['code'] = $data_reward['code'];
         }
         $this->tracker_model->trackGift($data);
     }

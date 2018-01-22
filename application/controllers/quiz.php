@@ -285,7 +285,9 @@ class Quiz extends REST2_Controller
 
         $total_max_score = 0;
         if (is_array($quiz['questions'])) foreach ($quiz['questions'] as $questions) {
-            $total_max_score += $this->get_max_score_of_question($questions['options'], isset($questions['is_multiple_choices']) ? $questions['is_multiple_choices'] : false);
+            if(isset($questions['options'])) {
+                $total_max_score += $this->get_max_score_of_question($questions['options'], isset($questions['is_multiple_choices']) ? $questions['is_multiple_choices'] : false);
+            }
         }
 
         /* param "player_id" */
@@ -869,6 +871,7 @@ class Quiz extends REST2_Controller
             'client_id' => $this->client_id,
             'site_id' => $this->site_id,
             'pb_player_id' => $pb_player_id,
+            'cl_player_id' => $player_id,
             'quiz_id' => $quiz_id,
             'quiz_name' => $quiz['name'],
             'question' => $question,
@@ -882,6 +885,7 @@ class Quiz extends REST2_Controller
                 'client_id' => $this->client_id,
                 'site_id' => $this->site_id,
                 'pb_player_id' => $pb_player_id,
+                'cl_player_id' => $player_id,
                 'quiz_id' => $quiz_id,
                 'quiz_name' => $quiz['name'],
                 'grade' => $grade,
@@ -1251,7 +1255,7 @@ class Quiz extends REST2_Controller
                             'client_id' => $client_id,
                             'site_id' => $site_id,
                             'quiz_id' => $quiz['_id'],
-                            'reward_type' => 'badge',
+                            'reward_type' => 'BADGE',
                             'reward_id' => $this->player_model->get_reward_id_by_name($this->validToken, 'badge'),
                             'reward_name' => $event['reward_type'],
                             'item_id' => $event['reward_id'],
@@ -1270,7 +1274,7 @@ class Quiz extends REST2_Controller
                             'client_id' => $client_id,
                             'site_id' => $site_id,
                             'quiz_id' => $quiz['_id'],
-                            'reward_type' => 'point',
+                            'reward_type' => 'POINT',
                             'reward_id' => $event['reward_id'],
                             'reward_name' => $event['reward_type'],
                             'amount' => $event['value'],

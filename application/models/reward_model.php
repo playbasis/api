@@ -124,6 +124,18 @@ class Reward_model extends MY_Model
                 $this->mongo_db->where(array(
                     'client_id' => $data['client_id'],
                     'site_id' => $data['site_id'],
+                    'event_type' => 'REWARD',
+                    'reward_id' => $pending_reward['reward_id'],
+                    'pb_player_id' => $pending_reward['pb_player_id'],
+                    'transaction_id' => $data['transaction_id']
+                ));
+                $this->mongo_db->set('transaction_status', 'approve');
+                $this->mongo_db->set('date_modified', new MongoDate());
+                $this->mongo_db->update('playbasis_event_log');
+
+                $this->mongo_db->where(array(
+                    'client_id' => $data['client_id'],
+                    'site_id' => $data['site_id'],
                     'reward_id' => $pending_reward['reward_id'],
                     'pb_player_id' => $pending_reward['pb_player_id']
                 ));
@@ -153,6 +165,18 @@ class Reward_model extends MY_Model
                 $this->mongo_db->set('status', 'reject');
                 $this->mongo_db->set('date_modified', new MongoDate());
                 $this->mongo_db->update('playbasis_reward_status_to_player');
+
+                $this->mongo_db->where(array(
+                    'client_id' => $data['client_id'],
+                    'site_id' => $data['site_id'],
+                    'event_type' => 'REWARD',
+                    'reward_id' => $pending_reward['reward_id'],
+                    'pb_player_id' => $pending_reward['pb_player_id'],
+                    'transaction_id' => $data['transaction_id']
+                ));
+                $this->mongo_db->set('transaction_status', 'reject');
+                $this->mongo_db->set('date_modified', new MongoDate());
+                $this->mongo_db->update('playbasis_event_log');
 
                 $this->mongo_db->where(array(
                     'client_id' => $data['client_id'],

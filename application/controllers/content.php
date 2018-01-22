@@ -385,6 +385,15 @@ class Content extends REST2_Controller
             }
         }
 
+        if (isset($query_data['player_id']) && !empty($query_data['player_id'])) {
+            $player = $this->player_model->readPlayer($pb_player_id, $this->validToken['site_id']);
+            foreach($result as &$res){
+                $res['title'] = $this->utility->replace_template_vars($res['title'],$player);
+                $res['summary'] = $this->utility->replace_template_vars($res['summary'],$player);
+                $res['detail'] = $this->utility->replace_template_vars($res['detail'],$player);
+            }
+        }
+
         array_walk_recursive($result, array($this, "convert_mongo_object_and_optional"));
         $this->benchmark->mark('end');
         $t = $this->benchmark->elapsed_time('start', 'end');

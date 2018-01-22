@@ -605,10 +605,13 @@ class Redeem extends REST2_Controller
 
                     // publish to node stream
                     $eventMessage = $this->utility->getEventMessage('goods', '', '', '', '', '', $goodsData['name']);
+                    $cl_player_id = $this->player_model->getClientPlayerId($pb_player_id, $validToken['site_id']);
                     $validToken = array_merge($validToken, array(
                         'pb_player_id' => $pb_player_id,
+                        'cl_player_id' => $cl_player_id,
                         'goods_id' => new MongoId($goodsData['goods_id']),
                         'goods_name' => $goodsData['name'],
+                        'code' => array_key_exists('code', $goodsData) ? $goodsData['code'] : null,
                         'is_sponsor' => $is_sponsor,
                         'amount' => $amount,
                         'date_expire' => isset($get_redeem_goods['date_expire']) ? $get_redeem_goods['date_expire'] : null,

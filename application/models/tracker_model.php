@@ -15,6 +15,8 @@ class Tracker_model extends MY_Model
         $action_log_id = $this->mongo_db->insert('playbasis_action_log', array(
             'pb_player_id' => $input['pb_player_id'],
             'pb_player_id-2' => isset($input['pb_player_id-2']) ? $input['pb_player_id-2'] : null,
+            'cl_player_id' => $input['player_id'],
+            'cl_player_id-2' => isset($input['player_id-2']) ? $input['player_id-2'] : null,
             'client_id' => $input['client_id'],
             'site_id' => $input['site_id'],
             'action_id' => $input['action_id'],
@@ -27,6 +29,8 @@ class Tracker_model extends MY_Model
         $this->mongo_db->insert('playbasis_event_log', array(
             'pb_player_id' => $input['pb_player_id'],
             'pb_player_id-2' => isset($input['pb_player_id-2']) ? $input['pb_player_id-2'] : null,
+            'cl_player_id' => $input['player_id'],
+            'cl_player_id-2' => isset($input['player_id-2']) ? $input['player_id-2'] : null,
             'client_id' => $input['client_id'],
             'site_id' => $input['site_id'],
             'event_type' => 'ACTION',
@@ -43,11 +47,16 @@ class Tracker_model extends MY_Model
 
     public function trackEvent($type, $message, $input, $async = true)
     {
+        if (isset($input['pb_player_id'])) {
+            $input['cl_player_id'] = $this->getClientPlayerId($input['pb_player_id'], $input['site_id']);
+        }
         $this->set_site_mongodb($input['site_id']);
         $mongoDate = new MongoDate();
         $options = $async ? array("w" => 0, "j" => false) : array();
-        $_id = $this->mongo_db->insert('playbasis_event_log', array(
+
+        $data = array(
             'pb_player_id' => $input['pb_player_id'],
+            'cl_player_id' => $input['cl_player_id'],
             'client_id' => $input['client_id'],
             'site_id' => $input['site_id'],
             'event_type' => $type,
@@ -72,7 +81,12 @@ class Tracker_model extends MY_Model
             'transaction_id' => (isset($input['transaction_id'])) ? $input['transaction_id'] : null,
             'date_added' => $mongoDate,
             'date_modified' => $mongoDate
-        ), $options);
+        );
+
+        if($type == 'REWARD'){
+            $data['reward_type'] = isset($input['reward_type']) ? $input['reward_type'] : null;
+        }
+        $_id = $this->mongo_db->insert('playbasis_event_log', $data , $options);
         return $async ? null : $_id;
     }
 
@@ -83,6 +97,7 @@ class Tracker_model extends MY_Model
         $options = $async ? array("w" => 0, "j" => false) : array();
         $_id = $this->mongo_db->insert('playbasis_event_log', array(
             'pb_player_id' => $input['pb_player_id'],
+            'cl_player_id' => $input['cl_player_id'],
             'client_id' => $input['client_id'],
             'site_id' => $input['site_id'],
             'event_type' => 'SOCIAL',
@@ -102,11 +117,13 @@ class Tracker_model extends MY_Model
         $mongoDate = new MongoDate();
         $data = array(
             'pb_player_id' => $input['pb_player_id'],
+            'cl_player_id' => $input['cl_player_id'],
             'client_id' => $input['client_id'],
             'site_id' => $input['site_id'],
             'goods_id' => $input['goods_id'],
             'goods_name' => $input['goods_name'],
             'group' => (isset($input['group'])) ? $input['group'] : null,
+            'code' => (isset($input['code'])) ? $input['code'] : null,
             'is_sponsor' => (isset($input['is_sponsor'])) ? $input['is_sponsor'] : false,
             'redeem' => $input['redeem'],
             'amount' => $input['amount'],
@@ -164,6 +181,7 @@ class Tracker_model extends MY_Model
         $options = $async ? array("w" => 0, "j" => false) : array();
         $data = array(
             'pb_player_id' => $input['pb_player_id'],
+            'cl_player_id' => $input['cl_player_id'],
             'client_id' => $input['client_id'],
             'site_id' => $input['site_id'],
             'gift_type' => $input['reward_type'],
@@ -171,11 +189,15 @@ class Tracker_model extends MY_Model
             'gift_name' => $input['reward_name'],
             'gift_value' => $input['amount'],
             'sender' => $input['sent_pb_player_id'],
+            'sender_player_id' => $input['sent_cl_player_id'],
             'date_added' => $mongoDate,
             'date_modified' => $mongoDate
         );
         if(isset($input['group'])){
             $data['group'] = $input['group'];
+        }
+        if(isset($input['code'])){
+            $data['code'] = $input['code'];
         }
         $id = $this->mongo_db->insert('playbasis_gift_log', $data , $options);
 
@@ -196,11 +218,15 @@ class Tracker_model extends MY_Model
 
     public function trackQuest($input, $async = true)
     {
+        if (isset($input['pb_player_id'])) {
+            $input['cl_player_id'] = $this->getClientPlayerId($input['pb_player_id'], $input['site_id']);
+        }
         $this->set_site_mongodb($input['site_id']);
         $mongoDate = new MongoDate();
         $options = $async ? array("w" => 0, "j" => false) : array();
         $this->mongo_db->insert('playbasis_quest_reward_log', array(
             'pb_player_id' => $input['pb_player_id'],
+            'cl_player_id' => $input['cl_player_id'],
             'client_id' => $input['client_id'],
             'site_id' => $input['site_id'],
             'quest_id' => $input['quest_id'],
@@ -306,6 +332,12 @@ class Tracker_model extends MY_Model
 
     public function trackValidatedAction($input, $action_time = null)
     {
+        if(!isset($input['player_id'])){
+            $input['cl_player_id'] = $this->getClientPlayerId($input['pb_player_id'], $input['site_id']);
+        }
+        if(isset($input['pb_player_id-2']) && !empty($input['pb_player_id-2'])){
+            $input['cl_player_id-2'] = $this->getClientPlayerId($input['pb_player_id-2'], $input['site_id']);
+        }
         $this->set_site_mongodb($input['site_id']);
         $current_time = time();
         if ($action_time && $action_time > $current_time) {
@@ -320,10 +352,12 @@ class Tracker_model extends MY_Model
                 }
             }
         }
+
         $this->mongo_db->insert('playbasis_validated_action_log', array(
             'pb_player_id' => $input['pb_player_id'],
             'pb_player_id-2' => isset($input['pb_player_id-2']) ? $input['pb_player_id-2'] : null,
             'cl_player_id' => $input['player_id'],
+            'cl_player_id-2' => isset($input['cl_player_id-2']) ? $input['cl_player_id-2'] : null,
             'client_id' => $input['client_id'],
             'site_id' => $input['site_id'],
             'action_id' => $input['action_id'],
@@ -348,6 +382,7 @@ class Tracker_model extends MY_Model
 
         $this->mongo_db->insert('playbasis_quiz_log', array(
             'pb_player_id' => $input['pb_player_id'],
+            'cl_player_id' => isset($input['cl_player_id']) ? $input['cl_player_id'] : null,
             'client_id' => $input['client_id'],
             'site_id' => $input['site_id'],
             'quiz_id' => $input['quiz_id'],
@@ -360,6 +395,18 @@ class Tracker_model extends MY_Model
             'date_added' => $mongoDate,
             'date_modified' => $mongoDate
         ), array("w" => 0, "j" => false));
+    }
+
+    public function getClientPlayerId($pb_player_id, $site_id)
+    {
+        if (!$pb_player_id) {
+            return null;
+        }
+        $this->set_site_mongodb($site_id);
+        $this->mongo_db->select(array('cl_player_id'));
+        $this->mongo_db->where('_id', $pb_player_id);
+        $id = $this->mongo_db->get('playbasis_player');
+        return ($id) ? $id[0]['cl_player_id'] : null;
     }
 }
 
