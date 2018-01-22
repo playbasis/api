@@ -9,12 +9,11 @@ class Campaign_model extends MY_Model
         $this->config->load('playbasis');
     }
 
-    public function getCampaign($client_id, $site_id, $campaign_name=false)
+    public function getCampaign($client_id, $site_id, $campaign_name=false, $tags = null)
     {
-        //get badge name by $badge_id
         $this->set_site_mongodb($site_id);
-        $d = new MongoDate();
-        $this->mongo_db->select(array('name','image','date_start','date_end','weight'));
+
+        $this->mongo_db->select(array('name','image','date_start','date_end','weight','tags'));
         $this->mongo_db->where(array(
             'client_id' => $client_id,
             'site_id' => $site_id,
@@ -23,6 +22,11 @@ class Campaign_model extends MY_Model
         if ($campaign_name){
             $this->mongo_db->where('name', $campaign_name);
         }
+
+        if ($tags) {
+            $this->mongo_db->where_in('tags', $tags);
+        }
+
         $this->mongo_db->order_by(array('weight' => 'ASC', 'name' => 'ASC'));
         $result = $this->mongo_db->get('playbasis_campaign_to_client');
 
@@ -31,10 +35,9 @@ class Campaign_model extends MY_Model
 
     public function getActiveCampaign($client_id, $site_id)
     {
-        //get badge name by $badge_id
         $this->set_site_mongodb($site_id);
         $d = new MongoDate();
-        $this->mongo_db->select(array('name','image','date_start','date_end','weight'));
+        $this->mongo_db->select(array('name','image','date_start','date_end','weight','tags'));
         $this->mongo_db->where(array(
             'client_id' => $client_id,
             'site_id' => $site_id,
