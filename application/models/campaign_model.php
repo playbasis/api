@@ -33,7 +33,7 @@ class Campaign_model extends MY_Model
         return $result;
     }
 
-    public function getActiveCampaign($client_id, $site_id)
+    public function getActiveCampaign($client_id, $site_id, $tags = null)
     {
         $this->set_site_mongodb($site_id);
         $d = new MongoDate();
@@ -43,6 +43,11 @@ class Campaign_model extends MY_Model
             'site_id' => $site_id,
             'deleted' => false
         ));
+
+        if ($tags) {
+            $this->mongo_db->where_in('tags', $tags);
+        }
+
         $this->mongo_db->where(array('$and' => array( array('$or' => array(array("date_start" => null), array("date_start" => array('$lte'=> $d)))),
                                                       array('$or' => array(array("date_end" => array('$gte'=> $d)), array("date_end" => null))))));
         $this->mongo_db->order_by(array('weight' => 'desc','date_start' => 'desc', "date_end" => 'asc' , 'name' => 'asc'));
