@@ -10622,7 +10622,15 @@
           "URI": "Campaign/active",
           "RequiresOAuth": "N",
           "Public": "Y",
-          "parameters": [],
+          "parameters": [
+            {
+              "Name": "tags",
+              "Required": "N",
+              "Default": "",
+              "Type": "string",
+              "Description": "Specific tag(s) to find (e.g. foo,bar)"
+            }
+          ],
           "response": {
             "name":          {"-type": "string"},
             "image":         {"-type": "string"},
