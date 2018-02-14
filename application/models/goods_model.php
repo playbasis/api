@@ -759,6 +759,7 @@ class Goods_model extends MY_Model
             foreach ($goods['redeem']['custom'] as $k => $v) {
                 $list_custom_id[] = new MongoId($k);
             }
+            $msg['custom_id'] = $list_custom_id;
             $playerRecords = $this->getRewardsToPlayerRecords($list_custom_id, $pb_player_id);
             if ($playerRecords) {
                 foreach ($playerRecords as $playerRecord) {
@@ -766,12 +767,14 @@ class Goods_model extends MY_Model
                     $value = (int)$playerRecord['value'];
                     if ($value * $amount >= $goods['redeem']['custom'][$reward_id->{'$id'}] * $amount) {
                         $redeem_current++;
-                    } else {
-                        $msg['custom_id'][] = $reward_id->{'$id'};
+                        foreach ($msg['custom_id'] as $index => $value){
+                            if($value == $reward_id){
+                                unset($msg['custom_id'][$index]);
+                                break;
+                            }
+                        }
                     }
                 }
-            } else {
-                $msg['custom_id'] = $list_custom_id;
             }
 
             if ($redeem_current < $redeem_at_least) {
