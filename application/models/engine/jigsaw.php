@@ -437,12 +437,26 @@ class jigsaw extends MY_Model
         }
 
         if (is_null($config['item_id']) || $config['item_id'] == '') {
+            //reward exist
             $result =  $this->checkReward($config['reward_id'], $input['site_id']);
             if($result == true){
                 $timeNow = isset($input['action_log_time']) ? $input['action_log_time'] : time();
+                //reward per user limit
                 $result = $this->checkRewardLimitPerUser($config['reward_id'], $input['pb_player_id'], $input['client_id'], $input['site_id'], $config['quantity']);
-                if($result == true && $this->isRewardAvailable($config['reward_id'], $input['site_id'])){
-                    $result = $this->checkRewardLimitPerDay($input['pb_player_id'], $config['reward_id'], $input['client_id'], $input['site_id'], $config['quantity'], $timeNow);
+                if($result){
+                    //reward available
+                    $result = $this->isRewardAvailable($config['reward_id'], $input['site_id']);
+                    if($result){
+                        //reward per day limit
+                        $result = $this->checkRewardLimitPerDay($input['pb_player_id'], $config['reward_id'], $input['client_id'], $input['site_id'], $config['quantity'], $timeNow);
+                        if(!$result){
+                            $exInfo['error'] = "ENGINE_RULE_REWARD_EXCEED_LIMIT";
+                        }
+                    } else {
+                        $exInfo['error'] = "ENGINE_RULE_REWARD_OUT_OF_STOCK";
+                    }
+                } else {
+                    $exInfo['error'] = "ENGINE_RULE_REWARD_EXCEED_LIMIT";
                 }
             }
             return $result;
@@ -451,11 +465,9 @@ class jigsaw extends MY_Model
         //if reward type is badge
         switch ($config['reward_name']) {
             case 'badge':
-                return $this->checkBadge($config['item_id'], $input['pb_player_id'], $input['site_id'],
-                    $config['quantity']);
+                return $this->checkBadge($config['item_id'], $input['pb_player_id'], $input['site_id'], $config['quantity'], $exInfo);
             case 'goods':
-                $ret = $this->checkGoodsWithCache($cache, $config['item_id'], $input['pb_player_id'], $input['client_id'], $input['site_id'],
-                    $config['quantity']);
+                $ret = $this->checkGoodsWithCache($cache, $config['item_id'], $input['pb_player_id'], $input['client_id'], $input['site_id'], $config['quantity'], $exInfo);
                 return $ret;
             default:
                 return false;
@@ -1378,7 +1390,7 @@ class jigsaw extends MY_Model
             // invalid goods will be excluded from randomness
             if (!(array_key_exists('reward_name', $conf) && $conf['reward_name'] == 'goods')
                 || $this->checkGoodsWithCache($cache, new MongoId($conf['item_id']), $input['pb_player_id'],
-                    $input['client_id'], $input['site_id'], $conf['quantity'])
+                    $input['client_id'], $input['site_id'], $conf['quantity'], $exInfo)
             ) {
                 $sum += intval($conf['weight']);
                 $acc[$i] = $sum;
@@ -1666,7 +1678,7 @@ class jigsaw extends MY_Model
         return ($result) ? $result[0] : $result;
     }
 
-    private function checkBadge($badgeId, $pb_player_id, $site_id, $quantity = 0)
+    private function checkBadge($badgeId, $pb_player_id, $site_id, $quantity = 0, &$exInfo)
     {
         //get badge properties
         $this->set_site_mongodb($site_id);
@@ -1702,6 +1714,7 @@ class jigsaw extends MY_Model
         $badgeInfo = $badgeInfo[0];
         $max = (isset($badgeInfo['per_user']) && !is_null($badgeInfo['per_user'])) ? $badgeInfo['per_user']: null;
         if (!$badgeInfo['quantity'] && !is_null($badgeInfo['quantity'])) {
+            $exInfo['error'] = "ENGINE_RULE_REWARD_OUT_OF_STOCK";
             return false;
         }
         /* will handle quantity in client model updateplayerBadge()
@@ -1714,11 +1727,13 @@ class jigsaw extends MY_Model
                 if(isset($rewardInfo[0])){
                     $rewardInfo = $rewardInfo[0];
                     if ($rewardInfo['value'] >= $max){
+                        $exInfo['error'] = "ENGINE_RULE_REWARD_EXCEED_LIMIT";
                         return false;
                     }
                 }
             }
             elseif (!is_null($max)){
+                $exInfo['error'] = "ENGINE_RULE_REWARD_EXCEED_LIMIT";
                 return false;
             }
             return true;
@@ -1731,17 +1746,17 @@ class jigsaw extends MY_Model
         return true;
     }
 
-    private function checkGoodsWithCache(&$cache, $goodsId, $pb_player_id, $client_id, $site_id, $quantity = 0)
+    private function checkGoodsWithCache(&$cache, $goodsId, $pb_player_id, $client_id, $site_id, $quantity = 0, &$exInfo)
     {
         $key = $goodsId . '-' . $pb_player_id . '-' . $site_id . '-' . $quantity;
         if (!array_key_exists($key, $cache)) {
-            $value = $this->checkGoods($goodsId, $pb_player_id, $client_id, $site_id, $quantity);
+            $value = $this->checkGoods($goodsId, $pb_player_id, $client_id, $site_id, $quantity, $exInfo);
             $cache[$key] = $value;
         }
         return $cache[$key];
     }
 
-    private function checkGoods($goodsId, $pb_player_id, $client_id, $site_id, $quantity = 0)
+    private function checkGoods($goodsId, $pb_player_id, $client_id, $site_id, $quantity = 0, &$exInfo)
     {
         if (!$quantity) {
             return true;
@@ -1755,12 +1770,14 @@ class jigsaw extends MY_Model
         $per_user_include_inactive = isset($goods['per_user_include_inactive']) ? $goods['per_user_include_inactive'] : false;
         $used = isset($goods['group']) ? $this->getPlayerGoodsGroup($site_id, $goods['group'], $pb_player_id, $per_user_include_inactive) : $this->getPlayerGoods($site_id, $goodsId, $pb_player_id, $per_user_include_inactive);
         if ($total === 0 || $max === 0) {
+            $exInfo['error'] = "ENGINE_RULE_REWARD_OUT_OF_STOCK";
             return false;
         }
         if(!$max){
             return true;
         }
         if ($used >= $max) {
+            $exInfo['error'] = "ENGINE_RULE_REWARD_EXCEED_LIMIT";
             return false;
         }
         return true;
