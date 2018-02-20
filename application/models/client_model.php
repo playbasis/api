@@ -728,14 +728,6 @@ class Client_model extends MY_Model
             $remainingQuantity = null;
         }
 
-        /*
-        if($remainingQuantity < 0)
-        {
-            $remainingQuantity = 0;
-            $quantity = $goodsInfo['quantity'];
-        }
-        */
-
         // NEW -->
         if (is_null($remainingQuantity)) {
             $remainingQuantity = null;
@@ -764,6 +756,9 @@ class Client_model extends MY_Model
                 'goods_id' => new MongoId($goodsId)
             ));
             $this->mongo_db->set('date_modified', $mongoDate);
+            if(isset($goodsInfo['date_expired_coupon']) && !empty($goodsInfo['date_expired_coupon'])){
+                $this->mongo_db->set('date_expire', $goodsInfo['date_expired_coupon']);
+            }
             $this->mongo_db->inc('value', intval($quantity));
             if(intval($quantity) > 0){
                 $this->mongo_db->set('gifted', false);

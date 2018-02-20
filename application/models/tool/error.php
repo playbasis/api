@@ -656,17 +656,25 @@ class Error extends CI_Model
                 $errorData['message'] = "User has reached the maximum counter limit";
                 $errorData['error_code'] = '5001';
                 break;
+            case 'ENGINE_RULE_REWARD_OUT_OF_STOCK':
+                $errorData['message'] = "Reward out of stock";
+                $errorData['error_code'] = '5002';
+                break;
+            case 'ENGINE_RULE_REWARD_EXCEED_LIMIT':
+                $errorData['message'] = "Reward exceed limit per user or per day";
+                $errorData['error_code'] = '5003';
+                break;
             case 'INSURANCE_CALCULATOR_NOT_SET':
                 $errorData['message'] = "Insurance calculator has not been set in dashboard";
-                $errorData['error_code'] = '5001';
+                $errorData['error_code'] = '6001';
                 break;
             case 'INSURANCE_PRODUCT_NOT_FOUND':
                 $errorData['message'] = "Insurance product is not found";
-                $errorData['error_code'] = '5001';
+                $errorData['error_code'] = '6002';
                 break;
             case 'INSURANCE_PLAYER_INFO_MISSING':
                 $errorData['message'] = "Insurance player information is missing";
-                $errorData['error_code'] = '5001';
+                $errorData['error_code'] = '6003';
                 break;
             default:
                 $errorData['message'] = "Unknown";

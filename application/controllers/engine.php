@@ -1474,6 +1474,11 @@ class Engine extends Quest
                     } // break early, do not process next jigsaw
                 } else {  // jigsaw return false
                     if ($this->is_reward($jigsawCategory)) { // REWARD, FEEDBACK, GROUP, REWARD_SEQUENCE
+                        //Throw error set by jigsaw
+                        $return_error = isset($input['response_error_enable']) && $input['response_error_enable'] == "true" ? true : false;
+                        if(isset($exInfo['error']) && $return_error){
+                            throw new Exception($exInfo['error']);
+                        }
                         if (isset($exInfo['break']) && $exInfo['break']) {
                             break;
                         }
