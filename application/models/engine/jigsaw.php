@@ -495,8 +495,18 @@ class jigsaw extends MY_Model
         if($result == true){
             $timeNow = isset($input['action_log_time']) ? $input['action_log_time'] : time();
             $result = $this->checkRewardLimitPerUser($rewardId, $input['pb_player_id'], $input['client_id'], $input['site_id'], $quantity);
-            if($result == true && $this->isRewardAvailable($rewardId, $input['site_id'])){
-                $result = $this->checkRewardLimitPerDay($input['pb_player_id'], $rewardId, $input['client_id'], $input['site_id'], $quantity, $timeNow);
+            if($result == true){
+                $result = $this->isRewardAvailable($rewardId, $input['site_id']);
+                if($result == true) {
+                    $result = $this->checkRewardLimitPerDay($input['pb_player_id'], $rewardId, $input['client_id'], $input['site_id'], $quantity, $timeNow);
+                    if($result != true){
+                        $exInfo['error'] = "ENGINE_RULE_REWARD_EXCEED_LIMIT";
+                    }
+                } else {
+                    $exInfo['error'] = "ENGINE_RULE_REWARD_OUT_OF_STOCK";
+                }
+            } else {
+                $exInfo['error'] = "ENGINE_RULE_REWARD_EXCEED_LIMIT";
             }
         }
         return $result;
