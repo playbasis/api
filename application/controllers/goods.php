@@ -237,9 +237,9 @@ class Goods extends REST2_Controller
                         array_push($goods_param_id, new MongoId($custom_goods_id));
                     }
                 }
-                $group_list = $in_group ? $this->goods_model->getGroupsList($this->site_id,$filter_goods_name, $in_group) : array() ;
+                $group_list = $in_group ? $this->goods_model->getGroupsList($this->site_id, $active_filter, $filter_goods_name, $in_group) : array() ;
             } else {
-                $group_list = $this->goods_model->getGroupsList($this->site_id,$filter_goods_name);
+                $group_list = $this->goods_model->getGroupsList($this->site_id, $active_filter, $filter_goods_name);
             }
             
             $in_goods = array();
