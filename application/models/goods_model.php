@@ -138,7 +138,7 @@ class Goods_model extends MY_Model
         return $goods;
     }
 
-    public function getGroupsList($site_id, $active_filter=null, $filter_group =null, $in_group=array())
+    public function getGroupsList($site_id, $active_filter=false, $filter_group =null, $in_group=array())
     {
         $this->mongo_db->select(array('name','batch_name'));
         $this->mongo_db->where('site_id', new MongoId($site_id));
