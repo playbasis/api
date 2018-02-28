@@ -395,6 +395,7 @@ class Player_model extends MY_Model
         ));
         $this->mongo_db->select(array(), array('_id'));
         $this->mongo_db->where(array(
+            'site_id' => $site_id,
             'pb_player_id' => $pb_player_id,
             'badge_id' => null,
         ));
@@ -410,6 +411,7 @@ class Player_model extends MY_Model
         ));
         $this->mongo_db->select(array(), array('_id'));
         $this->mongo_db->where(array(
+            'site_id' => $site_id,
             'pb_player_id' => $pb_player_id,
             'reward_id' => $reward_id
         ));
