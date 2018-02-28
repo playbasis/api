@@ -1110,10 +1110,11 @@ class Player extends REST2_Controller
             $player = $this->player_model->getPlayerByEmail($this->site_id, $email);
         } elseif ($username && is_null($player)) {
             $player = $this->player_model->getPlayerByUsername($this->site_id, $username);
-        } else {
-            $player = null;
         }
-        if (!$player || !isset($player['approve_status']) || $player['approve_status'] != "approved") {
+        
+        if(!$player){
+            $this->response($this->error->setError('USER_NOT_EXIST'), 200);
+        } elseif ( !isset($player['approve_status']) || $player['approve_status'] != "approved") {
             $this->response($this->error->setError('AUTHENTICATION_FAIL'), 200);
         } elseif (isset($player['locked']) && $player['locked']) {
             $this->response($this->error->setError('ACCOUNT_IS_LOCKED'), 200);
