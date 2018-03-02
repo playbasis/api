@@ -580,6 +580,11 @@ class Error extends CI_Model
                 $errorData['message'] = "Node is not found in this organize type";
                 $errorData['error_code'] = '2424';
                 break;
+            case 'ACCOUNT_NOT_APPROVED':
+                $errorData['message'] = "Account is not activated or approved yet";
+                $errorData['error_code'] = '2425';
+                $errorData['response'] = $dataArray;
+                break;
             case 'TRIP_NOT_EXIST':
                 $errorData['message'] = "The specified trip does not exist";
                 $errorData['error_code'] = '2501';
