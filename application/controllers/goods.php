@@ -226,7 +226,7 @@ class Goods extends REST2_Controller
                         }
                     }
                 }
-                $custom_goods = $this->goods_model->getGroupsCustomParam($this->site_id, $custom_array, $not_custom_array);
+                $custom_goods = $this->goods_model->getGroupsCustomParam($this->site_id,$active_filter, $custom_array, $not_custom_array);
                 $in_group = array();
                 $goods_param_id = array();
                 foreach ($custom_goods as $c_goods){
