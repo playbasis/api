@@ -13,7 +13,7 @@ class Quiz_model extends MY_Model
     {
         $d = new MongoDate(time());
         $this->set_site_mongodb($site_id);
-        $this->mongo_db->select(array('name', 'image', 'description', 'description_image', 'weight', 'tags'));
+        $this->mongo_db->select(array('name', 'image', 'description', 'description_image', 'weight', 'tags', 'type'));
         $this->mongo_db->where('client_id', $client_id);
         $this->mongo_db->where('site_id', $site_id);
         $this->mongo_db->where(array('status' => true, 'deleted' => false));
