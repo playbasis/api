@@ -5557,7 +5557,7 @@
               ]
             }
           ],
-          "responses": {
+          "response": {
             "result": [
               {
                 "name":                      { "-type": "string"},
@@ -5566,6 +5566,7 @@
                 "weight":                    { "-type": "integer"},
                 "description":               { "-type": "string"},
                 "description_image":         { "-type": "string"},
+                "type":                      { "-type": "string", "-optional": "true"},
                 "tags":                      { "-type": "any", "-optional": "true"}
               }
             ],
