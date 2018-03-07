@@ -1071,6 +1071,27 @@ class Quiz extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $result, 'processing_time' => $t)), 200);
     }
 
+    public function completed_get($quiz_id = '')
+    {
+        $this->benchmark->mark('start');
+
+        /* param "quiz_id" */
+        if (empty($quiz_id)) {
+            $this->response($this->error->setError('PARAMETER_MISSING', array('quiz_id')), 200);
+        }
+        $quiz_id = new MongoId($quiz_id);
+        $quiz = $this->quiz_model->find_by_id($this->client_id, $this->site_id, $quiz_id);
+        if ($quiz === null) {
+            $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
+        }
+
+        $result = $this->quiz_model->countCompletedQuiz($this->client_id, $this->site_id, $quiz_id);
+
+        $this->benchmark->mark('end');
+        $t = $this->benchmark->elapsed_time('start', 'end');
+        $this->response($this->resp->setRespond(array('result' => $result, 'processing_time' => $t)), 200);
+    }
+
     /*
      * reset quiz
      *
