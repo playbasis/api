@@ -6180,6 +6180,28 @@
           }
         },
         {
+          "MethodName": "Get Completed Count of a Quiz",
+          "Synopsis": "Get Completed Count of a Quiz.",
+          "HTTPMethod": "GET",
+          "URI": "Quiz/:id/completed",
+          "RequiresOAuth": "N",
+          "Public": "Y",
+          "PlayerAuthRequired": "N",
+          "parameters": [
+            {
+              "Name": "id",
+              "Required": "URI",
+              "Default": "",
+              "Type": "string",
+              "Description": "quiz id"
+            }
+          ],
+          "responses": {
+            "result":                   { "-type": "string"},
+            "processing_time":          { "-type": "string"}
+          }
+        },
+        {
           "MethodName": "Reset a Player's Quiz",
           "Synopsis": "Reset a quiz done by a player.",
           "HTTPMethod": "POST",

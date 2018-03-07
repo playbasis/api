@@ -312,6 +312,19 @@ class Quiz_model extends MY_Model
         return $result;
     }
 
+    public function countCompletedQuiz($client_id, $site_id, $quiz_id){
+        $this->set_site_mongodb($site_id);
+
+        $this->mongo_db->where('client_id', $client_id);
+        $this->mongo_db->where('site_id', $site_id);
+        $this->mongo_db->where('quiz_id', $quiz_id);
+        $this->mongo_db->where('quiz_completed', true);
+
+        $result = $this->mongo_db->count("playbasis_quiz_log");
+
+        return $result;
+    }
+
     public function calculate_frequency($client_id, $site_id, $quiz_id)
     {
         $this->set_site_mongodb($site_id);
