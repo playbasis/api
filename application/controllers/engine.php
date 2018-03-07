@@ -982,7 +982,7 @@ class Engine extends Quest
                             ), $reward_name);
                             $jigsawConfig['item_id'] = null;
                         }
-                        $jigsawConfig['quantity'] = 1;
+                        $jigsawConfig['quantity'] = (isset($input['reward_custom_quantity']) && is_numeric($input['reward_custom_quantity'])) ? $input['reward_custom_quantity'] : 1;
                     }else{
                         //no custom parameter found
                         $jigsawConfig['reward_name'] = null;
