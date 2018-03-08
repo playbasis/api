@@ -1425,9 +1425,13 @@ class jigsaw extends MY_Model
                     $ret = $this->reward($conf, $input, $exInfo, $cache);
                     return $ret;
                 } else {
-                    if (array_key_exists('feedback_name', $conf)) {
+                    if (array_key_exists('feedback_name', $conf) && ($conf['feedback_name'] != "data")) {
                         $ret = $this->feedback($conf['feedback_name'], $conf, $input, $exInfo);
                         return $ret;
+                    }else{ // feedback response data
+                        $exInfo['feedback_key'] = $conf['key'];
+                        $exInfo['feedback_value'] =  $conf['param_value'];
+                        return true;
                     }
                 }
                 return false; // should not reach this line
@@ -1464,8 +1468,12 @@ class jigsaw extends MY_Model
             }
             return $this->reward($conf, $input, $exInfo);
         } else {
-            if (array_key_exists('feedback_name', $conf)) {
+            if (array_key_exists('feedback_name', $conf) && ($conf['feedback_name'] != "data")) {
                 return $this->feedback($conf['feedback_name'], $conf, $input, $exInfo);
+            }else{ // feedback response data
+                $exInfo['feedback_key'] = $conf['key'];
+                $exInfo['feedback_value'] =  $conf['param_value'];
+                return true;
             }
         }
         return false; // can reach this line if (1) there is no entry (2) all entries are invalid
