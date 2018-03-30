@@ -450,7 +450,7 @@ class jigsaw extends MY_Model
                         //reward per day limit
                         $result = $this->checkRewardLimitPerDay($input['pb_player_id'], $config['reward_id'], $input['client_id'], $input['site_id'], $config['quantity'], $timeNow);
                         if(!$result){
-                            $exInfo['error'] = "ENGINE_RULE_REWARD_EXCEED_LIMIT";
+                            $exInfo['error'] = "ENGINE_RULE_REWARD_OUT_OF_STOCK";
                         }
                     } else {
                         $exInfo['error'] = "ENGINE_RULE_REWARD_OUT_OF_STOCK";
@@ -500,7 +500,7 @@ class jigsaw extends MY_Model
                 if($result == true) {
                     $result = $this->checkRewardLimitPerDay($input['pb_player_id'], $rewardId, $input['client_id'], $input['site_id'], $quantity, $timeNow);
                     if($result != true){
-                        $exInfo['error'] = "ENGINE_RULE_REWARD_EXCEED_LIMIT";
+                        $exInfo['error'] = "ENGINE_RULE_REWARD_OUT_OF_STOCK";
                     }
                 } else {
                     $exInfo['error'] = "ENGINE_RULE_REWARD_OUT_OF_STOCK";
