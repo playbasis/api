@@ -488,7 +488,8 @@ class Redeem extends REST2_Controller
             if (isset($player_point[0]['value'])) {
                 $reward_expire = $this->point_model->getPlayerRewardExpiration($this->validToken['client_id'], $this->validToken['site_id'], $pb_player_id, $reward_id);
                 if($reward_expire){
-                    $expire_value = is_numeric(array_sum(array_column($reward_expire,'current_value'))) ? array_sum(array_column($reward_expire,'current_value')) : 0;
+                    $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
+                    $expire_value = $expire_sum ? $expire_sum : 0;
                     $player_point[0]['value'] = $player_point[0]['value'] - $expire_value;
                 }
                 $player_point = $player_point[0]['value'];
@@ -552,7 +553,8 @@ class Redeem extends REST2_Controller
                 $player_custom = $this->player_model->getPlayerPoint($pb_player_id, $customid, $validToken['site_id']);
                 $reward_expire = $this->point_model->getPlayerRewardExpiration($this->validToken['client_id'], $this->validToken['site_id'], $pb_player_id, $customid);
                 if($reward_expire){
-                    $expire_value = is_numeric(array_sum(array_column($reward_expire,'current_value'))) ? array_sum(array_column($reward_expire,'current_value')) : 0;
+                    $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
+                    $expire_value = $expire_sum ? $expire_sum : 0;
                     $player_custom[0]['value'] = $player_custom[0]['value'] - $expire_value;
                 }
 
@@ -709,7 +711,8 @@ class Redeem extends REST2_Controller
             $player_point = $this->player_model->getPlayerPoint($pb_player_id, $reward_id, $validToken['site_id']);
             $reward_expire = $this->point_model->getPlayerRewardExpiration($this->validToken['client_id'], $this->validToken['site_id'], $pb_player_id, $reward_id);
             if($reward_expire){
-                $expire_value = is_numeric(array_sum(array_column($reward_expire,'current_value'))) ? array_sum(array_column($reward_expire,'current_value')) : 0;
+                $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
+                $expire_value = $expire_sum ? $expire_sum : 0;
                 $player_point[0]['value'] = $player_point[0]['value'] - $expire_value;
             }
             if ((int)$player_point[0]['value'] * $amount >= (int)$goods['redeem']['point']["point_value"] * $amount) {
@@ -749,7 +752,8 @@ class Redeem extends REST2_Controller
                 $player_custom = $this->player_model->getPlayerPoint($pb_player_id, $customid, $validToken['site_id']);
                 $reward_expire = $this->point_model->getPlayerRewardExpiration($this->validToken['client_id'], $this->validToken['site_id'], $pb_player_id, $customid);
                 if($reward_expire){
-                    $expire_value = is_numeric(array_sum(array_column($reward_expire,'current_value'))) ? array_sum(array_column($reward_expire,'current_value')) : 0;
+                    $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
+                    $expire_value = $expire_sum ? $expire_sum : 0;
                     $player_custom[0]['value'] = $player_custom[0]['value'] - $expire_value;
                 }
                 $custom_name = $this->client_model->getRewardName(array_merge($validToken,

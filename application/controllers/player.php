@@ -242,7 +242,8 @@ class Player extends REST2_Controller
             $point['reward_id'] = $point['reward_id'] . "";
             $reward_expire = $this->point_model->getPlayerRewardExpiration($this->validToken['client_id'], $this->validToken['site_id'], $pb_player_id, $point['reward_id']);
             if($reward_expire){
-                $expire_value = is_numeric(array_sum(array_column($reward_expire,'current_value'))) ? array_sum(array_column($reward_expire,'current_value')) : 0;
+                $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
+                $expire_value = $expire_sum ? $expire_sum : 0;
                 $point['value'] = $point['value'] - $expire_value;
             }
             ksort($point);
@@ -318,7 +319,8 @@ class Player extends REST2_Controller
             $point['reward_id'] = $point['reward_id'] . "";
             $reward_expire = $this->point_model->getPlayerRewardExpiration($this->validToken['client_id'], $this->validToken['site_id'], $pb_player_id, $point['reward_id']);
             if($reward_expire){
-                $expire_value = is_numeric(array_sum(array_column($reward_expire,'current_value'))) ? array_sum(array_column($reward_expire,'current_value')) : 0;
+                $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
+                $expire_value = $expire_sum ? $expire_sum : 0;
                 $point['value'] = $point['value'] - $expire_value;
             }
             ksort($point);
@@ -1340,7 +1342,8 @@ class Player extends REST2_Controller
             $point['reward_id'] = $point['reward_id'] . "";
             $reward_expire = $this->point_model->getPlayerRewardExpiration($this->validToken['client_id'], $this->validToken['site_id'], $pb_player_id, $point['reward_id']);
             if($reward_expire){
-                $expire_value = is_numeric(array_sum(array_column($reward_expire,'current_value'))) ? array_sum(array_column($reward_expire,'current_value')) : 0;
+                $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
+                $expire_value = $expire_sum ? $expire_sum : 0;
                 $point['value'] = $point['value'] - $expire_value;
             }
             ksort($point);
@@ -1378,7 +1381,8 @@ class Player extends REST2_Controller
         if(isset($point['point'][0]['value'])){
             $reward_expire = $this->point_model->getPlayerRewardExpiration($this->validToken['client_id'], $this->validToken['site_id'], $pb_player_id, $reward_id);
             if($reward_expire){
-                $expire_value = is_numeric(array_sum(array_column($reward_expire,'current_value'))) ? array_sum(array_column($reward_expire,'current_value')) : 0;
+                $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
+                $expire_value = $expire_sum ? $expire_sum : 0;
                 $point['point'][0]['value'] = $point['point'][0]['value'] - $expire_value;
             }
         } else {
@@ -2424,7 +2428,8 @@ class Player extends REST2_Controller
 
         $reward_expire = $this->point_model->getPlayerRewardExpiration($this->validToken['client_id'], $this->validToken['site_id'], $pb_player_id, $reward_id);
         if($reward_expire){
-            $expire_value = is_numeric(array_sum(array_column($reward_expire,'current_value'))) ? array_sum(array_column($reward_expire,'current_value')) : 0;
+            $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
+            $expire_value = $expire_sum ? $expire_sum : 0;
             $record['value'] = $record['value'] - $expire_value;
         }
 

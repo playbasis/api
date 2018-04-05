@@ -733,7 +733,8 @@ class Goods_model extends MY_Model
             if (isset($player_point)) {
                 $reward_expire = $this->getPlayerRewardExpiration($client_id, $site_id, $pb_player_id, $reward_id);
                 if ($reward_expire) {
-                    $expire_value = is_numeric(array_sum(array_column($reward_expire, 'current_value'))) ? array_sum(array_column($reward_expire, 'current_value')) : 0;
+                    $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
+                    $expire_value = $expire_sum ? $expire_sum : 0;
                     $player_point = $player_point - $expire_value;
                 }
             }
@@ -791,7 +792,8 @@ class Goods_model extends MY_Model
                     if (isset($playerRecord['value']) && $value) {
                         $reward_expire = $this->getPlayerRewardExpiration($client_id, $site_id, $pb_player_id, $reward_id);
                         if ($reward_expire) {
-                            $expire_value = is_numeric(array_sum(array_column($reward_expire, 'current_value'))) ? array_sum(array_column($reward_expire, 'current_value')) : 0;
+                            $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
+                            $expire_value = $expire_sum ? $expire_sum : 0;
                             $value = $value - $expire_value;
                         }
                     }
