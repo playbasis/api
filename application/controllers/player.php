@@ -234,14 +234,7 @@ class Player extends REST2_Controller
 
         $player['player']['badges'] = $this->player_model->getBadge($pb_player_id, $this->site_id, null, true);
         $player['player']['goods'] = $this->player_model->getGoods($pb_player_id, $this->site_id);
-        $points = $this->player_model->getPlayerPoints($pb_player_id, $this->site_id);
-        foreach ($points as &$point) {
-            $point['reward_name'] = $this->point_model->getRewardNameById(array_merge($this->validToken, array(
-                'reward_id' => $point['reward_id']
-            )));
-            $point['reward_id'] = $point['reward_id'] . "";
-            ksort($point);
-        }
+        $points = $this->player_model->getPlayerPoints($this->client_id, $this->site_id, $pb_player_id);
         $player['player']['points'] = $points;
         //get last login/logout
         $player['player']['last_login'] = $this->player_model->getLastEventTime($pb_player_id, $this->site_id, 'LOGIN');
@@ -305,14 +298,7 @@ class Player extends REST2_Controller
 
         $player['player']['badges'] = $this->player_model->getBadge($pb_player_id, $this->site_id, null, true);
         $player['player']['goods'] = $this->player_model->getGoods($pb_player_id, $this->site_id);
-        $points = $this->player_model->getPlayerPoints($pb_player_id, $this->site_id);
-        foreach ($points as &$point) {
-            $point['reward_name'] = $this->point_model->getRewardNameById(array_merge($this->validToken, array(
-                'reward_id' => $point['reward_id']
-            )));
-            $point['reward_id'] = $point['reward_id'] . "";
-            ksort($point);
-        }
+        $points = $this->player_model->getPlayerPoints($this->validToken['client_id'], $this->validToken['site_id'], $pb_player_id);
         $player['player']['points'] = $points;
 
         $nodes_list = $this->store_org_model->getAssociatedNodeOfPlayer($this->validToken['client_id'],
@@ -1322,14 +1308,7 @@ class Player extends REST2_Controller
             'pb_player_id' => $pb_player_id
         ));
         //get player points
-        $points['points'] = $this->player_model->getPlayerPoints($pb_player_id, $this->site_id);
-        foreach ($points['points'] as &$point) {
-            $point['reward_name'] = $this->point_model->getRewardNameById(array_merge($input, array(
-                'reward_id' => $point['reward_id']
-            )));
-            $point['reward_id'] = $point['reward_id'] . "";
-            ksort($point);
-        }
+        $points['points'] = $this->player_model->getPlayerPoints($this->client_id, $this->site_id, $pb_player_id);
         $this->response($this->resp->setRespond($points), 200);
     }
 
@@ -1359,7 +1338,7 @@ class Player extends REST2_Controller
         if (!$reward_id) {
             $this->response($this->error->setError('REWARD_NOT_FOUND'), 200);
         }
-        $point['point'] = $this->player_model->getPlayerPoint($pb_player_id, $reward_id, $this->site_id);
+        $point['point'] = $this->player_model->getPlayerPoint($this->client_id, $this->site_id, $pb_player_id, $reward_id);
         if(!isset($point['point'][0]['value'])){
             $point['point'][0]['value'] = 0;
         }
@@ -2396,21 +2375,26 @@ class Player extends REST2_Controller
         $force = $this->input->post('force');
 
         /* get current reward value */
-        $record = $this->reward_model->getPlayerReward($this->client_id, $this->site_id, $pb_player_id, $reward_id);
+        $record = $this->player_model->getPlayerPoint($this->client_id, $this->site_id, $pb_player_id, $reward_id);
+
         if (!$record) {
             $this->response($this->error->setError('REWARD_FOR_USER_NOT_EXIST'), 200);
         }
+
+        $record = $record[0];
 
         /* set new reward value */
         if (!$force && $record['value'] < $amount) {
             $this->response($this->error->setError('REWARD_FOR_USER_NOT_ENOUGH'), 200);
         }
-        $new_value = $record['value'] - $amount;
-        if ($new_value < 0) {
-            $new_value = 0;
+        $value_deducted = $amount > $record['value'] ? $record['value'] : $amount;
+        $new_value = $record['value'] - $value_deducted;
+        $this->reward_model->setPlayerReward($this->client_id, $this->site_id, $pb_player_id, $reward_id, $value_deducted);
+        $reward_expire = $this->player_model->checkPlayerRewardExpiration($this->client_id, $this->site_id, $pb_player_id, $reward_id);
+        if($reward_expire) {
+            $this->client_model->updateRewardExpired($this->client_id, $this->site_id, $pb_player_id, $reward_id, $amount > $record['value'] ? $record['value'] : $amount);
         }
-        $value_deducted = $record['value'] - $new_value;
-        $this->reward_model->setPlayerReward($this->client_id, $this->site_id, $pb_player_id, $reward_id, $new_value);
+
         if ($reward == 'exp') {
             $this->player_model->setPlayerExp($this->client_id, $this->site_id, $pb_player_id, $new_value);
         }
@@ -2708,11 +2692,11 @@ class Player extends REST2_Controller
         print_r($cl_player_id);
         echo '<br>';
         echo '<br>getPlayerPoints:<br>';
-        $result = $this->player_model->getPlayerPoints($pb_player_id, $token['site_id']);
+        $result = $this->player_model->getPlayerPoints($token['client_id'], $token['site_id'], $pb_player_id);
         print_r($result);
         $reward_id = $this->point_model->findPoint(array_merge($token, array('reward_name' => 'exp')));
         echo '<br>getPlayerPoint:<br>';
-        $result = $this->player_model->getPlayerPoint($pb_player_id, $reward_id, $token['site_id']);
+        $result = $this->player_model->getPlayerPoint($token['client_id'], $token['site_id'], $pb_player_id, $reward_id);
         print_r($result);
         echo '<br>getLastActionPerform:<br>';
         $result = $this->player_model->getLastActionPerform($pb_player_id, $token['site_id']);

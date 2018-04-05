@@ -386,7 +386,43 @@ class Player_model extends MY_Model
         ));
     }
 
-    public function getPlayerPoints($pb_player_id, $site_id)
+    public function getPlayerRewardExpiration($client_id, $site_id, $pb_player_id, $reward_id)
+    {
+        $this->mongo_db->where('client_id' , new MongoId($client_id));
+        $this->mongo_db->where('site_id' , new MongoId($site_id));
+        $this->mongo_db->where('pb_player_id' , new MongoId($pb_player_id));
+        $this->mongo_db->where('reward_id' , new MongoId($reward_id));
+        $this->mongo_db->where_lte('date_expire' , new MongoDate());
+        $result = $this->mongo_db->get('playbasis_reward_expiration_to_player');
+        return $result;
+    }
+
+    public function checkPlayerRewardExpiration($client_id, $site_id, $pb_player_id, $reward_id)
+    {
+        $this->mongo_db->where('client_id' , new MongoId($client_id));
+        $this->mongo_db->where('site_id' , new MongoId($site_id));
+        $this->mongo_db->where('pb_player_id' , new MongoId($pb_player_id));
+        $this->mongo_db->where('reward_id' , new MongoId($reward_id));
+        $this->mongo_db->where_gt('date_expire' , new MongoDate());
+        $this->mongo_db->order_by(array('date_expire' => 'asc'));
+        $result = $this->mongo_db->get('playbasis_reward_expiration_to_player');
+        return $result;
+    }
+
+    public function getRewardNameById($client_id, $site_id, $reward_id)
+    {
+        $this->set_site_mongodb($site_id);
+        $this->mongo_db->select(array('name'));
+        $this->mongo_db->where(array(
+            'client_id' => $client_id,
+            'site_id' => $site_id,
+            'reward_id' => $reward_id
+        ));
+        $result = $this->mongo_db->get('playbasis_reward_to_client');
+        return ($result) ? $result[0]['name'] : $result;
+    }
+
+    public function getPlayerPoints($client_id, $site_id, $pb_player_id)
     {
         $this->set_site_mongodb($site_id);
         $this->mongo_db->select(array(
@@ -399,10 +435,23 @@ class Player_model extends MY_Model
             'pb_player_id' => $pb_player_id,
             'badge_id' => null,
         ));
-        return $this->mongo_db->get('playbasis_reward_to_player');
+        $results = $this->mongo_db->get('playbasis_reward_to_player');
+        if($results){
+            foreach ($results as &$result){
+                $result['reward_name'] = $this->getRewardNameById($client_id, $site_id, $result['reward_id']);
+                $reward_expire = $this->getPlayerRewardExpiration($client_id, $site_id, $pb_player_id, $result['reward_id']);
+                if ($reward_expire) {
+                    $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
+                    $expire_value = $expire_sum ? $expire_sum : 0;
+                    $result['value'] = $result['value'] - $expire_value;
+                }
+                $result['reward_id'] = $result['reward_id'] . "";
+            }
+        }
+        return $results;
     }
 
-    public function getPlayerPoint($pb_player_id, $reward_id, $site_id)
+    public function getPlayerPoint($client_id, $site_id, $pb_player_id, $reward_id)
     {
         $this->set_site_mongodb($site_id);
         $this->mongo_db->select(array(
@@ -416,7 +465,17 @@ class Player_model extends MY_Model
             'reward_id' => $reward_id
         ));
         $this->mongo_db->limit(1);
-        return $this->mongo_db->get('playbasis_reward_to_player');
+        $result = $this->mongo_db->get('playbasis_reward_to_player');
+        if($result){
+            $reward_expire = $this->getPlayerRewardExpiration($client_id, $site_id, $pb_player_id, $reward_id);
+            if ($reward_expire) {
+                $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
+                $expire_value = $expire_sum ? $expire_sum : 0;
+                $result[0]['value'] = $result[0]['value'] - $expire_value;
+            }
+        }
+
+        return $result;
     }
 
     public function getPlayerPointFromDateTime($pb_player_id, $reward_id, $site_id, $starttime = "", $endtime = "")

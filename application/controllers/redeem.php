@@ -483,7 +483,7 @@ class Redeem extends REST2_Controller
             ));
             $this->load->model('point_model');
             $reward_id = $this->point_model->findPoint($input);
-            $player_point = $this->player_model->getPlayerPoint($pb_player_id, $reward_id, $validToken['site_id']);
+            $player_point = $this->player_model->getPlayerPoint($validToken['client_id'], $validToken['site_id'], $pb_player_id, $reward_id);
             if (isset($player_point[0]['value'])) {
                 $player_point = $player_point[0]['value'];
             } else {
@@ -543,7 +543,7 @@ class Redeem extends REST2_Controller
             foreach ($goods['redeem']['custom'] as $customobj) {
 
                 $customid = new MongoId($customobj["custom_id"]);
-                $player_custom = $this->player_model->getPlayerPoint($pb_player_id, $customid, $validToken['site_id']);
+                $player_custom = $this->player_model->getPlayerPoint($validToken['client_id'], $validToken['site_id'], $pb_player_id, $customid);
 
                 if ($player_custom && (int)($player_custom[0]['value'] * $amount) >= (int)($customobj["custom_value"] * $amount)) {
                     $custom_can_redeem++;
@@ -695,11 +695,15 @@ class Redeem extends REST2_Controller
             $this->load->model('point_model');
             $reward_id = $this->point_model->findPoint($input);
             $reward_id = new MongoId($reward_id);
-            $player_point = $this->player_model->getPlayerPoint($pb_player_id, $reward_id, $validToken['site_id']);
+            $player_point = $this->player_model->getPlayerPoint($validToken['client_id'], $validToken['site_id'], $pb_player_id, $reward_id);
             if ((int)$player_point[0]['value'] * $amount >= (int)$goods['redeem']['point']["point_value"] * $amount) {
                 $this->client_model->updatePlayerPointReward($reward_id,
                     (-1 * $goods['redeem']['point']["point_value"] * $amount), $pb_player_id,
                     $validToken['cl_player_id'], $validToken['client_id'], $validToken['site_id']);
+                if($reward_expire) {
+                    $this->client_model->updateRewardExpired($validToken['client_id'], $validToken['site_id'], $pb_player_id, $reward_id, (int)$goods['redeem']['point']["point_value"] * $amount);
+                }
+
             }
         }
 
@@ -727,7 +731,7 @@ class Redeem extends REST2_Controller
             foreach ($goods['redeem']['custom'] as $customobj) {
 
                 $customid = new MongoId($customobj["custom_id"]);
-                $player_custom = $this->player_model->getPlayerPoint($pb_player_id, $customid, $validToken['site_id']);
+                $player_custom = $this->player_model->getPlayerPoint($validToken['client_id'], $validToken['site_id'], $pb_player_id, $customid);
 
                 $custom_name = $this->client_model->getRewardName(array_merge($validToken,
                     array('reward_id' => $customid)));
@@ -740,6 +744,11 @@ class Redeem extends REST2_Controller
                         array_merge($validToken,
                             array('pb_player_id' => $pb_player_id, 'player_id' => $validToken['cl_player_id'])),
                         $customArray);
+                    $reward_expire = $this->player_model->checkPlayerRewardExpiration($this->client_id, $this->site_id, $pb_player_id, $customid);
+                    if($reward_expire) {
+                        $this->client_model->updateRewardExpired($validToken['client_id'], $validToken['site_id'], $pb_player_id, $customid, (int)($customobj["custom_value"] * $amount));
+                    }
+
                 }
             }
         }
