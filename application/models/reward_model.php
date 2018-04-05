@@ -321,7 +321,7 @@ class Reward_model extends MY_Model
             'pb_player_id' => $pb_player_id,
             'reward_id' => $reward_id,
         ));
-        $this->mongo_db->set('value', $value);
+        $this->mongo_db->dec('value', $value);
         $this->mongo_db->set('date_modified', $d);
         $this->mongo_db->update('playbasis_reward_to_player');
     }

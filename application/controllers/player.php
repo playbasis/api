@@ -240,6 +240,12 @@ class Player extends REST2_Controller
                 'reward_id' => $point['reward_id']
             )));
             $point['reward_id'] = $point['reward_id'] . "";
+            $reward_expire = $this->point_model->getPlayerRewardExpiration($this->validToken['client_id'], $this->validToken['site_id'], $pb_player_id, $point['reward_id']);
+            if($reward_expire){
+                $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
+                $expire_value = $expire_sum ? $expire_sum : 0;
+                $point['value'] = $point['value'] - $expire_value;
+            }
             ksort($point);
         }
         $player['player']['points'] = $points;
@@ -311,6 +317,12 @@ class Player extends REST2_Controller
                 'reward_id' => $point['reward_id']
             )));
             $point['reward_id'] = $point['reward_id'] . "";
+            $reward_expire = $this->point_model->getPlayerRewardExpiration($this->validToken['client_id'], $this->validToken['site_id'], $pb_player_id, $point['reward_id']);
+            if($reward_expire){
+                $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
+                $expire_value = $expire_sum ? $expire_sum : 0;
+                $point['value'] = $point['value'] - $expire_value;
+            }
             ksort($point);
         }
         $player['player']['points'] = $points;
@@ -1328,6 +1340,12 @@ class Player extends REST2_Controller
                 'reward_id' => $point['reward_id']
             )));
             $point['reward_id'] = $point['reward_id'] . "";
+            $reward_expire = $this->point_model->getPlayerRewardExpiration($this->validToken['client_id'], $this->validToken['site_id'], $pb_player_id, $point['reward_id']);
+            if($reward_expire){
+                $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
+                $expire_value = $expire_sum ? $expire_sum : 0;
+                $point['value'] = $point['value'] - $expire_value;
+            }
             ksort($point);
         }
         $this->response($this->resp->setRespond($points), 200);
@@ -1360,7 +1378,14 @@ class Player extends REST2_Controller
             $this->response($this->error->setError('REWARD_NOT_FOUND'), 200);
         }
         $point['point'] = $this->player_model->getPlayerPoint($pb_player_id, $reward_id, $this->site_id);
-        if(!isset($point['point'][0]['value'])){
+        if(isset($point['point'][0]['value'])){
+            $reward_expire = $this->point_model->getPlayerRewardExpiration($this->validToken['client_id'], $this->validToken['site_id'], $pb_player_id, $reward_id);
+            if($reward_expire){
+                $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
+                $expire_value = $expire_sum ? $expire_sum : 0;
+                $point['point'][0]['value'] = $point['point'][0]['value'] - $expire_value;
+            }
+        } else {
             $point['point'][0]['value'] = 0;
         }
         $point['point'][0]['reward_id'] = $reward_id . "";
@@ -2401,16 +2426,22 @@ class Player extends REST2_Controller
             $this->response($this->error->setError('REWARD_FOR_USER_NOT_EXIST'), 200);
         }
 
+        $reward_expire = $this->point_model->getPlayerRewardExpiration($this->validToken['client_id'], $this->validToken['site_id'], $pb_player_id, $reward_id);
+        if($reward_expire){
+            $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
+            $expire_value = $expire_sum ? $expire_sum : 0;
+            $record['value'] = $record['value'] - $expire_value;
+        }
+
         /* set new reward value */
         if (!$force && $record['value'] < $amount) {
             $this->response($this->error->setError('REWARD_FOR_USER_NOT_ENOUGH'), 200);
         }
-        $new_value = $record['value'] - $amount;
-        if ($new_value < 0) {
-            $new_value = 0;
+        $new_value = $amount > $record['value'] ? 0 : $record['value'] - $amount;
+        $this->reward_model->setPlayerReward($this->client_id, $this->site_id, $pb_player_id, $reward_id, $amount > $record['value'] ? $record['value'] : $amount);
+        if($reward_expire) {
+            $this->client_model->updateRewardExpired($this->client_id, $this->site_id, $pb_player_id, $reward_id, $amount > $record['value'] ? $record['value'] : $amount);
         }
-        $value_deducted = $record['value'] - $new_value;
-        $this->reward_model->setPlayerReward($this->client_id, $this->site_id, $pb_player_id, $reward_id, $new_value);
         if ($reward == 'exp') {
             $this->player_model->setPlayerExp($this->client_id, $this->site_id, $pb_player_id, $new_value);
         }
@@ -2418,7 +2449,7 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond(array(
             "old_value" => $record['value'],
             "new_value" => $new_value,
-            "value_deducted" => $value_deducted
+            "value_deducted" => $amount > $record['value'] ? $record['value'] : $amount
         )), 200);
     }
 

@@ -670,7 +670,7 @@ class Goods_model extends MY_Model
             $msg['error'] = "BADGE_NOT_ENOUGH";
             return false;
         }
-        $valid = $this->checkGoodsPlayerCustom($goods, $pb_player_id, $amount, $msg);
+        $valid = $this->checkGoodsPlayerCustom($client_id, $site_id, $goods, $pb_player_id, $amount, $msg);
         if (!$valid) {
             $msg['error'] = "CUSTOM_POINT_NOT_ENOUGH";
             return false;
@@ -713,12 +713,31 @@ class Goods_model extends MY_Model
         return true;
     }
 
+    public function getPlayerRewardExpiration($client_id, $site_id, $pb_player_id, $reward_id)
+    {
+        $this->mongo_db->where('client_id' , new MongoId($client_id));
+        $this->mongo_db->where('site_id' , new MongoId($site_id));
+        $this->mongo_db->where('pb_player_id' , new MongoId($pb_player_id));
+        $this->mongo_db->where('reward_id' , new MongoId($reward_id));
+        $this->mongo_db->where_lte('date_expire' , new MongoDate());
+        $result = $this->mongo_db->get('playbasis_reward_expiration_to_player');
+        return $result;
+    }
+
     private function checkGoodsPlayerPoint($goods, $pb_player_id, $amount, $client_id, $site_id)
     {
         if (isset($goods['redeem']['point']["point_value"]) && ($goods['redeem']['point']["point_value"] > 0)) {
             $reward_id = $this->getRewardIdByName($client_id, $site_id, 'point');
             $playerRecord = $this->getRewardToPlayerRecord($reward_id, $pb_player_id);
             $player_point = ($playerRecord && array_key_exists('value', $playerRecord) ? $playerRecord['value'] : 0);
+            if (isset($player_point)) {
+                $reward_expire = $this->getPlayerRewardExpiration($client_id, $site_id, $pb_player_id, $reward_id);
+                if ($reward_expire) {
+                    $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
+                    $expire_value = $expire_sum ? $expire_sum : 0;
+                    $player_point = $player_point - $expire_value;
+                }
+            }
             if ((int)($player_point * $amount) < (int)($goods['redeem']['point']["point_value"] * $amount)) {
                 return false;
             }
@@ -754,7 +773,7 @@ class Goods_model extends MY_Model
         return true;
     }
 
-    private function checkGoodsPlayerCustom($goods, $pb_player_id, $amount, &$msg = array())
+    private function checkGoodsPlayerCustom($client_id, $site_id, $goods, $pb_player_id, $amount, &$msg = array())
     {
         if (isset($goods['redeem']['custom'])) {
             $redeem_current = 0;
@@ -770,6 +789,14 @@ class Goods_model extends MY_Model
                 foreach ($playerRecords as $playerRecord) {
                     $reward_id = $playerRecord['reward_id'];
                     $value = (int)$playerRecord['value'];
+                    if (isset($playerRecord['value']) && $value) {
+                        $reward_expire = $this->getPlayerRewardExpiration($client_id, $site_id, $pb_player_id, $reward_id);
+                        if ($reward_expire) {
+                            $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
+                            $expire_value = $expire_sum ? $expire_sum : 0;
+                            $value = $value - $expire_value;
+                        }
+                    }
                     if ($value * $amount >= $goods['redeem']['custom'][$reward_id->{'$id'}] * $amount) {
                         $redeem_current++;
                         foreach ($msg['custom_id'] as $index => $value){
