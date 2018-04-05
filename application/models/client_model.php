@@ -801,7 +801,7 @@ class Client_model extends MY_Model
         return $data;
     }
 
-    public function updateRewardExpired($client_id, $site_id, $pb_player_id, $reward_id, $amount)
+    private function checkPlayerRewardExpiration($client_id, $site_id, $pb_player_id, $reward_id)
     {
         $this->mongo_db->where('client_id' , new MongoId($client_id));
         $this->mongo_db->where('site_id' , new MongoId($site_id));
@@ -810,6 +810,12 @@ class Client_model extends MY_Model
         $this->mongo_db->where_gt('date_expire' , new MongoDate());
         $this->mongo_db->order_by(array('date_expire' => 'asc'));
         $result = $this->mongo_db->get('playbasis_reward_expiration_to_player');
+        return $result;
+    }
+
+    public function updateRewardExpiration($client_id, $site_id, $pb_player_id, $reward_id, $amount)
+    {
+        $result = $this->checkPlayerRewardExpiration($client_id, $site_id, $pb_player_id, $reward_id);
         $deduct_amount = 0;
         $numerator_amount = 0;
         $used_id = array();

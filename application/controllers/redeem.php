@@ -700,10 +700,8 @@ class Redeem extends REST2_Controller
                 $this->client_model->updatePlayerPointReward($reward_id,
                     (-1 * $goods['redeem']['point']["point_value"] * $amount), $pb_player_id,
                     $validToken['cl_player_id'], $validToken['client_id'], $validToken['site_id']);
-                if($reward_expire) {
-                    $this->client_model->updateRewardExpired($validToken['client_id'], $validToken['site_id'], $pb_player_id, $reward_id, (int)$goods['redeem']['point']["point_value"] * $amount);
-                }
-
+                
+                $this->client_model->updateRewardExpiration($validToken['client_id'], $validToken['site_id'], $pb_player_id, $reward_id, (int)$goods['redeem']['point']["point_value"] * $amount);
             }
         }
 
@@ -741,14 +739,8 @@ class Redeem extends REST2_Controller
 
                 if ((int)($player_custom[0]['value'] * $amount) >= (int)($customobj["custom_value"] * $amount)) {
                     $this->client_model->updateCustomReward($custom_name, (-1 * $customobj["custom_value"] * $amount),
-                        array_merge($validToken,
-                            array('pb_player_id' => $pb_player_id, 'player_id' => $validToken['cl_player_id'])),
-                        $customArray);
-                    $reward_expire = $this->player_model->checkPlayerRewardExpiration($this->client_id, $this->site_id, $pb_player_id, $customid);
-                    if($reward_expire) {
-                        $this->client_model->updateRewardExpired($validToken['client_id'], $validToken['site_id'], $pb_player_id, $customid, (int)($customobj["custom_value"] * $amount));
-                    }
-
+                        array_merge($validToken, array('pb_player_id' => $pb_player_id, 'player_id' => $validToken['cl_player_id'])), $customArray);
+                    $this->client_model->updateRewardExpiration($validToken['client_id'], $validToken['site_id'], $pb_player_id, $customid, (int)($customobj["custom_value"] * $amount));
                 }
             }
         }

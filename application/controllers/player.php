@@ -2389,11 +2389,8 @@ class Player extends REST2_Controller
         }
         $value_deducted = $amount > $record['value'] ? $record['value'] : $amount;
         $new_value = $record['value'] - $value_deducted;
-        $this->reward_model->setPlayerReward($this->client_id, $this->site_id, $pb_player_id, $reward_id, $value_deducted);
-        $reward_expire = $this->player_model->checkPlayerRewardExpiration($this->client_id, $this->site_id, $pb_player_id, $reward_id);
-        if($reward_expire) {
-            $this->client_model->updateRewardExpired($this->client_id, $this->site_id, $pb_player_id, $reward_id, $amount > $record['value'] ? $record['value'] : $amount);
-        }
+        $this->reward_model->deductPlayerReward($this->client_id, $this->site_id, $pb_player_id, $reward_id, $value_deducted);
+        $this->client_model->updateRewardExpiration($this->client_id, $this->site_id, $pb_player_id, $reward_id, $value_deducted);
 
         if ($reward == 'exp') {
             $this->player_model->setPlayerExp($this->client_id, $this->site_id, $pb_player_id, $new_value);

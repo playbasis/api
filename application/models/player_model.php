@@ -386,25 +386,13 @@ class Player_model extends MY_Model
         ));
     }
 
-    public function getPlayerRewardExpiration($client_id, $site_id, $pb_player_id, $reward_id)
+    public function getExpiredPlayerReward($client_id, $site_id, $pb_player_id, $reward_id)
     {
         $this->mongo_db->where('client_id' , new MongoId($client_id));
         $this->mongo_db->where('site_id' , new MongoId($site_id));
         $this->mongo_db->where('pb_player_id' , new MongoId($pb_player_id));
         $this->mongo_db->where('reward_id' , new MongoId($reward_id));
         $this->mongo_db->where_lte('date_expire' , new MongoDate());
-        $result = $this->mongo_db->get('playbasis_reward_expiration_to_player');
-        return $result;
-    }
-
-    public function checkPlayerRewardExpiration($client_id, $site_id, $pb_player_id, $reward_id)
-    {
-        $this->mongo_db->where('client_id' , new MongoId($client_id));
-        $this->mongo_db->where('site_id' , new MongoId($site_id));
-        $this->mongo_db->where('pb_player_id' , new MongoId($pb_player_id));
-        $this->mongo_db->where('reward_id' , new MongoId($reward_id));
-        $this->mongo_db->where_gt('date_expire' , new MongoDate());
-        $this->mongo_db->order_by(array('date_expire' => 'asc'));
         $result = $this->mongo_db->get('playbasis_reward_expiration_to_player');
         return $result;
     }
@@ -439,7 +427,7 @@ class Player_model extends MY_Model
         if($results){
             foreach ($results as &$result){
                 $result['reward_name'] = $this->getRewardNameById($client_id, $site_id, $result['reward_id']);
-                $reward_expire = $this->getPlayerRewardExpiration($client_id, $site_id, $pb_player_id, $result['reward_id']);
+                $reward_expire = $this->getExpiredPlayerReward($client_id, $site_id, $pb_player_id, $result['reward_id']);
                 if ($reward_expire) {
                     $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
                     $expire_value = $expire_sum ? $expire_sum : 0;
@@ -467,7 +455,7 @@ class Player_model extends MY_Model
         $this->mongo_db->limit(1);
         $result = $this->mongo_db->get('playbasis_reward_to_player');
         if($result){
-            $reward_expire = $this->getPlayerRewardExpiration($client_id, $site_id, $pb_player_id, $reward_id);
+            $reward_expire = $this->getExpiredPlayerReward($client_id, $site_id, $pb_player_id, $reward_id);
             if ($reward_expire) {
                 $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
                 $expire_value = $expire_sum ? $expire_sum : 0;
