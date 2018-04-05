@@ -553,8 +553,7 @@ class Quest extends REST2_Controller
                         }
                         break;
                     case "POINT":
-                        $point_a = $this->player_model->getPlayerPoint($pb_player_id, $c["condition_id"],
-                            $validToken['site_id']);
+                        $point_a = $this->player_model->getPlayerPoint($validToken['client_id'], $validToken['site_id'], $pb_player_id, $c["condition_id"]);
 
                         if (isset($point_a[0]['value'])) {
                             $point = $point_a[0]['value'];
@@ -571,8 +570,7 @@ class Quest extends REST2_Controller
                         }
                         break;
                     case "CUSTOM_POINT":
-                        $point_a = $this->player_model->getPlayerPoint($pb_player_id,
-                            $c["condition_id"], $validToken['site_id']);
+                        $point_a = $this->player_model->getPlayerPoint($validToken['client_id'], $validToken['site_id'], $pb_player_id, $c["condition_id"]);
 
                         if (isset($point_a[0]['value'])) {
                             $custom_point = $point_a[0]['value'];
@@ -708,8 +706,7 @@ class Quest extends REST2_Controller
                     }
                 }
                 if ($c["completion_type"] == "POINT") {
-                    $point_a = $this->player_model->getPlayerPoint($pb_player_id, $c["completion_id"],
-                        $validToken['site_id']);
+                    $point_a = $this->player_model->getPlayerPoint($validToken['client_id'], $validToken['site_id'], $pb_player_id, $c["completion_id"]);
 
                     if (isset($point_a[0]['value'])) {
                         $point = $point_a[0]['value'];
@@ -731,8 +728,7 @@ class Quest extends REST2_Controller
                     }
                 }
                 if ($c["completion_type"] == "CUSTOM_POINT") {
-                    $point_a = $this->player_model->getPlayerPoint($pb_player_id, $c["completion_id"],
-                        $validToken['site_id']);
+                    $point_a = $this->player_model->getPlayerPoint($validToken['client_id'], $validToken['site_id'], $pb_player_id, $c["completion_id"]);
 
                     if (isset($point_a[0]['value'])) {
                         $custom_point = $point_a[0]['value'];

@@ -53,13 +53,13 @@ class Client extends REST2_Controller
             array('cl_player_id' => $cl_player_id)));
         $reward_id = $this->point_model->findPoint(array_merge($token, array('reward_name' => 'point')));
         print_r($reward_id);
-        $result = $this->player_model->getPlayerPoint($pb_player_id, $reward_id, $token['site_id']);
+        $result = $this->player_model->getPlayerPoint($token['client_id'], $token['site_id'], $pb_player_id, $reward_id);
         print_r($result);
         echo '<br>updatePlayerPointReward<br>';
         $result = $this->client_model->updatePlayerPointReward($reward_id, 20, $pb_player_id, $cl_player_id,
             $token['client_id'], $token['site_id']);
         print_r($result);
-        $result = $this->player_model->getPlayerPoint($pb_player_id, $reward_id, $token['site_id']);
+        $result = $this->player_model->getPlayerPoint($token['client_id'], $token['site_id'], $pb_player_id, $reward_id);
         print_r($result);
         $jigsawConfig = array();
         $input = array_merge($token, array(

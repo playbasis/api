@@ -801,6 +801,61 @@ class Client_model extends MY_Model
         return $data;
     }
 
+    private function checkPlayerRewardExpiration($client_id, $site_id, $pb_player_id, $reward_id)
+    {
+        $this->mongo_db->where('client_id' , new MongoId($client_id));
+        $this->mongo_db->where('site_id' , new MongoId($site_id));
+        $this->mongo_db->where('pb_player_id' , new MongoId($pb_player_id));
+        $this->mongo_db->where('reward_id' , new MongoId($reward_id));
+        $this->mongo_db->where_gt('date_expire' , new MongoDate());
+        $this->mongo_db->order_by(array('date_expire' => 'asc'));
+        $result = $this->mongo_db->get('playbasis_reward_expiration_to_player');
+        return $result;
+    }
+
+    public function updateRewardExpiration($client_id, $site_id, $pb_player_id, $reward_id, $amount)
+    {
+        $result = $this->checkPlayerRewardExpiration($client_id, $site_id, $pb_player_id, $reward_id);
+        $deduct_amount = 0;
+        $numerator_amount = 0;
+        $used_id = array();
+        $numerator_id = false;
+        if($result){
+            foreach ($result as $key => $value){
+                $deduct_amount += $value['current_value'];
+                if($deduct_amount == $amount){
+                    array_push($used_id, $value['_id']);
+                    break;
+                } elseif ($deduct_amount > $amount){
+                    $numerator_amount = $deduct_amount - $amount;
+                    $numerator_id = $value['_id'];
+                    break;
+                }
+                array_push($used_id, $value['_id']);
+            }
+
+            $this->mongo_db->where('client_id' , new MongoId($client_id));
+            $this->mongo_db->where('site_id' , new MongoId($site_id));
+            $this->mongo_db->where('pb_player_id' , new MongoId($pb_player_id));
+            $this->mongo_db->where('reward_id' , new MongoId($reward_id));
+            $this->mongo_db->where_in('_id', $used_id);
+            $this->mongo_db->set('current_value' , 0);
+            $this->mongo_db->update_all('playbasis_reward_expiration_to_player');
+
+            if($numerator_amount){
+                $this->mongo_db->where('client_id' , new MongoId($client_id));
+                $this->mongo_db->where('site_id' , new MongoId($site_id));
+                $this->mongo_db->where('pb_player_id' , new MongoId($pb_player_id));
+                $this->mongo_db->where('reward_id' , new MongoId($reward_id));
+                $this->mongo_db->where('_id',  $numerator_id);
+                $this->mongo_db->set('current_value' , $numerator_amount);
+                $result = $this->mongo_db->update('playbasis_reward_expiration_to_player');
+            }
+        }
+
+        return $result;
+    }
+
     public function getRewardName($input)
     {
         $this->set_site_mongodb($input['site_id']);
