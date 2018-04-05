@@ -515,7 +515,7 @@ class jigsaw extends MY_Model
     private function getPlayerPointByName($client_id, $site_id, $pb_player_id, $reward_name)
     {
         $value = null;
-        $points = $this->player_model->getPlayerPoints($pb_player_id, $site_id);
+        $points = $this->player_model->getPlayerPoints($client_id, $site_id, $pb_player_id);
         foreach ($points as $point) {
             if($reward_name == $this->point_model->getRewardNameById(array( 'reward_id' => $point['reward_id'], 'client_id'=> $client_id, 'site_id' =>  $site_id ))){
                 $value = $point['value'];
@@ -1913,9 +1913,9 @@ class jigsaw extends MY_Model
 
                 }else{
                     /* get current reward value */
-                    $reward_to_player = $this->reward_model->getPlayerReward($client_id, $site_id, $pb_player_id, $reward_id);
-                    if(isset($reward_to_player['value']) && $reward_to_player['value']){
-                        $total = $reward_to_player['value'];
+                    $reward_to_player = $this->player_model->getPlayerPoint($client_id, $site_id, $pb_player_id, $reward_id);
+                    if(isset($reward_to_player[0]['value']) && $reward_to_player[0]['value']){
+                        $total = $reward_to_player[0]['value'];
                     }else{
                         $total = 0;
                     }
