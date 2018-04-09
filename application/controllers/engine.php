@@ -180,7 +180,7 @@ class Engine extends Quest
                         }
                         if($jigsaw['category'] == 'REWARD') {
                             foreach ($jigsaw['dataSet'] as $index => $data_set){
-                                if($data_set['param_name'] == "custom_log"){
+                                if($data_set['param_name'] == "custom_log" || $data_set['param_name'] == "point_expire_date"){
                                     unset($jigsaw['dataSet'][$index]);
                                 }
                             }
@@ -1219,6 +1219,7 @@ class Engine extends Quest
                                 } else {
                                     //update point-based reward
                                     if (!$input["test"]) {
+                                        $point_expire_date = (isset($jigsawConfig['point_expire_date']) && ($jigsawConfig['point_expire_date'] != "")) ? $jigsawConfig['point_expire_date'] : null;
                                         $reward = $this->client_model->updatePlayerPointReward(
                                             $jigsawConfig['reward_id'],
                                             $jigsawConfig['quantity'],
@@ -1226,7 +1227,9 @@ class Engine extends Quest
                                             $input['player_id'],
                                             $input['client_id'],
                                             $input['site_id'],
-                                            $anonymousUser);
+                                            false,
+                                            $anonymousUser,
+                                            $point_expire_date);
                                     }
                                 }  // close if ($jigsawConfig["reward_name"] == 'exp')
 

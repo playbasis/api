@@ -169,6 +169,31 @@ class Client_model extends MY_Model
         return $cache[$key];
     }
 
+    public function addPointExpireDate($client_id, $site_id, $cl_player_id, $pb_player_id, $reward_id, $reward_name, $value, $time_now, $date_expire)
+    {
+        $this->set_site_mongodb($site_id);
+        $this->mongo_db->where(array(
+            'client_id' => new MongoId($client_id),
+            'site_id' => new MongoId($site_id),
+            'pb_player_id' => new MongoId($pb_player_id),
+            'reward_id' => $reward_id,
+            'date_expire' => new MongoDate($date_expire),
+        ));
+
+        $this->mongo_db->limit(1);
+
+        $this->mongo_db->set(array(
+            'reward_name' => $reward_name,
+            'cl_player_id' => $cl_player_id,
+            'date_added' => new MongoDate($time_now),
+            'date_modified' => new MongoDate($time_now)
+        ));
+        $this->mongo_db->inc('value',(int)$value);
+        $this->mongo_db->inc('current_value',(int)$value);
+        return $this->mongo_db->findAndModify('playbasis_reward_expiration_to_player',array('upsert' => true, 'new' => true));
+
+    }
+
     public function updatePlayerPointReward(
         $rewardId,
         $amount,
@@ -177,7 +202,8 @@ class Client_model extends MY_Model
         $clientId,
         $siteId,
         $overrideOldValue = false,
-        $anonymous = false
+        $anonymous = false,
+        $expireDate = null
     ) {
         assert(isset($rewardId));
         assert(isset($siteId));
@@ -194,6 +220,8 @@ class Client_model extends MY_Model
         $result = $this->mongo_db->get('playbasis_reward_to_client');
         $reward = false;
         $status = array();
+        $mongoDate = new MongoDate(time());
+        $expireDate = (!is_null($expireDate)) ? strtotime( $expireDate) : null;
         $status['reward_status'] = "REWARD_RECEIVED";
         if ($result && $result[0]) {
             $result = $result[0];
@@ -220,7 +248,6 @@ class Client_model extends MY_Model
                     }
                     $this->mongo_db->update('playbasis_reward_to_player');
                 } else {
-                    $mongoDate = new MongoDate(time());
                     $this->mongo_db->insert('playbasis_reward_to_player', array(
                         'pb_player_id' => $pbPlayerId,
                         'cl_player_id' => $clPlayerId,
@@ -231,6 +258,11 @@ class Client_model extends MY_Model
                         'date_added' => $mongoDate,
                         'date_modified' => $mongoDate
                     ));
+                }
+
+                //(point)add expire date if set
+                if(!is_null($expireDate)){
+                    $this->addPointExpireDate($clientId, $siteId, $clPlayerId, $pbPlayerId, $rewardId, $result['name'], $amount, $mongoDate->sec, $expireDate);
                 }
                 $reward = true;
             } else {
@@ -249,7 +281,6 @@ class Client_model extends MY_Model
                         $this->mongo_db->update('playbasis_reward_to_client');
                     }
                     if ($pending && ($amount > 0)) {
-                        $mongoDate = new MongoDate(time());
                         $inset_data = array(
                             'pb_player_id' => $pbPlayerId,
                             'cl_player_id' => $clPlayerId,
@@ -265,6 +296,10 @@ class Client_model extends MY_Model
                             $inset_data['value'] = intval($amount);
                         } else {
                             $inset_data['value'] = intval($quantity);
+                        }
+                        //(pending custom point)add expire date if set
+                        if(!is_null($expireDate)){
+                            $inset_data['date_expire'] = new MongoDate($expireDate);
                         }
                         $transaction_id = $this->mongo_db->insert('playbasis_reward_status_to_player', $inset_data);
                         $status['reward_status'] = "REWARD_PENDING";
@@ -296,7 +331,6 @@ class Client_model extends MY_Model
                             }
                             $this->mongo_db->update('playbasis_reward_to_player');
                         } else {
-                            $mongoDate = new MongoDate(time());
                             $insert_reward = array(
                                 'pb_player_id' => $pbPlayerId,
                                 'cl_player_id' => $clPlayerId,
@@ -315,12 +349,18 @@ class Client_model extends MY_Model
                             }
                             $this->mongo_db->insert('playbasis_reward_to_player', $insert_reward);
                         }
+
+                        //(custom point)add expire date if set
+                        if(!is_null($expireDate)){
+                            $this->addPointExpireDate($clientId, $siteId, $clPlayerId, $pbPlayerId, $rewardId, $result['name'], $status['reward_amount'], $mongoDate->sec, $expireDate);
+                        }
+
                         $reward = true;
                     }
 
                     if($amount > 0){
                         //update custom point log
-                        $this->logCustomPoint($clientId, $siteId, $pbPlayerId, $rewardId, $amount);
+                        $this->logCustomPoint($clientId, $siteId, $pbPlayerId, $rewardId, $amount, $expireDate);
                     }
                 } else {
                     // not enough
@@ -353,7 +393,7 @@ class Client_model extends MY_Model
         return $status;
     }
 
-    private function logCustomPoint($client_id, $site_id, $pb_player_id, $reward_id, $quantity){
+    private function logCustomPoint($client_id, $site_id, $pb_player_id, $reward_id, $quantity, $date_expire = null){
         $d = new MongoDate(time());
         $data = array(
             'client_id' => new MongoId($client_id),
@@ -364,6 +404,9 @@ class Client_model extends MY_Model
             'date_added' => $d,
             'date_modified' => $d
         );
+        if($date_expire){
+            $data['date_expire'] = new MongoDate($date_expire);
+        }
         $data['value'] = intval($quantity);
         $this->mongo_db->insert('playbasis_custom_point_log', $data);
     }
