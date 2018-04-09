@@ -29,7 +29,7 @@ class Point_model extends MY_Model
         $this->mongo_db->where(array(
             'client_id' => $data['client_id'],
             'site_id' => $data['site_id'],
-            'name' => strtolower($data['reward_name'])
+            'name' => $data['reward_name']
         ));
         $result = $this->mongo_db->get('playbasis_reward_to_client');
         /*if($result)
@@ -45,7 +45,7 @@ class Point_model extends MY_Model
             'client_id' => $data['client_id'],
             'site_id' => $data['site_id'],
             'group' => 'POINT',
-            'name' => strtolower($data['reward_name'])
+            'name' => $data['reward_name']
         ));
         $result = $this->mongo_db->get('playbasis_reward_to_client');
         /*if($result)

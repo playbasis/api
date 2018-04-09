@@ -98,9 +98,10 @@ class Reward_model extends MY_Model
         return $result? $result[0]: null;
     }
 
-    public function approvePendingReward($data,$approve)
+    public function approvePendingReward($data,$approve,&$transaction_data)
     {
         $this->set_site_mongodb($data['site_id']);
+        $time_now = new MongoDate();
         $this->mongo_db->where(array(
             'client_id' => $data['client_id'],
             'site_id' => $data['site_id'],
@@ -111,6 +112,8 @@ class Reward_model extends MY_Model
 
         if ($pending_reward){
             $pending_reward = $pending_reward[0];
+            //return transaction data
+            $transaction_data = $pending_reward;
             if ($approve) {
                 $this->mongo_db->where(array(
                     'client_id' => $data['client_id'],
@@ -118,7 +121,7 @@ class Reward_model extends MY_Model
                     '_id' => $data['transaction_id']
                 ));
                 $this->mongo_db->set('status', 'approve');
-                $this->mongo_db->set('date_modified', new MongoDate());
+                $this->mongo_db->set('date_modified', $time_now);
                 $this->mongo_db->update('playbasis_reward_status_to_player');
 
                 $this->mongo_db->where(array(
@@ -130,7 +133,7 @@ class Reward_model extends MY_Model
                     'transaction_id' => $data['transaction_id']
                 ));
                 $this->mongo_db->set('transaction_status', 'approve');
-                $this->mongo_db->set('date_modified', new MongoDate());
+                $this->mongo_db->set('date_modified', $time_now);
                 $this->mongo_db->update('playbasis_event_log');
 
                 $this->mongo_db->where(array(
@@ -148,12 +151,15 @@ class Reward_model extends MY_Model
                         'pb_player_id' => $pending_reward['pb_player_id']
                     ));
                     $this->mongo_db->inc('value', intval($pending_reward['value']));
-                    $this->mongo_db->set('date_modified', new MongoDate());
+                    $this->mongo_db->set('date_modified', $time_now);
                     $this->mongo_db->update('playbasis_reward_to_player');
                 } else {
                     unset($pending_reward['status']);
-                    $pending_reward['date_added'] = new MongoDate();
-                    $pending_reward['date_modified'] = new MongoDate();
+                    if(isset($pending_reward['date_expire'])){
+                        unset($pending_reward['date_expire']);
+                    }
+                    $pending_reward['date_added'] = $time_now;
+                    $pending_reward['date_modified'] = $time_now;
                     $this->mongo_db->insert('playbasis_reward_to_player',$pending_reward);
                 }
             } else {
@@ -163,7 +169,7 @@ class Reward_model extends MY_Model
                     '_id' => $data['transaction_id']
                 ));
                 $this->mongo_db->set('status', 'reject');
-                $this->mongo_db->set('date_modified', new MongoDate());
+                $this->mongo_db->set('date_modified', $time_now);
                 $this->mongo_db->update('playbasis_reward_status_to_player');
 
                 $this->mongo_db->where(array(
@@ -175,7 +181,7 @@ class Reward_model extends MY_Model
                     'transaction_id' => $data['transaction_id']
                 ));
                 $this->mongo_db->set('transaction_status', 'reject');
-                $this->mongo_db->set('date_modified', new MongoDate());
+                $this->mongo_db->set('date_modified', $time_now);
                 $this->mongo_db->update('playbasis_event_log');
 
                 $this->mongo_db->where(array(
@@ -192,7 +198,7 @@ class Reward_model extends MY_Model
                         'reward_id' => $pending_reward['reward_id']
                     ));
                     $this->mongo_db->inc('quantity', intval($pending_reward['value']));
-                    $this->mongo_db->set('date_modified', new MongoDate());
+                    $this->mongo_db->set('date_modified', $time_now);
                     $this->mongo_db->update('playbasis_reward_to_client');
                 }
 
@@ -259,6 +265,7 @@ class Reward_model extends MY_Model
         $this->mongo_db->where(array(
             'client_id' => $data['client_id'],
             'site_id' => $data['site_id'],
+            'status' => true,
             'name' => $reward_name
         ));
 
