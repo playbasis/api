@@ -713,13 +713,14 @@ class Goods_model extends MY_Model
         return true;
     }
 
-    public function getExpiredPlayerReward($client_id, $site_id, $pb_player_id, $reward_id)
+    public function getExpiredPlayerReward($client_id, $site_id, $pb_player_id, $reward_id, $time_now = null)
     {
+        $mongo_date = $time_now ? $time_now : new MongoDate();
         $this->mongo_db->where('client_id' , new MongoId($client_id));
         $this->mongo_db->where('site_id' , new MongoId($site_id));
         $this->mongo_db->where('pb_player_id' , new MongoId($pb_player_id));
         $this->mongo_db->where('reward_id' , new MongoId($reward_id));
-        $this->mongo_db->where_lte('date_expire' , new MongoDate());
+        $this->mongo_db->where_lte('date_expire' , $mongo_date);
         $result = $this->mongo_db->get('playbasis_reward_expiration_to_player');
         return $result;
     }
@@ -862,6 +863,7 @@ class Goods_model extends MY_Model
 
     private function getRewardsToPlayerRecords($client_id, $site_id, $list_reward_id, $pb_player_id)
     {
+        $time_now = new MongoDate();
         $this->mongo_db->where(array(
             'client_id' => $client_id,
             'site_id' => $site_id,
@@ -872,7 +874,7 @@ class Goods_model extends MY_Model
         if($results){
             foreach ($results as &$result){
                 $result['reward_name'] = $this->getRewardNameById($client_id, $site_id, $result['reward_id']);
-                $reward_expire = $this->getExpiredPlayerReward($client_id, $site_id, $pb_player_id, $result['reward_id']);
+                $reward_expire = $this->getExpiredPlayerReward($client_id, $site_id, $pb_player_id, $result['reward_id'], $time_now);
                 if ($reward_expire) {
                     $expire_sum = array_sum(array_column($reward_expire, 'current_value'));
                     $expire_value = $expire_sum ? $expire_sum : 0;

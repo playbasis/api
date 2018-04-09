@@ -245,7 +245,9 @@ class jigsaw extends MY_Model
         assert(isset($config['value']));
         $result = false;
 
-        $point_amount = $this->getPlayerPoint($input['site_id'], new MongoId($config['reward_id']), $input['pb_player_id']);
+        /* get current reward value */
+        $reward_to_player = $this->player_model->getPlayerPoint($input['client_id'], $input['site_id'], $input['pb_player_id'], new MongoId($config['reward_id']));
+        $point_amount = (isset($reward_to_player[0]['value']) && $reward_to_player[0]['value']) ? $reward_to_player[0]['value'] : 0;
 
         if(isset($config['value'])){
             if ($config['operator'] == '=') {
@@ -415,6 +417,8 @@ class jigsaw extends MY_Model
         assert(is_array($input));
         assert($input['pb_player_id']);
 
+        $timeNow = isset($input['action_log_time']) ? $input['action_log_time'] : time();
+        
         if(isset($config['sequence_id']) && isset($input['jigsaw_category']) && ($input['jigsaw_category'] == "REWARD_SEQUENCE") ){
             $sequence_list = $this->getSequenceFile($input['client_id'],$input['site_id'],$config['sequence_id']);
             if($sequence_list){
@@ -437,10 +441,13 @@ class jigsaw extends MY_Model
         }
 
         if (is_null($config['item_id']) || $config['item_id'] == '') {
-            //reward exist
+            //check if expired
+            if((isset($config['point_expire_date'])) && ($config['point_expire_date']) && ($timeNow > strtotime($config['point_expire_date'])) ){
+                return false;
+            } 
+            //check if reward exist
             $result =  $this->checkReward($config['reward_id'], $input['site_id']);
             if($result == true){
-                $timeNow = isset($input['action_log_time']) ? $input['action_log_time'] : time();
                 //reward per user limit
                 $result = $this->checkRewardLimitPerUser($config['reward_id'], $input['pb_player_id'], $input['client_id'], $input['site_id'], $config['quantity']);
                 if($result){
@@ -514,14 +521,15 @@ class jigsaw extends MY_Model
 
     private function getPlayerPointByName($client_id, $site_id, $pb_player_id, $reward_name)
     {
-        $value = null;
-        $points = $this->player_model->getPlayerPoints($client_id, $site_id, $pb_player_id);
-        foreach ($points as $point) {
-            if($reward_name == $this->point_model->getRewardNameById(array( 'reward_id' => $point['reward_id'], 'client_id'=> $client_id, 'site_id' =>  $site_id ))){
-                $value = $point['value'];
-                break;
-            }
-        }
+        $reward_id = $this->reward_model->findByName(array(
+            'client_id' => $client_id,
+            'site_id' => $site_id
+        ), $reward_name);
+
+        $reward_to_player = $this->player_model->getPlayerPoint($client_id, $site_id, $pb_player_id, $reward_id);
+
+        $value = (isset($reward_to_player[0]['value']) && $reward_to_player[0]['value']) ? $reward_to_player[0]['value'] : 0;
+
         return $value;
     }
 
@@ -612,16 +620,7 @@ class jigsaw extends MY_Model
             if($input['condition-rewardname'] == "exp"){
                 $point = $input['user_profile']['exp'];
             }else{
-                //point and custom point
-                $point_id = $this->point_model->findOnlyPoint(array(
-                    'client_id' => $input['client_id'],
-                    'site_id' => $input['site_id'],
-                    'reward_name' => $input['condition-rewardname']));
-                if (!$point_id) {
-                    return false;
-                }
-                $player_point = $this->getPlayerPointByName( $input['client_id'], $input['site_id'],$input['pb_player_id'],$input['condition-rewardname']);
-                $point = is_null($player_point) ? 0 : $player_point;
+                $point = $this->getPlayerPointByName( $input['client_id'], $input['site_id'],$input['pb_player_id'],$input['condition-rewardname']);
             }
         }
 
@@ -1486,12 +1485,12 @@ class jigsaw extends MY_Model
         foreach ($config['group_container'] as $conf) {
             $avail = false;
             if (is_null($conf['item_id']) || $conf['item_id'] == '') {
-                $avail = $this->checkRedeemPoint($input['site_id'], new MongoId($conf['reward_id']),
+                $avail = $this->checkRedeemPoint($input['client_id'], $input['site_id'], new MongoId($conf['reward_id']),
                     $input['pb_player_id'], intval($conf['quantity']));
             } else {
                 switch ($conf['reward_name']) {
                     case 'badge':
-                        $avail = $this->checkRedeemBadge($input['site_id'], new MongoId($conf['item_id']),
+                        $avail = $this->checkRedeemBadge($input['client_id'], $input['site_id'], new MongoId($conf['item_id']),
                             $input['pb_player_id'], intval($conf['quantity']));
                         break;
                     case 'goods':
@@ -1513,9 +1512,8 @@ class jigsaw extends MY_Model
                     if ($conf['reward_name'] == 'exp') {
                         continue;
                     } // "exp" should not be decreasing
-                    $this->updatePlayerRedeemPointReward($input['client_id'], $input['site_id'],
-                        new MongoId($conf['reward_id']), $input['pb_player_id'], $input['player_id'],
-                        -1 * (int)$conf['quantity']);
+                    $this->reward_model->deductPlayerReward($input['client_id'], $input['site_id'], $input['pb_player_id'], new MongoId($conf['reward_id']), (int)$conf['quantity']);
+                    $this->client_model->updateRewardExpiration($input['client_id'], $input['site_id'], $input['pb_player_id'], new MongoId($conf['reward_id']), (int)$conf['quantity']);
                 } else {
                     switch ($conf['reward_name']) {
                         case 'badge':
@@ -1914,11 +1912,7 @@ class jigsaw extends MY_Model
                 }else{
                     /* get current reward value */
                     $reward_to_player = $this->player_model->getPlayerPoint($client_id, $site_id, $pb_player_id, $reward_id);
-                    if(isset($reward_to_player[0]['value']) && $reward_to_player[0]['value']){
-                        $total = $reward_to_player[0]['value'];
-                    }else{
-                        $total = 0;
-                    }
+                    $total = (isset($reward_to_player[0]['value']) && $reward_to_player[0]['value']) ? $reward_to_player[0]['value'] : 0;
 
                     if(isset($reward['pending']) && !empty($reward['pending']) && $reward['pending'] != false){
                         $pending_point_amount = $this->countPendingPointToPlayer($reward_id, $pb_player_id, $client_id, $site_id);
@@ -2308,36 +2302,20 @@ class jigsaw extends MY_Model
         return $goods;
     }
 
-    private function checkRedeemPoint($site_id, $rewardId, $pb_player_id, $quantity = 0)
+    private function checkRedeemPoint($client_id, $site_id, $rewardId, $pb_player_id, $quantity = 0)
     {
-        $this->set_site_mongodb($site_id);
-        $this->mongo_db->where(array(
-            'reward_id' => new MongoId($rewardId),
-            'pb_player_id' => $pb_player_id,
-        ));
-        if ($quantity) {
-            $this->mongo_db->where_gte('value', $quantity);
-        }
-        return $this->mongo_db->count('playbasis_reward_to_player');
+        $reward_to_player = $this->player_model->getPlayerPoint($client_id, $site_id, $pb_player_id, new MongoId($rewardId));
+        $value = (isset($reward_to_player[0]['value']) && $reward_to_player[0]['value']) ? $reward_to_player[0]['value'] : 0;
+        return $value >= $quantity;
+
     }
 
-    private function getPlayerPoint($site_id, $rewardId, $pb_player_id)
+    private function checkRedeemBadge($client_id, $site_id, $badgeId, $pb_player_id, $quantity = 0)
     {
         $this->set_site_mongodb($site_id);
         $this->mongo_db->where(array(
-            'reward_id' => new MongoId($rewardId),
-            'pb_player_id' => $pb_player_id,
-        ));
-        $this->mongo_db->limit(1);
-        $results =  $this->mongo_db->get('playbasis_reward_to_player');
-
-        return $results && isset($results[0]['value']) ? $results[0]['value'] : 0;
-    }
-
-    private function checkRedeemBadge($site_id, $badgeId, $pb_player_id, $quantity = 0)
-    {
-        $this->set_site_mongodb($site_id);
-        $this->mongo_db->where(array(
+            'client_id' => $client_id,
+            'site_id' => $site_id,
             'badge_id' => new MongoId($badgeId),
             'pb_player_id' => $pb_player_id,
         ));
@@ -2347,44 +2325,6 @@ class jigsaw extends MY_Model
         return $this->mongo_db->count('playbasis_reward_to_player');
     }
 
-    private function updatePlayerRedeemPointReward(
-        $client_id,
-        $site_id,
-        $rewardId,
-        $pb_player_id,
-        $cl_player_id,
-        $quantity = 0
-    ) {
-        $this->set_site_mongodb($site_id);
-        // update player reward table
-        $this->mongo_db->where(array(
-            'pb_player_id' => $pb_player_id,
-            'reward_id' => $rewardId
-        ));
-        $hasReward = $this->mongo_db->count('playbasis_reward_to_player');
-        if ($hasReward) {
-            $this->mongo_db->where(array(
-                'pb_player_id' => $pb_player_id,
-                'reward_id' => $rewardId
-            ));
-            $this->mongo_db->set('date_modified', new MongoDate(time()));
-            $this->mongo_db->inc('value', intval($quantity));
-            $this->mongo_db->update('playbasis_reward_to_player');
-        } else {
-            $mongoDate = new MongoDate(time());
-            $this->mongo_db->insert('playbasis_reward_to_player', array(
-                'pb_player_id' => $pb_player_id,
-                'cl_player_id' => $cl_player_id,
-                'client_id' => $client_id,
-                'site_id' => $site_id,
-                'reward_id' => $rewardId,
-                'value' => intval($quantity),
-                'date_added' => $mongoDate,
-                'date_modified' => $mongoDate
-            ));
-        }
-    }
-
     private function updateplayerRedeemBadge($client_id, $site_id, $badgeId, $pb_player_id, $cl_player_id, $quantity = 0)
     {
         $this->set_site_mongodb($site_id);
@@ -2392,12 +2332,16 @@ class jigsaw extends MY_Model
 
         // update player badge table
         $this->mongo_db->where(array(
+            'client_id' => $client_id,
+            'site_id' => $site_id,
             'pb_player_id' => $pb_player_id,
             'badge_id' => $badgeId
         ));
         $hasBadge = $this->mongo_db->count('playbasis_reward_to_player');
         if ($hasBadge) {
             $this->mongo_db->where(array(
+                'client_id' => $client_id,
+                'site_id' => $site_id,
                 'pb_player_id' => $pb_player_id,
                 'badge_id' => $badgeId
             ));

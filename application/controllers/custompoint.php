@@ -10,6 +10,7 @@ class Custompoint extends REST2_Controller
         $this->load->model('reward_model');
         $this->load->model('point_model');
         $this->load->model('player_model');
+        $this->load->model('client_model');
         $this->load->model('tool/error', 'error');
         $this->load->model('tool/respond', 'resp');
     }
@@ -95,8 +96,14 @@ class Custompoint extends REST2_Controller
         $response = array();
         if (is_array($transaction_list)) foreach ($transaction_list as $transaction_id){
             try{
+                $transaction_data = array();
                 $data['transaction_id'] = new MongoId($transaction_id);
-                $status = $this->reward_model->approvePendingReward($data,$approve);
+                $status = $this->reward_model->approvePendingReward($data,$approve, $transaction_data);
+                //add point expire date if set
+                if ($status && (isset($transaction_data['date_expire'])) && ($transaction_data['date_expire'])) {
+                    $this->client_model->addPointExpireDate($data['client_id'], $data['site_id'], $transaction_data['cl_player_id'], $transaction_data['pb_player_id'],
+                        $transaction_data['reward_id'], $transaction_data['reward_name'], $transaction_data['value'], time(), $transaction_data['date_expire']->sec);
+                }
                 array_push($response, array('transaction_id' => $transaction_id, 'status' => $status ? "success" : "Transaction ID not found"));
             } catch (Exception $e){
                 array_push($response, array('transaction_id' => $transaction_id, 'status' => "Transaction ID is invalid"));
