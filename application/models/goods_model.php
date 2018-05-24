@@ -191,11 +191,12 @@ class Goods_model extends MY_Model
         return $this->mongo_db->get('playbasis_goods_distinct_to_client');
     }
 
-    public function checkGoodsGroupQuantity($site_id, $group)
+    public function checkGoodsGroupQuantity($client_id, $site_id, $group)
     {
-        $this->mongo_db->where('deleted', false);
+        $this->mongo_db->where('client_id', $client_id);
         $this->mongo_db->where('site_id', $site_id);
         $this->mongo_db->where('group', $group);
+        $this->mongo_db->where('deleted', false);
         $this->mongo_db->where('quantity', 1);
         return $this->mongo_db->count("playbasis_goods_to_client");
     }
