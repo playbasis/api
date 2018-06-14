@@ -93,7 +93,6 @@ class Email extends REST2_Controller
 
         $message = $goods_name." : ".$goods_image." : ".$alert_threshold;
         $data = array(
-            'base_url' => site_url(),
             'goods_name' => $goods_name,
             'goods_image' => $goods_image,
             'alert_threshold' => $alert_threshold,
