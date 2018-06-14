@@ -292,7 +292,8 @@ class Goods_model extends MY_Model
             'code',
             'tags',
             'organize_id',
-            'organize_role'
+            'organize_role',
+            'distinct_id'
         ));
         $this->mongo_db->select(array(), array('_id'));
         $this->mongo_db->where(array(
@@ -551,7 +552,8 @@ class Goods_model extends MY_Model
         $group,
         $pb_player_id,
         $amount,
-        $is_sponsor = false
+        $is_sponsor = false,
+        &$total
     ) {
         $msg = array();
         $goodsList = $this->getGoodsByGroup($is_sponsor ? null : $client_id, $is_sponsor ? null : $site_id, $group, 0, 1);
@@ -681,17 +683,22 @@ class Goods_model extends MY_Model
 
     private function checkGoodsTime($goods)
     {
-        if (isset($goods['date_start']) && $goods['date_start']) {
-            $datetimecheck = new DateTime('now');
-            $datetimestart = new DateTime($goods['date_start']);
-            if ($datetimecheck < $datetimestart) {
+        $datetimecheck = new DateTime('now');
+            if (isset($goods['date_start']) && $goods['date_start']) {
+                $datetimestart = new DateTime($goods['date_start']);
+                if ($datetimecheck < $datetimestart) {
+                    return false;
+                }
+        }
+        if (isset($goods['date_expire']) && $goods['date_expire']) {
+            $datetimeexpire = new DateTime($goods['date_expire']);
+            if ($datetimecheck > $datetimeexpire) {
                 return false;
             }
         }
-        if (isset($goods['date_expire']) && $goods['date_expire']) {
-            $datetimecheck = new DateTime('now');
-            $datetimeexpire = new DateTime($goods['date_expire']);
-            if ($datetimecheck > $datetimeexpire) {
+        if (isset($goods['date_expired_coupon']) && $goods['date_expired_coupon']) {
+            $datetimeexpireCoupon = new DateTime($goods['date_expired_coupon']);
+            if ($datetimecheck > $datetimeexpireCoupon) {
                 return false;
             }
         }

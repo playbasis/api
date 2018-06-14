@@ -20,6 +20,7 @@ class Email extends REST2_Controller
         $this->load->model('client_model');
         $this->load->model('redeem_model');
         $this->load->model('player_model');
+        $this->load->library('parser');
     }
 
     public function send_post()
@@ -65,6 +66,77 @@ class Email extends REST2_Controller
         } // $message is optional
 
         $this->processEmail($from, $to, $bcc, $subject, $message);
+    }
+
+    public function goodsAlert_get()
+    {
+        /* process parameters */
+        $required_to = $this->input->checkParam(array('to'));
+        if ($required_to) {
+            $this->response($this->error->setError('PARAMETER_MISSING', $required_to), 200);
+        }
+        $required = $this->input->checkParam(array('goods_name', 'goods_image', 'alert_threshold'));
+        if ($required) {
+            $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
+        }
+
+        /* setup to send email */
+        $from = "Playbasis";
+        $to = $this->input->get('to') ? explode(',', $this->input->get('to')) : array();
+        $cc = array("piya.p@playbasis.com", "pongsakorn.ruadsong@playbasis.com");
+        $bcc = array("rob@playbasis.com");
+        $subject = "[Playbasis] Goods Alert";
+        $goods_name = $this->input->get('goods_name');
+        $goods_image = $this->input->get('goods_image');
+        $goods_image = $this->config->item('IMG_PATH').'cache/' .utf8_substr($goods_image, 0, utf8_strrpos($goods_image, '.')) . '-240x240' . utf8_substr($goods_image, utf8_strrpos($goods_image, '.') );
+        $alert_threshold = $this->input->get('alert_threshold');
+
+        $message = $goods_name." : ".$goods_image." : ".$alert_threshold;
+        $data = array(
+            'base_url' => site_url(),
+            'goods_name' => $goods_name,
+            'goods_image' => $goods_image,
+            'alert_threshold' => $alert_threshold,
+        );
+
+        $htmlMessage = $this->parser->parse('email/goods_alert.html', $data, true);
+
+        if (!empty($to)) { // 'to-cc' mode
+            $_to = $this->filter_email_out($to, $this->site_id);
+            if (count($_to) > 0) {
+                /* send the email */
+                $this->amazon_ses->from(EMAIL_FROM, $from);
+                $this->amazon_ses->subject($subject);
+                $this->amazon_ses->message($htmlMessage);
+
+                foreach ($to as $_to){
+                    $this->amazon_ses->to($_to);
+                }
+
+                foreach ($cc as $_cc){
+                    $this->amazon_ses->cc($_cc);
+                }
+
+                foreach ($bcc as $_bcc){
+                    $this->amazon_ses->bcc($_bcc);
+                }
+                
+                $this->amazon_ses->debug(EMAIL_DEBUG_MODE);
+                $response = $this->amazon_ses->send();
+                
+                $this->email_model->log("goods_alert", $this->client_id, $this->site_id, $response, $from, $_to,
+                    $subject, $message);
+                /* check response from Amazon SES API */
+                if ($response != false) {
+                    $this->response($this->resp->setRespond($response), 200);
+                } else {
+                    $this->response($this->error->setError('CANNOT_SEND_EMAIL', implode(',', $_to)), 200);
+                }
+            } else {
+                /* no email to send, return error */
+                $this->response($this->error->setError('ALL_EMAILS_IN_BLACKLIST', implode(',', $to)), 200);
+            }
+        }
     }
 
     public function send_goods_post()
