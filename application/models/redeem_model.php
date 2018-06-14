@@ -31,6 +31,26 @@ class Redeem_model extends MY_Model
             'date_modified' => $mongoDate
         ));
     }
+
+    public function checkGoodsAlertEnabled($client_id, $site_id, $distinct_id, $total)
+    {
+        $this->set_site_mongodb($site_id);
+        $this->mongo_db->where('client_id', new MongoId($client_id));
+        $this->mongo_db->where('site_id', new MongoId($site_id));
+        $this->mongo_db->where('_id', new MongoId($distinct_id));
+        $this->mongo_db->where('alert_enable', true);
+        $this->mongo_db->where_ne('alert_sent', true);
+        $this->mongo_db->where(array("alert_threshold" => array('$gte'=> $total)));
+        
+        $this->mongo_db->limit(1);
+
+        $this->mongo_db->set('alert_sent',true);
+        $this->mongo_db->set('alert_date',new MongoDate(time()));
+        $result = $this->mongo_db->findAndModify('playbasis_goods_distinct_to_client', array('upsert' => false));
+
+        return $result;
+    }
+    
 }
 
 ?>

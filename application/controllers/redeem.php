@@ -13,6 +13,8 @@ class Redeem extends REST2_Controller
         $this->load->model('goods_model');
         $this->load->model('player_model');
         $this->load->model('redeem_model');
+        $this->load->model('setting_model');
+        $this->load->model('user_model');
         $this->load->model('sms_model');
         $this->load->model('merchant_model');
         $this->load->model('store_org_model');
@@ -77,7 +79,7 @@ class Redeem extends REST2_Controller
 
         $redeemResult = null;
         try {
-            $redeemResult = $this->redeem($validToken['site_id'], $pb_player_id, $goods, $amount, $validToken);
+            $redeemResult = $this->redeem($validToken['site_id'], $pb_player_id, $goods, $amount, $validToken, true, false, false, $goods['quantity']);
             if (isset($redeemResult['events'][0]['event_type']) && ($redeemResult['events'][0]['event_type'] != 'GOODS_RECEIVED')) {
                 $msg = $redeemResult['events'][0]['event_type'];
                 switch ($msg) {
@@ -262,8 +264,9 @@ class Redeem extends REST2_Controller
             }
         }
 
+        $total = null;
         $goods = $this->goods_model->getGoodsByGroupAndPlayerId($this->validToken['client_id'],
-            $this->validToken['site_id'], $group, $pb_player_id, $amount);
+            $this->validToken['site_id'], $group, $pb_player_id, $amount, false, $total);
         if ($goods && !isset($goods['error'])) {
             if (isset($goods['organize_id'])) {
                 if ((!array_key_exists((string)$goods['organize_id'], $org_id_list)
@@ -279,7 +282,7 @@ class Redeem extends REST2_Controller
                 /* actual redemption */
                 try {
                     $redeemResult = $this->redeem($validToken['site_id'], $pb_player_id, $goods, $amount, $validToken,
-                        false, false, true);
+                        false, false, true, $total);
                     $this->response($this->resp->setRespond($redeemResult), 200);
                 } catch (Exception $e) {
                     if ($e->getMessage() == 'OVER_LIMIT_REDEEM') {
@@ -301,7 +304,7 @@ class Redeem extends REST2_Controller
                     }
                 }
                 $goods = $this->goods_model->getGoodsByGroupAndPlayerId($this->validToken['client_id'],
-                    $this->validToken['site_id'], $group, $pb_player_id, $amount);
+                    $this->validToken['site_id'], $group, $pb_player_id, $amount, false, $total);
             }
         } else {
             if(isset($goods['error'])) {
@@ -435,7 +438,8 @@ class Redeem extends REST2_Controller
         $validToken,
         $validate = true,
         $is_sponsor = false,
-        $is_group = false
+        $is_group = false,
+        $total = null
     ) {
         if (!$goods) {
             throw new Exception('GOODS_NOT_FOUND');
@@ -454,10 +458,10 @@ class Redeem extends REST2_Controller
             }
         }
 
-        return $this->processRedeem($pb_player_id, $goods, $amount, $validToken, $validate, $is_sponsor);
+        return $this->processRedeem($pb_player_id, $goods, $amount, $validToken, $validate, $is_sponsor, $total);
     }
 
-    private function processRedeem($pb_player_id, $goods, $amount, $validToken, $validate = true, $is_sponsor = false)
+    private function processRedeem($pb_player_id, $goods, $amount, $validToken, $validate = true, $is_sponsor = false, $total = null)
     {
         $redeemResult = array(
             'events' => array()
@@ -631,6 +635,30 @@ class Redeem extends REST2_Controller
                         'message' => $eventMessage,
                         'goods' => $event['goods_data']
                     )), $validToken['site_name'], $validToken['site_id']);
+
+                    // check if goods alert feature is enabled
+                    $setting = $this->setting_model->retrieveSetting($this->client_id, $this->site_id);
+                    if(!is_null($total) && isset($setting['goods_alert_enabled']) && $setting['goods_alert_enabled'] && isset($setting['goods_alert_users']) && $setting['goods_alert_users']){
+                        $goods_distinct_info = $this->redeem_model->checkGoodsAlertEnabled($this->client_id, $this->site_id, $goodsData['distinct_id'], $total);
+                        if( $goods_distinct_info ){
+                            // Get email if each users
+                            $email_to = array();
+                            foreach($setting['goods_alert_users'] as $user){
+                                $user_info = $this->user_model->getById( $user);
+                                $email_to[] = $user_info['email'];
+                            }
+
+                            // send Email
+                            $platform = $this->auth_model->getOnePlatform($this->client_id, $this->site_id);
+                            $this->utility->request('Email', 'goodsAlert', http_build_query(array(
+                                'api_key' => $platform['api_key'],
+                                'to' => implode(',', $email_to),
+                                'goods_name' => $goods_distinct_info['name'],
+                                'goods_image' => $goods_distinct_info['image'],
+                                'alert_threshold' => $goods_distinct_info['alert_threshold'],
+                            )));
+                        }
+                    }
                 }
             } catch (Exception $e) {
                 if ($e->getMessage() == "LIMIT_EXCEED") {
