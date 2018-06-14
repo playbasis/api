@@ -281,6 +281,7 @@ $route['Email/goods'] = 'email/send_goods';
 $route['Email/recent'] = 'email/recent';
 $route['Email/template/'.ANY_STRING] = 'email/template/$1';
 $route['Email/template'] = 'email/template';
+$route['Email/goodsAlert'] = 'email/goodsAlert';
 
 //sms API
 $route['Sms/sendTo'] = 'pb_sms/sendTo';
