@@ -1784,7 +1784,7 @@ class jigsaw extends MY_Model
         $total = isset($goods['group']) ? $this->getGroupQuantity($client_id, $site_id, $goods['group'], $quantity) : $goods['quantity'];
         $max = isset($goods['per_user']) ? $goods['per_user'] : null;
         $per_user_include_inactive = isset($goods['per_user_include_inactive']) ? $goods['per_user_include_inactive'] : false;
-        $used = isset($goods['group']) ? $this->getPlayerGoodsGroup($site_id, $goods['group'], $pb_player_id, $per_user_include_inactive) : $this->getPlayerGoods($site_id, $goodsId, $pb_player_id, $per_user_include_inactive);
+        $used = isset($goods['group']) ? $this->getPlayerGoodsGroup($client_id, $site_id, $goods['group'], $pb_player_id, $per_user_include_inactive) : $this->getPlayerGoods($client_id, $site_id, $goodsId, $pb_player_id, $per_user_include_inactive);
         if ($total === 0 || $max === 0) {
             $exInfo['error'] = "ENGINE_RULE_REWARD_OUT_OF_STOCK";
             return false;
@@ -2254,10 +2254,11 @@ class jigsaw extends MY_Model
         return $ret && isset($ret[0]) ? $ret[0] : array();
     }
 
-    private function getPlayerGoods($site_id, $goodsId, $pb_player_id, $include_inactive = false)
+    private function getPlayerGoods($client_id, $site_id, $goodsId, $pb_player_id, $include_inactive = false)
     {
         if($include_inactive){
             $this->mongo_db->where(array(
+                'client_id' => $client_id,
                 'site_id' => $site_id,
                 'goods_id' => $goodsId,
                 'pb_player_id' => $pb_player_id
@@ -2266,6 +2267,7 @@ class jigsaw extends MY_Model
         }else{
             $this->mongo_db->select(array('value'));
             $this->mongo_db->where(array(
+                'client_id' => $client_id,
                 'site_id' => $site_id,
                 'goods_id' => $goodsId,
                 'pb_player_id' => $pb_player_id
@@ -2278,10 +2280,11 @@ class jigsaw extends MY_Model
         return $goods;
     }
 
-    private function getPlayerGoodsGroup($site_id, $goods_group, $pb_player_id, $include_inactive = false)
+    private function getPlayerGoodsGroup($client_id, $site_id, $goods_group, $pb_player_id, $include_inactive = false)
     {
         if($include_inactive){
             $this->mongo_db->where(array(
+                'client_id' => $client_id,
                 'site_id' => $site_id,
                 'group' => $goods_group,
                 'pb_player_id' => $pb_player_id
@@ -2290,6 +2293,7 @@ class jigsaw extends MY_Model
             $goods = $this->mongo_db->count('playbasis_goods_log');
         }else{
             $this->mongo_db->where(array(
+                'client_id' => $client_id,
                 'site_id' => $site_id,
                 'group' => $goods_group,
                 'pb_player_id' => $pb_player_id

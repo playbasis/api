@@ -825,7 +825,7 @@ class Quest extends REST2_Controller
                     $i = 1;
                     foreach($rand_goods as $index){
                         $per_user_include_inactive = isset($goods_group_rewards[$index]['per_user_include_inactive']) ? $goods_group_rewards[$index]['per_user_include_inactive'] : false;
-                        $player_goods = $this->goods_model->getPlayerGoodsGroup($validToken['site_id'], $reward['reward_data']['group'] ,$player_id, $per_user_include_inactive);
+                        $player_goods = $this->goods_model->getPlayerGoodsGroup($validToken['client_id'], $validToken['site_id'], $reward['reward_data']['group'] ,$player_id, $per_user_include_inactive);
                         if(($goods_group_rewards[$index]['per_user'] >= ($player_goods + $i)) && ($i < $reward['reward_value'])){
                             $goods_data = array('reward_value' => "1",
                                 'reward_id' => $goods_group_rewards[$index]['goods_id'],
@@ -886,7 +886,7 @@ class Quest extends REST2_Controller
                         $i = 1;
                         foreach($rand_goods as $index){
                             $per_user_include_inactive = isset($goods_group_rewards[$index]['per_user_include_inactive']) ? $goods_group_rewards[$index]['per_user_include_inactive'] : false;
-                            $player_goods = $this->goods_model->getPlayerGoodsGroup($validToken['site_id'], $reward['reward_data']['group'] ,$player_id, $per_user_include_inactive);
+                            $player_goods = $this->goods_model->getPlayerGoodsGroup($validToken['client_id'], $validToken['site_id'], $reward['reward_data']['group'] ,$player_id, $per_user_include_inactive);
                             if(($goods_group_rewards[$index]['per_user'] >= ($player_goods + $i)) && ($i < $reward['reward_value'])){
                                 $goods_data = array('reward_value' => "1",
                                     'reward_id' => $goods_group_rewards[$index]['goods_id'],
@@ -961,7 +961,7 @@ class Quest extends REST2_Controller
                 )), $validToken['site_name'], $validToken['site_id']);
             } elseif ($r["reward_type"] == "GOODS") {
                 $per_user_include_inactive = isset($r["reward_data"]['per_user_include_inactive']) ? $r["reward_data"]['per_user_include_inactive'] : false;
-                $player_goods = $this->goods_model->getPlayerGoods($validToken['site_id'], $r["reward_id"], $player_id, $per_user_include_inactive);
+                $player_goods = $this->goods_model->getPlayerGoods($validToken['client_id'], $validToken['site_id'], $r["reward_id"], $player_id, $per_user_include_inactive);
                 if(isset($r["reward_data"]['per_user']) && (int)$r["reward_data"]['per_user'] > 0){
                     $quantity = ((int)$r["reward_value"] + (isset($player_goods) && !empty($player_goods) ? $player_goods : 0)) >
                                  (int)$r["reward_data"]['per_user'] ? (int)$r["reward_data"]['per_user'] - (int)$player_goods : $r["reward_value"];

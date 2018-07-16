@@ -1561,7 +1561,7 @@ class Engine extends Quest
                 $code_array = array();
                 foreach($rand_goods as $index){
                     $per_user_include_inactive = isset($goods_group_rewards[$index]['per_user_include_inactive']) ? $goods_group_rewards[$index]['per_user_include_inactive'] : false;
-                    $player_goods = $this->goods_model->getPlayerGoodsGroup($validToken['site_id'], $goodsData['group'] , $input['pb_player_id'], $per_user_include_inactive);
+                    $player_goods = $this->goods_model->getPlayerGoodsGroup($validToken['client_id'], $validToken['site_id'], $goodsData['group'] , $input['pb_player_id'], $per_user_include_inactive);
                     if(($goods_group_rewards[$index]['per_user'] > $player_goods) || ($goods_group_rewards[$index]['per_user'] == null)) {
                         try {
                             $return_data = $this->client_model->updateplayerGoods($goods_group_rewards[$index]['goods_id'], 1,
@@ -1599,7 +1599,7 @@ class Engine extends Quest
             }
         } else {
             $per_user_include_inactive = isset($goodsData['per_user_include_inactive']) ? $goodsData['per_user_include_inactive'] : false;
-            $player_goods = $this->goods_model->getPlayerGoods($validToken['site_id'], $goodsData['goods_id'], $input['pb_player_id'], $per_user_include_inactive);
+            $player_goods = $this->goods_model->getPlayerGoods($validToken['client_id'], $validToken['site_id'], $goodsData['goods_id'], $input['pb_player_id'], $per_user_include_inactive);
             if(isset($goodsData['per_user']) && (int)$goodsData['per_user'] > 0){
                 $quantity = ((int)$jigsawConfig['quantity'] + (int)$player_goods) > (int)$goodsData['per_user'] ? (int)$goodsData['per_user'] - (int)$player_goods : $jigsawConfig['quantity'];
             }
