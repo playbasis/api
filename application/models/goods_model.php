@@ -438,10 +438,11 @@ class Goods_model extends MY_Model
         return $this->mongo_db->count('playbasis_goods_to_client');
     }
     
-    public function getPlayerGoods($site_id, $goodsId, $pb_player_id, $include_inactive = false)
+    public function getPlayerGoods($client_id, $site_id, $goodsId, $pb_player_id, $include_inactive = false)
     {
         if($include_inactive){
             $this->mongo_db->where(array(
+                'client_id' => new MongoID($client_id),
                 'site_id' => new MongoID($site_id),
                 'goods_id' => new MongoID($goodsId),
                 'pb_player_id' => new MongoID($pb_player_id)
@@ -451,6 +452,7 @@ class Goods_model extends MY_Model
         }else{
             $this->mongo_db->select(array('value'));
             $this->mongo_db->where(array(
+                'client_id' => new MongoID($client_id),
                 'site_id' => new MongoID($site_id),
                 'goods_id' => new MongoID($goodsId),
                 'pb_player_id' => new MongoID($pb_player_id)
@@ -463,10 +465,11 @@ class Goods_model extends MY_Model
         return $goods;
     }
     
-    public function getPlayerGoodsGroup($site_id, $goods_group, $pb_player_id, $include_inactive = false)
+    public function getPlayerGoodsGroup($client_id, $site_id, $goods_group, $pb_player_id, $include_inactive = false)
     {
         if($include_inactive){
             $this->mongo_db->where(array(
+                'client_id' =>  new MongoID($client_id),
                 'site_id' => new MongoID($site_id),
                 'group' => $goods_group,
                 'pb_player_id' => new MongoID($pb_player_id)
@@ -475,6 +478,7 @@ class Goods_model extends MY_Model
             $goods = $this->mongo_db->count('playbasis_goods_log');
         }else{
             $this->mongo_db->where(array(
+                'client_id' =>  new MongoID($client_id),
                 'site_id' => new MongoID($site_id),
                 'group' => $goods_group,
                 'pb_player_id' => new MongoID($pb_player_id)

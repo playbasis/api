@@ -233,7 +233,7 @@ class Player extends REST2_Controller
         $player['player']['level_image'] = $level['level_image'];
 
         $player['player']['badges'] = $this->player_model->getBadge($pb_player_id, $this->site_id, null, true);
-        $player['player']['goods'] = $this->player_model->getGoods($pb_player_id, $this->site_id);
+        $player['player']['goods'] = $this->player_model->getGoods($this->client_id, $this->site_id, $pb_player_id);
         $points = $this->player_model->getPlayerPoints($pb_player_id, $this->site_id);
         foreach ($points as &$point) {
             $point['reward_name'] = $this->point_model->getRewardNameById(array_merge($this->validToken, array(
@@ -304,7 +304,7 @@ class Player extends REST2_Controller
         $player['player']['level_image'] = $level['level_image'];
 
         $player['player']['badges'] = $this->player_model->getBadge($pb_player_id, $this->site_id, null, true);
-        $player['player']['goods'] = $this->player_model->getGoods($pb_player_id, $this->site_id);
+        $player['player']['goods'] = $this->player_model->getGoods($this->client_id, $this->site_id, $pb_player_id);
         $points = $this->player_model->getPlayerPoints($pb_player_id, $this->site_id);
         foreach ($points as &$point) {
             $point['reward_name'] = $this->point_model->getRewardNameById(array_merge($this->validToken, array(
@@ -2002,7 +2002,7 @@ class Player extends REST2_Controller
             $status = "active";
         }
         //get player goods
-        $goodsList['goods'] = $this->player_model->getGoods($pb_player_id, $this->site_id,
+        $goodsList['goods'] = $this->player_model->getGoods($this->client_id, $this->site_id, $pb_player_id,
                               $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null, $status);
 
         $null_list = array();
@@ -2077,7 +2077,7 @@ class Player extends REST2_Controller
         $goods_id = $this->input->post('goods_id');
         //check player goods
         $isPlayerGoodsFound = false;
-        $playerGoodsList = $this->player_model->getGoods($pb_player_id, $this->site_id, null, null);
+        $playerGoodsList = $this->player_model->getGoods($this->client_id, $this->site_id, $pb_player_id, null, null);
         foreach($playerGoodsList as $playerGoods){
             if($playerGoods['goods_id'] == $goods_id){
                 $isPlayerGoodsFound = true;
@@ -2118,7 +2118,7 @@ class Player extends REST2_Controller
             $status = "active";
         }
         //get player goods
-        $n = $this->player_model->getGoodsCount($pb_player_id, $this->site_id,
+        $n = $this->player_model->getGoodsCount($this->client_id, $this->site_id, $pb_player_id,
             $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null, $status);
 
         $this->response($this->resp->setRespond(array('n' => $n)), 200);

@@ -1646,12 +1646,13 @@ class Player_model extends MY_Model
         return $event_log;
     }
 
-    public function getGoods($pb_player_id, $site_id, $tags = null, $status = null)
+    public function getGoods($client_id, $site_id, $pb_player_id, $tags = null, $status = null)
     {
         $this->set_site_mongodb($site_id);
         $playerGoods = array();
 
         $this->mongo_db->where(array(
+            'client_id' => new MongoId($client_id),
             'site_id' => new MongoId($site_id),
             'pb_player_id' => new MongoId($pb_player_id)
 
@@ -1726,6 +1727,7 @@ class Player_model extends MY_Model
             if(isset($goods_detail['group']) && $goods_detail['group']) {
                 $goods_player['group'] = $goods_detail['group'];
                 $this->mongo_db->where(array(
+                    'client_id' => new MongoId($client_id),
                     'site_id' => new MongoId($site_id),
                     'pb_player_id' => new MongoId($pb_player_id),
                     'goods_id' => $good
@@ -1781,11 +1783,12 @@ class Player_model extends MY_Model
         return $result ? $result[0]['status'] : false;
     }
 
-    public function getGoodsCount($pb_player_id, $site_id, $tags = null, $status = null)
+    public function getGoodsCount($client_id, $site_id, $pb_player_id, $tags = null, $status = null)
     {
         $this->set_site_mongodb($site_id);
 
         $match_condition = array(
+            'client_id' => new MongoId($client_id),
             'site_id' => new MongoId($site_id),
             'pb_player_id' => new MongoId($pb_player_id)
         );
@@ -1841,6 +1844,8 @@ class Player_model extends MY_Model
                 ));
                 $this->mongo_db->select(array(), array('_id'));
                 $this->mongo_db->where(array(
+                    'client_id' => new MongoId($client_id),
+                    'site_id' => new MongoId($site_id),
                     'pb_player_id' => $pb_player_id,
                     'goods_id' => $goods['_id'],
                 ));

@@ -79,7 +79,7 @@ class Redeem extends REST2_Controller
 
         $redeemResult = null;
         try {
-            $redeemResult = $this->redeem($validToken['site_id'], $pb_player_id, $goods, $amount, $validToken, true, false, false, $goods['quantity']);
+            $redeemResult = $this->redeem($this->client_id, $this->site_id, $pb_player_id, $goods, $amount, $validToken, true, false, false, $goods['quantity']);
             if (isset($redeemResult['events'][0]['event_type']) && ($redeemResult['events'][0]['event_type'] != 'GOODS_RECEIVED')) {
                 $msg = $redeemResult['events'][0]['event_type'];
                 switch ($msg) {
@@ -154,7 +154,7 @@ class Redeem extends REST2_Controller
 
         $redeemResult = null;
         try {
-            $redeemResult = $this->redeem($validToken['site_id'], $pb_player_id, $goods, $amount, $validToken, true);
+            $redeemResult = $this->redeem($validToken['client_id'], $validToken['site_id'], $pb_player_id, $goods, $amount, $validToken, true);
         } catch (Exception $e) {
             $msg = $e->getMessage();
             switch ($msg) {
@@ -281,7 +281,7 @@ class Redeem extends REST2_Controller
                 log_message('debug', 'random = ' . $goods['goods_id']);
                 /* actual redemption */
                 try {
-                    $redeemResult = $this->redeem($validToken['site_id'], $pb_player_id, $goods, $amount, $validToken,
+                    $redeemResult = $this->redeem($validToken['client_id'], $validToken['site_id'], $pb_player_id, $goods, $amount, $validToken,
                         false, false, true, $total);
                     $this->response($this->resp->setRespond($redeemResult), 200);
                 } catch (Exception $e) {
@@ -371,7 +371,7 @@ class Redeem extends REST2_Controller
                 log_message('debug', 'random = ' . $goods['goods_id']);
                 /* actual redemption */
                 try {
-                    $redeemResult = $this->redeem($validToken['site_id'], $pb_player_id, $goods, $amount, $validToken,
+                    $redeemResult = $this->redeem($validToken['client_id'], $validToken['site_id'], $pb_player_id, $goods, $amount, $validToken,
                         false, true, true);
                     $this->response($this->resp->setRespond($redeemResult), 200);
                 } catch (Exception $e) {
@@ -431,6 +431,7 @@ class Redeem extends REST2_Controller
     }
 
     private function redeem(
+        $client_id,
         $site_id,
         $pb_player_id,
         $goods,
@@ -448,9 +449,9 @@ class Redeem extends REST2_Controller
         if ($goods['per_user'] !== null) {
             $per_user_include_inactive = isset($goods['per_user_include_inactive']) ? $goods['per_user_include_inactive'] : false;
             if($is_group){
-                $get_player_goods = $this->goods_model->getPlayerGoodsGroup($site_id, $goods['group'] , $pb_player_id, $per_user_include_inactive);
+                $get_player_goods = $this->goods_model->getPlayerGoodsGroup($client_id, $site_id, $goods['group'] , $pb_player_id, $per_user_include_inactive);
             }else{
-                $get_player_goods = $this->goods_model->getPlayerGoods($site_id, $goods['goods_id'], $pb_player_id, $per_user_include_inactive);
+                $get_player_goods = $this->goods_model->getPlayerGoods($client_id, $site_id, $goods['goods_id'], $pb_player_id, $per_user_include_inactive);
             }
 
             if ($get_player_goods && $get_player_goods + $amount > $goods['per_user']) {

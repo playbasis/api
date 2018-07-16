@@ -32,7 +32,7 @@ class Goods extends REST2_Controller
             if (!$pb_player_id) {
                 $this->response($this->error->setError('USER_NOT_EXIST'), 200);
             }
-            $myGoods = $this->player_model->getGoods($pb_player_id, $this->site_id);
+            $myGoods = $this->player_model->getGoods($this->client_id, $this->site_id, $pb_player_id);
             $m = $this->mapByGoodsId($myGoods);
 
             $org_list = $this->store_org_model->retrieveNodeByPBPlayerID($this->client_id, $this->site_id,
@@ -362,7 +362,7 @@ class Goods extends REST2_Controller
             if (!$pb_player_id) {
                 $this->response($this->error->setError('USER_NOT_EXIST'), 200);
             }
-            $myGoods = $this->player_model->getGoods($pb_player_id, $this->site_id);
+            $myGoods = $this->player_model->getGoods($this->client_id, $this->site_id, $pb_player_id);
             $m = $this->mapByGoodsId($myGoods);
         }
         /* main */
