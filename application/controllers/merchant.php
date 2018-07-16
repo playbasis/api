@@ -253,7 +253,7 @@ class Merchant extends REST2_Controller
             $this->response($this->error->setError('REDEEM_GOODS_NOT_AVAILABLE'), 200);
         }
 
-        $get_player_goods = $this->goods_model->getPlayerGoods($site_id, $goods_id, $pb_player_id);
+        $get_player_goods = $this->goods_model->getPlayerGoods($client_id, $site_id, $goods_id, $pb_player_id);
         if(!$get_player_goods || $get_player_goods < $amount){
             $this->response($this->error->setError('GOODS_FOR_USER_NOT_ENOUGH'), 200);
         }
