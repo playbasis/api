@@ -293,6 +293,27 @@ class Utility extends CI_Model
         }
 
     }
+
+    public function goodsRequestExecuteEngineRuleAPI($client_id, $site_id, $pb_player_id, $action, $goodsData, $amount){
+        if(isset($goodsData['tags']) && is_array($goodsData['tags'])){
+            $searchword = 'PRICE';
+            $price = explode("=RM", implode("", array_filter($goodsData['tags'], function ($var) use ($searchword) {
+                return preg_match("/\b$searchword\b/i", $var);
+            })));
+            $price = isset($price[1]) ? $price[1] : 0;
+        }else{
+            $price = 0;
+        }
+
+        $total_value =  floatval($price) * floatval($amount);
+        $platform = $this->auth_model->getOnePlatform($client_id, $site_id);
+        $this->request('engine', 'json', http_build_query(array(
+            'api_key' => $platform['api_key'],
+            'pb_player_id' => $pb_player_id . '',
+            'action' => $action,
+            'amount' => $total_value,
+        )));
+    }
 }
 
 ?>
