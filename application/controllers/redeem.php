@@ -119,6 +119,12 @@ class Redeem extends REST2_Controller
             }
         }
 
+        // execute engine rule API
+        if(defined('GOODS_EXECUTE_ENGINE_RULE') && (GOODS_EXECUTE_ENGINE_RULE == true) && defined('ACTION_GOODS_ACTIVE')) {
+            $this->utility->goodsRequestExecuteEngineRuleAPI($this->client_id, $this->site_id, $pb_player_id, ACTION_GOODS_ACTIVE, $goods, $amount);
+        }
+
+        // send response
         $this->benchmark->mark('goods_redeem_end');
         $redeemResult['processing_time'] = $this->benchmark->elapsed_time('goods_redeem_start', 'goods_redeem_end');
         $this->response($this->resp->setRespond($redeemResult), 200);
@@ -283,6 +289,11 @@ class Redeem extends REST2_Controller
                 try {
                     $redeemResult = $this->redeem($validToken['client_id'], $validToken['site_id'], $pb_player_id, $goods, $amount, $validToken,
                         false, false, true, $total);
+                    // execute engine rule API
+                    if(defined('GOODS_EXECUTE_ENGINE_RULE') && (GOODS_EXECUTE_ENGINE_RULE == true) && defined('ACTION_GOODS_ACTIVE')) {
+                        $this->utility->goodsRequestExecuteEngineRuleAPI($this->client_id, $this->site_id, $pb_player_id, ACTION_GOODS_ACTIVE, $goods, $amount);
+                    }
+
                     $this->response($this->resp->setRespond($redeemResult), 200);
                 } catch (Exception $e) {
                     if ($e->getMessage() == 'OVER_LIMIT_REDEEM') {
