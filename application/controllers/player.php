@@ -1682,6 +1682,11 @@ class Player extends REST2_Controller
                 // log event - goods
                 $this->tracker_model->trackGoods($validToken);
                 $this->tracker_model->trackGoodsStatus($client_id, $site_id, $sent_pb_player_id, $gift_id, "sender", $received_pb_player_id);
+
+                // execute engine rule API
+                if(defined('GOODS_EXECUTE_ENGINE_RULE') && (GOODS_EXECUTE_ENGINE_RULE == true) && defined('ACTION_GOODS_SENT')) {
+                    $this->utility->goodsRequestExecuteEngineRuleAPI($client_id, $site_id, $sent_pb_player_id, ACTION_GOODS_SENT, $gift_data, $gift_value);
+                }
             }
             //publish to node stream
             $this->node->publish(array(
