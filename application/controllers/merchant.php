@@ -12,6 +12,7 @@ class Merchant extends REST2_Controller
         $this->load->model('merchant_model');
         $this->load->model('reward_model');
         $this->load->model('player_model');
+        $this->load->model('tool/utility', 'utility');
         $this->load->model('tool/error', 'error');
         $this->load->model('tool/respond', 'resp');
     }
@@ -206,6 +207,11 @@ class Merchant extends REST2_Controller
                         if ($result) {
                             $this->player_model->markUsedGoodsFromPlayer($client_id, $site_id, $pb_player_id, new MongoId($player_goods['goods_id']));
                             $this->tracker_model->trackGoodsStatus($client_id, $site_id, $pb_player_id, new MongoId($player_goods['goods_id']), "used");
+                            // execute engine rule API
+                            if(defined('GOODS_EXECUTE_ENGINE_RULE') && (GOODS_EXECUTE_ENGINE_RULE == true) && defined('ACTION_GOODS_USED')) {
+                                $goodsData = $this->goods_model->getGoods(array('client_id'=>$client_id , 'site_id'=>$site_id , 'goods_id' => new MongoId($player_goods['goods_id'])));
+                                $this->utility->goodsRequestExecuteEngineRuleAPI($client_id, $site_id, $pb_player_id, ACTION_GOODS_USED, $goodsData, 1);
+                            }
                         }
                         $this->response($this->resp->setRespond(array("success" => true)), 200);
                     } else {
@@ -214,8 +220,15 @@ class Merchant extends REST2_Controller
                 } else {
                     $this->player_model->markUsedGoodsFromPlayer($client_id, $site_id, $pb_player_id, new MongoId($player_goods['goods_id']));
                     $this->tracker_model->trackGoodsStatus($client_id, $site_id, $pb_player_id, new MongoId($player_goods['goods_id']), "used");
+                    // execute engine rule API
+                    if(defined('GOODS_EXECUTE_ENGINE_RULE') && (GOODS_EXECUTE_ENGINE_RULE == true) && defined('ACTION_GOODS_USED')) {
+                        $goodsData = $this->goods_model->getGoods(array('client_id'=>$client_id , 'site_id'=>$site_id , 'goods_id' => new MongoId($player_goods['goods_id'])));
+                        $this->utility->goodsRequestExecuteEngineRuleAPI($client_id, $site_id, $pb_player_id, ACTION_GOODS_USED, $goodsData, 1);
+                    }
+
                     $this->response($this->resp->setRespond(array("success" => true)), 200);
                 }
+
             }
         } else {
             $this->response($this->error->setError('REDEEM_GOODS_NOT_AVAILABLE'), 200);
@@ -260,6 +273,13 @@ class Merchant extends REST2_Controller
 
         $this->player_model->deductNormalGoodsFromPlayer($client_id, $site_id, $pb_player_id, $goods_id, $amount);
         $this->tracker_model->trackGoodsStatus($client_id, $site_id, $pb_player_id, new MongoId($goods_id), "used");
+        
+        // execute engine rule API
+        if(defined('GOODS_EXECUTE_ENGINE_RULE') && (GOODS_EXECUTE_ENGINE_RULE == true) && defined('ACTION_GOODS_USED')) {
+            $goodsData = $this->goods_model->getGoods(array('client_id'=>$client_id , 'site_id'=>$site_id , 'goods_id' => new MongoId($goods_id)));
+            $this->utility->goodsRequestExecuteEngineRuleAPI($client_id, $site_id, $pb_player_id, ACTION_GOODS_USED, $goodsData, $amount);
+        }
+        
         $this->response($this->resp->setRespond(array("success" => true)), 200);
     }
 }
