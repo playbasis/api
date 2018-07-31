@@ -745,11 +745,14 @@ class Engine extends Quest
 
     private function levelup($lv, &$apiResult, $input)
     {
-        $event = array(
-            'event_type' => 'LEVEL_UP',
-            'value' => $lv
-        );
-        array_push($apiResult['events'], $event);
+        if(!isset($input['input']['hidden_reward']) || $input['input']['hidden_reward']=="false") {
+            $event = array(
+                'event_type' => 'LEVEL_UP',
+                'value' => $lv
+            );
+            array_push($apiResult['events'], $event);
+        }
+        
         $eventMessage = $this->utility->getEventMessage('level', '', '', '', $lv);
         //log event - level
         $this->tracker_model->trackEvent('LEVEL', $eventMessage, array_merge($input, array(
@@ -1237,13 +1240,16 @@ class Engine extends Quest
                                     'event_type' => isset($reward['reward_status']) && !empty($reward['reward_status']) ? $reward['reward_status'] : 'REWARD_RECEIVED',
                                     'reward_type' => $jigsawConfig['reward_name'],
                                 );
-                                $event['value'] = $event['event_type'] == "REWARD_NOT_AVAILABLE" ? "0" : ((isset($reward['reward_amount']) && !empty($reward['reward_amount'])) ? $reward['reward_amount']."" :$jigsawConfig['quantity']."");
+                                $event['value'] = $event['event_type'] == "REWARD_NOT_AVAILABLE" ? "0" : ((isset($reward['reward_amount']) && !empty($reward['reward_amount'])) && ($event['reward_type'] != "exp") ? $reward['reward_amount']."" :$jigsawConfig['quantity']."");
 
                                 if (isset($reward['transaction_id']) && !empty($reward['transaction_id'])) {
                                     $event['transaction_id'] = $reward['transaction_id'];
                                 }
-                                array_push($apiResult['events'],
-                                    $isGroup ? array_merge($event, array('index' => $exInfo['index'])) : $event);
+
+                                if(!isset($jigsawConfig['hidden_reward']) || $jigsawConfig['hidden_reward']=="false") {
+                                    array_push($apiResult['events'],
+                                        $isGroup ? array_merge($event, array('index' => $exInfo['index'])) : $event);
+                                }
 
                                 if (!$input["test"]) {
                                     $eventMessage = $this->utility->getEventMessage(
