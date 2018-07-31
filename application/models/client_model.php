@@ -583,6 +583,7 @@ class Client_model extends MY_Model
         //check if client have their own exp table setup
         $this->mongo_db->select(array('level'));
         $this->mongo_db->where($clientData);
+        $this->mongo_db->where('status', true);
         $this->mongo_db->where_lte('exp', intval($newExp));
         $this->mongo_db->order_by(array('level' => 'desc'));
         $this->mongo_db->limit(1);
