@@ -1402,6 +1402,42 @@ class Mongo_db
 	}
 
 	/**
+	 * setOnInsert.
+	 *
+	 * Sets a field to a value only when insert the document
+	 *
+	 * <code>
+	 * $this->mongo_db->where(array('blog_id'=>123))->setOnInsert('posted', 1)->update('blog_posts');
+	 * $this->mongo_db->where(array('blog_id'=>123))->setOnInsert(array('posted' => 1, 'time' => time()))->update('blog_posts');
+	 * </code>
+	 *
+	 * @param array|string $fields Array of field names (or a single string field name)
+	 * @param mixed        $value  Value that the field(s) should be set to
+	 *
+	 * @access public
+	 * @return object
+	 */
+	public function setOnInsert($fields, $value = NULL)
+	{
+		$this->_update_init('$setOnInsert');
+
+		if (is_string($fields))
+		{
+			$this->updates['$setOnInsertt'][$fields] = $value;
+		}
+
+		elseif (is_array($fields))
+		{
+			foreach ($fields as $field => $value)
+			{
+				$this->updates['$setOnInsert'][$field] = $value;
+			}
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Unset.
 	 *
 	 * Unsets a field (or fields)

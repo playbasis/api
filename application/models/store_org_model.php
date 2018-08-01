@@ -669,9 +669,9 @@ class Store_org_model extends MY_Model
     {
         $this->mongo_db->select(array('reward_id'));
         $this->mongo_db->where(array(
-            'name' => $name,
+            'client_id' => $client_id,
             'site_id' => $site_id,
-            'client_id' => $client_id
+            'name' => $name
         ));
         $this->mongo_db->limit(1);
         $results = $this->mongo_db->get('playbasis_reward_to_client');
