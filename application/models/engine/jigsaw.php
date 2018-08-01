@@ -446,13 +446,13 @@ class jigsaw extends MY_Model
                 return false;
             } 
             //check if reward exist
-            $result =  $this->checkReward($config['reward_id'], $input['site_id']);
+            $result =  $this->checkReward($input['client_id'], $input['site_id'], $config['reward_id']);
             if($result == true){
                 //reward per user limit
                 $result = $this->checkRewardLimitPerUser($config['reward_id'], $input['pb_player_id'], $input['client_id'], $input['site_id'], $config['quantity']);
                 if($result){
                     //reward available
-                    $result = $this->isRewardAvailable($config['reward_id'], $input['site_id']);
+                    $result = $this->isRewardAvailable($input['client_id'], $input['site_id'], $config['reward_id']);
                     if($result){
                         //reward per day limit
                         $result = $this->checkRewardLimitPerDay($input['pb_player_id'], $config['reward_id'], $input['client_id'], $input['site_id'], $config['quantity'], $timeNow);
@@ -496,14 +496,14 @@ class jigsaw extends MY_Model
         $exInfo['dynamic']['reward_name'] = $name;
         $exInfo['dynamic']['quantity'] = $quantity;
         if (!$name || !$quantity) return false;
-        $rewardId = $this->getRewardByName($name, $input['site_id']);
+        $rewardId = $this->getRewardByName($input['client_id'], $input['site_id'], $name);
         if (!$rewardId) return false;
-        $result =  $this->checkReward($rewardId, $input['site_id']);
+        $result =  $this->checkReward($input['client_id'], $input['site_id'], $rewardId);
         if($result == true){
             $timeNow = isset($input['action_log_time']) ? $input['action_log_time'] : time();
             $result = $this->checkRewardLimitPerUser($rewardId, $input['pb_player_id'], $input['client_id'], $input['site_id'], $quantity);
             if($result == true){
-                $result = $this->isRewardAvailable($rewardId, $input['site_id']);
+                $result = $this->isRewardAvailable( $input['client_id'], $input['site_id'], $rewardId);
                 if($result == true) {
                     $result = $this->checkRewardLimitPerDay($input['pb_player_id'], $rewardId, $input['client_id'], $input['site_id'], $quantity, $timeNow);
                     if($result != true){
@@ -1799,14 +1799,15 @@ class jigsaw extends MY_Model
         return true;
     }
 
-    private function checkReward($rewardId, $siteId)
+    private function checkReward($clientId, $siteId, $rewardId)
     {
         $this->set_site_mongodb($siteId);
         $this->mongo_db->select(array('limit'));
         $this->mongo_db->where(array(
-            'reward_id' => $rewardId,
+            'client_id' => $clientId,
             'site_id' => $siteId,
-            'status' => true,
+            'reward_id' => $rewardId,
+            'status' => true
         ));
         $this->mongo_db->limit(1);
         $result = $this->mongo_db->get('playbasis_reward_to_client');
@@ -1816,13 +1817,14 @@ class jigsaw extends MY_Model
         return $result['limit'] > 0;
     }
 
-    private function isRewardAvailable($rewardId, $siteId)
+    private function isRewardAvailable($clientId, $siteId, $rewardId)
     {
         $this->set_site_mongodb($siteId);
         $this->mongo_db->select(array('quantity'));
         $this->mongo_db->where(array(
-            'reward_id' => $rewardId,
+            'client_id' => $clientId,
             'site_id' => $siteId,
+            'reward_id' => $rewardId,
             'status' => true,
         ));
         $this->mongo_db->limit(1);
@@ -1833,13 +1835,14 @@ class jigsaw extends MY_Model
         return (isset($result['quantity']) && !is_null($result['quantity']) && $result['quantity'] <= 0) ? false : true;
     }
 
-    private function getRewardByName($rewardName, $siteId)
+    private function getRewardByName($clientId, $siteId, $rewardName )
     {
         $this->set_site_mongodb($siteId);
         $this->mongo_db->select(array('reward_id'));
         $this->mongo_db->where(array(
+            'client_id' => $clientId,
+            'site_id' => $siteId,
             'name' => $rewardName,
-            'site_id' => $siteId
         ));
         $this->mongo_db->limit(1);
         $result = $this->mongo_db->get('playbasis_reward_to_client');
