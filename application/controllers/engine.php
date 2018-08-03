@@ -1237,12 +1237,12 @@ class Engine extends Quest
                                 }  // close if ($jigsawConfig["reward_name"] == 'exp')
 
                                 $event = array(
-                                    'event_type' => isset($reward['reward_status']) && !empty($reward['reward_status']) ? $reward['reward_status'] : 'REWARD_RECEIVED',
+                                    'event_type' => isset($reward['reward_status']) && !empty($reward['reward_status']) && ($jigsawConfig['reward_name'] != "exp")  ? $reward['reward_status'] : 'REWARD_RECEIVED',
                                     'reward_type' => $jigsawConfig['reward_name'],
                                 );
-                                $event['value'] = $event['event_type'] == "REWARD_NOT_AVAILABLE" ? "0" : ((isset($reward['reward_amount']) && !empty($reward['reward_amount'])) && ($event['reward_type'] != "exp") ? $reward['reward_amount']."" :$jigsawConfig['quantity']."");
+                                $event['value'] = $event['event_type'] == "REWARD_NOT_AVAILABLE" ? "0" : ((isset($reward['reward_amount']) && !empty($reward['reward_amount'])) && ($jigsawConfig['reward_name'] != "exp") ? $reward['reward_amount']."" :$jigsawConfig['quantity']."");
 
-                                if (isset($reward['transaction_id']) && !empty($reward['transaction_id'])) {
+                                if (isset($reward['transaction_id']) && !empty($reward['transaction_id']) && ($jigsawConfig['reward_name'] != "exp")) {
                                     $event['transaction_id'] = $reward['transaction_id'];
                                 }
 
