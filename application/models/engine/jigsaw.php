@@ -438,17 +438,18 @@ class jigsaw extends MY_Model
 
         if (is_null($config['item_id']) || $config['item_id'] == '') {
             //check if reward exist
-            $result =  $this->checkReward($input['client_id'], $input['site_id'], $config['reward_id']);
+            $reward_info = $this->getRewardInfo($input['client_id'], $input['site_id'], $config['reward_id']);
+            $result =  $this->checkReward($reward_info);
             if($result == true){
                 $timeNow = isset($input['action_log_time']) ? $input['action_log_time'] : time();
                 //reward per user limit
-                $result = $this->checkRewardLimitPerUser($config['reward_id'], $input['pb_player_id'], $input['client_id'], $input['site_id'], $config['quantity']);
+                $result = $this->checkRewardLimitPerUser($input['pb_player_id'], $reward_info, $input['client_id'], $input['site_id'], $config['quantity']);
                 if($result){
                     //reward available
-                    $result = $this->isRewardAvailable($input['client_id'], $input['site_id'], $config['reward_id']);
+                    $result = $this->isRewardAvailable($reward_info);
                     if($result){
                         //reward per day limit
-                        $result = $this->checkRewardLimitPerDay($input['pb_player_id'], $config['reward_id'], $input['client_id'], $input['site_id'], $config['quantity'], $timeNow);
+                        $result = $this->checkRewardLimitPerDay($input['pb_player_id'], $reward_info, $input['client_id'], $input['site_id'], $config['quantity'], $timeNow);
                         if(!$result){
                             $exInfo['error'] = "ENGINE_RULE_REWARD_OUT_OF_STOCK";
                         }
@@ -489,16 +490,15 @@ class jigsaw extends MY_Model
         $exInfo['dynamic']['reward_name'] = $name;
         $exInfo['dynamic']['quantity'] = $quantity;
         if (!$name || !$quantity) return false;
-        $rewardId = $this->getRewardByName($input['client_id'], $input['site_id'], $name);
-        if (!$rewardId) return false;
-        $result =  $this->checkReward($input['client_id'], $input['site_id'], $rewardId);
+        $reward_info = $this->getRewardByName($input['client_id'], $input['site_id'], $name);
+        $result =  $this->checkReward($reward_info);
         if($result == true){
             $timeNow = isset($input['action_log_time']) ? $input['action_log_time'] : time();
-            $result = $this->checkRewardLimitPerUser($rewardId, $input['pb_player_id'], $input['client_id'], $input['site_id'], $quantity);
+            $result = $this->checkRewardLimitPerUser($input['pb_player_id'], $reward_info, $input['client_id'], $input['site_id'], $quantity);
             if($result == true){
-                $result = $this->isRewardAvailable( $input['client_id'], $input['site_id'], $rewardId);
+                $result = $this->isRewardAvailable($reward_info);
                 if($result == true) {
-                    $result = $this->checkRewardLimitPerDay($input['pb_player_id'], $rewardId, $input['client_id'], $input['site_id'], $quantity, $timeNow);
+                    $result = $this->checkRewardLimitPerDay($input['pb_player_id'], $reward_info, $input['client_id'], $input['site_id'], $quantity, $timeNow);
                     if($result != true){
                         $exInfo['error'] = "ENGINE_RULE_REWARD_OUT_OF_STOCK";
                     }
@@ -1801,142 +1801,115 @@ class jigsaw extends MY_Model
         return true;
     }
 
-    private function checkReward($clientId, $siteId, $rewardId)
+    private function checkReward($reward)
     {
-        $this->set_site_mongodb($siteId);
-        $this->mongo_db->select(array('limit'));
-        $this->mongo_db->where(array(
-            'client_id' => $clientId,
-            'site_id' => $siteId,
-            'reward_id' => $rewardId,
-            'status' => true
-        ));
-        $this->mongo_db->limit(1);
-        $result = $this->mongo_db->get('playbasis_reward_to_client');
-        if (!$result) return false;
-        $result = $result[0];
-        if (is_null($result['limit'])) return true;
-        return $result['limit'] > 0;
+        if (!$reward){
+            return false;
+        }else{
+            if (is_null($reward['limit'])){
+                return true;
+            }else{
+                return $reward['limit'] > 0;
+            }
+        }
     }
 
-    private function isRewardAvailable($clientId, $siteId, $rewardId)
+    private function isRewardAvailable($reward)
     {
-        $this->set_site_mongodb($siteId);
-        $this->mongo_db->select(array('quantity'));
-        $this->mongo_db->where(array(
-            'client_id' => $clientId,
-            'site_id' => $siteId,
-            'reward_id' => $rewardId,
-            'status' => true,
-        ));
-        $this->mongo_db->limit(1);
-        $result = $this->mongo_db->get('playbasis_reward_to_client');
-        if (!$result) return false;
-        $result = $result[0];
-
-        return (isset($result['quantity']) && !is_null($result['quantity']) && $result['quantity'] <= 0) ? false : true;
+        if(isset($reward['quantity']) && !is_null($reward['quantity']) && $reward['quantity'] <= 0){
+            return false;
+        }else{
+            return true;
+        }
     }
 
     private function getRewardByName($clientId, $siteId, $rewardName )
     {
         $this->set_site_mongodb($siteId);
-        $this->mongo_db->select(array('reward_id'));
         $this->mongo_db->where(array(
             'client_id' => $clientId,
             'site_id' => $siteId,
             'name' => $rewardName,
+            'status' => true,
         ));
         $this->mongo_db->limit(1);
         $result = $this->mongo_db->get('playbasis_reward_to_client');
-        return ($result && isset($result[0]['reward_id']) ? $result[0]['reward_id'] : null);
+
+        return $result ? $result[0] : null;
     }
 
-    private function checkRewardLimitPerDay($player_id, $reward_id, $client_id,  $site_id, $quantity, $timeNow)
+    private function checkRewardLimitPerDay($player_id, $reward, $client_id,  $site_id, $quantity, $timeNow)
     {
-        $reward = $this->getRewardInfo($client_id, $site_id, $reward_id);
-        if(!$reward){
-            return false;
-        }else {
-            $result = true;
-            if (isset($reward['limit_per_day']) && $reward['limit_per_day']) {
-                $currentYMD = date("Y-m-d");
-                $settingTime = (isset($reward['limit_start_time']) && $reward['limit_start_time']) ? $reward['limit_start_time'] : "00:00";
-                $settingTime = strtotime("$currentYMD $settingTime:00");
-                $currentTime = strtotime($currentYMD." " . date('H:i:s', $timeNow) );
+        $reward_id = $reward['reward_id'];
+        $result = true;
+        if (isset($reward['limit_per_day']) && $reward['limit_per_day']) {
+            $currentYMD = date("Y-m-d");
+            $settingTime = (isset($reward['limit_start_time']) && $reward['limit_start_time']) ? $reward['limit_start_time'] : "00:00";
+            $settingTime = strtotime("$currentYMD $settingTime:00");
+            $currentTime = strtotime($currentYMD." " . date('H:i:s', $timeNow) );
 
-                if ($settingTime <= $currentTime){ // action has been processed for today !
-                    $startTimeFilter = $settingTime;
-                }else{
-                    $startTimeFilter =  strtotime( "-1 day" , $settingTime ) ;
-                }
-
-                $counter = $this->getCustomPointCounter($client_id, $site_id, $reward_id, $startTimeFilter, $quantity); // to prevent concurrency issue.
-                $rejected_point_amount = $this->countRejectedPointInDay($reward_id, $client_id, $site_id, $startTimeFilter);
-
-                $is_reset = false;
-                if( $counter > $reward['limit_per_day']){
-                    $total = $this->deductCustomPointCounter($client_id, $site_id, $reward_id, $startTimeFilter, $quantity);
-
-                    if($total < 0){
-                        $is_reset = true;
-                        $this->resetCustomPointCounter($client_id, $site_id, $reward_id, $startTimeFilter);
-                    }
-                    $result = false;
-                }
-
-                // log point counter for validation
-                $this->logCustomPointCounter($client_id, $site_id, $player_id, $reward_id, $counter, $rejected_point_amount, $result, $startTimeFilter, $currentTime, $is_reset);
-
+            if ($settingTime <= $currentTime){ // action has been processed for today !
+                $startTimeFilter = $settingTime;
+            }else{
+                $startTimeFilter =  strtotime( "-1 day" , $settingTime ) ;
             }
-            return $result;
+
+            $counter = $this->getCustomPointCounter($client_id, $site_id, $reward_id, $startTimeFilter, $quantity); // to prevent concurrency issue.
+            $rejected_point_amount = $this->countRejectedPointInDay($reward_id, $client_id, $site_id, $startTimeFilter);
+
+            $is_reset = false;
+            if( $counter > $reward['limit_per_day']){
+                $total = $this->deductCustomPointCounter($client_id, $site_id, $reward_id, $startTimeFilter, $quantity);
+
+                if($total < 0){
+                    $is_reset = true;
+                    $this->resetCustomPointCounter($client_id, $site_id, $reward_id, $startTimeFilter);
+                }
+                $result = false;
+            }
+
+            // log point counter for validation
+            $this->logCustomPointCounter($client_id, $site_id, $player_id, $reward_id, $counter, $rejected_point_amount, $result, $startTimeFilter, $currentTime, $is_reset);
+
         }
+        return $result;
     }
 
-    private function checkRewardLimitPerUser($reward_id, $pb_player_id, $client_id,  $site_id, $quantity)
+    private function checkRewardLimitPerUser($pb_player_id, $reward, $client_id,  $site_id, $quantity)
     {
-        $reward = $this->getRewardInfo($client_id, $site_id, $reward_id);
-        if(!$reward){
-            return false;
-        }else {
+        $reward_id = $reward['reward_id'];
+        if(isset($reward['per_user']) && $reward['per_user']){
+            if(isset($reward['per_user_include_deducted']) && $reward['per_user_include_deducted']){
+                /* get total reward value in log*/
+                $total = $this->countPlayerPointAward($client_id, $site_id, $pb_player_id, $reward_id);
 
-            if(isset($reward['per_user']) && $reward['per_user']){
-                if(isset($reward['per_user_include_deducted']) && $reward['per_user_include_deducted']){
-                    /* get total reward value in log*/
-                    $total = $this->countPlayerPointAward($client_id, $site_id, $pb_player_id, $reward_id);
-
-                    if(isset($reward['pending']) && !empty($reward['pending']) && $reward['pending'] != false){
-                        $rejected_point_amount = $this->countRejectedPointOfPlayer($reward_id, $pb_player_id, $client_id, $site_id);
-                    }else{
-                        $rejected_point_amount = 0;
-                    }
-
-                    if((($total - $rejected_point_amount) + $quantity) > $reward['per_user']){
-                        return false;
-                    }
-
+                if(isset($reward['pending']) && !empty($reward['pending']) && $reward['pending'] != false){
+                    $rejected_point_amount = $this->countRejectedPointOfPlayer($reward_id, $pb_player_id, $client_id, $site_id);
                 }else{
-                    /* get current reward value */
-                    $reward_to_player = $this->reward_model->getPlayerReward($client_id, $site_id, $pb_player_id, $reward_id);
-                    if(isset($reward_to_player['value']) && $reward_to_player['value']){
-                        $total = $reward_to_player['value'];
-                    }else{
-                        $total = 0;
-                    }
+                    $rejected_point_amount = 0;
+                }
 
-                    if(isset($reward['pending']) && !empty($reward['pending']) && $reward['pending'] != false){
-                        $pending_point_amount = $this->countPendingPointToPlayer($reward_id, $pb_player_id, $client_id, $site_id);
-                    }else{
-                        $pending_point_amount = 0;
-                    }
+                if((($total - $rejected_point_amount) + $quantity) > $reward['per_user']){
+                    return false;
+                }
 
-                    if((($total + $pending_point_amount) + $quantity) > $reward['per_user']){
-                        return false;
-                    }
+            }else{
+                /* get current reward value */
+                $reward_to_player = $this->player_model->getPlayerPoint($client_id, $site_id, $pb_player_id, $reward_id);
+                $total = (isset($reward_to_player[0]['value']) && $reward_to_player[0]['value']) ? $reward_to_player[0]['value'] : 0;
+
+                if(isset($reward['pending']) && !empty($reward['pending']) && $reward['pending'] != false){
+                    $pending_point_amount = $this->countPendingPointToPlayer($reward_id, $pb_player_id, $client_id, $site_id);
+                }else{
+                    $pending_point_amount = 0;
+                }
+
+                if((($total + $pending_point_amount) + $quantity) > $reward['per_user']){
+                    return false;
                 }
             }
-            return true;
         }
-
+        return true;
     }
 
     private function countPlayerPointAward($client_id, $site_id, $pb_player_id, $reward_id){
@@ -2124,6 +2097,7 @@ class jigsaw extends MY_Model
             'client_id' => $client_id,
             'site_id' => $site_id,
             'reward_id' => $reward_id,
+            'status' => true,
         ));
         $this->mongo_db->limit(1);
         $result = $this->mongo_db->get('playbasis_reward_to_client');
