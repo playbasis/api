@@ -47,7 +47,10 @@ class Tracker_model extends MY_Model
 
     public function trackEvent($type, $message, $input, $async = true)
     {
-        if (isset($input['pb_player_id'])) {
+        if(isset($input['player_id']) && $input['player_id']){
+            $input['cl_player_id'] = $input['player_id'];
+        }
+        else if (isset($input['pb_player_id'])) {
             $input['cl_player_id'] = $this->getClientPlayerId($input['pb_player_id'], $input['site_id']);
         }
         $this->set_site_mongodb($input['site_id']);
