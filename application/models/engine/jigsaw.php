@@ -1895,8 +1895,13 @@ class jigsaw extends MY_Model
 
             }else{
                 /* get current reward value */
-                $reward_to_player = $this->player_model->getPlayerPoint($client_id, $site_id, $pb_player_id, $reward_id);
-                $total = (isset($reward_to_player[0]['value']) && $reward_to_player[0]['value']) ? $reward_to_player[0]['value'] : 0;
+                $reward_to_player = $this->reward_model->getPlayerReward($client_id, $site_id, $pb_player_id, $reward_id);
+
+                if(isset($reward_to_player['value']) && $reward_to_player['value']){
+                    $total = $reward_to_player['value'];
+                }else{
+                    $total = 0;
+                }
 
                 if(isset($reward['pending']) && !empty($reward['pending']) && $reward['pending'] != false){
                     $pending_point_amount = $this->countPendingPointToPlayer($reward_id, $pb_player_id, $client_id, $site_id);
