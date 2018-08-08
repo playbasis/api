@@ -375,6 +375,7 @@ class Goods_model extends MY_Model
             $this->mongo_db->limit(1);
             $results = $this->mongo_db->get("playbasis_goods_to_client");
         }else{
+            $this->mongo_db->where('site_id', new MongoId($site_id));
             $this->mongo_db->where('name', $good_name);
             $this->mongo_db->where('deleted', false);
             $this->mongo_db->where('status', true);
