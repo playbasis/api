@@ -769,6 +769,12 @@ class Engine extends Quest
         $apiResult['processor_time'] = $this->benchmark->elapsed_time('processor_start', 'processor_end');
         $apiResult['point_time'] = $this->benchmark->elapsed_time('point_start', 'point_end');
         $apiResult['point_event_time'] = $this->benchmark->elapsed_time('point_event_start', 'point_event_end');
+        $apiResult['point_event_time_1'] = $this->benchmark->elapsed_time('point_event_start_1', 'point_event_end_1');
+        $apiResult['point_event_time_2'] = $this->benchmark->elapsed_time('point_event_start_2', 'point_event_end_2');
+        $apiResult['point_event_time_3'] = $this->benchmark->elapsed_time('point_event_start_3', 'point_event_end_3');
+        $apiResult['point_event_time_4'] = $this->benchmark->elapsed_time('point_event_start_4', 'point_event_end_4');
+        $apiResult['point_event_total'] = $apiResult['point_event_time_1']+$apiResult['point_event_time_2']+$apiResult['point_event_time_3']+$apiResult['point_event_time_4'];
+
         $apiResult['badge_time'] = $this->benchmark->elapsed_time('badge_start', 'badge_end');
         $apiResult['badge_event_time'] = $this->benchmark->elapsed_time('badge_event_start', 'badge_event_end');
         $apiResult['goods_time'] = $this->benchmark->elapsed_time('goods_start', 'goods_end');
@@ -1296,11 +1302,14 @@ class Engine extends Quest
 
                                 if (!$input["test"]) {
                                     $this->benchmark->mark('point_event_start');
+                                    $this->benchmark->mark('point_event_start_1');
                                     $eventMessage = $this->utility->getEventMessage(
                                         'point',
                                         intval($event['value']),
                                         $jigsawConfig['reward_name']);
                                     //log event - reward, non-custom point
+                                    $this->benchmark->mark('point_event_end_1');
+                                    $this->benchmark->mark('point_event_start_2');
                                     $this->tracker_model->trackEvent(
                                         'REWARD',
                                         $eventMessage,
@@ -1311,6 +1320,8 @@ class Engine extends Quest
                                             'amount' => intval($event['value']),
                                             'transaction_id' => isset($event['transaction_id']) && $event['transaction_id']? $event['transaction_id'] : null
                                         )));
+                                    $this->benchmark->mark('point_event_end_2');
+                                    $this->benchmark->mark('point_event_start_3');
                                     //publish to node stream
                                     $this->node->publish(array_merge($input, array(
                                         'message' => $eventMessage,
@@ -1326,13 +1337,15 @@ class Engine extends Quest
                                             $eventMessage,
                                             '');
                                     }
-
+                                    $this->benchmark->mark('point_event_end_3');
+                                    $this->benchmark->mark('point_event_start_4');
                                     if(isset($jigsawConfig['custom_log']) && $jigsawConfig['custom_log']){
                                         if(isset($input[$jigsawConfig['custom_log']]) && $input[$jigsawConfig['custom_log']]){
                                             $this->reward_model->addCustomLog($client_id, $site_id, $input['player_id'],
                                                 $input['pb_player_id'], $jigsawConfig['reward_id'], $jigsawConfig['custom_log'], $input[$jigsawConfig['custom_log']]);
                                         }
                                     }
+                                    $this->benchmark->mark('point_event_end_4');
                                     $this->benchmark->mark('point_event_end');
 
                                 }  // close if (!$input["test"])
