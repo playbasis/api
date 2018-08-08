@@ -17,28 +17,30 @@ class Node_stream extends MY_Model
 
     public function publish($data, $site_name, $site_id)
     {
-        //get chanel name
-        $chanelName = preg_replace('/(http[s]?:\/\/)?([w]{3}\.)?/', '', $site_name);
-        $chanelName = preg_replace('/\//', '\\', $chanelName);
-        $message = json_encode($this->activityFeedFormatter($data, $site_id));
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_URL, STREAM_URL . $chanelName);    // set url
-        curl_setopt($ch, CURLOPT_PORT, STREAM_PORT);                // set port
-        curl_setopt($ch, CURLOPT_HEADER, false);                    // turn off output
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);                // refuse response from called server
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Content-Type: text/plain; charset=utf-8'                // set Content-Type
-        ));
-        curl_setopt($ch, CURLOPT_USERAGENT, 'CURL AGENT');            // set agent
-        curl_setopt($ch, CURLOPT_TIMEOUT_MS, 500);                    // times for execute
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);                // times for try to connect
-        curl_setopt($ch, CURLOPT_POST, true);                        // use POST
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $message);                // data
-        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);            // http authen
-        curl_setopt($ch, CURLOPT_USERPWD, USERPASS);                // user password
-        $res = curl_exec($ch);
-        curl_close($ch);
+        if(defined('ENABLE_NODE_PUBLISH') && (ENABLE_NODE_PUBLISH == true) ) {
+            //get chanel name
+            $chanelName = preg_replace('/(http[s]?:\/\/)?([w]{3}\.)?/', '', $site_name);
+            $chanelName = preg_replace('/\//', '\\', $chanelName);
+            $message = json_encode($this->activityFeedFormatter($data, $site_id));
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_URL, STREAM_URL . $chanelName);    // set url
+            curl_setopt($ch, CURLOPT_PORT, STREAM_PORT);                // set port
+            curl_setopt($ch, CURLOPT_HEADER, false);                    // turn off output
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);                // refuse response from called server
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type: text/plain; charset=utf-8'                // set Content-Type
+            ));
+            curl_setopt($ch, CURLOPT_USERAGENT, 'CURL AGENT');            // set agent
+            curl_setopt($ch, CURLOPT_TIMEOUT_MS, 500);                    // times for execute
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);                // times for try to connect
+            curl_setopt($ch, CURLOPT_POST, true);                        // use POST
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $message);                // data
+            curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);            // http authen
+            curl_setopt($ch, CURLOPT_USERPWD, USERPASS);                // user password
+            $res = curl_exec($ch);
+            curl_close($ch);
+        }
     }
 
     private function activityFeedFormatter($data, $site_id)
