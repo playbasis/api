@@ -473,6 +473,7 @@ class Engine extends Quest
     public function rule_post($option = 0)
     {
         $this->benchmark->mark('engine_rule_start');
+        $this->benchmark->mark('engine_rule_start_1');
         $fbData = null;
         $twData = null;
         if ($option == 'facebook') {
@@ -568,6 +569,8 @@ class Engine extends Quest
                     }
                 }
             } else {
+                $this->benchmark->mark('engine_rule_end_1');
+                $this->benchmark->mark('engine_rule_start_2');
                 $test = $this->input->post("test");
                 $required = null;
 
@@ -605,6 +608,8 @@ class Engine extends Quest
                 $actionId = $action['action_id'];
                 $actionIcon = $action['icon'];
 
+                $this->benchmark->mark('engine_rule_end_2');
+                $this->benchmark->mark('engine_rule_start_3');
                 //get playbasis player id from client player id
                 $pb_player_id = array();
                 if (!$test) {
@@ -625,6 +630,8 @@ class Engine extends Quest
                     }
                 }
 
+                $this->benchmark->mark('engine_rule_end_3');
+                $this->benchmark->mark('engine_rule_start_4');
                 if (!$pb_player_id && !$test) {
                     log_message('error',
                         '[debug-case-pbapp_auto_user] player_id = ' . $this->input->post('player_id') . ', action = ' . $this->input->post('action'));
@@ -693,6 +700,8 @@ class Engine extends Quest
                 if (!$test) {
                     $input["test"] = false;
                 }
+                $this->benchmark->mark('engine_rule_end_4');
+                $this->benchmark->mark('engine_rule_start_5');
 
                 try {
                     $apiResult = $this->processRule($input, $validToken, $fbData, $twData);
@@ -706,6 +715,8 @@ class Engine extends Quest
                 }
             }
         }
+        $this->benchmark->mark('engine_rule_end_5');
+        $this->benchmark->mark('log_start');
         //Log validated action
         if (!$test) {
             // populate input parameter of the action
@@ -736,9 +747,33 @@ class Engine extends Quest
             $apiQuestResult = $this->QuestProcess($pb_player_id, $validToken);
             $apiResult = array_merge($apiResult, $apiQuestResult);
         }
+        $this->benchmark->mark('log_end');
+
 
         $this->benchmark->mark('engine_rule_end');
         $apiResult['processing_time'] = $this->benchmark->elapsed_time('engine_rule_start', 'engine_rule_end');
+        $apiResult['1_time'] = $this->benchmark->elapsed_time('engine_rule_start_1', 'engine_rule_end_1');
+        $apiResult['2_time'] = $this->benchmark->elapsed_time('engine_rule_start_2', 'engine_rule_end_2');
+        $apiResult['3_time'] = $this->benchmark->elapsed_time('engine_rule_start_3', 'engine_rule_end_3');
+        $apiResult['4_time'] = $this->benchmark->elapsed_time('engine_rule_start_4', 'engine_rule_end_4');
+        $apiResult['5_time'] = $this->benchmark->elapsed_time('engine_rule_start_4', 'engine_rule_end_5');
+        $apiResult['log_time'] = $this->benchmark->elapsed_time('log_start', 'log_end');
+        $apiResult['total'] = $apiResult['1_time']+$apiResult['2_time']+$apiResult['3_time']+$apiResult['4_time']+$apiResult['5_time']+$apiResult['log_time'];
+
+
+
+
+        $apiResult['processrule_time'] = $this->benchmark->elapsed_time('processrule_start', 'processrule_end');
+        $apiResult['processrule_1_time'] = $this->benchmark->elapsed_time('processrule_start_1', 'processrule_end_1');
+        $apiResult['processrule_2_time'] = $this->benchmark->elapsed_time('processrule_start_2', 'processrule_end_2');
+        $apiResult['processor_time'] = $this->benchmark->elapsed_time('processor_start', 'processor_end');
+        $apiResult['point_time'] = $this->benchmark->elapsed_time('point_start', 'point_end');
+        $apiResult['point_event_time'] = $this->benchmark->elapsed_time('point_event_start', 'point_event_end');
+        $apiResult['badge_time'] = $this->benchmark->elapsed_time('badge_start', 'badge_end');
+        $apiResult['badge_event_time'] = $this->benchmark->elapsed_time('badge_event_start', 'badge_event_end');
+        $apiResult['goods_time'] = $this->benchmark->elapsed_time('goods_start', 'goods_end');
+        $apiResult['process_total'] = $apiResult['processor_time']+$apiResult['point_time']+$apiResult['point_event_time']+$apiResult['badge_time']+$apiResult['badge_event_time']+$apiResult['goods_time'];
+
         array_walk_recursive($apiResult, array($this, "convert_mongo_object"));
         $this->response($this->resp->setRespond($apiResult), 200);
     }
@@ -763,6 +798,8 @@ class Engine extends Quest
 
     public function processRule(&$input, $validToken, $fbData, $twData, $time = null)
     {
+        $this->benchmark->mark('processrule_start');
+        $this->benchmark->mark('processrule_start_1');
         if (!isset($input['player_id']) || !$input['player_id']) {
             if (!$input["test"]) {
                 $input['player_id'] = $this->player_model->getClientPlayerId(
@@ -867,6 +904,8 @@ class Engine extends Quest
         }
 
         $cache_jigsaw = array();
+        $this->benchmark->mark('processrule_end_1');
+        $this->benchmark->mark('processrule_start_2');
         foreach ($ruleSet as $rule) {
             /* [rule usage] init */
             $count = 0;
@@ -1067,13 +1106,15 @@ class Engine extends Quest
                         $input['player_badge'] = $badge;
                     }
                 }
-
+                $this->benchmark->mark('processor_start');
                 if (!$input["test"]) {
+
                     $jigsaw_model = $this->jigsaw_model->$processor($jigsawConfig, $input, $exInfo);
+
                 } else {
                     $jigsaw_model = true;
                 }
-
+                $this->benchmark->mark('processor_end');
                 /* [rule usage] increase rule usage counter if a reward is given on chunk-based basis */
                 if ($this->is_reward($jigsaw['category']) && !$this->is_reward($last_jigsaw)) {
                     $count++;
@@ -1223,6 +1264,7 @@ class Engine extends Quest
                                     //update point-based reward
                                     if (!$input["test"]) {
                                         $point_expire_date = (isset($jigsawConfig['point_expire_date']) && ($jigsawConfig['point_expire_date'] != "")) ? $jigsawConfig['point_expire_date'] : null;
+                                        $this->benchmark->mark('point_start');
                                         $reward = $this->client_model->updatePlayerPointReward(
                                             $jigsawConfig['reward_id'],
                                             $jigsawConfig['quantity'],
@@ -1233,6 +1275,7 @@ class Engine extends Quest
                                             false,
                                             $anonymousUser,
                                             $point_expire_date);
+                                        $this->benchmark->mark('point_end');
                                     }
                                 }  // close if ($jigsawConfig["reward_name"] == 'exp')
 
@@ -1252,6 +1295,7 @@ class Engine extends Quest
                                 }
 
                                 if (!$input["test"]) {
+                                    $this->benchmark->mark('point_event_start');
                                     $eventMessage = $this->utility->getEventMessage(
                                         'point',
                                         intval($event['value']),
@@ -1289,11 +1333,13 @@ class Engine extends Quest
                                                 $input['pb_player_id'], $jigsawConfig['reward_id'], $jigsawConfig['custom_log'], $input[$jigsawConfig['custom_log']]);
                                         }
                                     }
+                                    $this->benchmark->mark('point_event_end');
 
                                 }  // close if (!$input["test"])
                             } else {
                                 switch ($jigsawConfig['reward_name']) {
                                     case 'badge':
+                                        $this->benchmark->mark('badge_start');
                                         if (!$input["test"]) {
                                             $this->client_model->updateplayerBadge(
                                                 $jigsawConfig['item_id'],
@@ -1302,6 +1348,9 @@ class Engine extends Quest
                                                 $input['player_id'],
                                                 $client_id, $site_id);
                                         }
+                                        $this->benchmark->mark('badge_end');
+
+                                        $this->benchmark->mark('badge_event_start');
 
                                         $badgeData = $this->client_model->getBadgeById(
                                             $jigsawConfig['item_id'],
@@ -1360,8 +1409,10 @@ class Engine extends Quest
                                             }
                                             break;
                                         }  // close if (!$input["test"])
+                                        $this->benchmark->mark('badge_event_end');
                                         break;
                                     case 'goods':
+                                        $this->benchmark->mark('goods_start');
                                         $goodsData = $this->jigsaw_model->getGoods($site_id, $jigsawConfig['item_id']);
                                         if (!$goodsData) {
                                             break;
@@ -1401,7 +1452,7 @@ class Engine extends Quest
                                             array_push($last_coupon, $event['reward_data']['code']);
                                         }
                                         array_push($apiResult['events'], $isGroup ? array_merge($event, array('index' => $exInfo['index'])) : $event);
-
+                                        $this->benchmark->mark('goods_end');
                                         break;
                                     default:
                                         log_message('error', 'Unknown reward: ' . $jigsawConfig['reward_name']);
@@ -1529,6 +1580,8 @@ class Engine extends Quest
                 );
             }
         }  // close foreach($ruleSet as $rule)
+        $this->benchmark->mark('processrule_end_2');
+        $this->benchmark->mark('processrule_end');
         return $apiResult;
     }
 
