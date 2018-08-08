@@ -39,6 +39,7 @@ class Node_stream extends MY_Model
         curl_setopt($ch, CURLOPT_USERPWD, USERPASS);                // user password
         $res = curl_exec($ch);
         curl_close($ch);
+        return $res;
     }
 
     private function activityFeedFormatter($data, $site_id)

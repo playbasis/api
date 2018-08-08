@@ -773,11 +773,12 @@ class Engine extends Quest
         $apiResult['point_event_time_2'] = $this->benchmark->elapsed_time('point_event_start_2', 'point_event_end_2');
         $apiResult['point_event_time_3'] = $this->benchmark->elapsed_time('point_event_start_3', 'point_event_end_3');
         $apiResult['point_event_time_4'] = $this->benchmark->elapsed_time('point_event_start_4', 'point_event_end_4');
-        $apiResult['point_event_time_5'] = $this->benchmark->elapsed_time('point_event_start_4', 'point_event_end_5');
+        $apiResult['point_event_time_5'] = $this->benchmark->elapsed_time('point_event_start_5', 'point_event_end_5');
         $apiResult['point_event_total'] = $apiResult['point_event_time_1']+$apiResult['point_event_time_2']+$apiResult['point_event_time_3']+$apiResult['point_event_time_4']+$apiResult['point_event_time_5'];
 
         $apiResult['badge_time'] = $this->benchmark->elapsed_time('badge_start', 'badge_end');
         $apiResult['badge_event_time'] = $this->benchmark->elapsed_time('badge_event_start', 'badge_event_end');
+        $apiResult['badge_publish_time'] = $this->benchmark->elapsed_time('badge_publish_start', 'badge_publish_end');
         $apiResult['goods_time'] = $this->benchmark->elapsed_time('goods_start', 'goods_end');
         $apiResult['process_total'] = $apiResult['processor_time']+$apiResult['point_time']+$apiResult['point_event_time']+$apiResult['badge_time']+$apiResult['badge_event_time']+$apiResult['goods_time'];
 
@@ -1324,11 +1325,13 @@ class Engine extends Quest
                                     $this->benchmark->mark('point_event_end_2');
                                     $this->benchmark->mark('point_event_start_3');
                                     //publish to node stream
-                                    $this->node->publish(array_merge($input, array(
+                                    $node_result = $this->node->publish(array_merge($input, array(
                                         'message' => $eventMessage,
                                         'amount' => intval($event['value']),
                                         'point' => $jigsawConfig['reward_name']
                                     )), $site_name, $site_id);
+
+                                    $apiResult[$jigsawName."-".'node_result'] = $node_result;
                                     $this->benchmark->mark('point_event_end_3');
                                     $this->benchmark->mark('point_event_start_4');
                                     //publish to facebook notification
@@ -1400,10 +1403,13 @@ class Engine extends Quest
                                                     'amount' => $jigsawConfig['quantity']
                                                 )));
                                             //publish to node stream
-                                            $this->node->publish(array_merge($input, array(
+                                            $this->benchmark->mark('badge_publish_start');
+                                            $node_result= $this->node->publish(array_merge($input, array(
                                                 'message' => $eventMessage,
                                                 'badge' => $event['reward_data']
                                             )), $site_name, $site_id);
+                                            $this->benchmark->mark('badge_publish_end');
+                                            $apiResult[$jigsawName."-".'node_result'] = $node_result;
                                             //publish to facebook notification
                                             if ($fbData) {
                                                 $this->social_model->sendFacebookNotification(
