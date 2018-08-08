@@ -773,7 +773,8 @@ class Engine extends Quest
         $apiResult['point_event_time_2'] = $this->benchmark->elapsed_time('point_event_start_2', 'point_event_end_2');
         $apiResult['point_event_time_3'] = $this->benchmark->elapsed_time('point_event_start_3', 'point_event_end_3');
         $apiResult['point_event_time_4'] = $this->benchmark->elapsed_time('point_event_start_4', 'point_event_end_4');
-        $apiResult['point_event_total'] = $apiResult['point_event_time_1']+$apiResult['point_event_time_2']+$apiResult['point_event_time_3']+$apiResult['point_event_time_4'];
+        $apiResult['point_event_time_5'] = $this->benchmark->elapsed_time('point_event_start_4', 'point_event_end_5');
+        $apiResult['point_event_total'] = $apiResult['point_event_time_1']+$apiResult['point_event_time_2']+$apiResult['point_event_time_3']+$apiResult['point_event_time_4']+$apiResult['point_event_time_5'];
 
         $apiResult['badge_time'] = $this->benchmark->elapsed_time('badge_start', 'badge_end');
         $apiResult['badge_event_time'] = $this->benchmark->elapsed_time('badge_event_start', 'badge_event_end');
@@ -1328,6 +1329,8 @@ class Engine extends Quest
                                         'amount' => intval($event['value']),
                                         'point' => $jigsawConfig['reward_name']
                                     )), $site_name, $site_id);
+                                    $this->benchmark->mark('point_event_end_3');
+                                    $this->benchmark->mark('point_event_start_4');
                                     //publish to facebook notification
                                     if ($fbData) {
                                         $this->social_model->sendFacebookNotification(
@@ -1337,15 +1340,15 @@ class Engine extends Quest
                                             $eventMessage,
                                             '');
                                     }
-                                    $this->benchmark->mark('point_event_end_3');
-                                    $this->benchmark->mark('point_event_start_4');
+                                    $this->benchmark->mark('point_event_end_4');
+                                    $this->benchmark->mark('point_event_start_5');
                                     if(isset($jigsawConfig['custom_log']) && $jigsawConfig['custom_log']){
                                         if(isset($input[$jigsawConfig['custom_log']]) && $input[$jigsawConfig['custom_log']]){
                                             $this->reward_model->addCustomLog($client_id, $site_id, $input['player_id'],
                                                 $input['pb_player_id'], $jigsawConfig['reward_id'], $jigsawConfig['custom_log'], $input[$jigsawConfig['custom_log']]);
                                         }
                                     }
-                                    $this->benchmark->mark('point_event_end_4');
+                                    $this->benchmark->mark('point_event_end_5');
                                     $this->benchmark->mark('point_event_end');
 
                                 }  // close if (!$input["test"])
