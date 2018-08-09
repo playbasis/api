@@ -379,12 +379,8 @@ class Goods_model extends MY_Model
             $this->mongo_db->where('name', $good_name);
             $this->mongo_db->where('deleted', false);
             $this->mongo_db->where('status', true);
-            $distinct = $this->mongo_db->get("playbasis_goods_distinct_to_client");
-
-            if($distinct){
-                $this->mongo_db->where('distinct_id', $distinct[0]['_id']);
-                $results = $this->mongo_db->get("playbasis_goods_to_client");
-            }
+            $this->mongo_db->limit(1);
+            $results = $this->mongo_db->get("playbasis_goods_distinct_to_client");
         }
         return $results ? $results[0]['goods_id']."" : null;
     }
