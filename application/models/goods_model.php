@@ -359,27 +359,29 @@ class Goods_model extends MY_Model
 
     public function getGoodsIDByName($client_id, $site_id, $good_name, $good_group=null, $active_filter = false)
     {
-        $this->mongo_db->where('client_id', new MongoId($client_id));
-        $this->mongo_db->where('site_id', new MongoId($site_id));
-
         if($good_group){
+            $this->mongo_db->where('client_id', new MongoId($client_id));
+            $this->mongo_db->where('site_id', new MongoId($site_id));
             $this->mongo_db->where('group', $good_group);
+            $this->mongo_db->where('deleted', false);
+            $this->mongo_db->where('status', true);
+            if ($active_filter){
+                $d = new MongoDate();
+                $this->mongo_db->where(array('$and' => array( array('$or' => array(array("date_start" => null), array("date_start" => array('$lte'=> $d)))),
+                    array('$or' => array(array("date_expire" => null), array("date_expire" => array('$gte'=> $d)))))));
+                $this->mongo_db->where('$or',  array(array('date_expired_coupon' => array('$exists' => false)), array('date_expired_coupon' => array('$gt' => $d))));
+                $this->mongo_db->where('quantity', 1);
+            }
+            $this->mongo_db->limit(1);
+            $results = $this->mongo_db->get("playbasis_goods_to_client");
         }else{
-            $this->mongo_db->where_exists('group', false);
+            $this->mongo_db->where('site_id', new MongoId($site_id));
             $this->mongo_db->where('name', $good_name);
+            $this->mongo_db->where('deleted', false);
+            $this->mongo_db->where('status', true);
+            $this->mongo_db->limit(1);
+            $results = $this->mongo_db->get("playbasis_goods_distinct_to_client");
         }
-        $this->mongo_db->where('deleted', false);
-        $this->mongo_db->where('status', true);
-        if ($active_filter && $good_group){
-            $d = new MongoDate();
-            $this->mongo_db->where(array('$and' => array( array('$or' => array(array("date_start" => null), array("date_start" => array('$lte'=> $d)))),
-                                                        array('$or' => array(array("date_expire" => null), array("date_expire" => array('$gte'=> $d)))))));
-            $this->mongo_db->where('$or',  array(array('date_expired_coupon' => array('$exists' => false)), array('date_expired_coupon' => array('$gt' => $d))));
-            $this->mongo_db->where('quantity', 1);
-        }
-        $this->mongo_db->limit(1);
-        $results = $this->mongo_db->get("playbasis_goods_to_client");
-
         return $results ? $results[0]['goods_id']."" : null;
     }
 
