@@ -238,6 +238,7 @@ class Redeem extends REST2_Controller
 
     public function goodsGroup_post()
     {
+        $this->benchmark->mark('goods_redeem_start');
         $required = $this->input->checkParam(array(
             'player_id',
             'group'
@@ -294,6 +295,8 @@ class Redeem extends REST2_Controller
                         $this->utility->goodsRequestExecuteEngineRuleAPI($this->client_id, $this->site_id, $pb_player_id, ACTION_GOODS_ACTIVE, $goods, $amount);
                     }
 
+                    $this->benchmark->mark('goods_redeem_end');
+                    $redeemResult['processing_time'] = $this->benchmark->elapsed_time('goods_redeem_start', 'goods_redeem_end');
                     $this->response($this->resp->setRespond($redeemResult), 200);
                 } catch (Exception $e) {
                     if ($e->getMessage() == 'OVER_LIMIT_REDEEM') {
@@ -354,6 +357,7 @@ class Redeem extends REST2_Controller
 
     public function sponsorGroup_post()
     {
+        $this->benchmark->mark('goods_redeem_start');
         $required = $this->input->checkParam(array(
             'player_id',
             'group'
@@ -384,6 +388,8 @@ class Redeem extends REST2_Controller
                 try {
                     $redeemResult = $this->redeem($validToken['client_id'], $validToken['site_id'], $pb_player_id, $goods, $amount, $validToken,
                         false, true, true);
+                    $this->benchmark->mark('goods_redeem_end');
+                    $redeemResult['processing_time'] = $this->benchmark->elapsed_time('goods_redeem_start', 'goods_redeem_end');
                     $this->response($this->resp->setRespond($redeemResult), 200);
                 } catch (Exception $e) {
                     if ($e->getMessage() == 'OVER_LIMIT_REDEEM') {
