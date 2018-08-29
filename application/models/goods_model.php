@@ -165,7 +165,6 @@ class Goods_model extends MY_Model
 
     public function getGroupsCustomParam($site_id, $active_filter, $custom_param=array(), $not_custom_param=array())
     {
-        $this->mongo_db->select(array('name','is_group'));
         $this->mongo_db->where('site_id', new MongoId($site_id));
 
         $query_array = array();

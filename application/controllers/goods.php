@@ -233,7 +233,7 @@ class Goods extends REST2_Controller
                     if($c_goods['is_group']){
                         array_push($in_group, $c_goods['name']);
                     } else {
-                        $custom_goods_id =$this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, $c_goods['name']);
+                        $custom_goods_id = isset($c_goods['goods_id']) ? $c_goods['goods_id'] : $this->goods_model->getGoodsIDByName($this->client_id, $this->site_id, $c_goods['name']);
                         array_push($goods_param_id, new MongoId($custom_goods_id));
                     }
                 }
