@@ -268,7 +268,17 @@ class Goods extends REST2_Controller
                 foreach ($goodsList['goods_list'] as $key => &$goods) {
 
                     if($player_id){
-                        $goods_distinct_info = $this->goods_model->getGoodsDistinctByID($this->client_id, $this->site_id, $goods['distinct_id']);
+                        if(isset($custom_goods)){
+                            $distinct_index = array_search($goods['distinct_id'], array_column($custom_goods, '_id'));
+                            if(is_numeric($distinct_index)){
+                                $goods_distinct_info = $custom_goods[$distinct_index];
+                            } else {
+                                $goods_distinct_info = $this->goods_model->getGoodsDistinctByID($this->client_id, $this->site_id, $goods['distinct_id']);
+                            }
+                        }else {
+                            $goods_distinct_info = $this->goods_model->getGoodsDistinctByID($this->client_id, $this->site_id, $goods['distinct_id']);
+                        }
+
                         if(isset($goods_distinct_info['whitelist_enable']) && $goods_distinct_info['whitelist_enable'] == true){
                             $is_in_whitelist = $this->goods_model->checkIfUserInWhitelist($this->client_id, $this->site_id, $goods['distinct_id'], $player_id);
                             if(!$is_in_whitelist){
