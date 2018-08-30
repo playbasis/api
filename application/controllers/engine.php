@@ -3,6 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 require_once APPPATH . '/libraries/REST2_Controller.php';
 require_once(APPPATH . 'controllers/quest.php');
 require_once APPPATH . '/libraries/ApnsPHP/Autoload.php';
+require_once APPPATH . '/libraries/ipsum/Parser.class.php';
 
 /*function myround2($number){
     $result  = round($number,2);
@@ -1007,7 +1008,6 @@ class Engine extends Quest
                             $f = str_replace('{' . $key . '}', $value, $f);
                         }
 
-                        require_once APPPATH . '/libraries/ipsum/Parser.class.php';
                         $parser = new Parser($f);
 
                         //$parser->addFunction('round2', 'myround2');
@@ -1039,7 +1039,6 @@ class Engine extends Quest
                                 $f = str_replace('{' . $key . '}', $value, $f);
                             }
 
-                            require_once APPPATH . '/libraries/ipsum/Parser.class.php';
                             $parser = new Parser($f);
                             try {
                                 $jigsawConfigGroup['quantity'] = intval($parser->run());
