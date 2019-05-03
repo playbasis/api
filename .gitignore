@@ -6,6 +6,8 @@
 /php.ini
 /.httpd.conf
 _local
+docker_new_local/log
+docker_new_local/data
 # local config
 application/config/database.php
 application/config/config.php
