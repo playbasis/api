@@ -26,17 +26,12 @@ Plese check .gitignore file where the following app config files are not include
 <root>/application/config/playbasis.php
 ```
 
-With `<root>/application/config/mongodb.php` You can choose to copy the file from
+`{database,config,playbasis}.php` can be copied from `<root>/application/config/{database,config,playbasis}-example.php`
+
+With `<root>/application/config/mongodb.php` You can choose to copy the file from docker_v2 folder
 
 ```
 <root>/docker_v2/main/php/codeigniter/application/config/mongodb.php
-```
-
-The following three files can be copied from `<root>/application/config/{database,config,playbasis}-example.php`
-```
-<root>/application/config/database.php
-<root>/application/config/config.php
-<root>/application/config/playbasis.php
 ```
 
 
