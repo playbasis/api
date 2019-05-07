@@ -8,4 +8,10 @@ RUN apt-get update \
 RUN rm /etc/nginx/sites-enabled/app.conf
 ADD nginx.conf /etc/nginx/conf.d/default.conf
 
+RUN rm /etc/php/5.6/fpm/php.ini
+RUN rm /etc/php/5.6/cli/php.ini
+
+ADD php.ini etc/php/5.6/fpm/php.ini
+ADD php.ini etc/php/5.6/cli/php.ini
+
 CMD ["/usr/bin/supervisord"]

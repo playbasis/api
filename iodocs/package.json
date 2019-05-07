@@ -21,9 +21,11 @@
     "url": "git://github.com/mashery/iodocs.git"
   },
   "dependencies": {
+    "@sentry/node": "^5.1.2",
     "connect-redis": "1.0.6",
     "express": "2.5.8",
     "jade": "0.13",
+    "newrelic": "^5.8.0",
     "oauth": "0.9.3",
     "querystring": "0.1.0",
     "raven": "^0.12.1",
@@ -33,5 +35,8 @@
   "main": "index",
   "engines": {
     "node": ">= 0.4.0"
+  },
+  "scripts": {
+    "start": "node doc.js"
   }
 }

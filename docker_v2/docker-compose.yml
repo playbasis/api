@@ -1,8 +1,9 @@
 version: '3'
 services:
+    redis:
+        image: redis:latest
     mongo:
         image: mongo:4.0.9
-
     web:
         build: ./web
         depends_on:

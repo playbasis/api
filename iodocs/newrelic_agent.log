@@ -1,0 +1,4 @@
+{"v":0,"level":30,"name":"newrelic","hostname":"vorachets-iMac.local","pid":55744,"time":"2019-05-07T09:22:20.882Z","msg":"Using New Relic for Node.js. Agent version: 5.8.0; Node version: v10.15.0."}
+{"v":0,"level":30,"name":"newrelic","hostname":"vorachets-iMac.local","pid":55744,"time":"2019-05-07T09:22:21.315Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"vorachets-iMac.local","pid":55744,"time":"2019-05-07T09:22:30.689Z","msg":"Connected to collector-009.newrelic.com:443 with agent run ID BMo65Oyt-vAbAAgt_xFCduZc0U6wAAgBAAAjHQECBABJSgwDAAU1LjguMAAUdm9yYWNoZXRzLWlNYWMubG9jYWwABUlPRG9j.","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"vorachets-iMac.local","pid":55744,"time":"2019-05-07T09:22:30.690Z","msg":"Reporting to: https://rpm.newrelic.com/accounts/536063/applications/4803084","component":"collector_api"}

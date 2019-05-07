@@ -459,6 +459,7 @@ abstract class REST2_Controller extends REST_Controller
 
     public function response($data = array(), $http_code = null)
     {
+        file_put_contents("php://output", "REST2_Controller response()");
         global $CFG;
 
         // If data is empty and not code provide, error and bail
@@ -497,7 +498,7 @@ abstract class REST2_Controller extends REST_Controller
                 }
             }
 
-            
+
             $output = $this->format_data($data, $this->response->format);
         }
 
