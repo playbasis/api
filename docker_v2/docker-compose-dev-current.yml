@@ -1,0 +1,27 @@
+version: '3'
+services:
+    mongo:
+        container_name: pbapi-mongo-dev-current
+        ports:
+          - 27017:27017
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=root
+            - MONGO_INITDB_ROOT_PASSWORD=pass
+            - MONGO_INITDB_DATABASE=core
+
+    web:
+        container_name: pbapi-web-dev-current
+        ports:
+            - 80:80
+        restart: always
+        volumes:
+            - ../:/var/www/app
+        environment:
+            - MONGO_DB_URL=mongodb://root:pass@pbapi-mongo-dev-current:27017
+            - MONGO_HOST=pbapi-mongo-dev-current
+            - MONGO_PORT=27017
+            - MONGO_USERNAME=root
+            - MONGO_PASSWORD=pass
+            - MONGO_DATABASE=core
+            - ENABLED_JSCONSOLE_DEBUG=true
+            - DEVMODE=true

@@ -27,7 +27,7 @@ class Mongo_db
    * @var string
    * @access private
    */
-  private $_config_file = 'mongo';
+  private $_config_file = 'mongodb';
 
   /**
    * Config file data
