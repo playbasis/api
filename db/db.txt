@@ -1,0 +1,13 @@
+digi-db1:PRIMARY> show dbs;
+admin             0.642GB
+api_metrics       0.003GB
+checkweb          0.000GB
+core           1437.493GB
+core_kasikorn     0.016GB
+core_playbook     0.082GB
+core_starhub      0.120GB
+core_true         0.329GB
+ex                0.002GB
+lisa              0.000GB
+local            16.367GB
+playboy           0.062GB

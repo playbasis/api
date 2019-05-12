@@ -32,7 +32,7 @@
 		margin: 0 auto;
 	}
 </style>
-</head>
+</head> 
 <body>
 	<div class="container deco">
 		<h1>Welcome to Playbasis API</h1>

@@ -1,0 +1,2 @@
+
+db.User.insert({name: "23"})
