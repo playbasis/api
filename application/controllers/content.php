@@ -17,6 +17,143 @@ class Content extends REST2_Controller
         $this->load->model('tool/respond', 'resp');
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Content"},
+     *     path="/Content",
+     *     description="Retrieve content(s) by specified filter fields",
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="query",
+     *         type="string",
+     *         description="Node Id of specific content",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="language",
+     *         in="query",
+     *         type="string",
+     *         description="Select language of content's detail | default = English",
+     *         required=false,
+     *         default="English"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="title",
+     *         in="query",
+     *         type="string",
+     *         description="Specific title of content",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="category",
+     *         in="query",
+     *         type="string",
+     *         description="Specific category name of content",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="date_check",
+     *         in="query",
+     *         type="string",
+     *         description="Return content that is available in this date range",
+     *         required=false,
+     *         default="false",
+     *     ),
+     *     @SWG\Parameter(
+     *         name="sort",
+     *         in="query",
+     *         type="string",
+     *         description="Return content that is available in this date range",
+     *         required=false,
+     *         default="title",
+     *         enum={"title", "date_start", "date_end", "date_added", "date_modified", "random", "followup", "action"}
+     *     ),
+     *     @SWG\Parameter(
+     *         name="order",
+     *         in="query",
+     *         type="string",
+     *         description="Return content that is available in this date range | specify seed number if choice is 'random'",
+     *         required=false,
+     *         default="asc",
+     *         enum={"asc", "desc", "random"}
+     *     ),
+     *     @SWG\Parameter(
+     *         name="offset",
+     *         in="query",
+     *         type="string",
+     *         description="Specify paging offset | default = 0",
+     *         required=false,
+     *         default=0,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         type="string",
+     *         description="Specify amount to return | default = 20",
+     *         required=false,
+     *         default=20,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="full_html",
+     *         in="query",
+     *         type="string",
+     *         description="Return full html",
+     *         required=false,
+     *         default="false",
+     *         enum={"true","false"}
+     *     ),
+     *     @SWG\Parameter(
+     *         name="pin",
+     *         in="query",
+     *         type="string",
+     *         description="Secret PIN code for content",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="tags",
+     *         in="query",
+     *         type="string",
+     *         description="Specific tag(s) to find",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="status",
+     *         in="query",
+     *         type="string",
+     *         description="Specify status of the content to find. | default = true",
+     *         required=false,
+     *         default="true",
+     *         enum={"true", "false", "all"}
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="only_new_content",
+     *         in="path",
+     *         type="string",
+     *         description="Display content which the player does not provide any action (like/dislike)",
+     *         required=false,
+     *         enum={"true", "false"}
+     *     ),
+     *     @SWG\Parameter(
+     *         name="only_new_feedback",
+     *         in="path",
+     *         type="string",
+     *         description="Display content which the player does not provide any action yet",
+     *         required=false,
+     *         enum={"true", "false"}
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function list_get()
     {
         $this->benchmark->mark('start');
@@ -164,9 +301,9 @@ class Content extends REST2_Controller
         if (isset($query_data['full_html']) && $query_data['full_html'] == "true") {
             if(is_array($contents))foreach ($contents as &$content){
                 $content['detail'] = '<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">' .
-                        '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">' .
-                        '<style>img{ max-width: 100%}</style>' .
-                        '</head><title></title><body>' . $content['detail'] . '</body></html>';
+                    '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">' .
+                    '<style>img{ max-width: 100%}</style>' .
+                    '</head><title></title><body>' . $content['detail'] . '</body></html>';
             }
         }
         array_walk($contents, function(&$val, $key) use (&$contents){
@@ -374,9 +511,9 @@ class Content extends REST2_Controller
                     if (isset($query_data['full_html']) && $query_data['full_html'] == "true") {
 
                         $res['detail'] = '<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">' .
-                                '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">' .
-                                '<style>img{ max-width: 100%}</style>' .
-                                '</head><title></title><body>' . $detail_to_language . '</body></html>';
+                            '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">' .
+                            '<style>img{ max-width: 100%}</style>' .
+                            '</head><title></title><body>' . $detail_to_language . '</body></html>';
 
                     }else {
                         $res['detail'] = $detail_to_language;
@@ -400,6 +537,85 @@ class Content extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $result, 'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Content"},
+     *     path="/Content/count",
+     *     description="Count content(s) by specified filter fields",
+     *     @SWG\Parameter(
+     *         name="title",
+     *         in="query",
+     *         type="string",
+     *         description="Specific title of content",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="category",
+     *         in="query",
+     *         type="string",
+     *         description="Specific category name of content",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="date_check",
+     *         in="query",
+     *         type="string",
+     *         description="Return content that is available in this date range",
+     *         required=false,
+     *         default="false",
+     *     ),
+     *     @SWG\Parameter(
+     *         name="pin",
+     *         in="query",
+     *         type="string",
+     *         description="Secret PIN code for content",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="tags",
+     *         in="query",
+     *         type="string",
+     *         description="Specific tag(s) to find",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="status",
+     *         in="query",
+     *         type="string",
+     *         description="Specify status of the content to find. | default = true",
+     *         required=false,
+     *         default="true",
+     *         enum={"true", "false", "all"}
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="only_new_content",
+     *         in="path",
+     *         type="string",
+     *         description="Display content which the player does not provide any action (like/dislike)",
+     *         required=false,
+     *         enum={"true", "false"}
+     *     ),
+     *     @SWG\Parameter(
+     *         name="only_new_feedback",
+     *         in="path",
+     *         type="string",
+     *         description="Display content which the player does not provide any action yet",
+     *         required=false,
+     *         enum={"true", "false"}
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function countContent_get()
     {
         $this->benchmark->mark('start');
@@ -496,6 +712,62 @@ class Content extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $count_value,'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Content"},
+     *     path="/Content/category",
+     *     description="Retrieve category by specified filter fields",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Specific Id of category",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="name",
+     *         in="path",
+     *         type="string",
+     *         description="Specific name of category",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="sort",
+     *         in="path",
+     *         type="string",
+     *         description="Specific field to sort | (e.g. _id, name, dated_added, date_modified)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="order",
+     *         in="path",
+     *         type="string",
+     *         description="Direction to order | (e.g. desc, asc)",
+     *         required=false,
+     *         default="asc"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="offset",
+     *         in="path",
+     *         type="integer",
+     *         description="Specify paging offset | default = 0",
+     *         required=false,
+     *         default=0
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="path",
+     *         type="integer",
+     *         description="Specify amount of records",
+     *         required=false,
+     *         default=20
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function listCategory_get()
     {
         $this->benchmark->mark('start');
@@ -535,6 +807,124 @@ class Content extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $result, 'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Content"},
+     *     path="/Content/addContent",
+     *     description="Create content",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="query",
+     *         type="string",
+     *         description="Specific Node Id of content",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="title",
+     *         in="query",
+     *         type="string",
+     *         description="Specific title of content",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="summary",
+     *         in="query",
+     *         type="string",
+     *         description="Specific summary of content",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="detail",
+     *         in="query",
+     *         type="string",
+     *         description="Specific detail of content",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="category",
+     *         in="query",
+     *         type="string",
+     *         description="Specific category name of content",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="image",
+     *         in="query",
+     *         type="string",
+     *         description="URL to the content profile image",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="status",
+     *         in="query",
+     *         type="string",
+     *         description="URL to the content profile image",
+     *         required=false,
+     *         default="false",
+     *         enum={"true", "false"},
+     *     ),
+     *     @SWG\Parameter(
+     *         name="date_start",
+     *         in="query",
+     *         type="string",
+     *         description="Date start | format = YYYY-MM-DD (e.g. 1982-09-29)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="date_end",
+     *         in="query",
+     *         type="string",
+     *         description="Date end | format = YYYY-MM-DD (e.g. 1982-09-29)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="pin",
+     *         in="query",
+     *         type="string",
+     *         description="Secret PIN code for content",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="tags",
+     *         in="query",
+     *         type="string",
+     *         description="Specific tag(s) to find",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="key",
+     *         in="query",
+     *         type="string",
+     *         description="Comma separated keys",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="value",
+     *         in="query",
+     *         type="string",
+     *         description="Comma separated values",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function insert_post()
     {
         $this->benchmark->mark('start');
@@ -637,6 +1027,117 @@ class Content extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $insert, 'node_id' => $result_node_id, 'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Content"},
+     *     path="/Content/{node_id}/update",
+     *     description="Update content",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Specific Node Id of content",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="title",
+     *         in="query",
+     *         type="string",
+     *         description="Specific title of content",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="summary",
+     *         in="query",
+     *         type="string",
+     *         description="Specific summary of content",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="detail",
+     *         in="query",
+     *         type="string",
+     *         description="Specific detail of content",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="category",
+     *         in="query",
+     *         type="string",
+     *         description="Specific category name of content",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="image",
+     *         in="query",
+     *         type="string",
+     *         description="URL to the content profile image",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="status",
+     *         in="query",
+     *         type="string",
+     *         description="URL to the content profile image",
+     *         required=false,
+     *         default="false",
+     *         enum={"true", "false"},
+     *     ),
+     *     @SWG\Parameter(
+     *         name="date_start",
+     *         in="query",
+     *         type="string",
+     *         description="Date start | format = YYYY-MM-DD (e.g. 1982-09-29)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="date_end",
+     *         in="query",
+     *         type="string",
+     *         description="Date end | format = YYYY-MM-DD (e.g. 1982-09-29)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="pin",
+     *         in="query",
+     *         type="string",
+     *         description="Secret PIN code for content",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="tags",
+     *         in="query",
+     *         type="string",
+     *         description="Specific tag(s) to find",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="key",
+     *         in="query",
+     *         type="string",
+     *         description="Comma separated keys",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="value",
+     *         in="query",
+     *         type="string",
+     *         description="Comma separated values",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function update_post($node_id = null)
     {
         $this->benchmark->mark('start');
@@ -717,6 +1218,96 @@ class Content extends REST2_Controller
         $this->response($this->resp->setRespond(array('processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Content"},
+     *     path="/Content/{node_id}/player/{player_id}/like",
+     *     description="Send a like action as a player to content",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Node ID as used in client's content",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="key",
+     *         in="query",
+     *         type="string",
+     *         description="Custom fields keys separated by comma",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="values",
+     *         in="query",
+     *         type="string",
+     *         description="Custom fields values separated by comma",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     * @SWG\Post(
+     *     tags={"Content"},
+     *     path="/Content/{node_id}/player/{player_id}/dislike",
+     *     description="Send a dislike action as a player to content",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Node ID as used in client's content",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="key",
+     *         in="query",
+     *         type="string",
+     *         description="Custom fields keys separated by comma",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="values",
+     *         in="query",
+     *         type="string",
+     *         description="Custom fields values separated by comma",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function action_post($action = null, $node_id = null, $player_id = null)
     {
         $this->load->library('RestClient');
@@ -825,6 +1416,59 @@ class Content extends REST2_Controller
         $this->response($this->resp->setRespond(array('processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Content"},
+     *     path="/Content/{node_id}/player/{player_id}/feedback",
+     *     description="Send feedback as a player to content",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Node ID as used in client's content",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="feedback",
+     *         in="query",
+     *         type="string",
+     *         description="Feedback from the player to the content",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="key",
+     *         in="query",
+     *         type="string",
+     *         description="Custom fields keys separated by comma",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="values",
+     *         in="query",
+     *         type="string",
+     *         description="Custom fields values separated by comma",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function giveFeedback_post($node_id, $player_id)
     {
         $this->benchmark->mark('start');
@@ -891,6 +1535,31 @@ class Content extends REST2_Controller
         $this->response($this->resp->setRespond(array('result'=> $result,'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Content"},
+     *     path="/Content/{node_id}/delete",
+     *     description="Delete content",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Specific Node Id of content",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function deleteContent_post($node_id = null)
     {
         $this->benchmark->mark('start');
@@ -913,6 +1582,31 @@ class Content extends REST2_Controller
         $this->response($this->resp->setRespond(array('processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Content"},
+     *     path="/Content/category/create",
+     *     description="Create content category",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="name",
+     *         in="query",
+     *         type="string",
+     *         description="Specific name of category",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function createContentCategory_post()
     {
         $this->benchmark->mark('start');
@@ -930,6 +1624,38 @@ class Content extends REST2_Controller
         $this->response($this->resp->setRespond(array('processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Content"},
+     *     path="/Content/category/update",
+     *     description="Update content category",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="query",
+     *         type="string",
+     *         description="Specific Id of category",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="name",
+     *         in="query",
+     *         type="string",
+     *         description="Specific name of category",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function updateContentCategory_post()
     {
         $this->benchmark->mark('start');
@@ -971,6 +1697,31 @@ class Content extends REST2_Controller
         $this->response($this->resp->setRespond(array('processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Content"},
+     *     path="/Content/category/delete",
+     *     description="Delete content category",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="query",
+     *         type="string",
+     *         description="Specific Id of category",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function deleteContentCategory_post()
     {
         $this->benchmark->mark('start');

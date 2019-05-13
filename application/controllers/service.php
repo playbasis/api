@@ -187,6 +187,40 @@ class Service extends REST2_Controller
         }
     */
 
+    /**
+     * @SWG\Get(
+     *     tags={"Service"},
+     *     path="/Service/recent_point",
+     *     description="Returns recent points",
+     *     @SWG\Parameter(
+     *         name="point_name",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="offset",
+     *         in="query",
+     *         type="integer",
+     *         description="Index of records to start at",
+     *         required=false,
+     *         default=0
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         type="integer",
+     *         description="Number of results to return",
+     *         required=false,
+     *         default=20
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function recent_point_get($player_id = '')
     {
         $offset = ($this->input->get('offset')) ? $this->input->get('offset') : 0;
@@ -225,6 +259,78 @@ class Service extends REST2_Controller
         $this->response($this->resp->setRespond($respondThis), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Live Feed"},
+     *     path="/Service/recentActivities",
+     *     description="Returns recent activites",
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="offset",
+     *         in="query",
+     *         type="integer",
+     *         description="Index of records to start at",
+     *         required=false,
+     *         default=0
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         type="integer",
+     *         description="Number of results to return",
+     *         required=false,
+     *         default=20
+     *     ),
+     *     @SWG\Parameter(
+     *         name="last_read_activity_id",
+     *         in="query",
+     *         type="string",
+     *         description="Last activity ID that you read",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="mode",
+     *         in="query",
+     *         type="string",
+     *         description="Specify all or player",
+     *         required=false,
+     *         default="all",
+     *         enum={"all", "player"},
+     *     ),
+     *     @SWG\Parameter(
+     *         name="event_type",
+     *         in="query",
+     *         type="string",
+     *         description="Event type",
+     *         required=false,
+     *         enum={"reward", "redeem", "action", "level"}
+     *     ),
+     *     @SWG\Parameter(
+     *         name="action_name",
+     *         in="query",
+     *         type="string",
+     *         description="Filter action name",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="reward_name",
+     *         in="query",
+     *         type="string",
+     *         description="Filter reward name",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function recent_activities_get()
     {
         $offset = ($this->input->get('offset')) ? $this->input->get('offset') : 0;
@@ -252,6 +358,24 @@ class Service extends REST2_Controller
         $this->response($this->resp->setRespond($respondThis), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Live Feed"},
+     *     path="/Service/detailActivityFeed/{activity_id}",
+     *     description="Get detail activity",
+     *     @SWG\Parameter(
+     *         name="activity_id",
+     *         in="path",
+     *         type="string",
+     *         description="Activity ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function detail_activity_get($activity_id = '')
     {
         if (!$activity_id) {
@@ -267,6 +391,38 @@ class Service extends REST2_Controller
         $this->response($this->resp->setRespond($respondThis), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Live Feed"},
+     *     path="/Service/likeActivityFeed/{activity_id}",
+     *     description="Like activity",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="activity_id",
+     *         in="path",
+     *         type="string",
+     *         description="Activity ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function like_activity_post($activity_id = '')
     {
         if (!$activity_id) {
@@ -295,6 +451,45 @@ class Service extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => true)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Live Feed"},
+     *     path="/Service/commentActivity/{activity_id}",
+     *     description="Comment on activity",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="activity_id",
+     *         in="path",
+     *         type="string",
+     *         description="Activity ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="message",
+     *         in="query",
+     *         type="string",
+     *         description="Comment message",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function comment_activity_post($activity_id = '')
     {
         if (!$activity_id) {
@@ -330,6 +525,31 @@ class Service extends REST2_Controller
         $this->response($this->resp->setRespond($res), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Service"},
+     *     path="/Service/reset_point",
+     *     description="Reset point of all players",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="point_name",
+     *         in="query",
+     *         type="string",
+     *         description="Name of the point-based reward to query",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function reset_point_post()
     {
         $reward_name = $this->input->post('point_name');

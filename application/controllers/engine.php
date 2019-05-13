@@ -101,6 +101,31 @@ class Engine extends Quest
         $this->response($this->resp->setRespond($actionConfig), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Engine"},
+     *     path="/Engine/rules",
+     *     description="Returns a list of active game rules defined for a client's website",
+     *     @SWG\Parameter(
+     *         name="action",
+     *         in="query",
+     *         type="string",
+     *         description="Name of action performed",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function rules_get()
     {
         /* check parameters */
@@ -196,6 +221,31 @@ class Engine extends Quest
         $this->response($this->resp->setRespond($rules), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Engine"},
+     *     path="/Engine/rule/{id}",
+     *     description="Get details of the rule",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Rule ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function rule_get($rule_id = 0)
     {
         /* check parameters */
@@ -471,6 +521,80 @@ class Engine extends Quest
         $this->response($this->resp->setRespond($apiResult), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Engine"},
+     *     path="/Engine/rule",
+     *     description="Returns a list of active game rules defined for a client's website",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="action",
+     *         in="query",
+     *         type="string",
+     *         description="Name of action performed",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="url",
+     *         in="query",
+     *         type="string",
+     *         description="URL of the page that triggers the action or any identifier string",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="reward",
+     *         in="query",
+     *         type="string",
+     *         description="Name of the point-based rewardto give to the player",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="quantity",
+     *         in="query",
+     *         type="string",
+     *         description="Amount of point-based rewards to give to the player",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="rule_id",
+     *         in="query",
+     *         type="string",
+     *         description="You can also specify a rule Id so that the rule engine will only process against that rule",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="query",
+     *         type="string",
+     *         description="You can also specific a node Id so that the rule engine will process with that rule",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="session_id",
+     *         in="query",
+     *         type="string",
+     *         description="You can specify a session Id to extend expiration session time for the player",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function rule_post($option = 0)
     {
         $this->benchmark->mark('engine_rule_start');

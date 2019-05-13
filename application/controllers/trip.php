@@ -14,6 +14,40 @@ class Trip extends REST2_Controller
         $this->load->model('tool/respond', 'resp');
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Trip"},
+     *     path="/Trip",
+     *     description="List of Trips that the player has started.",
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="trip_id",
+     *         in="query",
+     *         type="string",
+     *         description="Trip ID",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="finished",
+     *         in="query",
+     *         type="string",
+     *         description="Status of trip",
+     *         default="",
+     *         required=false,
+     *         enum={"", "true", "false"},
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function getTrip_get()
     {
         $this->benchmark->mark('start');
@@ -56,7 +90,32 @@ class Trip extends REST2_Controller
         $t = $this->benchmark->elapsed_time('start', 'end');
         $this->response($this->resp->setRespond(array('result' => $results, 'processing_time' => $t)), 200);
     }
-    
+
+    /**
+     * @SWG\Post(
+     *     tags={"Trip"},
+     *     path="/Trip/startTrip",
+     *     description="Start trip",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function startTrip_post()
     {
         $this->benchmark->mark('start');
@@ -88,6 +147,40 @@ class Trip extends REST2_Controller
         $this->response($this->resp->setRespond(array('trip_id' => $result."", 'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Trip"},
+     *     path="/Trip/finishTrip",
+     *     description="Finish trip",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="drive_log",
+     *         in="query",
+     *         type="string",
+     *         description="Response including driving log",
+     *         required=true,
+     *         default="false",
+     *         enum={"true", "false"},
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function finishTrip_post()
     {
         $this->benchmark->mark('start');
@@ -191,6 +284,87 @@ class Trip extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $tripResult,'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Trip"},
+     *     path="/Trip/addTripLog",
+     *     description="Log driving status of the trip that the player has started",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="trip_id",
+     *         in="query",
+     *         type="string",
+     *         description="Trip Id",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="speed",
+     *         in="query",
+     *         type="string",
+     *         description="Current speed | (km/h)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="latitude",
+     *         in="query",
+     *         type="string",
+     *         description="Current latitude",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="longitude",
+     *         in="query",
+     *         type="string",
+     *         description="Current longitude",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="altitude",
+     *         in="query",
+     *         type="string",
+     *         description="Current altitude",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="rpm",
+     *         in="query",
+     *         type="string",
+     *         description="Current RPM",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="distance",
+     *         in="query",
+     *         type="string",
+     *         description="Distance from start",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="speed_limit",
+     *         in="query",
+     *         type="string",
+     *         description="Speed limit at the location | (km/h)",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function addTripLog_post()
     {
         $this->benchmark->mark('start');
@@ -243,6 +417,31 @@ class Trip extends REST2_Controller
         $this->response($this->resp->setRespond(array('processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Trip"},
+     *     path="/Trip/getTripLog",
+     *     description="Retrieve driving status log of specific trip Id",
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="trip_id",
+     *         in="query",
+     *         type="string",
+     *         description="Trip Id",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function getTripLog_get()
     {
         $this->benchmark->mark('start');

@@ -13,6 +13,31 @@ class Campaign extends REST2_Controller
         $this->load->model('tool/respond', 'resp');
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Campaign"},
+     *     path="/Campaign",
+     *     description="Get campaign",
+     *     @SWG\Parameter(
+     *         name="campaign_name",
+     *         in="query",
+     *         type="string",
+     *         description="Name of campaign to retrieve campaign details",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="tags",
+     *         in="query",
+     *         type="string",
+     *         description="Specific tag(s) to find",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function index_get()
     {
         $campaign_name = $this->input->get('campaign_name');
@@ -26,6 +51,24 @@ class Campaign extends REST2_Controller
         $this->response($this->resp->setRespond($result), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Campaign"},
+     *     path="/Campaign/active",
+     *     description="Retrieve active campaign",
+     *     @SWG\Parameter(
+     *         name="tags",
+     *         in="query",
+     *         type="string",
+     *         description="Specific tag(s) to find",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function activeCampaign_get()
     {
         $tags = $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null;

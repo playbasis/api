@@ -24,6 +24,45 @@ class Push extends REST2_Controller
         $this->response($this->resp->setRespond(array('to' => $to, 'from' => $from, 'message' => $message)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Communication"},
+     *     path="/Push/send",
+     *     description="Send push notfications to a player",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="message",
+     *         in="query",
+     *         type="string",
+     *         description="SMS Message",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="template_id",
+     *         in="query",
+     *         type="string",
+     *         description="Template message",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function send_post()
     {
         /* check permission to send push notification in this bill cycle */
@@ -100,6 +139,52 @@ class Push extends REST2_Controller
         $this->response($this->resp->setRespond(''), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Communication"},
+     *     path="/Push/goods",
+     *     description="Send coupon to a player via push notification.",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="ref_id",
+     *         in="query",
+     *         type="string",
+     *         description="Reference transaction ID for redemption",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="message",
+     *         in="query",
+     *         type="string",
+     *         description="SMS Message | use {{coupon}} for the code | message or template_id is required",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="template_id",
+     *         in="query",
+     *         type="string",
+     *         description="Template message | message or template_id is required",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function send_goods_post()
     {
         /* check permission to send push notification in this bill cycle */
@@ -225,6 +310,61 @@ class Push extends REST2_Controller
         $pb_player_id = $this->player_model->getPlaybasisId($validToken);
     }*/
 
+    /**
+     * @SWG\Post(
+     *     tags={"Communication"},
+     *     path="/Push/deviceRegistration",
+     *     description="Register for your device",
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="device_token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned from device",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="device_description",
+     *         in="query",
+     *         type="string",
+     *         description="Device model description",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="device_name",
+     *         in="query",
+     *         type="string",
+     *         description="Device model name",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="os_type",
+     *         in="query",
+     *         type="string",
+     *         description="Device model name",
+     *         required=true,
+     *         enum={"IOS", "Android"},
+     *         default="IOS"
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function deviceRegistration_post()
     {
         $this->benchmark->mark('start');
@@ -271,6 +411,38 @@ class Push extends REST2_Controller
         $this->response($this->resp->setRespond(array('processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Communication"},
+     *     path="/Push/deviceDeRegistration",
+     *     description="DeRegister for your device",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="device_token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned from device",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function deviceDeRegistration_post()
     {
         $this->benchmark->mark('start');
@@ -336,6 +508,32 @@ class Push extends REST2_Controller
         }
         $this->response($this->resp->setRespond(''), 200);
     }*/
+
+    /**
+     * @SWG\Get(
+     *     tags={"Communication"},
+     *     path="/Push/recent",
+     *     description="List recent push notifications to a player",
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="since",
+     *         in="query",
+     *         type="string",
+     *         description="DateTime format string",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function recent_get()
     {
         /* process parameters */
@@ -363,6 +561,40 @@ class Push extends REST2_Controller
         $this->response($this->resp->setRespond($results), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Communication"},
+     *     path="/Push/template/{template_id}",
+     *     description="List recent push notifications to a player",
+     *     @SWG\Parameter(
+     *         name="template_id",
+     *         in="path",
+     *         type="string",
+     *         description="Template message",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     * @SWG\Get(
+     *     tags={"Communication"},
+     *     path="/Push/template",
+     *     description="List recent push notifications",
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function template_get($template_id = '')
     {
         $result = array();

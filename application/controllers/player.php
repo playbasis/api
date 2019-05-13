@@ -31,6 +31,31 @@ class Player extends REST2_Controller
         $this->load->model('sms_model');
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Player"},
+     *     path="/Player/{id}",
+     *     description="Get public information about a player",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function index_get($player_id = '')
     {
         if (!$player_id) {
@@ -67,6 +92,31 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($player), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/{id}",
+     *     description="Get public/private information about a player",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function index_post($player_id = '')
     {
         if (!$player_id) {
@@ -129,6 +179,38 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($player), 200);
     }*/
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/list",
+     *     description="Get public information of players",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="list_player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Comma separated values of player id's or tags (e.g. 1,2,3)",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="tags",
+     *         in="query",
+     *         type="string",
+     *         description="Specific tag(s) to find",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function list_post()
     {
         if(isset($_POST['list_player_id']) && $_POST['list_player_id']) {
@@ -179,6 +261,31 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($player), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Player"},
+     *     path="/Player/{id}/data/all",
+     *     description="Get detailed public and private information about a player including (points, badges)",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function details_get($player_id = '')
     {
         if (!$player_id) {
@@ -243,6 +350,31 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($player), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/{id}/data/all",
+     *     description="Get detailed public and private information about a player including (points, badges)",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function details_post($player_id = '')
     {
         if (!$player_id) {
@@ -358,6 +490,146 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($player), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/{id}/register",
+     *     description="Register a user from client's website as a Playbasis player",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="username",
+     *         in="query",
+     *         type="string",
+     *         description="Player's username",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="email",
+     *         in="query",
+     *         type="string",
+     *         description="Player's email",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="image",
+     *         in="query",
+     *         type="string",
+     *         description="Player's profile image",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="password",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID's password",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="phone_number",
+     *         in="query",
+     *         type="string",
+     *         description="Player's phone number (e.g. +66 xxyyyyzzzz)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="tags",
+     *         in="query",
+     *         type="string",
+     *         description="Specific tag(s) to find",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="facebook_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player's Facebook ID",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="twitter_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player's Twitter ID",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="first_name",
+     *         in="query",
+     *         type="string",
+     *         description="Player's first name",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="last_name",
+     *         in="query",
+     *         type="string",
+     *         description="Player's last name",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="gender",
+     *         in="query",
+     *         type="string",
+     *         description="Player's gender",
+     *         required=false,
+     *         enum={"1", "2"}
+     *     ),
+     *     @SWG\Parameter(
+     *         name="birth_date",
+     *         in="query",
+     *         type="string",
+     *         description="Player's date of birth (e.g. YYYY-MM-DD)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="code",
+     *         in="query",
+     *         type="string",
+     *         description="Referral code of another player for an invitation",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="anonymous",
+     *         in="query",
+     *         type="string",
+     *         description="Anonymous flag",
+     *         required=false,
+     *         enum={"0", "1"}
+     *     ),
+     *     @SWG\Parameter(
+     *         name="device_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player's Device ID to submit verification process",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="approve_status",
+     *         in="query",
+     *         type="string",
+     *         description="Approval status of the Player",
+     *         required=false,
+     *         enum={"approved", "rejected", "pending"}
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function register_post($player_id = '')
     {
         if (!$player_id) {
@@ -576,6 +848,39 @@ class Player extends REST2_Controller
             $this->response($this->error->setError('LIMIT_EXCEED'), 200);
         }
     }
+
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/referral",
+     *     description="To perform an invitation between two players and referral code",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="referral_code",
+     *         in="query",
+     *         type="string",
+     *         description="Referral code of another player for an invitation",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function referral_post()
     {
         $required = $this->input->checkParam(array(
@@ -686,6 +991,138 @@ class Player extends REST2_Controller
         }
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/{id}/update",
+     *     description="Update a player's information",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="username",
+     *         in="query",
+     *         type="string",
+     *         description="Player's username",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="email",
+     *         in="query",
+     *         type="string",
+     *         description="Player's email",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="image",
+     *         in="query",
+     *         type="string",
+     *         description="Player's profile image",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="phone_number",
+     *         in="query",
+     *         type="string",
+     *         description="Player's phone number (e.g. +66 xxyyyyzzzz)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="tags",
+     *         in="query",
+     *         type="string",
+     *         description="Specific tag(s) to find",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="facebook_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player's Facebook ID",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="twitter_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player's Twitter ID",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="first_name",
+     *         in="query",
+     *         type="string",
+     *         description="Player's first name",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="last_name",
+     *         in="query",
+     *         type="string",
+     *         description="Player's last name",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="gender",
+     *         in="query",
+     *         type="string",
+     *         description="Player's gender",
+     *         required=false,
+     *         enum={"1", "2"}
+     *     ),
+     *     @SWG\Parameter(
+     *         name="birth_date",
+     *         in="query",
+     *         type="string",
+     *         description="Player's date of birth (e.g. YYYY-MM-DD)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="device_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player's Device ID to submit verification process",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="exp",
+     *         in="query",
+     *         type="integer",
+     *         description="Player's experience points",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="level",
+     *         in="query",
+     *         type="integer",
+     *         description="Player's level",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="approve_status",
+     *         in="query",
+     *         type="string",
+     *         description="Approval status of the Player",
+     *         required=false,
+     *         enum={"approved", "rejected", "pending"}
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function update_post($player_id = '')
     {
         if (!$player_id) {
@@ -817,6 +1254,24 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond(), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Player"},
+     *     path="/Player/{id}/custom",
+     *     description="Get custom field information about a player",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function custom_get($player_id = '')
     {
         if (!$player_id) {
@@ -845,6 +1300,45 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($player), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/{id}/custom",
+     *     description="Set custom field information about a player",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="key",
+     *         in="query",
+     *         type="string",
+     *         description="Attribute to change",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="value",
+     *         in="query",
+     *         type="string",
+     *         description="Attribute value",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function custom_post($player_id = '')
     {
         if (!$player_id) {
@@ -885,6 +1379,31 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond(), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/{id}/player/delete",
+     *     description="Permanently delete a player from Playbasis",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function delete_post($player_id = '')
     {
         if (!$player_id) {
@@ -903,6 +1422,45 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond(), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/{id}/login",
+     *     description="Tell Playbasis that a player has logged in",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="session_id",
+     *         in="query",
+     *         type="string",
+     *         description="Session ID of the player",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="session_expires_in",
+     *         in="query",
+     *         type="string",
+     *         description="Session expiring in x seconds",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function login_post($player_id = '')
     {
         if (!$player_id) {
@@ -988,6 +1546,38 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond(), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/{id}/logout",
+     *     description="Tell Playbasis that a player has logged out",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="session_id",
+     *         in="query",
+     *         type="string",
+     *         description="Session ID of the player",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function logout_post($player_id = '')
     {
         if (!$player_id) {
@@ -1035,6 +1625,25 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond(), 200);
     }
 
+
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/{id}/sessions",
+     *     description="Get a list of active sessions of a player",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function sessions_get($player_id = '')
     {
         if (!$player_id) {
@@ -1056,6 +1665,24 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($sessions), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/session/{session_id}",
+     *     description="Get a player by their session_id",
+     *     @SWG\Parameter(
+     *         name="session_id",
+     *         in="path",
+     *         type="string",
+     *         description="Player's Session ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function session_get($session_id = '')
     {
         if (!$session_id) {
@@ -1085,6 +1712,52 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($player), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/auth",
+     *     description="Authenticate, log in, and create a session for a player",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="email",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID's email",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="username",
+     *         in="query",
+     *         type="string",
+     *         description="Player's username",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="password",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID's password",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="device_token",
+     *         in="query",
+     *         type="string",
+     *         description="Player's Device ID to submit verification process",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function auth_post()
     {
         $username = $this->input->post('username');
@@ -1179,6 +1852,38 @@ class Player extends REST2_Controller
         )), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/auth/{id}/verifyOTPCode",
+     *     description="Perform OTP verification from code that has been sent to player's SMS",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="code",
+     *         in="query",
+     *         type="string",
+     *         description="OTP Code to be sent to player",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function verifyOTPCode_post($player_id = '')
     {
         if (!$player_id) {
@@ -1226,6 +1931,31 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond(), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/password/email",
+     *     description="Reset a player's password stored on Playbasis",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="email",
+     *         in="query",
+     *         type="string",
+     *         description="Player Email as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function forgotPasswordEmail_post()
     {
         $email = $this->input->post('email');
@@ -1256,6 +1986,31 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond(array('success' => true)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/{id}/email/verify",
+     *     description="Verify a player's email that's stored on Playbasis",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="query",
+     *         type="string",
+     *         description="Player's ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function emailVerify_post($player_id = '')
     {
         if (!$player_id) {
@@ -1290,6 +2045,24 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond(array('success' => true,'message' => 'Verification message was sent to your email. Please check it.')), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/{id}/points",
+     *     description="Get information about all point-based rewards that a player currently has",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function points_get($player_id = '')
     {
         if (!$player_id) {
@@ -1312,6 +2085,31 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($points), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/{id}/point/{point_name}",
+     *     description="Get specified point-based rewards a player currently has",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="point_name",
+     *         in="path",
+     *         type="string",
+     *         description="Name of point-based reward to query",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function point_get($player_id = '', $reward = '')
     {
         $required = array();
@@ -1418,6 +2216,56 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($point), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/{id}/point_history",
+     *     description="Returns history points of a player",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="point_name",
+     *         in="query",
+     *         type="string",
+     *         description="Point name to query",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="offset",
+     *         in="query",
+     *         type="integer",
+     *         description="Number of records to start at",
+     *         required=false,
+     *         default=0,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         type="integer",
+     *         description="Number of records to stop at",
+     *         required=false,
+     *         default=20,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="order",
+     *         in="query",
+     *         type="string",
+     *         description="Order records by ASC/DESC",
+     *         required=false,
+     *         enum={"asc", "desc"},
+     *         default="desc",
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function point_history_get($player_id = '')
     {
         if (!$player_id) {
@@ -1458,6 +2306,40 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($respondThis), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Player"},
+     *     path="/Player/{id}/quest_reward_history",
+     *     description="List of all available quests of the client along with the status of the player",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="offset",
+     *         in="query",
+     *         type="integer",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *         default=0,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         type="integer",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *         default=50,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function quest_reward_history_get($player_id = '')
     {
         if (!$player_id) {
@@ -1486,6 +2368,45 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($respondThis), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/{id}/action/{action_name}/count",
+     *     description="Returns the number of times that a player has performed the action",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="action_name",
+     *         in="path",
+     *         type="string",
+     *         description="Name of the action to query",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="key",
+     *         in="query",
+     *         type="string",
+     *         description="Name of the action to query (e.g. currency, type, url)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="value",
+     *         in="query",
+     *         type="string",
+     *         description="List of parameter values of the action to query (e.g. dollar,money, step)",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function action_get($player_id = '', $action = '', $option = 'time')
     {
         if (!$player_id) {
@@ -1529,6 +2450,61 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($actions), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/{id}/action_history",
+     *     description="Returns a list of actions that a player performed",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="action_name",
+     *         in="query",
+     *         type="string",
+     *         description="Point name to query",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="date_start",
+     *         in="query",
+     *         type="string",
+     *         description="Date start (e.g. YYYY-MM-DD format)",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="date_end",
+     *         in="query",
+     *         type="string",
+     *         description="Date end (e.g. YYYY-MM-DD format)",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         type="string",
+     *         description="Number of records to stop at",
+     *         required=true,
+     *         default="unlimited"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="offset",
+     *         in="query",
+     *         type="string",
+     *         description="Number of records to start at",
+     *         required=true,
+     *         default=0,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function action_history_get($player_id = '')
     {
         if (!$player_id) {
@@ -1586,6 +2562,61 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($result), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/{sent_player_id}/giveGift/{type}",
+     *     description="Deduct a reward from a given player",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="sent_player_id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="received_player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="gift_id",
+     *         in="query",
+     *         type="string",
+     *         description="ID of the gift (Badge ID, Goods ID, Custom_Point ID)",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="type",
+     *         in="path",
+     *         type="string",
+     *         description="Type of gift",
+     *         required=true,
+     *         enum={"BADGE", "CUSTOM_POINT", "GOODS"},
+     *         default="BADGE"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="amount",
+     *         in="query",
+     *         type="integer",
+     *         description="Amount of gift(s) to send",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function giveGift_post($sent_player_id, $gift_type){
         $client_id = new MongoId($this->validToken['client_id']);
         $site_id = new MongoId($this->validToken['site_id']);
@@ -1728,6 +2759,31 @@ class Player extends REST2_Controller
         $this->tracker_model->trackGift($data);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Player"},
+     *     path="/Player/{id}/badge",
+     *     description="Returns information about all Player's earned badges",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player's current level",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="tags",
+     *         in="query",
+     *         type="string",
+     *         description="Specific tag(s) to find",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function badge_get($player_id = '')
     {
         if (!$player_id) {
@@ -1747,6 +2803,31 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($badgeList), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Player"},
+     *     path="/Player/{id}/badgeAll",
+     *     description="Returns all information about the client's badges",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player's current level",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="tags",
+     *         in="query",
+     *         type="string",
+     *         description="Specific tag(s) to find",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function badgeAll_get($player_id = '')
     {
         $pb_player_id = null;
@@ -1770,6 +2851,40 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($badges), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Player"},
+     *     path="/Player/rank/{rank_by}/{limit}",
+     *     description="Returns list of players sorted by the specified range",
+     *     @SWG\Parameter(
+     *         name="rank_by",
+     *         in="path",
+     *         type="string",
+     *         description="Name of point-based reward to rank players by",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="path",
+     *         type="integer",
+     *         description="Number of results to return",
+     *         required=true,
+     *         default=20
+     *     ),
+     *     @SWG\Parameter(
+     *         name="mode",
+     *         in="query",
+     *         type="string",
+     *         description="Weekly, monthly, all time",
+     *         required=false,
+     *         enum={"weekly", "monthly", "all-time"}
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function rank_get($ranked_by, $limit = RETURN_LIMIT_FOR_RANK)
     {
         if (!$ranked_by) {
@@ -1812,6 +2927,33 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($leaderboard), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Player"},
+     *     path="/Player/ranks/{limit}",
+     *     description="Returns list of players sorted by the specified range",
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="path",
+     *         type="string",
+     *         description="Number of results to return for each point type",
+     *         required=true,
+     *         default=20,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="mode",
+     *         in="query",
+     *         type="string",
+     *         description="Weekly, monthly, all time",
+     *         required=false,
+     *         enum={"weekly", "monthly", "all-time"}
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function ranks_get($limit = RETURN_LIMIT_FOR_RANK)
     {
         $mode = $this->input->get('mode');
@@ -1832,6 +2974,31 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($leaderboards), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Player"},
+     *     path="/Player/rankuser/{id}/{rank_by}",
+     *     description="Returns list of players sorted by the specified range",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Name of point-based reward to rank players by",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="rank_by",
+     *         in="path",
+     *         type="string",
+     *         description="Name of point-based reward to rank players by",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function rankuser_get($player_id = '', $ranked_by = '')
     {
         if ($player_id == '' || $ranked_by == '') {
@@ -1899,6 +3066,53 @@ class Player extends REST2_Controller
         }
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Player"},
+     *     path="/Player/rankParam/{action}/{parameter}",
+     *     description="Returns list of players sorted by ascending custom parameter",
+     *     @SWG\Parameter(
+     *         name="action",
+     *         in="path",
+     *         type="string",
+     *         description="Action of parameter to rank players by",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="parameter",
+     *         in="path",
+     *         type="string",
+     *         description="Name of parameter to rank players by",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         type="integer",
+     *         description="Number of results to return",
+     *         required=false,
+     *         default=20
+     *     ),
+     *     @SWG\Parameter(
+     *         name="month",
+     *         in="query",
+     *         type="string",
+     *         description="Month to rank players by (e.g. 01,02,03, ...)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="year",
+     *         in="query",
+     *         type="string",
+     *         description="Year to rank players by (e.g. 2017,2018,2019)",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function rankParam_get($action, $param)
     {
         // Check validity of action and parameter
@@ -1943,6 +3157,41 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($result), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Player"},
+     *     path="/Player/level/{level}",
+     *     description="Returns detail of level",
+     *     @SWG\Parameter(
+     *         name="level",
+     *         in="path",
+     *         type="integer",
+     *         description="Player's current level",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     * * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/level/{level}",
+     *     description="Returns detail of level",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="integer",
+     *         description="Player's current level",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     ),
+     *     deprecated=true
+     * )
+     */
     public function level_get($level = '')
     {
         if (!$level) {
@@ -1956,12 +3205,81 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($level), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Player"},
+     *     path="/Player/levels",
+     *     description="Returns all details of levels",
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     *  * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/levels",
+     *     description="Returns all details of levels",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="level",
+     *         in="query",
+     *         type="integer",
+     *         description="Number of levels",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     ),
+     *     deprecated=true
+     * )
+     */
     public function levels_get()
     {
         $level = $this->level_model->getLevelsDetail($this->validToken['client_id'], $this->validToken['site_id']);
         $this->response($this->resp->setRespond($level), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Player"},
+     *     path="/Player/{id}/goods",
+     *     description="Returns all goods owned by a specific player",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Name of point-based reward to rank players by",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="tags",
+     *         in="query",
+     *         type="string",
+     *         description="Specific tag(s) to find",
+     *         required=false
+     *     ),
+     *     @SWG\Parameter(
+     *         name="status",
+     *         in="query",
+     *         type="string",
+     *         description="Get goods by a specified status",
+     *         required=false,
+     *         enum={"active", "all", "expired", "used", "gifted"},
+     *         default="active",
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function goods_get($player_id = '')
     {
         if (!$player_id) {
@@ -2033,6 +3351,47 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($goodsList), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/{id}/goods/favorite",
+     *     description="Set specific goods in a player's inventory as favorite",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="goods_id",
+     *         in="query",
+     *         type="string",
+     *         description="Comma separated values of tags",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="status",
+     *         in="query",
+     *         type="string",
+     *         description="Set favorite status (true | false)",
+     *         required=true,
+     *         enum={"true", "false"},
+     *         default="true",
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function goods_favorite_post($player_id = '')
     {
         if (!$player_id) {
@@ -2078,6 +3437,40 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond(), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Player"},
+     *     path="/Player/{id}/goods/count",
+     *     description="Returns information about the number of goods that a player has",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Name of point-based reward to rank players by",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="tags",
+     *         in="query",
+     *         type="string",
+     *         description="Specific tag(s) to find",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="status",
+     *         in="query",
+     *         type="string",
+     *         description="Set favorite status (true | false)",
+     *         required=true,
+     *         enum={"active", "all", "expired", "used", "gifted"},
+     *         default="active",
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function goodsCount_get($player_id = '')
     {
         if (!$player_id) {
@@ -2108,6 +3501,24 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond(array('n' => $n)), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Player"},
+     *     path="/Player/{id}/code",
+     *     description="Returns generated referral code of a player",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function code_get($player_id = '')
     {
         if (!$player_id) {
@@ -2171,6 +3582,60 @@ class Player extends REST2_Controller
         $this->response($this->error->setError('LIMIT_EXCEED'), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/auth/{id}/requestOTPCode",
+     *     description="Request OTP (One Time Password)",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="device_token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned from the device",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="device_description",
+     *         in="query",
+     *         type="string",
+     *         description="Device model description",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="device_name",
+     *         in="query",
+     *         type="string",
+     *         description="Device model name",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="os_type",
+     *         in="query",
+     *         type="string",
+     *         description="Device OS type",
+     *         required=false,
+     *         enum={"IOS", "Android"}
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function requestOTPCode_post($player_id = '')
     {
         if (!$player_id) {
@@ -2213,6 +3678,67 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond(array('success' => true)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/auth/{id}/setupPhone",
+     *     description="Request OTP (One Time Password) for setup",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="phone_number",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="device_token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned from the device",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="device_description",
+     *         in="query",
+     *         type="string",
+     *         description="Device model description",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="device_name",
+     *         in="query",
+     *         type="string",
+     *         description="Device model name",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="os_type",
+     *         in="query",
+     *         type="string",
+     *         description="Device OS type",
+     *         required=false,
+     *         enum={"IOS", "Android"}
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function setupPhone_post($player_id = '')
     {
         if (!$player_id) {
@@ -2345,6 +3871,54 @@ class Player extends REST2_Controller
         return 'phone';
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/{id}/deduct",
+     *     description="Deduct a reward from a given player",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="reward",
+     *         in="query",
+     *         type="string",
+     *         description="Name of the reward",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="amount",
+     *         in="query",
+     *         type="integer",
+     *         description="Amount of reward(s) to deduct",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="force",
+     *         in="query",
+     *         type="string",
+     *         description="0 => Do not force if the player does not have enough rewards to deduct. 1 => Force the deduction and set the player's reward to zero",
+     *         required=true,
+     *         default=0,
+     *         enum={"0", "1"}
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function deduct_reward_post($player_id)
     {
         /* param "player_id" */
@@ -2408,7 +3982,54 @@ class Player extends REST2_Controller
         )), 200);
     }
 
-
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/{id}/deduct/badge",
+     *     description="Deduct a reward from a given player",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="badge",
+     *         in="query",
+     *         type="string",
+     *         description="Name of the badge",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="amount",
+     *         in="query",
+     *         type="integer",
+     *         description="Amount of badge(s) to deduct",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="force",
+     *         in="query",
+     *         type="string",
+     *         description="0 => Do not force if the player does not have enough badges to deduct. 1 => Force the deduction and set the player's badges to zero",
+     *         required=true,
+     *         enum={"0", "1"},
+     *         default=0,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function deduct_badge_post($player_id)
     {
         /* param "player_id" */
@@ -2758,6 +4379,24 @@ class Player extends REST2_Controller
         }
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Player"},
+     *     path="/Player/{id}/getAssociatedNode",
+     *     description="Get associated node of player",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function getAssociatedNode_get($player_id = '')
     {
         $result = array();
@@ -2788,6 +4427,31 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($result), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Player"},
+     *     path="/Player/{id}/getRole/{node_id}",
+     *     description="Get role of player in specific node",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Node ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function getRole_get($player_id = '', $node_id = '')
     {
         if (!$player_id) {
@@ -2839,6 +4503,31 @@ class Player extends REST2_Controller
         }
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Player"},
+     *     path="/Player/{id}/unlock",
+     *     description="Unlock player for authentication",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function unlock_post($player_id = '')
     {
         if (!$player_id) {
@@ -2858,6 +4547,52 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond(), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Player"},
+     *     path="/Player/{id}/saleReport",
+     *     description="Get sale report of any node that is associated with the player",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="month",
+     *         in="query",
+     *         type="string",
+     *         description="Select month to get sales report (e.g. 1,2,...,12)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="year",
+     *         in="query",
+     *         type="string",
+     *         description="Select year to get sales report (e.g. 2017,2018,2019)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="action",
+     *         in="query",
+     *         type="string",
+     *         description="Select action name to query from action log | default = 'sell'",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="parameter",
+     *         in="query",
+     *         type="string",
+     *         description="Select parameter to query from action log | default = 'amount'",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function saleReport_get($player_id = '')
     {
         $result = array();
@@ -2936,6 +4671,59 @@ class Player extends REST2_Controller
         $this->response($this->resp->setRespond($result), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Player"},
+     *     path="/Player/{id}/actionReport",
+     *     description="Get action report of a specific player",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="month",
+     *         in="query",
+     *         type="string",
+     *         description="Select month to get sales report (e.g. 1,2,...,12)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="year",
+     *         in="query",
+     *         type="string",
+     *         description="Select year to get sales report (e.g. 2017,2018,2019)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="count",
+     *         in="query",
+     *         type="integer",
+     *         description="Number of months to get the report | default = '1 month'",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="action",
+     *         in="query",
+     *         type="string",
+     *         description="Select action name to query from action log | default = 'sell'",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="parameter",
+     *         in="query",
+     *         type="string",
+     *         description="Select parameter to query from action log | default = 'amount'",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function actionReport_get($player_id = '')
     {
         $result = array();

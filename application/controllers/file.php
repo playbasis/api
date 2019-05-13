@@ -172,6 +172,32 @@ class File extends REST2_Controller
         $this->response($this->resp->setRespond($json), 200);
     }
 
+    /**
+     * @todo Check security
+     * @SWG\Post(
+     *     tags={"File"},
+     *     path="/File/delete",
+     *     description="Retrieve image(s) content by specified filter fields",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="file_name",
+     *         in="query",
+     *         type="string",
+     *         description="Image file name",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function delete_post()
     {
         $this->benchmark->mark('start');
@@ -198,6 +224,47 @@ class File extends REST2_Controller
         $this->response($this->resp->setRespond(array('processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"File"},
+     *     path="/File/list",
+     *     description="Retrieve image(s) content by specified filter fields",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="query",
+     *         type="string",
+     *         description="Id of file data",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="sort",
+     *         in="query",
+     *         type="string",
+     *         description="Field to sort | (e.g. date_added, date_modified, type, file_size)",
+     *         required=false,
+     *         default="date_added",
+     *     ),
+     *     @SWG\Parameter(
+     *         name="order",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *         enum={"asc", "desc"}
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function list_get()
     {
         $this->benchmark->mark('start');

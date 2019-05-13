@@ -1183,16 +1183,46 @@ class Quest extends REST2_Controller
     }*/
 
     /**
-     * Check quest available for the player.
-     * Quest available depends on quest condition and player information.
-     * return empty array if any available quest for the player, otherwise array of quest(s).
-     * @param string $quest_id
-     * @param string $this ->input->get("api_key")
-     * @param string $this ->input->get("player_id")
-     * @return mixed array of quest(s)
-     * @throws PARAMETER_MISSING if api_key or player_id is not given
-     * @throws INVALID_API_KEY_OR_SECRET if apikey is invalid
-     * @throws USER_NOT_EXIST if user not found
+     * @SWG\Get(
+     *     tags={"Quest"},
+     *     path="/Quest/available",
+     *     description="Returns information about the list of available quests for a player",
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     *
+     * @SWG\Get(
+     *     tags={"Quest"},
+     *     path="/Quest/{id}/available",
+     *     description="Returns information about the list of available quests for a player",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Quest ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
      */
     public function available_get($quest_id = 0)
     {
@@ -1272,14 +1302,22 @@ class Quest extends REST2_Controller
     }
 
     /**
-     * Get quest information.
-     * Get paticular quest if quest_id is given,
-     * otherwise get all quests for the Client's quest.
-     * @param string $quest_id
-     * @param string $this ->input->get("api_key")
-     * @return mixed array of quest(s)
-     * @throws PARAMETER_MISSING if api_key is not given
-     * @throws INVALID_API_KEY_OR_SECRET if apikey is invalid
+     * @SWG\Get(
+     *     tags={"Quest"},
+     *     path="/Quest/{id}",
+     *     description="Returns information about the quest with the specified ID",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Quest ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
      */
     public function index_get($quest_id = 0)
     {
@@ -1355,17 +1393,36 @@ class Quest extends REST2_Controller
     }
 
     /**
-     * Client join particular quest
-     * @param string $quest_id
-     * @param string $this ->input->post("token")
-     * @param string $this ->input->post("player_id")
-     * @return array()
-     * @throws PARAMETER_MISSING if token, player_id or quest_id not given
-     * @throws INVALID_API_KEY_OR_SECRET if token is invalid
-     * @throws USER_NOT_EXIST if user not found
-     * @throws QUEST_CONDITION if player did not meet the quest condition
-     * @throws QUEST_JOINED if player joined the quest
-     * @throws QUEST_FINISHED if player finished this quest
+     * @SWG\Post(
+     *     tags={"Quest"},
+     *     path="/Quest/{id}/join",
+     *     description="Join a quest",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Quest ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
      */
     public function join_post($quest_id = 0)
     {
@@ -1447,6 +1504,31 @@ class Quest extends REST2_Controller
             )), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Quest"},
+     *     path="/Quest/joinAll",
+     *     description="Make the player join all available quests",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function joinAll_post()
     {
         // check user exists
@@ -1496,17 +1578,36 @@ class Quest extends REST2_Controller
     }
 
     /**
-     * Client cancel particular quest
-     * @param string $quest_id
-     * @param string $this ->input->post("token")
-     * @param string $this ->input->post("player_id")
-     * @return array()
-     * @throws PARAMETER_MISSING if token, player_id or quest_id not given
-     * @throws INVALID_API_KEY_OR_SECRET if token is invalid
-     * @throws USER_NOT_EXIST if user not found
-     * @throws QUEST_CANCEL_FAILED if player not yet join the quest or
-     *                             already join but cancelled
-     * @throws QUEST_FINISHED if player finished this quest
+     * @SWG\Post(
+     *     tags={"Quest"},
+     *     path="/Quest/{id}/cancel",
+     *     description="Make the player cancel the specified quest",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Quest ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
      */
     public function cancel_post($quest_id = 0)
     {
@@ -1574,6 +1675,31 @@ class Quest extends REST2_Controller
         )), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Quest"},
+     *     path="/Quest/{id}/mission/{mission_id}",
+     *     description="Returns information about the mission with the specified ID",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Quest ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="mission_id",
+     *         in="path",
+     *         type="string",
+     *         description="Mission ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function mission_get($quest_id = '', $mission_id = '')
     {
         $data = $this->validToken;
@@ -1612,6 +1738,68 @@ class Quest extends REST2_Controller
         $this->response($this->resp->setRespond($resp), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Player"},
+     *     path="/Player/quest",
+     *     description="Returns generated referral code of a player",
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="tags",
+     *         in="query",
+     *         type="string",
+     *         description="Specific tag(s) to find",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="filter",
+     *         in="query",
+     *         type="string",
+     *         description="Fields to be inclued (Comma separated)",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     * @SWG\Get(
+     *     tags={"Player"},
+     *     path="/Player/quest/{id}",
+     *     description="Returns generated referral code of a player",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Quest ID the player has joined",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="filter",
+     *         in="query",
+     *         type="string",
+     *         description="Fields to be inclued (Comma separated)",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function questOfPlayer_get($quest_id = 0)
     {
         $required = $this->input->checkParam(array('player_id'));
@@ -1789,6 +1977,24 @@ class Quest extends REST2_Controller
         $this->response($this->resp->setRespond($resp), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Player"},
+     *     path="/Player/questAll/{id}",
+     *     description="List of all available quests of the client along with the status of the player",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function questAll_get($player_id = 0)
     {
         $pb_player_id = null;
@@ -1850,12 +2056,37 @@ class Quest extends REST2_Controller
         $this->response($this->resp->setRespond($resp), 200);
     }
 
-    /*
-     * reset quest
-     *
-     * @param player_id string player id of client
-     * @param quest_id string (optional) id of quest
-     * return array
+    /**
+     * @SWG\Post(
+     *     tags={"Quest"},
+     *     path="/Quest/reset",
+     *     description="Make the player cancel the specified quest",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="quest_id",
+     *         in="query",
+     *         type="string",
+     *         description="Quest ID",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
      */
     public function reset_post()
     {
@@ -1880,6 +2111,63 @@ class Quest extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $results, 'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Quest"},
+     *     path="/Quest/leader",
+     *     description="Make the player cancel the specified quest",
+     *     @SWG\Parameter(
+     *         name="quest_id",
+     *         in="query",
+     *         type="string",
+     *         description="Quest ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="completion_element_id",
+     *         in="query",
+     *         type="string",
+     *         description="Quest complete element ID",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="offset",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *         default=0
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *         default=20
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *         enum={"","finish", "join"},
+     *         default=""
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function leaderBoard_get(){
         $required = $this->input->checkParam(array(
             'quest_id',

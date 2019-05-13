@@ -17,6 +17,24 @@ class Merchant extends REST2_Controller
         $this->load->model('tool/respond', 'resp');
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Merchant"},
+     *     path="/Merchant/availableBranchGoodsGroup",
+     *     description="Return list of available branch for goods group",
+     *     @SWG\Parameter(
+     *         name="goods_group",
+     *         in="query",
+     *         type="string",
+     *         description="Name of goods group",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function availableBranchGoodsGroup_get()
     {
         $required = $this->input->checkParam(array(
@@ -47,6 +65,45 @@ class Merchant extends REST2_Controller
         $this->response($this->resp->setRespond($result), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Merchant"},
+     *     path="/Merchant/goodsGroup/verify",
+     *     description="Verify coupon code available for redemption",
+     *     @SWG\Parameter(
+     *         name="goods_group",
+     *         in="query",
+     *         type="string",
+     *         description="Name of goods group",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="coupon_code",
+     *         in="query",
+     *         type="string",
+     *         description="Coupon code of goods to verify",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="pin_code",
+     *         in="query",
+     *         type="string",
+     *         description="Merchant PIN code generated from admin dashboard",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function GoodsGroupVerify_get()
     {
         $required = $this->input->checkParam(array(
@@ -124,6 +181,52 @@ class Merchant extends REST2_Controller
         }
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Merchant"},
+     *     path="/Merchant/goodsGroup/redeem",
+     *     description="Verify coupon code available for redemption",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="goods_group",
+     *         in="query",
+     *         type="string",
+     *         description="Name of goods group",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="coupon_code",
+     *         in="query",
+     *         type="string",
+     *         description="Coupon code of goods to verify",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="pin_code",
+     *         in="query",
+     *         type="string",
+     *         description="Merchant PIN code generated from admin dashboard",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function GoodsGroupRedeem_post()
     {
         $required = $this->input->checkParam(array(
@@ -235,6 +338,46 @@ class Merchant extends REST2_Controller
         }
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Merchant"},
+     *     path="/Merchant/goods/redeem",
+     *     description="Redeem normal goods from player",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="goods_name",
+     *         in="query",
+     *         type="string",
+     *         description="Name of goods group",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="amount",
+     *         in="query",
+     *         type="integer",
+     *         description="Amount of goods to be redemed from the player",
+     *         required=false,
+     *         default=1
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function GoodsRedeem_post()
     {
         // Parameter required

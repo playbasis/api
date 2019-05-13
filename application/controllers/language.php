@@ -12,14 +12,23 @@ class Language extends REST2_Controller
         $this->load->model('tool/respond', 'resp');
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Language"},
+     *     path="/Language",
+     *     description="Retrieve language list",
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function list_get()
     {
         $language_info = $this->language_model->getLanguage($this->client_id, $this->site_id);
 
         $this->response($this->resp->setRespond($language_info), 200);
     }
-
-
 
     private function convert_mongo_object(&$item, $key)
     {

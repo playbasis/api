@@ -12,6 +12,31 @@ class Location extends REST2_Controller
         $this->load->model('tool/respond', 'resp');
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Location"},
+     *     path="/Location",
+     *     description="Retrieve location",
+     *     @SWG\Parameter(
+     *         name="location_id",
+     *         in="query",
+     *         type="string",
+     *         description="Location ID",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="status",
+     *         in="query",
+     *         type="string",
+     *         description="Status to retrieve location",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function list_get()
     {
         $data = $this->input->get();

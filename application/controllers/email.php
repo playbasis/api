@@ -23,6 +23,52 @@ class Email extends REST2_Controller
         $this->load->library('parser');
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Communication"},
+     *     path="/Email/send",
+     *     description="Send email to a player",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="subject",
+     *         in="query",
+     *         type="string",
+     *         description="Email subject",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="message",
+     *         in="query",
+     *         type="string",
+     *         description="Email message | message or template_id required",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="template_id",
+     *         in="query",
+     *         type="string",
+     *         description="Template ID | message or template_id required",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function send_post()
     {
         /* check permission to send email in this bill cycle */
@@ -138,6 +184,59 @@ class Email extends REST2_Controller
         }
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Communication"},
+     *     path="/Email/goods",
+     *     description="Send email to a player",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="ref_id",
+     *         in="query",
+     *         type="string",
+     *         description="Reference transaction ID for redemption",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="subject",
+     *         in="query",
+     *         type="string",
+     *         description="Email subject",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="message",
+     *         in="query",
+     *         type="string",
+     *         description="Email message | message or template_id required",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="template_id",
+     *         in="query",
+     *         type="string",
+     *         description="Template ID | message or template_id required",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function send_goods_post()
     {
         /* check permission to send email in this bill cycle */
@@ -385,6 +484,31 @@ class Email extends REST2_Controller
         $this->response($this->resp->setRespond('Email has been successfully removed from blacklist'), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Communication"},
+     *     path="/Email/recent",
+     *     description="List recent emails sent to a player",
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="since",
+     *         in="query",
+     *         type="string",
+     *         description="DateTime formatted string",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function recent_get()
     {
         /* process parameters */
@@ -413,6 +537,40 @@ class Email extends REST2_Controller
         $this->response($this->resp->setRespond($results), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Communication"},
+     *     path="/Email/template/{template_id}",
+     *     description="Get processed email template.",
+     *     @SWG\Parameter(
+     *         name="template_id",
+     *         in="path",
+     *         type="string",
+     *         description="Template message ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     * @SWG\Get(
+     *     tags={"Communication"},
+     *     path="/Email/template",
+     *     description="List email templates",
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function template_get($template_id = '')
     {
         $result = array();
