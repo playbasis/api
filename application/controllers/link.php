@@ -19,7 +19,6 @@ class Link extends REST2_Controller
      *     tags={"Link"},
      *     path="/Link",
      *     description="Find details of data associated wtih a link",
-     *     security={{"apiKey":{}, "token": {}}},
      *     @SWG\Parameter(
      *         name="link",
      *         in="query",

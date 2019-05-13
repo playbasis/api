@@ -22,7 +22,6 @@ class Auth extends REST2_Controller
      *     tags={"Auth"},
      *     path="/Auth",
      *     description="Request an access token from Playbasis",
-     *     security={{"apiKey":{}, "apiSecret": {}}},
      *     @SWG\Parameter(
      *         name="api_key",
      *         in="query",
