@@ -69,6 +69,46 @@ class Quiz extends REST2_Controller
         $this->load->model('tracker_model');
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Quiz"},
+     *     path="/Quest/list",
+     *     description="Returns a list of all active quizzes",
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="type",
+     *         in="query",
+     *         type="string",
+     *         description="Quiz / Poll",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="tags",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="get_status",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *         default="false"
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function list_get()
     {
         $this->benchmark->mark('start');
@@ -110,6 +150,31 @@ class Quiz extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $results, 'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Quiz"},
+     *     path="/Quest/{id}/detail",
+     *     description="Get details of a specified quiz",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Quiz ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function detail_get($quiz_id = '')
     {
         $this->benchmark->mark('start');
@@ -169,6 +234,38 @@ class Quiz extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $result, 'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Quiz"},
+     *     path="/Quest/random",
+     *     description="Randomly get a quiz out of all active quizzes",
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="type",
+     *         in="query",
+     *         type="string",
+     *         description="Quiz / Poll",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="tags",
+     *         in="query",
+     *         type="string",
+     *         description="Specific tag(s) to find",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function random_get($quest_id_to_skip = null)
     {
         $this->benchmark->mark('start');
@@ -214,6 +311,32 @@ class Quiz extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $result, 'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Quiz"},
+     *     path="/Quiz/player/{player_id}/{limit}",
+     *     description="Revoke existing Access Token",
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="path",
+     *         type="integer",
+     *         description="Number of quizzes",
+     *         required=true,
+     *         default=5,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function player_recent_get($player_id = '', $limit = 10)
     {
         $this->benchmark->mark('start');
@@ -240,6 +363,32 @@ class Quiz extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $results, 'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Quiz"},
+     *     path="/Quest/player/{player_id}/pending/{limit}",
+     *     description="Return a list of pending quizzes by the player",
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="path",
+     *         type="integer",
+     *         description="Number of quizzes",
+     *         required=true,
+     *         default=5,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function player_pending_get($player_id = '', $limit = 10)
     {
         $this->benchmark->mark('start');
@@ -267,6 +416,47 @@ class Quiz extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $results, 'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Quiz"},
+     *     path="/Quest/{id}/question",
+     *     description="Get a question with a list of options for a given quiz",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Quiz ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="question_id",
+     *         in="query",
+     *         type="string",
+     *         description="Question ID",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="random",
+     *         in="query",
+     *         type="integer",
+     *         description="Randomize result",
+     *         required=true,
+     *         enum={1, 2},
+     *         default=1,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function question_get($quiz_id = '')
     {
         $this->benchmark->mark('start');
@@ -439,6 +629,54 @@ class Quiz extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $question, 'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Quiz"},
+     *     path="/Quest/{id}/question",
+     *     description="Get a question with a list of options for a given quiz",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Quiz ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="question_id",
+     *         in="query",
+     *         type="string",
+     *         description="Question ID",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="random",
+     *         in="query",
+     *         type="integer",
+     *         description="Randomize result",
+     *         required=true,
+     *         enum={1, 2},
+     *         default=1,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function question_post($quiz_id = '')
     {
         $this->benchmark->mark('start');
@@ -606,6 +844,59 @@ class Quiz extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $question, 'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Quiz"},
+     *     path="/Quest/{id}/answer",
+     *     description="Submit a player's answer for a question within a quiz",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Quiz ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="question_id",
+     *         in="query",
+     *         type="string",
+     *         description="Question ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="option_id",
+     *         in="query",
+     *         type="string",
+     *         description="Option ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="answer",
+     *         in="query",
+     *         type="string",
+     *         description="Specific answer required for range options",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function answer_post($quiz_id = '')
     {
         $this->benchmark->mark('start');
@@ -961,6 +1252,32 @@ class Quiz extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $data, 'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Quiz"},
+     *     path="/Quiz/{id}/rank/{limit}",
+     *     description="Submit a player's answer for a question within a quiz",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Quiz ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="path",
+     *         type="integer",
+     *         description="Limit number of players",
+     *         required=true,
+     *         default=5
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function rank_get($quiz_id = '', $limit = 10)
     {
         $this->benchmark->mark('start');
@@ -1008,6 +1325,24 @@ class Quiz extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $results, 'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Quiz"},
+     *     path="/Quiz/{id}/stat",
+     *     description="Query statistics of a quiz completed by all users",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Quiz ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function stat_get($quiz_id = '')
     {
         $this->benchmark->mark('start');
@@ -1071,6 +1406,24 @@ class Quiz extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $result, 'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Quiz"},
+     *     path="/Quiz/{id}/completed",
+     *     description="Get count of completed quizzes",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Quiz ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function completed_get($quiz_id = '')
     {
         $this->benchmark->mark('start');
@@ -1092,12 +1445,37 @@ class Quiz extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $result, 'processing_time' => $t)), 200);
     }
 
-    /*
-     * reset quiz
-     *
-     * @param player_id string player id of client
-     * @param quiz_id string (optional) id of quiz
-     * return array
+    /**
+     * @SWG\Post(
+     *     tags={"Quiz"},
+     *     path="/Quiz/reset",
+     *     description="Get count of completed quizzes",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="quiz_id",
+     *         in="query",
+     *         type="string",
+     *         description="Quiz ID",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
      */
     public function reset_post()
     {

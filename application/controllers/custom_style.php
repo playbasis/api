@@ -13,6 +13,64 @@ class Custom_style extends REST2_Controller
         $this->load->model('tool/respond', 'resp');
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Style"},
+     *     path="/Style",
+     *     description="Retrieve custom style by specified filter fields",
+     *     @SWG\Parameter(
+     *         name="name",
+     *         in="query",
+     *         type="string",
+     *         description="Name of group to retrieve custom style",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="key",
+     *         in="query",
+     *         type="string",
+     *         description="Name of key name to retrieve custom style",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="sort",
+     *         in="query",
+     *         type="string",
+     *         description="Field to sort (e.g. name, key, date_added, date_modified)",
+     *         required=false,
+     *         default="name"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="order",
+     *         in="query",
+     *         type="string",
+     *         description="Field to sort (e.g. name, key, date_added, date_modified)",
+     *         required=false,
+     *         default="asc",
+     *         enum={"asc", "desc", "random"}
+     *     ),
+     *     @SWG\Parameter(
+     *         name="offset",
+     *         in="query",
+     *         type="integer",
+     *         description="Specify paging offset | default = 0",
+     *         required=false,
+     *         default=0,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         type="integer",
+     *         description="Specify paging limit | default = 20",
+     *         required=false,
+     *         default=20
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function list_get()
     {
         $this->benchmark->mark('start');

@@ -14,6 +14,24 @@ class Link extends REST2_Controller
         $this->load->library('curl');
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Link"},
+     *     path="/Link",
+     *     description="Find details of data associated wtih a link",
+     *     @SWG\Parameter(
+     *         name="link",
+     *         in="query",
+     *         type="string",
+     *         description="Link to find associated data",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function view_get()
     {
         $link = $this->input->get('link');
@@ -52,6 +70,24 @@ class Link extends REST2_Controller
         $this->response($this->resp->setRespond(array('data' => $data)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Link"},
+     *     path="/Link/generate",
+     *     description="Generate a unique URL",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function generate_post()
     {
         $data = $this->input->post();

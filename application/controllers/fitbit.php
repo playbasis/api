@@ -14,6 +14,24 @@ class Fitbit extends REST2_Controller
         $this->load->model('tool/respond', 'resp');
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Health"},
+     *     path="/Fitbit",
+     *     description="Retrieve Fitbit player",
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function getFitBitPlayer_get()
     {
         $this->benchmark->mark('start');
@@ -39,6 +57,45 @@ class Fitbit extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $result, 'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Health"},
+     *     path="/Fitbit/add",
+     *     description="Add a new Fitbit player",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="fitbit_token",
+     *         in="query",
+     *         type="string",
+     *         description="Fitbit token to access Fitbit API",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="subscription_id",
+     *         in="query",
+     *         type="string",
+     *         description="Subscription Id to subscribe to a Fitbit activity",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function addFitBitPlayer_post()
     {
         $this->benchmark->mark('start');
@@ -74,6 +131,45 @@ class Fitbit extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $result, 'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Health"},
+     *     path="/Fitbit/{player_id}/update",
+     *     description="Add a new Fitbit player",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="fitbit_token",
+     *         in="query",
+     *         type="string",
+     *         description="Fitbit token to access Fitbit API",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="subscription_id",
+     *         in="query",
+     *         type="string",
+     *         description="Subscription Id to subscribe to a Fitbit activity",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function updateFitBitPlayer_post($cl_player_id)
     {
         $this->benchmark->mark('start');
@@ -112,6 +208,31 @@ class Fitbit extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $result, 'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Health"},
+     *     path="/Fitbit/{player_id}/delete",
+     *     description="Delete Fitbit Player",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function deleteFitBitPlayer_post($cl_player_id)
     {
         $this->benchmark->mark('start');
@@ -146,6 +267,48 @@ class Fitbit extends REST2_Controller
         $this->response($this->resp->setRespond(array('processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Health"},
+     *     path="/Fitbit/{player_id}/data",
+     *     description="Delete Fitbit Player",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="category",
+     *         in="query",
+     *         type="string",
+     *         description="Category of data",
+     *         required=true,
+     *         default="PROFILE",
+     *         enum={"ACTIVITY", "BODY", "BP", "FOOD", "GLUCOSE", "HEART", "PROFILE", "SLEEP"}
+     *     ),
+     *     @SWG\Parameter(
+     *         name="date",
+     *         in="query",
+     *         type="string",
+     *         description="Date start | format YYYY-MM-DD or 'today'",
+     *         default="today",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function getFitBitPlayerData_get($cl_player_id, $category_input=null, $date_input=null, $period_input=null)
     {
         $this->benchmark->mark('start');

@@ -17,6 +17,31 @@ class Auth extends REST2_Controller
         $this->load->library('form_validation');
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Auth"},
+     *     path="/Auth",
+     *     description="Request an access token from Playbasis",
+     *     @SWG\Parameter(
+     *         name="api_key",
+     *         in="query",
+     *         type="string",
+     *         description="API Key issued by Playbasis",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="api_secret",
+     *         in="query",
+     *         type="string",
+     *         description="API Secret issued by Playbasis",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function index_post()
     {
         $required = $this->input->checkParam(array(
@@ -37,6 +62,31 @@ class Auth extends REST2_Controller
         }
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Auth"},
+     *     path="/Auth/renew",
+     *     description="Create a new access token from Playbasis",
+     *     @SWG\Parameter(
+     *         name="api_key",
+     *         in="query",
+     *         type="string",
+     *         description="API Key issued by Playbasis",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="api_secret",
+     *         in="query",
+     *         type="string",
+     *         description="API Secret issued by Playbasis",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function renew_post()
     {
         $required = $this->input->checkParam(array(
@@ -57,6 +107,38 @@ class Auth extends REST2_Controller
         }
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Auth"},
+     *     path="/Auth/player/{player_id}",
+     *     description="Create a new access token from Playbasis",
+     *     @SWG\Parameter(
+     *         name="api_key",
+     *         in="query",
+     *         type="string",
+     *         description="API Key issued by Playbasis",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="password",
+     *         in="query",
+     *         type="string",
+     *         description="Player's password",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function player_post($player_id)
     {
         $required = $this->input->checkParam(array(
@@ -93,6 +175,38 @@ class Auth extends REST2_Controller
         }
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Auth"},
+     *     path="/Auth/player/{player_id}/renew",
+     *     description="Create a new access token from Playbasis and discard the previous one",
+     *     @SWG\Parameter(
+     *         name="api_key",
+     *         in="query",
+     *         type="string",
+     *         description="API Key issued by Playbasis",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="refresh_token",
+     *         in="query",
+     *         type="string",
+     *         description="Refresh token",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function player_renew_post($player_id)
     {
         $required = $this->input->checkParam(array(
@@ -129,6 +243,31 @@ class Auth extends REST2_Controller
         }
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Auth"},
+     *     path="/Auth/player/{player_id}/revoke",
+     *     description="Revoke existing Access Token",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function player_revoke_post($player_id)
     {
         if (!$this->validToken){
@@ -147,6 +286,146 @@ class Auth extends REST2_Controller
         $this->response($this->resp->setRespond(), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Auth"},
+     *     path="/Auth/player/{player_id}/register",
+     *     description="Register a user from client's website as a Playbasis player",
+     *     @SWG\Parameter(
+     *         name="api_key",
+     *         in="query",
+     *         type="string",
+     *         description="API Key issued by Playbasis",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="password",
+     *         in="query",
+     *         type="string",
+     *         description="Player's password",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="username",
+     *         in="query",
+     *         type="string",
+     *         description="Player's username",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="email",
+     *         in="query",
+     *         type="string",
+     *         description="Player's email",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="image",
+     *         in="query",
+     *         type="string",
+     *         description="Player's profile image",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="phone_number",
+     *         in="query",
+     *         type="string",
+     *         description="Player's phone number (e.g. +66 xxyyyyzzzz)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="tags",
+     *         in="query",
+     *         type="string",
+     *         description="Specific tag(s) to find",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="facebook_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player's Facebook ID",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="twitter_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player's Twitter ID",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="first_name",
+     *         in="query",
+     *         type="string",
+     *         description="Player's first name",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="last_name",
+     *         in="query",
+     *         type="string",
+     *         description="Player's last name",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="gender",
+     *         in="query",
+     *         type="string",
+     *         description="Player's gender",
+     *         required=false,
+     *         enum={"1", "2"}
+     *     ),
+     *     @SWG\Parameter(
+     *         name="birth_date",
+     *         in="query",
+     *         type="string",
+     *         description="Player's date of birth (e.g. YYYY-MM-DD)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="code",
+     *         in="query",
+     *         type="string",
+     *         description="Referral code of another player for an invitation",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="anonymous",
+     *         in="query",
+     *         type="string",
+     *         description="Anonymous flag",
+     *         required=false,
+     *         enum={"0", "1"}
+     *     ),
+     *     @SWG\Parameter(
+     *         name="device_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player's Device ID to submit verification process",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="approve_status",
+     *         in="query",
+     *         type="string",
+     *         description="Approval status of the Player",
+     *         required=false,
+     *         enum={"approved", "rejected", "pending"}
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function player_register_post($player_id)
     {
         $required = $this->input->checkParam(array(

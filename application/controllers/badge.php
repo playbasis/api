@@ -13,6 +13,47 @@ class Badge extends REST2_Controller
         $this->load->model('tool/respond', 'resp');
     }
 
+    /**
+     *  * @SWG\Get(
+     *     tags={"Badge"},
+     *     path="/Badges",
+     *     description="Returns information about all available badges",
+     *     @SWG\Parameter(
+     *         name="tags",
+     *         in="path",
+     *         type="string",
+     *         description="Comma separated values",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     * @SWG\Get(
+     *     tags={"Badge"},
+     *     path="/Badge/{id}",
+     *     description="Get information about a specific badge",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function index_get($badgeId = 0)
     {
         $data = $this->validToken;

@@ -15,6 +15,63 @@ class Custompoint extends REST2_Controller
         $this->load->model('tool/respond', 'resp');
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Point"},
+     *     path="/Point/custom/list",
+     *     description="Return a list of custom points to be approved",
+     *     @SWG\Parameter(
+     *         name="player_list",
+     *         in="query",
+     *         type="string",
+     *         description="List of players (e.g. John, Max, Robert)",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="status",
+     *         in="query",
+     *         type="string",
+     *         description="Status of custom point",
+     *         required=true,
+     *         enum={"all", "approve", "pending", "reject"},
+     *         default="all"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="from",
+     *         in="query",
+     *         type="string",
+     *         description="From date (e.g. YYYY-MM-DD format)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="to",
+     *         in="query",
+     *         type="string",
+     *         description="To date (e.g. YYYY-MM-DD format)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="offset",
+     *         in="query",
+     *         type="integer",
+     *         description="Specify paging offset | default = 0",
+     *         required=false,
+     *         default=0,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         type="integer",
+     *         description="Specify paging limit | default = 20",
+     *         required=false,
+     *         default=20
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function list_get()
     {
         $data = $this->input->get();
@@ -45,6 +102,24 @@ class Custompoint extends REST2_Controller
         $this->response($this->resp->setRespond($pending_list), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Point"},
+     *     path="/Point/custom/transaction",
+     *     description="Return transaction of custompoint",
+     *     @SWG\Parameter(
+     *         name="transaction_id",
+     *         in="query",
+     *         type="string",
+     *         description="Transaction ID of custompoint",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function transaction_get()
     {
         $required = $this->input->checkParam(array(
@@ -77,6 +152,39 @@ class Custompoint extends REST2_Controller
         $this->response($this->resp->setRespond($response), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Point"},
+     *     path="/Point/custom/approval",
+     *     description="To approve custom point in transaction list",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="transaction_id",
+     *         in="query",
+     *         type="string",
+     *         description="Transaction ID of custompoint",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="approve",
+     *         in="query",
+     *         type="boolean",
+     *         description="Transaction ID of custompoint",
+     *         required=true,
+     *         enum={"true", "false"}
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function approval_post()
     {
         $required = $this->input->checkParam(array(
@@ -112,6 +220,24 @@ class Custompoint extends REST2_Controller
         $this->response($this->resp->setRespond($response), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Point"},
+     *     path="/Point/custom/remaining",
+     *     description="Return remaining for each points",
+     *     @SWG\Parameter(
+     *         name="name",
+     *         in="query",
+     *         type="string",
+     *         description="Return remaining for each points",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function remainingPoint_get()
     {
         $data = $this->input->get();
@@ -121,7 +247,7 @@ class Custompoint extends REST2_Controller
         if($this->input->post('point_name')){
             $data['name'] = $this->input->post('point_name');
         }
-        
+
         $remaining_point = $this->reward_model->remainingPoint($data);
         foreach ($remaining_point as &$point){
             if(!isset($point['quantity'])){
@@ -131,6 +257,47 @@ class Custompoint extends REST2_Controller
         $this->response($this->resp->setRespond($remaining_point), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Point"},
+     *     path="/Point/custom/log",
+     *     description="Return First/Last reward custom log",
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="reward_name",
+     *         in="query",
+     *         type="string",
+     *         description="Name of reward to be queried",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="key",
+     *         in="query",
+     *         type="string",
+     *         description="Key name of custom parameter",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="sort",
+     *         in="query",
+     *         type="string",
+     *         description="Key name of custom parameter",
+     *         required=true,
+     *         enum={"asc", "desc"},
+     *         default="asc"
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function customLog_get()
     {
         $required = $this->input->checkParam(array(
@@ -163,6 +330,31 @@ class Custompoint extends REST2_Controller
         $this->response($this->resp->setRespond($custom_value), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Point"},
+     *     path="/Point/custom/clearLog",
+     *     description="To clear reward custom log",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="log_id",
+     *         in="query",
+     *         type="string",
+     *         description="ID of reward custom log",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function clearCustomLog_post()
     {
         $required = $this->input->checkParam(array(

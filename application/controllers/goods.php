@@ -16,6 +16,186 @@ class Goods extends REST2_Controller
         $this->load->model('tool/respond', 'resp');
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Goods"},
+     *     path="/Goods/{id}",
+     *     description="Get information about goods with a specific Id",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     * @SWG\Get(
+     *     tags={"Goods"},
+     *     path="/Goods",
+     *     description="Get information about goods with a specific Id",
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="active_filter",
+     *         in="query",
+     *         type="string",
+     *         description="Filter only active goods",
+     *         required=true,
+     *         default="false",
+     *         enum={"true", "false"}
+     *     ),
+     *     @SWG\Parameter(
+     *         name="name",
+     *         in="query",
+     *         type="string",
+     *         description="Name or group name of goods to search",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="date_start",
+     *         in="query",
+     *         type="string",
+     *         description="Date start | format = YYYY-MM-DD (e.g. 1982-09-29)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="date_end",
+     *         in="query",
+     *         type="string",
+     *         description="Date end | format = YYYY-MM-DD (e.g. 1982-09-29)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="sort",
+     *         in="query",
+     *         type="string",
+     *         description="Field to be sorted | (e.g. sort_order, name, quantity, description, date_start, date_end)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="order",
+     *         in="query",
+     *         type="string",
+     *         description="Specify sorted direction | (e.g. desc, asc)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="offset",
+     *         in="query",
+     *         type="integer",
+     *         description="Specify paging offset | default = 0",
+     *         required=false,
+     *         default=0,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         type="integer",
+     *         description="Specify paging limit",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="tags",
+     *         in="path",
+     *         type="string",
+     *         description="Comma separated values",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="custom_param",
+     *         in="path",
+     *         type="string",
+     *         description="Custom param | (e.g. <, <=, >, >=, =, !=)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="not_custom_param",
+     *         in="path",
+     *         type="string",
+     *         description="Not custom param | (e.g. <, <=, >, >=, =, !=)",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     * @SWG\Get(
+     *     tags={"Goods"},
+     *     path="/Goods/field",
+     *     description="Get information about goods with a specific Id",
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="selected_field",
+     *         in="query",
+     *         type="string",
+     *         description="Select parameters",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="date_start",
+     *         in="query",
+     *         type="string",
+     *         description="Date start | format = YYYY-MM-DD (e.g. 1982-09-29)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="date_end",
+     *         in="query",
+     *         type="string",
+     *         description="Date end | format = YYYY-MM-DD (e.g. 1982-09-29)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="offset",
+     *         in="query",
+     *         type="integer",
+     *         description="Specify paging offset | default = 0",
+     *         required=false,
+     *         default=0,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         type="integer",
+     *         description="Specify paging limit",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="tags",
+     *         in="path",
+     *         type="string",
+     *         description="Comma separated values",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function index_get($goodsId = 0)
     {
         /* process group */
@@ -357,6 +537,33 @@ class Goods extends REST2_Controller
         }
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Goods"},
+     *     path="/Goods/sponsor/{id}",
+     *     description="Get information about goods with a specific Id",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     * @SWG\Get(
+     *     tags={"Goods"},
+     *     path="/Goods/sponsor",
+     *     description="Returns information about all available sponsored goods",
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function sponsor_get($goodsId = 0)
     {
         $validToken_ad = array('client_id' => null, 'site_id' => null);

@@ -83,6 +83,45 @@ class Pb_sms extends REST2_Controller
         $this->sendEngine('user', $from, $this->input->post('phone_number'), $this->input->post('message'));
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Communication"},
+     *     path="/Sms/send",
+     *     description="Send SMS to a player",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="message",
+     *         in="query",
+     *         type="string",
+     *         description="SMS message",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="template_id",
+     *         in="query",
+     *         type="string",
+     *         description="Template message",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function send_post()
     {
         $required = $this->input->checkParam(array('player_id'));
@@ -141,6 +180,52 @@ class Pb_sms extends REST2_Controller
         }
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Communication"},
+     *     path="/Sms/goods",
+     *     description="Send SMS to a player",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="ref_id",
+     *         in="query",
+     *         type="string",
+     *         description="Reference transaction Id for redemption",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="message",
+     *         in="query",
+     *         type="string",
+     *         description="SMS message",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="template_id",
+     *         in="query",
+     *         type="string",
+     *         description="Template message",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function send_goods_post()
     {
         $required = $this->input->checkParam(array('player_id', 'ref_id'));
@@ -201,6 +286,31 @@ class Pb_sms extends REST2_Controller
         }
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Communication"},
+     *     path="/Sms/recent",
+     *     description="List recent SMS messages sent to a player",
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="since",
+     *         in="query",
+     *         type="string",
+     *         description="DateTime formatted string",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function recent_get()
     {
         /* process parameters */
@@ -229,6 +339,40 @@ class Pb_sms extends REST2_Controller
         $this->response($this->resp->setRespond($results), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Communication"},
+     *     path="/Sms/template/{template_id}",
+     *     description="Get processed SMS Template",
+     *     @SWG\Parameter(
+     *         name="template_id",
+     *         in="path",
+     *         type="string",
+     *         description="Template message",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     * @SWG\Get(
+     *     tags={"Communication"},
+     *     path="/Sms/template",
+     *     description="Get processed SMS Template",
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function template_get($template_id = '')
     {
         $result = array();

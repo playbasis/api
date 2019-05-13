@@ -21,6 +21,38 @@ class Store_org extends REST2_Controller
         $this->load->model('client_model');
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Store Organize"},
+     *     path="/StoreOrg/nodes/{node_id}/addPlayer/{player_id}",
+     *     description="Add player to a specific node",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Node Id to add the player to",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function playerRegister_post($node_id, $player_id)
     {
         $this->benchmark->mark('start');
@@ -42,6 +74,38 @@ class Store_org extends REST2_Controller
         $this->response($this->resp->setRespond(array('processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Store Organize"},
+     *     path="/StoreOrg/nodes/{node_id}/addContent/{content_node_id}",
+     *     description="Register content",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Node ID of store organization to add to player",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="content_node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Node ID of store organization to add to player",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function contentRegister_post($node_id, $content_node_id)
     {
         $this->benchmark->mark('start');
@@ -108,6 +172,38 @@ class Store_org extends REST2_Controller
         $this->response($this->resp->setRespond(array('processing_time' => $t, 'node_id' => $node_id['_id'])), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Store Organize"},
+     *     path="/StoreOrg/nodes/{node_id}/removePlayer/{player_id}",
+     *     description="Remove player from a specific node",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Node Id to remove the player from",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function playerRemove_post($node_id, $player_id)
     {
         $this->benchmark->mark('start');
@@ -130,6 +226,38 @@ class Store_org extends REST2_Controller
         $this->response($this->resp->setRespond(array('processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Store Organize"},
+     *     path="/StoreOrg/nodes/{node_id}/removeContent/{content_node_id}",
+     *     description="Remove content",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Node ID of store organization to add to player",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="content_node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Node ID of store organization to add to player",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function contentRemove_post($node_id, $content_node_id)
     {
         $this->benchmark->mark('start');
@@ -158,6 +286,45 @@ class Store_org extends REST2_Controller
         $this->response($this->resp->setRespond(array('processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Store Organize"},
+     *     path="/StoreOrg/nodes/{node_id}/setPlayerRole/{player_id}",
+     *     description="Set player role",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Node Id to remove the player from",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="role",
+     *         in="query",
+     *         type="string",
+     *         description="Role name for the player",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function playerRoleSet_post($node_id, $player_id)
     {
         $this->benchmark->mark('start');
@@ -189,6 +356,45 @@ class Store_org extends REST2_Controller
         $this->response($this->resp->setRespond(array('processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Store Organize"},
+     *     path="/StoreOrg/nodes/{node_id}/unsetPlayerRole/{player_id}",
+     *     description="Unset a player's organization role from specific node",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Node Id to add the player to",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="path",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="role",
+     *         in="query",
+     *         type="string",
+     *         description="Player's role to unset",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function playerRoleUnset_post($node_id, $player_id)
     {
         $this->benchmark->mark('start');
@@ -227,6 +433,45 @@ class Store_org extends REST2_Controller
         }
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Store Organize"},
+     *     path="/StoreOrg/nodes/{node_id}/setContentRole/{content_node_id}",
+     *     description="Set content role",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Node ID of store organization to add to player",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="content_node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Node ID of store organization to add to player",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="role",
+     *         in="query",
+     *         type="string",
+     *         description="Role name to set content's role",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function contentRoleSet_post($node_id, $content_node_id)
     {
         $this->benchmark->mark('start');
@@ -263,6 +508,45 @@ class Store_org extends REST2_Controller
         $this->response($this->resp->setRespond(array('processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Store Organize"},
+     *     path="/StoreOrg/nodes/{node_id}/unsetContentRole/{content_node_id}",
+     *     description="Unset content role",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Node ID of store organization to add to player",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="content_node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Node ID of store organization to add to player",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="role",
+     *         in="query",
+     *         type="string",
+     *         description="Role name to set content's role",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function contentRoleUnset_post($node_id, $content_node_id)
     {
         $this->benchmark->mark('start');
@@ -308,6 +592,62 @@ class Store_org extends REST2_Controller
         }
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Store Organize"},
+     *     path="/StoreOrg/organizes",
+     *     description="Reset point of all players",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="query",
+     *         type="string",
+     *         description="Specify Organize ID to retrieve",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="search",
+     *         in="query",
+     *         type="string",
+     *         description="Specify Organize name to retrieve",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="sort",
+     *         in="query",
+     *         type="string",
+     *         description="Specify field to be sort (_id, name, status, description, date_added, date_modified)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="order",
+     *         in="query",
+     *         type="string",
+     *         description="Specify sorted direction",
+     *         required=false,
+     *         enum={"asc", "desc"},
+     *     ),
+     *     @SWG\Parameter(
+     *         name="offset",
+     *         in="query",
+     *         type="string",
+     *         description="Specify paging offset",
+     *         required=false,
+     *         default=0
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         type="string",
+     *         description="Specify paging limit",
+     *         required=false,
+     *         default=20
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function listOrganizes_get()
     {
         $this->benchmark->mark('start');
@@ -344,6 +684,77 @@ class Store_org extends REST2_Controller
         $this->response($this->resp->setRespond(array('results' => $formatted_results, 'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Store Organize"},
+     *     path="/StoreOrg/nodes",
+     *     description="List nodes as set from administration dashboard",
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="query",
+     *         type="string",
+     *         description="Specify Node ID to retrieve",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="organize_id",
+     *         in="query",
+     *         type="string",
+     *         description="Specify Organization ID to retrieve",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="parent_id",
+     *         in="query",
+     *         type="string",
+     *         description="Specify Parent ID to retrieve",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="search",
+     *         in="query",
+     *         type="string",
+     *         description="Specify Organize name to retrieve",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="sort",
+     *         in="query",
+     *         type="string",
+     *         description="Specify field to be sort (_id, name, status, description, date_added, date_modified)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="order",
+     *         in="query",
+     *         type="string",
+     *         description="Specify sorted direction",
+     *         required=false,
+     *         enum={"asc", "desc"},
+     *         default="asc"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="offset",
+     *         in="query",
+     *         type="string",
+     *         description="Specify paging offset",
+     *         required=false,
+     *         default=0
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         type="string",
+     *         description="Specify paging limit",
+     *         required=false,
+     *         default=20
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function listNodes_get()
     {
         $this->benchmark->mark('start');
@@ -535,6 +946,32 @@ class Store_org extends REST2_Controller
     }
 
 
+    /**
+     * @SWG\Get(
+     *     tags={"Store Organize"},
+     *     path="/StoreOrg/nodes/{node_id}/getChildNode/{layer}",
+     *     description="Get a player's list from a specific node",
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Node ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="layer",
+     *         in="query",
+     *         type="string",
+     *         description="Layer of nodes under specific node to find | default = 0 for finding all",
+     *         required=true,
+     *         default=0
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function getChildNode_get($node_id = '', $layer = 0)
     {
         $this->benchmark->mark('start');
@@ -584,6 +1021,54 @@ class Store_org extends REST2_Controller
         $this->response($this->resp->setRespond(array('results' => $formatted_results, 'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Store Organize"},
+     *     path="/StoreOrg/nodes/{node_id}/saleReport",
+     *     description="Sale report of specific node in a month",
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Node ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="month",
+     *         in="query",
+     *         type="string",
+     *         description="Month to rank players by | (e.g. 01, 02, 03)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="year",
+     *         in="query",
+     *         type="string",
+     *         description="Year to rank players by | (e.g. 2015, 2016, 2017)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="action",
+     *         in="query",
+     *         type="string",
+     *         description="Month to rank players by | (e.g. 01, 02, 03)",
+     *         required=false,
+     *         default="sell"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="parameter",
+     *         in="query",
+     *         type="string",
+     *         description="Year to rank players by | (e.g. 2015, 2016, 2017)",
+     *         required=false,
+     *         default="amount"
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function saleReport_get($node_id = '')
     {
         $result = array();
@@ -649,6 +1134,61 @@ class Store_org extends REST2_Controller
         $this->response($this->resp->setRespond($result), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Store Organize"},
+     *     path="/StoreOrg/nodes/{node_id}/saleHistory/{count}",
+     *     description="Sale history of specific node",
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Node ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="count",
+     *         in="path",
+     *         type="string",
+     *         description="Number of months to get",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="month",
+     *         in="query",
+     *         type="string",
+     *         description="Month to rank players by | (e.g. 01, 02, 03)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="year",
+     *         in="query",
+     *         type="string",
+     *         description="Year to rank players by | (e.g. 2015, 2016, 2017)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="action",
+     *         in="query",
+     *         type="string",
+     *         description="Month to rank players by | (e.g. 01, 02, 03)",
+     *         required=false,
+     *         default="sell"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="parameter",
+     *         in="query",
+     *         type="string",
+     *         description="Year to rank players by | (e.g. 2015, 2016, 2017)",
+     *         required=false,
+     *         default="amount"
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function saleHistory_get($node_id = '', $count = '')
     {
         $result = array();
@@ -726,6 +1266,77 @@ class Store_org extends REST2_Controller
         $this->response($this->resp->setRespond($result), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Store Organize"},
+     *     path="/StoreOrg/nodes/{node_id}/saleBoard/{layer}",
+     *     description="Sale history of specific node",
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Node ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="layer",
+     *         in="path",
+     *         type="string",
+     *         description="Layer of nodes under a specific node to find | default = 0",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="month",
+     *         in="query",
+     *         type="string",
+     *         description="Month to rank players by | (e.g. 01, 02, 03)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="year",
+     *         in="query",
+     *         type="string",
+     *         description="Year to rank players by | (e.g. 2015, 2016, 2017)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="action",
+     *         in="query",
+     *         type="string",
+     *         description="Month to rank players by | (e.g. 01, 02, 03)",
+     *         required=false,
+     *         default="sell"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="parameter",
+     *         in="query",
+     *         type="string",
+     *         description="Year to rank players by | (e.g. 2015, 2016, 2017)",
+     *         required=false,
+     *         default="amount"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="page",
+     *         in="query",
+     *         type="string",
+     *         description="Month to rank players by | (e.g. 01, 02, 03)",
+     *         required=false,
+     *         default=0
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         type="string",
+     *         description="Year to rank players by | (e.g. 2015, 2016, 2017)",
+     *         required=false,
+     *         default=0
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function saleBoard_get($node_id = '', $layer = '')
     {
         //$this->benchmark->mark('start');
@@ -826,6 +1437,31 @@ class Store_org extends REST2_Controller
 
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Store Organize"},
+     *     path="/StoreOrg/players/{node_id}",
+     *     description="Get a player's list from a specific node",
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Node ID",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="point_name",
+     *         in="query",
+     *         type="string",
+     *         description="Role name",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function players_get($node_id = '')
     {
         $result = array();
@@ -919,6 +1555,77 @@ class Store_org extends REST2_Controller
         return false;
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Store Organize"},
+     *     path="/StoreOrg/rankPeer/{node_id}/{rank_by}",
+     *     description="Reset point of all players",
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Organization ID to be ranked",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="rank_by",
+     *         in="path",
+     *         type="string",
+     *         description="Name of point-based reward to rank players by",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="page",
+     *         in="query",
+     *         type="string",
+     *         description="Select page to be reported | default = 0",
+     *         required=false,
+     *         default=0
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         type="integer",
+     *         description="Specify paging limit | default = 20",
+     *         required=false,
+     *         default=20
+     *     ),
+     *     @SWG\Parameter(
+     *         name="under_org",
+     *         in="query",
+     *         type="integer",
+     *         description="Return rank of organizations under a given node",
+     *         required=true,
+     *         default="false",
+     *         enum={"true", "false"}
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="month",
+     *         in="query",
+     *         type="string",
+     *         description="Month to rank players by | (e.g. 01, 02, 03)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="year",
+     *         in="query",
+     *         type="string",
+     *         description="Year to rank players by | (e.g. 2015, 2016, 2017)",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function rankPeer_get($node_id, $rank_by)
     {
         // Check validity of action and parameter
@@ -1050,6 +1757,82 @@ class Store_org extends REST2_Controller
         $this->response($this->resp->setRespond($return_list), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Store Organize"},
+     *     path="/StoreOrg/rankPeerByAccAction/{node_id}/{action}/{parameter}",
+     *     description="Reset point of all players",
+     *     @SWG\Parameter(
+     *         name="node_id",
+     *         in="path",
+     *         type="string",
+     *         description="Organization ID to be ranked",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="action",
+     *         in="path",
+     *         type="string",
+     *         description="Name of action to rank players by",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="parameter",
+     *         in="path",
+     *         type="string",
+     *         description="Name of parameter to rank players by",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="role",
+     *         in="query",
+     *         type="string",
+     *         description="Role in Organization to be filtered",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="page",
+     *         in="query",
+     *         type="string",
+     *         description="Select page to be reported | default = 0",
+     *         required=false,
+     *         default=0
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         type="integer",
+     *         description="Specify paging limit | default = 20",
+     *         required=false,
+     *         default=20
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="month",
+     *         in="query",
+     *         type="string",
+     *         description="Month to rank players by | (e.g. 01, 02, 03)",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="year",
+     *         in="query",
+     *         type="string",
+     *         description="Year to rank players by | (e.g. 2015, 2016, 2017)",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function rankPeerByAccumulateAction_get($node_id, $action, $param)
     {
         $this->benchmark->mark('rank_peer_start');

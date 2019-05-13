@@ -14,6 +14,31 @@ class Timestamp extends REST2_Controller
         $this->load->model('tool/respond', 'resp');
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Timestamp"},
+     *     path="/Timestamp",
+     *     description="Record timestamp",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function index_post()
     {
         $client_id = $this->validToken['client_id'];
@@ -45,6 +70,33 @@ class Timestamp extends REST2_Controller
         $this->response($this->resp->setRespond(), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Timestamp"},
+     *     path="/Timestamp",
+     *     description="Retrieve timestamp",
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="sort_order",
+     *         in="query",
+     *         type="string",
+     *         description="Specify sorted direction | (e.g. desc, asc)",
+     *         required=false,
+     *         default="desc",
+     *         enum={"asc", "desc"}
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function index_get()
     {
         $client_id = $this->validToken['client_id'];

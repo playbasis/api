@@ -1,4 +1,4 @@
-<?php
+ <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 require_once APPPATH . '/libraries/REST2_Controller.php';
 
@@ -15,6 +15,87 @@ class Game extends REST2_Controller
         $this->load->model('tool/respond', 'resp');
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Game"},
+     *     path="/Game",
+     *     description="Retrieve game(s) setting by specified filter fields",
+     *     @SWG\Parameter(
+     *         name="game_name",
+     *         in="query",
+     *         type="string",
+     *         description="Name of game to retrieve game details",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="stage_level",
+     *         in="query",
+     *         type="string",
+     *         description="Stage level of game",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="stage_name",
+     *         in="query",
+     *         type="string",
+     *         description="Stage name of game",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="sort",
+     *         in="query",
+     *         type="string",
+     *         description="Field to sort",
+     *         required=false,
+     *         enum={"game_name", "date_added", "date_modified", "random"}
+     *     ),
+     *     @SWG\Parameter(
+     *         name="order",
+     *         in="query",
+     *         type="string",
+     *         description="Direction to order | specify seed number if choice is 'random'",
+     *         required=false,
+     *         default="asc",
+     *         enum={"asc", "desc", "random"}
+     *     ),
+     *     @SWG\Parameter(
+     *         name="offset",
+     *         in="query",
+     *         type="string",
+     *         description="Specify paging offset | default = 0",
+     *         required=false,
+     *         default=0,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         type="string",
+     *         description="Specify paging limit",
+     *         required=false,
+     *         default=20,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="tags",
+     *         in="query",
+     *         type="string",
+     *         description="Specific tag(s) to find",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="status",
+     *         in="query",
+     *         type="string",
+     *         description="Status of the content to find",
+     *         required=false,
+     *         default="true",
+     *         enum={"true", "false", "all"}
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function list_get()
     {
         $this->benchmark->mark('start');
@@ -142,6 +223,31 @@ class Game extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $stage, 'processing_time' => $t)), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Game"},
+     *     path="/Game/campaign",
+     *     description="Retrieve game campaign",
+     *     @SWG\Parameter(
+     *         name="game_name",
+     *         in="query",
+     *         type="string",
+     *         description="Name of game to retrieve game details",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="campaign_name",
+     *         in="query",
+     *         type="string",
+     *         description="Name of campaign to retrieve campaign details",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function campaign_get()
     {
         $required = $this->input->checkParam(array(
@@ -174,6 +280,24 @@ class Game extends REST2_Controller
         $this->response($this->resp->setRespond(array('result' => $result)), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Game"},
+     *     path="/Game/campaign/active",
+     *     description="Retrieve active campaign",
+     *     @SWG\Parameter(
+     *         name="game_name",
+     *         in="query",
+     *         type="string",
+     *         description="Name of game to retrieve game details",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function activeCampaign_get()
     {
         $required = $this->input->checkParam(array(
@@ -258,6 +382,45 @@ class Game extends REST2_Controller
         return $item_status;
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Game"},
+     *     path="/Game/playerItemStatus",
+     *     description="Retrieve active campaign",
+     *     @SWG\Parameter(
+     *         name="game_name",
+     *         in="query",
+     *         type="string",
+     *         description="Name of game to retrieve game details",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="stage_level",
+     *         in="query",
+     *         type="string",
+     *         description="Specific stage level of game",
+     *         required=false,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="item_id",
+     *         in="query",
+     *         type="string",
+     *         description="Specific item Id in the game",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function playerItemStatus_get()
     {
         //$this->benchmark->mark('start');
@@ -465,6 +628,45 @@ class Game extends REST2_Controller
         $this->response($this->resp->setRespond(array('stage_finished'=>$stage_finished , 'next_stage'=>$next_stage)), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Game"},
+     *     path="/Game/setCurrentStage",
+     *     description="Set current stage for player to play the game",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="game_name",
+     *         in="query",
+     *         type="string",
+     *         description="Name of game to retrieve game details",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="stage_level",
+     *         in="query",
+     *         type="string",
+     *         description="Specific stage level of game",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function setCurrentStage_post()
     {
         //$this->benchmark->mark('start');

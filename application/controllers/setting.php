@@ -14,17 +14,45 @@ class Setting extends REST2_Controller
         $this->load->model('tool/respond', 'resp');
         $this->load->model('tool/node_stream', 'node');
     }
-    
+
+    /**
+     * @SWG\Post(
+     *     tags={"Setting"},
+     *     path="/Setting/appStatus",
+     *     description="Check if application is enabled in settings",
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function appStatus_get()
     {
-        $setting = $this->setting_model->retrieveSetting($this->client_id,$this->site_id);
+        $setting = $this->setting_model->retrieveSetting($this->client_id, $this->site_id);
         $response = array();
-        $response['app_status'] = $this->setting_model->appStatus($this->client_id,$this->site_id);
+        $response['app_status'] = $this->setting_model->appStatus($this->client_id, $this->site_id);
         $response['app_period'] = isset($setting['app_period']) && !empty($setting['app_period']) ? $setting['app_period'] : null;
 
         array_walk_recursive($response, array($this, 'convert_mongo_date'));
 
         $this->response($this->resp->setRespond($response), 200);
+    }
+
+    /**
+     * @SWG\Post(
+     *     tags={"Setting"},
+     *     path="/Setting/security",
+     *     description="Check player token security in settings",
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     ),
+     *     deprecated=true
+     * )
+     */
+    private function security_get()
+    {
+
     }
 
     private function convert_mongo_date(&$item, $key)

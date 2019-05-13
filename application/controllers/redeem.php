@@ -28,6 +28,45 @@ class Redeem extends REST2_Controller
         $this->load->model('tool/respond', 'resp');
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Redeem"},
+     *     path="/Redeem/goods",
+     *     description="Redeem goods for a client's website",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="goods_id",
+     *         in="query",
+     *         type="string",
+     *         description="Goods ID from a Goods Store",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="amount",
+     *         in="query",
+     *         type="integer",
+     *         description="Amount of goods to give to the player",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function goods_post()
     {
         $this->benchmark->mark('goods_redeem_start');
@@ -130,6 +169,45 @@ class Redeem extends REST2_Controller
         $this->response($this->resp->setRespond($redeemResult), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Redeem"},
+     *     path="/Redeem/sponsor",
+     *     description="Redeem sponsor goods for a client's website",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="goods_id",
+     *         in="query",
+     *         type="string",
+     *         description="Goods ID from a Goods store",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="amount",
+     *         in="query",
+     *         type="integer",
+     *         description="Amount of goods to give to the player",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function sponsor_post()
     {
         $this->benchmark->mark('goods_redeem_start');
@@ -178,6 +256,38 @@ class Redeem extends REST2_Controller
         $this->response($this->resp->setRespond($redeemResult), 200);
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Redeem"},
+     *     path="/Redeem/goodsGroup",
+     *     description="Redeem goods for a given group",
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="group",
+     *         in="query",
+     *         type="string",
+     *         description="Goods group",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="amount",
+     *         in="query",
+     *         type="integer",
+     *         description="Amount of goods to give to the player",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function goodsGroup_get()
     {
         $required = $this->input->checkParam(array(
@@ -207,6 +317,38 @@ class Redeem extends REST2_Controller
         $this->response($this->resp->setRespond($n), 200);
     }
 
+    /**
+     * @SWG\Get(
+     *     tags={"Redeem"},
+     *     path="/Redeem/sponsorGroup",
+     *     description="Find the number of available sponsored goods given a group",
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="group",
+     *         in="query",
+     *         type="string",
+     *         description="Goods group",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="amount",
+     *         in="query",
+     *         type="integer",
+     *         description="Amount of goods to give to the player",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function sponsorGroup_get()
     {
         $required = $this->input->checkParam(array(
@@ -355,6 +497,45 @@ class Redeem extends REST2_Controller
          
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Redeem"},
+     *     path="/Redeem/sponsorGroup",
+     *     description="Redeem goods for a given group",
+     *     @SWG\Parameter(
+     *         name="token",
+     *         in="query",
+     *         type="string",
+     *         description="Access token returned by Playbasis Authentication",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="group",
+     *         in="query",
+     *         type="string",
+     *         description="Goods group",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="amount",
+     *         in="query",
+     *         type="integer",
+     *         description="Amount of goods to give to the player",
+     *         required=false,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function sponsorGroup_post()
     {
         $this->benchmark->mark('goods_redeem_start');

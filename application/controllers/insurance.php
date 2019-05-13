@@ -15,6 +15,31 @@ class Insurance extends REST2_Controller
         $this->load->model('tool/respond', 'resp');
     }
 
+    /**
+     * @SWG\Post(
+     *     tags={"Insurance"},
+     *     path="/Insurance/getSuggestInsurance",
+     *     description="To get suggest insurance cover",
+     *     @SWG\Parameter(
+     *         name="player_id",
+     *         in="query",
+     *         type="string",
+     *         description="Player ID as used in client's website",
+     *         required=true,
+     *     ),
+     *     @SWG\Parameter(
+     *         name="product_type",
+     *         in="query",
+     *         type="string",
+     *         description="Insurance product",
+     *         required=true,
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="OK",
+     *     )
+     * )
+     */
     public function getSuggestInsurance_get()
     {
         $required = $this->input->checkParam(array(
