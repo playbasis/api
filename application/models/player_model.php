@@ -3543,8 +3543,8 @@ class Player_model extends MY_Model
         $player_id,
         $action,
         $parameter,
-        $month = null,
-        $year = null,
+        $month,
+        $year,
         $count
     ) {
         $result = array();
