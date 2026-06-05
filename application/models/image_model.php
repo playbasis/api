@@ -233,14 +233,16 @@ class Image_model extends MY_Model
         // Sorting
         $sort_data = array('_id', 'date_added', 'date_modified', 'type', 'file_size');
 
-        if (isset($optionalParams['order']) && (mb_strtolower($optionalParams['order']) == 'desc')) {
+        $sort_name = (isset($optionalParams['sort']) && is_scalar($optionalParams['sort'])) ? (string)$optionalParams['sort'] : null;
+        $order_name = (isset($optionalParams['order']) && is_scalar($optionalParams['order'])) ? mb_strtolower((string)$optionalParams['order']) : null;
+        if ($order_name == 'desc') {
             $order = -1;
         } else {
             $order = 1;
         }
 
-        if (isset($optionalParams['sort']) && in_array($optionalParams['sort'], $sort_data)) {
-            $this->mongo_db->order_by(array($optionalParams['sort'] => $order));
+        if ($sort_name !== null && in_array($sort_name, $sort_data)) {
+            $this->mongo_db->order_by(array($sort_name => $order));
         } else {
             $this->mongo_db->order_by(array('date_added' => $order));
         }

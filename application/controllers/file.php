@@ -203,40 +203,63 @@ class File extends REST2_Controller
         $this->benchmark->mark('start');
 
         $query_data = $this->input->get(null, true);
+        $filters = array();
+        foreach (array('id', 'player_id', 'username', 'sort', 'order') as $param_name) {
+            if (isset($query_data[$param_name]) && $query_data[$param_name] !== null) {
+                if (!is_scalar($query_data[$param_name])) {
+                    $this->response($this->error->setError('PARAMETER_INVALID', array($param_name)), 200);
+                }
+                $query_data[$param_name] = (string)$query_data[$param_name];
+            }
+        }
 
         if (isset($query_data['id']) && !empty($query_data['id'])) {
             try {
-                $query_data['id'] = new MongoId($query_data['id']);
+                new MongoId($query_data['id']);
+                $filters['id'] = $query_data['id'];
             } catch (Exception $e) {
                 $this->response($this->error->setError('PARAMETER_INVALID', array('id')), 200);
             }
         }
 
         if (isset($query_data['player_id']) && !empty($query_data['player_id'])){
-            $query_data['pb_player_id'] = new MongoId($this->player_model->getPlaybasisId(array_merge($this->validToken,
+            $pb_player_id = $this->player_model->getPlaybasisId(array_merge($this->validToken,
                 array(
                     'cl_player_id' => $query_data['player_id']
-                ))));
+                )));
+            if (!$pb_player_id) {
+                $this->response($this->error->setError('USER_NOT_EXIST'), 200);
+            }
+            $filters['pb_player_id'] = (string)$pb_player_id;
         }
 
         if (isset($query_data['username']) && !empty($query_data['username'])){
             if ($query_data['username'] == 'all') {
-                $query_data['user_id'] = 'all';
+                $filters['user_id'] = 'all';
             } else {
-                $user = isset($input['username']) ? $this->user_model->getByUsername($input['username']) : null;
+                $user = $this->user_model->getByUsername($query_data['username']);
                 if (!$user) {
                     $this->response($this->error->setError('USER_NOT_EXIST'), 200);
                 }
                 $user_id = isset($user) ? $user['_id'] : null;
                 try {
-                    $query_data['user_id'] = new MongoId($user_id);
+                    new MongoId($user_id);
+                    $filters['user_id'] = (string)$user_id;
                 } catch (Exception $e) {
                     $this->response($this->error->setError('PARAMETER_INVALID', array('id')), 200);
                 }
             }
         }
 
-        $files = $this->image_model->retrieveData($this->client_id, $this->site_id, $query_data);
+        if (isset($query_data['sort'])) {
+            $filters['sort'] = $query_data['sort'];
+        }
+
+        if (isset($query_data['order'])) {
+            $filters['order'] = $query_data['order'];
+        }
+
+        $files = $this->image_model->retrieveData($this->client_id, $this->site_id, $filters);
 
         foreach ( $files as &$file ){
             $extension = substr(strrchr($file['url'],'.'), 0);
