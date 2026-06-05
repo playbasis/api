@@ -20,7 +20,7 @@ services:
             - MONGO_PASSWORD=mongodbpasswordplaybasis
             - NODE_STREAM_URL=qav2node.pbapp.net
         volumes:
-            - ~/sandbox/api_test/:/var/www/api/
+            - ../:/var/www/api/
             - /tmp:/var/www/api/application/cache
         # restart: always
 
