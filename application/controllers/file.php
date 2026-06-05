@@ -72,7 +72,7 @@ class File extends REST2_Controller
             if ($limit_images && ($size + $image['size'] > $limit_images)) {
                 $this->response($this->error->setError('UPLOAD_EXCEED_LIMIT'), 200);
             }
-            $directory = isset($input['directory']) ? str_replace('../', '', $input['directory']) : null;
+            $directory = $this->normalizeDirectory(isset($input['directory']) ? $input['directory'] : null);
             $filename = basename(html_entity_decode($image['name'], ENT_QUOTES, 'UTF-8'));
 
             $t = explode('.', $filename);
@@ -88,7 +88,7 @@ class File extends REST2_Controller
             $local_directory = rtrim(DIR_IMAGE . $directory, '/');
 
             if (!is_dir($local_directory)) {
-                @mkdir($local_directory);
+                @mkdir($local_directory, 0777, true);
             }
 
             if ($image['size'] > MAX_UPLOADED_FILE_SIZE) {
@@ -152,7 +152,7 @@ class File extends REST2_Controller
         if ($result) {
             $json['url'] = rtrim(S3_IMAGE . S3_DATA_FOLDER . $directory, '/') . "/" . urlencode($filename);
             @copy(rtrim(S3_IMAGE . S3_DATA_FOLDER . $directory, '/') . "/" . urlencode($filename),
-                $directory . '/' . $filename);
+                $local_directory . '/' . $filename);
             if ($directory) {
                 $uri = $directory . "/" . $filename;
             } else {
@@ -183,11 +183,11 @@ class File extends REST2_Controller
             $this->response($this->error->setError('PARAMETER_INVALID', array('file_name')), 200);
         }
 
-        if (!$this->image_model->getImageUrl($client_id, $site_id, $input['file_name'])) {
+        $directory = $this->normalizeDirectory(isset($input['directory']) ? $input['directory'] : null);
+
+        if (!$this->image_model->getImageUrl($client_id, $site_id, $input['file_name'], $directory)) {
             $this->response($this->error->setError('FILE_NOT_FOUND'), 200);
         }
-
-        $directory = isset($input['directory']) ? str_replace('../', '', $input['directory']) : null;
 
         if (!$this->image_model->deleteImage($client_id, $site_id, $input['file_name'], $directory)) {
             $this->response($this->error->setError('DELETE_FILE_FAILED'), 200);
@@ -196,6 +196,50 @@ class File extends REST2_Controller
         $this->benchmark->mark('end');
         $t = $this->benchmark->elapsed_time('start', 'end');
         $this->response($this->resp->setRespond(array('processing_time' => $t)), 200);
+    }
+
+    private function normalizeDirectory($directory)
+    {
+        if ($directory === null || $directory === '') {
+            return null;
+        }
+
+        if (strpos($directory, "\0") !== false) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('directory')), 200);
+        }
+
+        $directory = trim($directory);
+
+        if ($directory === '') {
+            return null;
+        }
+
+        if (strpos($directory, "\\") !== false ||
+            substr($directory, 0, 1) === '/' ||
+            preg_match('#^[a-z][a-z0-9+.-]*://#i', $directory) ||
+            !preg_match('#^[a-zA-Z0-9_./-]+$#', $directory)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('directory')), 200);
+        }
+
+        $has_trailing_slash = substr($directory, -1) === '/';
+        $parts = explode('/', $directory);
+        $safe_parts = array();
+
+        foreach ($parts as $part) {
+            if ($part === '' || $part === '.') {
+                continue;
+            }
+            if (strpos($part, '..') !== false) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('directory')), 200);
+            }
+            $safe_parts[] = $part;
+        }
+
+        if (empty($safe_parts)) {
+            return null;
+        }
+
+        return implode('/', $safe_parts) . ($has_trailing_slash ? '/' : '');
     }
 
     public function list_get()
