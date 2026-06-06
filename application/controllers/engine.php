@@ -1058,9 +1058,14 @@ class Engine extends Quest
                 }
 
                 if($processor=="groupNot" || $processor=="groupOr"){
+                    if (!isset($jigsawConfig['condition_group_container']) || !is_array($jigsawConfig['condition_group_container'])) {
+                        $jigsawConfig['condition_group_container'] = array();
+                    }
+
+                    $condition_group_names = array_column($jigsawConfig['condition_group_container'], 'param_name');
                     // check if condition group containing item group
-                    if( (array_search("badge", array_column($jigsawConfig['condition_group_container'], 'param_name')) !== false) ||
-                        (array_search("specialRewardCondition", array_column($jigsawConfig['condition_group_container'], 'param_name')) !== false)){
+                    if( (array_search("badge", $condition_group_names) !== false) ||
+                        (array_search("specialRewardCondition", $condition_group_names) !== false)){
                         //read player badge information
                         $badge = $this->player_model->getBadge($input['pb_player_id'], $this->site_id);
                         $input['player_badge'] = $badge;
