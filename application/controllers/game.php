@@ -24,8 +24,30 @@ class Game extends REST2_Controller
             $query_data['tags'] = explode(',', $query_data['tags']);
         }
 
-        if (!isset($query_data['status']) || (strtolower($query_data['status']) !== 'all')){
-            $query_data['status'] = (isset($query_data['status']) && (strtolower($query_data['status'])==='false')) ? false : true;
+        if (isset($query_data['game_id']) && !empty($query_data['game_id']) &&
+            preg_match('/^[0-9a-f]{24}$/i', (string)$query_data['game_id']) !== 1) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('game_id')), 200);
+        }
+        if (isset($query_data['game_name']) && !is_scalar($query_data['game_name'])) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('game_name')), 200);
+        }
+        if (isset($query_data['game_name'])) {
+            $query_data['game_name'] = (string)$query_data['game_name'];
+        }
+        if (isset($query_data['order']) && !is_scalar($query_data['order'])) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('order')), 200);
+        }
+        if (isset($query_data['order'])) {
+            $query_data['order'] = (string)$query_data['order'];
+        }
+
+        if (isset($query_data['status']) && !is_scalar($query_data['status'])) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('status')), 200);
+        }
+
+        $status = isset($query_data['status']) ? strtolower((string)$query_data['status']) : null;
+        if ($status !== 'all'){
+            $query_data['status'] = ($status === 'false') ? false : true;
         }else{
             unset($query_data['status']);
         }
