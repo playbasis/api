@@ -42,6 +42,9 @@ class Notification extends Engine
         // headers = HTTP_X_AMZ_SNS_MESSAGE_TYPE, HTTP_X_AMZ_SNS_MESSAGE_ID, HTTP_X_AMZ_SNS_TOPIC_ARN, HTTP_X_AMZ_SNS_SUBSCRIPTION_ARN
         // body = $this->request->body
         $message = !empty($this->request->body) ? $this->request->body : $_POST;
+        if (!is_array($message)) {
+            $message = array('raw_message' => $message);
+        }
         log_message('debug', '_SERVER = ' . print_r($_SERVER, true));
         log_message('debug', 'message = ' . print_r($message, true));
         $log_id = $this->notification_model->log($this->site_id, $message);
@@ -51,12 +54,19 @@ class Notification extends Engine
             switch ($_SERVER['HTTP_X_AMZ_SNS_MESSAGE_TYPE']) {
                 case 'SubscriptionConfirmation': // http://docs.aws.amazon.com/sns/latest/dg/json-formats.html#http-subscription-confirmation-json
                     // fields: Type, MessageId, Token, TopicArn, Message, SubscribeURL, Timestamp, SignatureVersion, Signature, SigningCertURL
+                    if (!array_key_exists('SubscribeURL', $message) || !is_string($message['SubscribeURL'])) {
+                        break;
+                    }
                     log_message('debug', 'SubscribeURL = ' . print_r($message['SubscribeURL'], true));
                     $response = $this->curl->simple_get($message['SubscribeURL']); // http://philsturgeon.co.uk/code/codeigniter-curl
                     log_message('debug', 'response = ' . $response);
                     break;
                 case 'Notification': // http://docs.aws.amazon.com/sns/latest/dg/json-formats.html#http-notification-json
                     // fields: Type, MessageId, TopicArn, Subject, Message, Timestamp, SignatureVersion, Signature, SigningCertURL, UnsubscribeURL
+                    if (!array_key_exists('Message', $message) || !is_string($message['Message'])) {
+                        $response = false;
+                        break;
+                    }
                     log_message('debug', 'message = ' . $message['Message']);
                     $response = $this->handleNotification($this->convertToJson($message['Message']));
                     log_message('debug', 'response = ' . $response);
@@ -164,7 +174,7 @@ class Notification extends Engine
                                 log_message('error', 'Unknown tenant ID: ' . $tenent_id);
                                 $this->response($this->error->setError('INVALID_JIVE_TENANT_ID', $tenent_id), 200);
                             }
-                            if (!array_key_exists('activity', $message)) {
+                            if (!array_key_exists('activity', $message) || !is_array($message['activity'])) {
                                 log_message('error', 'Invalid Jive message');
                                 $this->response($this->error->setError('INVALID_JIVE_MESSAGE'), 200);
                             }
@@ -1026,6 +1036,9 @@ class Notification extends Engine
     private function handleNotification($message)
     {
         $ret = false;
+        if (!is_array($message)) {
+            return $ret;
+        }
         if (!empty($message)) {
             if (array_key_exists('notificationType',
                 $message)) { // http://docs.aws.amazon.com/ses/latest/DeveloperGuide/notification-examples.html
@@ -1093,6 +1106,9 @@ class Notification extends Engine
     private function handleJive($site_id, $message)
     {
         $ret = false;
+        if (!is_array($message)) {
+            return $ret;
+        }
         if (!empty($message) && array_key_exists('tenantId', $message)) {
             $this->jive_model->delete($site_id);
             if (!array_key_exists('uninstalled', $message)) {
