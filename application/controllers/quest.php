@@ -818,7 +818,12 @@ class Quest extends REST2_Controller
                 if(isset($reward['reward_data']['group']) && ($reward['reward_type'] == 'GOODS') && ($reward['reward_value'] > 0))
                 {
                     $goods_group_rewards = $this->goods_model->getGoodsByGroup($validToken['client_id'], $validToken['site_id'], $reward['reward_data']['group'] , null , null , 1 );
-                    $rand_goods = array_rand($goods_group_rewards, (int)$reward['reward_value']);
+                    if (!is_array($goods_group_rewards) || count($goods_group_rewards) == 0) {
+                        unset($mission["missions"][0]["rewards"][$rewardkey]);
+                        continue;
+                    }
+
+                    $rand_goods = array_rand($goods_group_rewards, min(count($goods_group_rewards), (int)$reward['reward_value']));
                     if(!is_array($rand_goods)){
                         $rand_goods = array($rand_goods);
                     }
@@ -878,8 +883,8 @@ class Quest extends REST2_Controller
                 if(isset($reward['reward_data']['group']) && ($reward['reward_type'] == 'GOODS') && ($reward['reward_value'] > 0))
                 {
                     $goods_group_rewards = $this->goods_model->getGoodsByGroup($validToken['client_id'], $validToken['site_id'], $reward['reward_data']['group'] , null , null , 1 );
-                    if($goods_group_rewards) {
-                        $rand_goods = array_rand($goods_group_rewards, (int)$reward['reward_value']);
+                    if(is_array($goods_group_rewards) && count($goods_group_rewards) > 0) {
+                        $rand_goods = array_rand($goods_group_rewards, min(count($goods_group_rewards), (int)$reward['reward_value']));
                         if(!is_array($rand_goods)){
                             $rand_goods = array($rand_goods);
                         }
