@@ -456,12 +456,21 @@ class Store_org extends REST2_Controller
         return (!preg_match("/^([a-zA-Z0-9-_=]+)+$/i", $cl_player_id)) ? false : true;
     }
 
+    private function requireValidNodeId($node_id)
+    {
+        if (!preg_match('/^[0-9a-f]{24}$/i', (string)$node_id)) {
+            $this->response($this->error->setError('STORE_ORG_NODE_NOT_FOUND'), 200);
+            die();
+        }
+    }
+
     /**
      * @param $node_id
      * @return MongoId
      */
     private function findNodeId($node_id)
     {
+        $this->requireValidNodeId($node_id);
         $node_id = new MongoId($node_id);
         $node = $this->store_org_model->retrieveNodeById($this->site_id, $node_id);
         if ($node === null) {
@@ -547,14 +556,16 @@ class Store_org extends REST2_Controller
                 'node_id'
             )), 200);
         }
+        $this->requireValidNodeId($node_id);
+        $node_mongo_id = new MongoId($node_id);
 
-        $check_node = $this->store_org_model->retrieveNodeById($this->validToken['site_id'], new MongoId($node_id));
+        $check_node = $this->store_org_model->retrieveNodeById($this->validToken['site_id'], $node_mongo_id);
         if (!$check_node) {
             $this->response($this->error->setError('STORE_ORG_NODE_NOT_FOUND'), 200);
         }
 
         $nodesData = $this->store_org_model->retrieveNode($this->client_id, $this->site_id);
-        $this->utility->recurGetChildUnder($nodesData, new MongoId($node_id), $candidate_nodes, $layer);
+        $this->utility->recurGetChildUnder($nodesData, $node_mongo_id, $candidate_nodes, $layer);
 
         foreach ($candidate_nodes as $node) {
             $node_info = $this->store_org_model->retrieveNodeById($this->validToken['site_id'], $node);
@@ -593,8 +604,10 @@ class Store_org extends REST2_Controller
                 'node_id'
             )), 200);
         }
+        $this->requireValidNodeId($node_id);
+        $node_mongo_id = new MongoId($node_id);
 
-        $node_chk = $this->store_org_model->retrieveNodeById($this->validToken['site_id'], new MongoId($node_id));
+        $node_chk = $this->store_org_model->retrieveNodeById($this->validToken['site_id'], $node_mongo_id);
         if (!$node_chk) {
             $this->response($this->error->setError('STORE_ORG_NODE_NOT_FOUND'), 200);
         }
@@ -618,7 +631,7 @@ class Store_org extends REST2_Controller
 
         $nodesData = $this->store_org_model->retrieveNode($this->client_id, $this->site_id);
         $list = array();
-        $this->utility->recurGetChildUnder($nodesData, new MongoId($node_id), $list);
+        $this->utility->recurGetChildUnder($nodesData, $node_mongo_id, $list);
 
         $table = $this->store_org_model->getSaleHistoryOfNode($this->validToken['client_id'],
             $this->validToken['site_id'], $list, $action, $parameter, $month, $year, 2);
@@ -657,8 +670,10 @@ class Store_org extends REST2_Controller
                 'node_id'
             )), 200);
         }
+        $this->requireValidNodeId($node_id);
+        $node_mongo_id = new MongoId($node_id);
 
-        $node_chk = $this->store_org_model->retrieveNodeById($this->validToken['site_id'], new MongoId($node_id));
+        $node_chk = $this->store_org_model->retrieveNodeById($this->validToken['site_id'], $node_mongo_id);
         if (!$node_chk) {
             $this->response($this->error->setError('STORE_ORG_NODE_NOT_FOUND'), 200);
         }
@@ -695,7 +710,7 @@ class Store_org extends REST2_Controller
 
         $node_list = array();
         $nodesData = $this->store_org_model->retrieveNode($this->client_id, $this->site_id);
-        $this->utility->recurGetChildUnder($nodesData, new MongoId($node_id), $node_list);
+        $this->utility->recurGetChildUnder($nodesData, $node_mongo_id, $node_list);
 
         $table = $this->store_org_model->getSaleHistoryOfNode($this->validToken['client_id'],
             $this->validToken['site_id'], $node_list, $action, $parameter, $month, $year, $count + 1);
@@ -736,7 +751,10 @@ class Store_org extends REST2_Controller
                 'node_id'
             )), 200);
         }
-        $node_chk = $this->store_org_model->retrieveNodeById($this->validToken['site_id'], new MongoId($node_id));
+        $this->requireValidNodeId($node_id);
+        $node_mongo_id = new MongoId($node_id);
+
+        $node_chk = $this->store_org_model->retrieveNodeById($this->validToken['site_id'], $node_mongo_id);
         if (!$node_chk) {
             $this->response($this->error->setError('STORE_ORG_NODE_NOT_FOUND'), 200);
         }
@@ -775,7 +793,7 @@ class Store_org extends REST2_Controller
 
         $nodesData = $this->store_org_model->retrieveNode($this->client_id, $this->site_id);
         $candidate_node = array();
-        $this->utility->recurGetChildByLevel($nodesData, new MongoId($node_id), $candidate_node, $layer);
+        $this->utility->recurGetChildByLevel($nodesData, $node_mongo_id, $candidate_node, $layer);
 
         foreach ($candidate_node as $node) {
             $list = array();
@@ -932,8 +950,10 @@ class Store_org extends REST2_Controller
                 'rank_by'
             )), 200);
         }
+        $this->requireValidNodeId($node_id);
+        $node_mongo_id = new MongoId($node_id);
 
-        $node_chk = $this->store_org_model->retrieveNodeById($this->validToken['site_id'], new MongoId($node_id));
+        $node_chk = $this->store_org_model->retrieveNodeById($this->validToken['site_id'], $node_mongo_id);
         if (!$node_chk) {
             $this->response($this->error->setError('STORE_ORG_NODE_NOT_FOUND'), 200);
         }
@@ -960,9 +980,9 @@ class Store_org extends REST2_Controller
         $node_to_match = array();
         // get node list of this node id
         if ($under_org == false) {
-            $list = array(new MongoId ($node_id));
+            $list = array($node_mongo_id);
         } else {
-            $list = $this->store_org_model->findAdjacentChildNode($client_id, $site_id, new MongoId ($node_id));
+            $list = $this->store_org_model->findAdjacentChildNode($client_id, $site_id, $node_mongo_id);
             if (is_array($list)) {
                 foreach ($list as &$p_node) {
                     $p_node = $p_node['_id'];
@@ -1070,8 +1090,10 @@ class Store_org extends REST2_Controller
                 'parameter'
             )), 200);
         }
+        $this->requireValidNodeId($node_id);
+        $node_mongo_id = new MongoId($node_id);
 
-        $node_chk = $this->store_org_model->retrieveNodeById($this->validToken['site_id'], new MongoId($node_id));
+        $node_chk = $this->store_org_model->retrieveNodeById($this->validToken['site_id'], $node_mongo_id);
         if (!$node_chk) {
             $this->response($this->error->setError('STORE_ORG_NODE_NOT_FOUND'), 200);
         }
@@ -1123,7 +1145,7 @@ class Store_org extends REST2_Controller
 
         $results = array();
         $leaderboard_list = array();
-        $node_list = $this->store_org_model->findAdjacentChildNode($client_id, $site_id, new MongoID($node_id));
+        $node_list = $this->store_org_model->findAdjacentChildNode($client_id, $site_id, $node_mongo_id);
         // get node list of this node id
         if ($node_list) {
             foreach ($node_list as $node) {
