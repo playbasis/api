@@ -183,6 +183,9 @@ class Email extends REST2_Controller
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         }
         $ref_id = $this->input->post('ref_id');
+        if (!preg_match('/^[0-9a-f]{24}$/i', (string)$ref_id)) {
+            $this->response($this->error->setError('REFERENCE_ID_INVALID'), 200);
+        }
         $redeemData = $this->redeem_model->findByReferenceId('goods', new MongoId($ref_id));
         if (!$redeemData) {
             $this->response($this->error->setError('REFERENCE_ID_INVALID'), 200);
