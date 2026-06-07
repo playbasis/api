@@ -4,7 +4,7 @@ require_once APPPATH . '/libraries/REST2_Controller.php';
 
 function index_weight($obj)
 {
-    return $obj['weight'];
+    return isset($obj['weight']) ? $obj['weight'] : 0;
 }
 
 function index_quiz_id($obj)
@@ -1365,16 +1365,21 @@ class Quiz extends REST2_Controller
     private function random_weight($weights)
     {
         if (!is_array($weights) || !(count($weights) > 0)) {
-            throw new Exception("$weights is not a non-empty array");
+            throw new Exception("weights is not a non-empty array");
         }
         $sum = 0;
         $acc = array();
         foreach ($weights as $weight) {
+            $weight = is_numeric($weight) ? (float)$weight : 0;
+            $weight = ($weight > 0) ? $weight : 0;
             $sum += $weight;
             array_push($acc, $sum);
         }
-        $max = $acc[count($acc) - 1];
-        $ran = rand(0, $max - 1);
+        if ($sum <= 0) {
+            return rand(0, count($weights) - 1);
+        }
+
+        $ran = (mt_rand() / mt_getrandmax()) * $sum;
         foreach ($acc as $i => $value) {
             if ($ran < $value) {
                 return $i;
