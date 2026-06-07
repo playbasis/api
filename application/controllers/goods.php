@@ -334,7 +334,12 @@ class Goods extends REST2_Controller
                 // Sorting
                 $sort_data = array('name', 'quantity', 'description', 'date_start', 'date_expire', 'sort_order');
 
-                if ($this->input->get('order') && (mb_strtolower($this->input->get('order')) == 'desc')) {
+                $order_input = $this->input->get('order');
+                if ($order_input !== null && $order_input !== false && !is_scalar($order_input)) {
+                    $this->response($this->error->setError('PARAMETER_INVALID', array('order')), 200);
+                }
+
+                if ($order_input && (mb_strtolower((string)$order_input) == 'desc')) {
                     $order = SORT_DESC;
                 } else {
                     $order = SORT_ASC;
@@ -346,6 +351,7 @@ class Goods extends REST2_Controller
                     $sort = "sort_order";
                 }
 
+                $sorter = array();
                 foreach ($goodsList['goods_list'] as $key => $row) {
                     $sorter[$key] = $row[$sort];
                 }
