@@ -108,7 +108,7 @@ class Content extends REST2_Controller
         }
         if (isset($query_data['tags']) && !empty($query_data['tags'])) {
             $query_data = array_merge($query_data, array(
-                'tags' => explode(',', $this->input->get('tags'))
+                'tags' => $this->commaListParameter($query_data['tags'], 'tags')
             ));
         }
 
@@ -476,7 +476,7 @@ class Content extends REST2_Controller
 
         if (isset($query_data['tags']) && !empty($query_data['tags'])) {
             $query_data = array_merge($query_data, array(
-                'tags' => explode(',', $this->input->get('tags'))
+                'tags' => $this->commaListParameter($query_data['tags'], 'tags')
             ));
         }
 
@@ -606,7 +606,7 @@ class Content extends REST2_Controller
         if ($this->input->post('pin')){
             $contentInfo['pin'] = $this->input->post('pin');
         }
-        $contentInfo['tags'] = $this->input->post('tags') && !is_null($this->input->post('tags')) ? explode(',', $this->input->post('tags')) : null;
+        $contentInfo['tags'] = $this->commaListParameter($this->input->post('tags'), 'tags');
 
         if ($this->input->post('key')) {
             $data['custom'] = array();
@@ -689,7 +689,7 @@ class Content extends REST2_Controller
         }
 
         if ($this->input->post('tags')){
-            $contentInfo['tags'] = explode(',', $this->input->post('tags'));
+            $contentInfo['tags'] = $this->commaListParameter($this->input->post('tags'), 'tags');
         }
 
         if ($this->input->post('key')) {
@@ -1040,6 +1040,17 @@ class Content extends REST2_Controller
             $this->response($this->error->setError('CONTENT_NOT_FOUND'), 200);
         }
         return $contents;
+    }
+
+    private function commaListParameter($value, $parameter)
+    {
+        if (!$value) {
+            return null;
+        }
+        if (!is_scalar($value)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($parameter)), 200);
+        }
+        return explode(',', $value);
     }
 
     private function getPlayerIdListForSameType($pb_player_id, $organize=null)
