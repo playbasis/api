@@ -25,6 +25,11 @@ class Instagram extends REST2_Controller
     public function feed_post()
     {
         $jsonArray = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($jsonArray)) {
+            $this->response($this->resp->setRespond(), 200);
+            return;
+        }
+
         $this->social_model->saveInstagramFeedData($jsonArray);
     }
 }
