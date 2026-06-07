@@ -10,7 +10,7 @@ class Reward extends REST2_Controller
         $this->load->model('auth_model');
         $this->load->model('reward_model');
         $this->load->model('badge_model');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/respond', 'resp');
     }
 

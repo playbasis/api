@@ -8,7 +8,7 @@ class Language extends REST2_Controller
     {
         parent::__construct();
         $this->load->model('language_model');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/respond', 'resp');
     }
 

@@ -29,7 +29,7 @@ class Engine extends Quest
         $this->load->model('email_model');
         $this->load->model('sms_model');
         $this->load->model('store_org_model');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/utility', 'utility');
         $this->load->model('tool/respond', 'resp');
         $this->load->model('tool/node_stream', 'node');
