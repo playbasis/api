@@ -104,6 +104,11 @@ class Memcached_library
 	*/
 	public function add($key = NULL, $value = NULL, $expiration = NULL)
 	{
+		if(!$this->has_client())
+		{
+			return FALSE;
+		}
+
         if($this->table_array)
             $this->keep_table($key);
 
@@ -150,6 +155,11 @@ class Memcached_library
 	*/
 	public function set($key = NULL, $value = NULL, $expiration = NULL)
 	{
+		if(!$this->has_client())
+		{
+			return FALSE;
+		}
+
         if($this->table_array)
             $this->keep_table($key);
 
@@ -196,6 +206,11 @@ class Memcached_library
 	*/
 	public function get($key = NULL)
 	{
+		if(!$this->has_client())
+		{
+			return FALSE;
+		}
+
         if($this->table_array)
             if(!$this->check_table($key))
                 return FALSE;
@@ -243,7 +258,12 @@ class Memcached_library
 			$this->errors[] = 'The key value cannot be NULL';
 			return FALSE;
 		}
-		
+
+		if(!$this->has_client())
+		{
+			return FALSE;
+		}
+
 		if(is_null($expiration))
 		{
 			$expiration = $this->config['config']['delete_expiration'];
@@ -265,7 +285,7 @@ class Memcached_library
 
     public function update_delete($name, $expiration=NULL)
     {
-        if($this->table_array)
+        if($this->has_client() && $this->table_array)
             $this->delete_table($name);
 
         return true;
@@ -325,6 +345,11 @@ class Memcached_library
 	*/
 	public function replace($key = NULL, $value = NULL, $expiration = NULL)
 	{
+		if(!$this->has_client())
+		{
+			return FALSE;
+		}
+
 		if(is_null($expiration))
 		{
 			$expiration = $this->config['config']['expiration'];
@@ -369,6 +394,11 @@ class Memcached_library
 	*/
 	public function flush()
 	{
+		if(!$this->has_client())
+		{
+			return FALSE;
+		}
+
 		return $this->m->flush();
 	}
 	
@@ -381,6 +411,11 @@ class Memcached_library
 	*/
 	public function getversion()
 	{
+		if(!$this->has_client())
+		{
+			return FALSE;
+		}
+
 		return $this->m->getVersion();
 	}
 	
@@ -394,6 +429,11 @@ class Memcached_library
 	*/
 	public function getstats($type="items")
 	{
+		if(!$this->has_client())
+		{
+			return FALSE;
+		}
+
 		switch($this->client_type)
 		{
 			case 'Memcache':
@@ -417,6 +457,11 @@ class Memcached_library
 	*/
 	public function setcompressthreshold($tresh, $savings=0.2)
 	{
+		if(!$this->has_client())
+		{
+			return FALSE;
+		}
+
 		switch($this->client_type)
 		{
 			case 'Memcache':
@@ -445,6 +490,9 @@ class Memcached_library
 
     private function keep_table($key)
     {
+        if(!$this->has_client())
+            return false;
+
         if($this->m->get($this->key_name("table")))
             $this->keep = $this->m->get($this->key_name("table"));
 
@@ -469,6 +517,9 @@ class Memcached_library
 
     private function check_table($key)
     {
+        if(!$this->has_client())
+            return false;
+
         if($this->m->get($this->key_name("table")))
             $this->keep = $this->m->get($this->key_name("table"));
 
@@ -478,6 +529,9 @@ class Memcached_library
 
     private function delete_table($table)
     {
+        if(!$this->has_client())
+            return null;
+
         if($this->m->get($this->key_name("table")))
             $this->keep = $this->m->get($this->key_name("table"));
 
@@ -497,7 +551,12 @@ class Memcached_library
 
         return null;
     }
-	
-}	
+
+    private function has_client()
+    {
+        return $this->client_type && $this->m;
+    }
+
+}
 /* End of file memcached_library.php */
 /* Location: ./application/libraries/memcached_library.php */
