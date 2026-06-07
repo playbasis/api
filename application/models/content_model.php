@@ -203,7 +203,7 @@ class Content_model extends MY_Model
 
     public function retrieveContentCategory($client_id, $site_id, $optionalParams = array())
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         // Searching
         if (isset($optionalParams['name']) && !is_null($optionalParams['name'])) {
@@ -255,6 +255,8 @@ class Content_model extends MY_Model
 
     public function getContentCategoryNameById($client_id, $site_id, $categoryId)
     {
+        $this->set_site_mongodb($site_id);
+
         $this->mongo_db->where('_id', $categoryId);
         $this->mongo_db->where('client_id', $client_id);
         $this->mongo_db->where('site_id', $site_id);
@@ -267,7 +269,7 @@ class Content_model extends MY_Model
 
     public function createContent($data)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($data['site_id']);
 
         $data = array_merge($data, array(
             'deleted' => false,
@@ -280,6 +282,8 @@ class Content_model extends MY_Model
 
     public function updateContent($client_id, $site_id, $data , $node_id)
     {
+        $this->set_site_mongodb($site_id);
+
         $this->mongo_db->where('client_id', new MongoID($client_id));
         $this->mongo_db->where('site_id', new MongoID($site_id));
         $this->mongo_db->where('node_id', $node_id);
@@ -293,7 +297,7 @@ class Content_model extends MY_Model
 
     public function addPlayerAction($data)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($data['site_id']);
 
         $insert_data = array(
             'client_id' => new MongoId($data['client_id']),
@@ -312,6 +316,8 @@ class Content_model extends MY_Model
 
     public function retrieveExistingPlayerContent($data)
     {
+        $this->set_site_mongodb($data['site_id']);
+
         $this->mongo_db->where('client_id', new MongoID($data['client_id']));
         $this->mongo_db->where('site_id', new MongoID($data['site_id']));
         $this->mongo_db->where('content_id', new MongoID($data['content_id']));
@@ -322,6 +328,8 @@ class Content_model extends MY_Model
 
     public function updatePlayerContent($data)
     {
+        $this->set_site_mongodb($data['site_id']);
+
         $this->mongo_db->where('client_id', new MongoID($data['client_id']));
         $this->mongo_db->where('site_id', new MongoID($data['site_id']));
         $this->mongo_db->where('content_id', new MongoID($data['content_id']));
@@ -337,7 +345,7 @@ class Content_model extends MY_Model
 
     public function setPinToContent($client_id, $site_id, $content_id, $pin_data)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         $this->mongo_db->where('client_id', new MongoId($client_id));
         $this->mongo_db->where('site_id', new MongoId($site_id));
@@ -352,6 +360,8 @@ class Content_model extends MY_Model
 
     public function deleteContent($client_id, $site_id, $node_id)
     {
+        $this->set_site_mongodb($site_id);
+
         $this->mongo_db->where('client_id', new MongoId($client_id));
         $this->mongo_db->where('site_id', new MongoId($site_id));
         $this->mongo_db->where('node_id', $node_id);
@@ -366,7 +376,7 @@ class Content_model extends MY_Model
 
     public function setContentFeedback($client_id, $site_id, $data)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         $insert_data = array(
             'client_id' => new MongoId($client_id),
@@ -385,7 +395,7 @@ class Content_model extends MY_Model
 
     public function getContentByNodeId($client_id, $site_id, $node_id)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
         $regex = new MongoRegex("/" . preg_quote(mb_strtolower($node_id)) . "/i");
         $this->mongo_db->where('client_id', new MongoId($client_id));
         $this->mongo_db->where('site_id', new MongoId($site_id));
@@ -398,7 +408,7 @@ class Content_model extends MY_Model
 
     public function findContent($client_id, $site_id, $node_id)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
         $regex = new MongoRegex("/" . preg_quote(mb_strtolower($node_id)) . "/i");
         $this->mongo_db->where('client_id', new MongoId($client_id));
         $this->mongo_db->where('site_id', new MongoId($site_id));
@@ -411,7 +421,7 @@ class Content_model extends MY_Model
 
     public function createContentCategory($client_id, $site_id, $name)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         $insert_data = array(
             'client_id' => $client_id,
@@ -428,6 +438,8 @@ class Content_model extends MY_Model
 
     public function updateContentCategory($category_id, $data)
     {
+        $this->set_site_mongodb($data['site_id']);
+
         try {
             $this->mongo_db->where('client_id', new MongoID($data['client_id']));
             $this->mongo_db->where('site_id', new MongoID($data['site_id']));
@@ -460,6 +472,8 @@ class Content_model extends MY_Model
 
     public function getContentIDToPlayer($client_id, $site_id, $pb_player_id)
     {
+        $this->set_site_mongodb($site_id);
+
         try {
             $this->mongo_db->where('client_id', new MongoID($client_id));
             $this->mongo_db->where('site_id', new MongoID($site_id));
@@ -473,6 +487,8 @@ class Content_model extends MY_Model
 
     public function getContentIDToFeedback($client_id, $site_id, $pb_player_id)
     {
+        $this->set_site_mongodb($site_id);
+
         try {
             $this->mongo_db->where('client_id', new MongoID($client_id));
             $this->mongo_db->where('site_id', new MongoID($site_id));
@@ -485,6 +501,8 @@ class Content_model extends MY_Model
     }
 
     public function countValidContentFollowup($client_id, $site_id, $content_id, $pb_player_id_list=null){
+        $this->set_site_mongodb($site_id);
+
         try {
             $this->mongo_db->where('client_id', new MongoID($client_id));
             $this->mongo_db->where('site_id', new MongoID($site_id));
@@ -501,6 +519,8 @@ class Content_model extends MY_Model
     }
 
     public function countContentAction($client_id, $site_id, $content_id, $pb_player_id_list=null){
+        $this->set_site_mongodb($site_id);
+
         try {
             $this->mongo_db->where('client_id', new MongoID($client_id));
             $this->mongo_db->where('site_id', new MongoID($site_id));
@@ -517,6 +537,8 @@ class Content_model extends MY_Model
     }
 
     public function countContentAllAction($client_id, $site_id, $content_id, $pb_player_id_list=null){
+        $this->set_site_mongodb($site_id);
+
         $match_condition = array(
             'client_id' => new MongoId($client_id),
             'site_id' => new MongoId($site_id),
@@ -544,7 +566,7 @@ class Content_model extends MY_Model
 
     public function getContentToLanguage($client_id, $site_id, $content_id , $language_id)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         $this->mongo_db->select(array('title', 'summary', 'detail'));
 
