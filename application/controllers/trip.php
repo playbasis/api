@@ -41,6 +41,9 @@ class Trip extends REST2_Controller
             $finished = false;
         }
         $trip_id = (isset($query_data['trip_id']) && !empty($query_data['trip_id'])) ? $query_data['trip_id'] : null ;
+        if ($trip_id && !$this->isMongoId($trip_id)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('trip_id')), 200);
+        }
 
         $trips = $this->Trip_model->getTrip($client_id, $site_id,  $finished, $pb_player_id, $trip_id );
 
@@ -115,18 +118,27 @@ class Trip extends REST2_Controller
 
         $trip_id =$trip[0]['_id']."";
         $tripLogs = $this->Trip_model->getTripLog($client_id, $site_id, $trip_id, array('distance','speed','speed_limit'));
+        $scoreLogs = array();
+        if ($tripLogs) {
+            foreach ($tripLogs as $tripLog) {
+                $scoreLog = $this->normalizeTripLogScoreData($tripLog);
+                if ($scoreLog !== false) {
+                    $scoreLogs[] = $scoreLog;
+                }
+            }
+        }
         $total_distance = 0;
         $total_point = 0;
-        if($tripLogs) {
-            $previous_distance = floatval($tripLogs[0]['distance']);
-            $checkpoint = floatval($tripLogs[0]['distance']); // for checking distance every 1 km
+        if($scoreLogs) {
+            $previous_distance = $scoreLogs[0]['distance'];
+            $checkpoint = $scoreLogs[0]['distance']; // for checking distance every 1 km
             $km = 1;
             $range = $km++ . " km(s) (" . ($checkpoint) . " - " . ($checkpoint + 1) . ")";
             $array_log = array();
             $array_log[$range]['min_point'] = 1;
-            foreach ($tripLogs as $tripLog) {
+            foreach ($scoreLogs as $tripLog) {
                 $point = 0;
-                $current_distance = floatval($tripLog['distance']);
+                $current_distance = $tripLog['distance'];
 
                 if ($tripLog['speed'] <= $tripLog['speed_limit']) {
                     $point = 1;
@@ -180,7 +192,7 @@ class Trip extends REST2_Controller
         $tripResult= array( 'driving_score'=>$driving_score."",
                             'total_distance'=>$total_distance."");
 
-        if(isset($query_data['drive_log']) && $query_data['drive_log'] == "true" && $tripLogs){
+        if(isset($query_data['drive_log']) && $query_data['drive_log'] == "true" && $scoreLogs){
             $tripResult += array( 'total_point'=>$total_point,
                                   'log'=>$array_log);
         }
@@ -199,8 +211,12 @@ class Trip extends REST2_Controller
 
         $query_data = $this->input->post();
         $trip_id = null;
-        if(isset($query_data['trip_id'])){
+        if(isset($query_data['trip_id']) && !empty($query_data['trip_id'])){
             $trip_id = $query_data['trip_id'];
+            if (!$this->isMongoId($trip_id)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('trip_id')), 200);
+            }
+
             $trip_data = $this->Trip_model->getTrip($client_id, $site_id, null, null, $trip_id);
             if (empty($trip_data)) {
                 $this->response($this->error->setError('TRIP_NOT_EXIST'), 200);
@@ -228,6 +244,7 @@ class Trip extends REST2_Controller
 
         unset($query_data['player_id']);
         unset($query_data['token']);
+        $this->validateTripLogTelemetry($query_data);
 
         $query_data += array(
             'client_id' => $client_id,
@@ -251,8 +268,12 @@ class Trip extends REST2_Controller
 
         $query_data = $this->input->get();
         $trip_id = null;
-        if(isset($query_data['trip_id'])){
+        if(isset($query_data['trip_id']) && !empty($query_data['trip_id'])){
             $trip_id = $query_data['trip_id'];
+            if (!$this->isMongoId($trip_id)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('trip_id')), 200);
+            }
+
             $trip_data = $this->Trip_model->getTrip($client_id, $site_id, null, null, $trip_id);
             if (empty($trip_data)) {
                 $this->response($this->error->setError('TRIP_NOT_EXIST'), 200);
@@ -287,5 +308,56 @@ class Trip extends REST2_Controller
         $this->benchmark->mark('end');
         $t = $this->benchmark->elapsed_time('start', 'end');
         $this->response($this->resp->setRespond(array('result' => $tripLogs, 'processing_time' => $t)), 200);
+    }
+
+    private function isMongoId($id)
+    {
+        return is_string($id) && preg_match('/^[a-f0-9]{24}$/i', $id) === 1;
+    }
+
+    private function validateTripLogTelemetry(&$query_data)
+    {
+        foreach (array('latitude', 'longitude', 'altitude') as $field) {
+            if (array_key_exists($field, $query_data) && $query_data[$field] !== null && !is_scalar($query_data[$field])) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array($field)), 200);
+            }
+        }
+
+        foreach (array('speed', 'speed_limit', 'distance', 'rpm') as $field) {
+            if (!array_key_exists($field, $query_data) || $query_data[$field] === null) {
+                continue;
+            }
+            if (!is_scalar($query_data[$field])) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array($field)), 200);
+            }
+
+            $value = trim((string)$query_data[$field]);
+            if ($value === '') {
+                $query_data[$field] = null;
+                continue;
+            }
+            if (!is_numeric($value)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array($field)), 200);
+            }
+            $query_data[$field] = $value + 0;
+        }
+    }
+
+    private function normalizeTripLogScoreData($tripLog)
+    {
+        $scoreLog = array();
+        foreach (array('distance', 'speed', 'speed_limit') as $field) {
+            if (!isset($tripLog[$field]) || !is_scalar($tripLog[$field])) {
+                return false;
+            }
+
+            $value = trim((string)$tripLog[$field]);
+            if ($value === '' || !is_numeric($value)) {
+                return false;
+            }
+            $scoreLog[$field] = floatval($value);
+        }
+
+        return $scoreLog;
     }
 }
