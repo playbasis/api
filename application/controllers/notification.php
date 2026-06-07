@@ -420,6 +420,21 @@ class Notification extends Engine
                         } else {
                             if (strpos($_SERVER['HTTP_USER_AGENT'], GOOGLE_USER_AGENT) === false ? false : true) {
                                 $this->load->library('GoogleApi');
+                                $required_google_headers = array(
+                                    'HTTP_X_GOOG_CHANNEL_ID',
+                                    'HTTP_X_GOOG_CHANNEL_TOKEN',
+                                    'HTTP_X_GOOG_RESOURCE_ID',
+                                    'HTTP_X_GOOG_RESOURCE_URI',
+                                    'HTTP_X_GOOG_RESOURCE_STATE',
+                                );
+                                foreach ($required_google_headers as $header) {
+                                    if (!isset($_SERVER[$header]) || $_SERVER[$header] === '') {
+                                        $this->response($this->error->setError('PARAMETER_MISSING', array($header)), 200);
+                                    }
+                                }
+                                if (!preg_match('/^[0-9a-f]{24}$/i', (string)$_SERVER['HTTP_X_GOOG_CHANNEL_TOKEN'])) {
+                                    $this->response($this->error->setError('PARAMETER_INVALID', array('HTTP_X_GOOG_CHANNEL_TOKEN')), 200);
+                                }
                                 $channel_id = $_SERVER['HTTP_X_GOOG_CHANNEL_ID'];
                                 $site_id = new MongoId($_SERVER['HTTP_X_GOOG_CHANNEL_TOKEN']);
                                 $subscription = $this->googles_model->getSubscription($site_id, $channel_id);
