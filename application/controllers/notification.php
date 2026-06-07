@@ -607,6 +607,16 @@ class Notification extends Engine
                                             }
                                             $client = $this->payment_model->getClientById($client_id);
                                             $plan = $this->payment_model->getPlanById($plan_id);
+                                            if (!$client) {
+                                                log_message('error',
+                                                    'Cannot find customer client for client_id: ' . $client_id);
+                                                $this->response($this->error->setError('CANNOT_FIND_CLIENT_ID'), 404);
+                                            }
+                                            if (!$plan) {
+                                                log_message('error',
+                                                    'Cannot find invoice plan for plan_id: ' . $plan_id);
+                                                $this->response($this->error->setError('INVALID_STRIPE_EVENT'), 404);
+                                            }
                                             switch ($event['type']) {
                                                 case INVOICE_CREATED:
                                                     $this->payment_model->invoiceCreated($client, $plan,
@@ -621,8 +631,11 @@ class Notification extends Engine
                                                         $subscription_id);
                                                     break;
                                                 case INVOICE_PAYMENT_FAILED:
+                                                    $retry_at = isset($event['data']['object']['attempt_count']) && is_scalar($event['data']['object']['attempt_count'])
+                                                        ? (int)$event['data']['object']['attempt_count']
+                                                        : 0;
                                                     $this->payment_model->invoicePaymentFailed($client, $plan,
-                                                        $subscription_id);
+                                                        $subscription_id, $retry_at);
                                                     break;
                                             }
                                             break;
@@ -650,6 +663,11 @@ class Notification extends Engine
                                                 $this->response($this->error->setError('CANNOT_FIND_CLIENT_ID'), 404);
                                             }
                                             $client = $this->payment_model->getClientById($client_id);
+                                            if (!$client) {
+                                                log_message('error',
+                                                    'Cannot find customer client for client_id: ' . $client_id);
+                                                $this->response($this->error->setError('CANNOT_FIND_CLIENT_ID'), 404);
+                                            }
                                             $this->payment_model->log($client_id, PAYMENT_CHANNEL_STRIPE, $event_id,
                                                 $txn_id, $amount, $currency, $status, $failure_code, $failure_message);
                                             if ($event['type'] == CHARGE_SUCCEEDED) {
@@ -688,6 +706,16 @@ class Notification extends Engine
                                             $plan = $this->payment_model->getPlanById($plan_id);
                                             $myplan_id = $this->payment_model->getPlanIdByClientId($client_id);
                                             $myplan = $this->payment_model->getPlanById($myplan_id);
+                                            if (!$client) {
+                                                log_message('error',
+                                                    'Cannot find customer client for client_id: ' . $client_id);
+                                                $this->response($this->error->setError('CANNOT_FIND_CLIENT_ID'), 404);
+                                            }
+                                            if (!$plan || !$myplan) {
+                                                log_message('error',
+                                                    'Cannot find subscription plan for plan_id: ' . $plan_id . ', myplan_id: ' . $myplan_id);
+                                                $this->response($this->error->setError('INVALID_STRIPE_EVENT'), 404);
+                                            }
                                             switch ($event['type']) {
                                                 case SUBSCRIPTION_CREATED:
                                                     $this->payment_model->subscriptionCreated($client, $plan, $myplan,
