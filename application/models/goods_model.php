@@ -202,7 +202,7 @@ class Goods_model extends MY_Model
 
     public function getGoodsByGroupAndCode($client_id, $site_id, $group, $code, $fields = array(),$all=false)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
         if ($fields) {
             $this->mongo_db->select($fields);
         }
@@ -223,7 +223,7 @@ class Goods_model extends MY_Model
 
     public function getAllAvailableGoodsByGroupAndCode($client_id, $site_id, $group, $code, $quantity=false)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
         $this->mongo_db->select(array(
             'goods_id',
             'image',
@@ -256,7 +256,7 @@ class Goods_model extends MY_Model
 
     public function checkPlayerGoodsGroupById($client_id, $site_id, $goods_list, $pb_player_id)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         $this->mongo_db->where('client_id', $client_id);
         $this->mongo_db->where('site_id', $site_id);
