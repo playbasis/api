@@ -127,10 +127,16 @@ class Notification extends Engine
                 // inspect IPN validation result and act accordingly
                 if (strcmp($res, PAYPAL_IPN_VERIFIED) == 0) { // The IPN is verified
                     // extract 'client_id' and 'plan_id' from 'custom' field in IPN message
-                    $custom = $_POST['custom'];
+                    $custom = isset($_POST['custom']) ? $_POST['custom'] : '';
                     $pieces = explode(',', $custom);
-                    $client_id = new MongoId($pieces[0]);
-                    $plan_id = new MongoId($pieces[1]);
+                    $client_id_value = isset($pieces[0]) ? trim($pieces[0]) : null;
+                    $plan_id_value = isset($pieces[1]) ? trim($pieces[1]) : null;
+                    if (!$this->isMongoId($client_id_value) || !$this->isMongoId($plan_id_value)) {
+                        log_message('error', 'Invalid PayPal IPN custom field: ' . print_r($custom, true));
+                        $this->response($this->error->setError('INVALID_PAYPAL_IPN', $custom), 200);
+                    }
+                    $client_id = new MongoId($client_id_value);
+                    $plan_id = new MongoId($plan_id_value);
 
                     log_message('debug', 'process: _POST = ' . print_r($_POST, true));
                     $result = $this->payment_model->processVerifiedIPN($client_id, $plan_id, $_POST, $log_id);
@@ -595,7 +601,15 @@ class Notification extends Engine
                                             $plan_id = null;
                                             foreach ($event['data']['lines']['data'] as $line) {
                                                 if ($line['type'] == 'subscription') {
-                                                    $plan_id = new MongoId($line['plan']['id']);
+                                                    $plan_id_value = isset($line['plan']['id']) ? $line['plan']['id'] : null;
+                                                    if (!$this->isMongoId($plan_id_value)) {
+                                                        log_message('error',
+                                                            'Invalid Stripe invoice plan id: ' . print_r($plan_id_value,
+                                                                true));
+                                                        $this->response($this->error->setError('INVALID_STRIPE_EVENT'),
+                                                            400);
+                                                    }
+                                                    $plan_id = new MongoId($plan_id_value);
                                                     break;
                                                 }
                                             }
@@ -672,7 +686,14 @@ class Notification extends Engine
                                         case SUBSCRIPTION_DELETED: // from paid to free, (1) cancel (2) after 3 failed payments
                                         case SUBSCRIPTION_TRIAL_WILL_END: // email (3 days before the end of trial period)
                                             $subscription_id = $event['data']['object']['id'];
-                                            $plan_id = new MongoId($event['data']['object']['plan']['id']);
+                                            $plan_id_value = isset($event['data']['object']['plan']['id']) ? $event['data']['object']['plan']['id'] : null;
+                                            if (!$this->isMongoId($plan_id_value)) {
+                                                log_message('error',
+                                                    'Invalid Stripe subscription plan id: ' . print_r($plan_id_value,
+                                                        true));
+                                                $this->response($this->error->setError('INVALID_STRIPE_EVENT'), 400);
+                                            }
+                                            $plan_id = new MongoId($plan_id_value);
                                             $stripe_id = $event['data']['object']['customer'];
                                             $period_start = $event['data']['object']['current_period_start'];
                                             $period_end = $event['data']['object']['current_period_end'];
@@ -726,6 +747,11 @@ class Notification extends Engine
             }
         }
         $this->response($this->error->setError('UNKNOWN_NOTIFICATION_MESSAGE'), 200);
+    }
+
+    private function isMongoId($id)
+    {
+        return is_string($id) && preg_match('/^[0-9a-f]{24}$/i', $id) === 1;
     }
 
     private function getPlayerFromService($validToken, $player, $service)
