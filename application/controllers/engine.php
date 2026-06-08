@@ -685,6 +685,7 @@ class Engine extends Quest
                 }
 
                 $postData = $this->input->post();
+                $this->validateSpecialRewardConditionInput($postData);
                 $input = array_merge($postData, $validToken, array(
                     'pb_player_id' => $pb_player_id,
                     'action_id' => $actionId,
@@ -760,6 +761,18 @@ class Engine extends Quest
             'amount' => $lv
         )));
         return $eventMessage;
+    }
+
+    private function validateSpecialRewardConditionInput(&$postData)
+    {
+        foreach (array('condition-rewardtype', 'condition-rewardname', 'condition-quantity') as $param_name) {
+            if (isset($postData[$param_name])) {
+                if (!is_scalar($postData[$param_name])) {
+                    $this->response($this->error->setError('PARAMETER_INVALID', array($param_name)), 200);
+                }
+                $postData[$param_name] = (string)$postData[$param_name];
+            }
+        }
     }
 
     public function processRule(&$input, $validToken, $fbData, $twData, $time = null)
