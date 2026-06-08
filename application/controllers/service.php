@@ -344,6 +344,10 @@ class Service extends REST2_Controller
     public function reset_point_post()
     {
         $reward_name = $this->input->post('point_name');
+        if (!is_scalar($reward_name) && $reward_name !== null) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('point_name')), 200);
+        }
+        $reward_name = $reward_name === null ? null : (string)$reward_name;
 
         if (strtolower($reward_name) == "exp") {
             $this->response($this->error->setError('REWARD_NOT_FOUND'), 200);
