@@ -2188,7 +2188,12 @@ class Player extends REST2_Controller
             $this->response($this->error->setError('SMS_VERIFICATION_PHONE_NUMBER_NOT_FOUND'), 200);
         }
 
-        if($this->input->post('os_type') && strtolower($this->input->post('os_type')) != "ios" && strtolower($this->input->post('os_type')) != "android"){
+        $os_type = $this->input->post('os_type');
+        if (!is_scalar($os_type) && $os_type !== null) {
+            $this->response($this->error->setError('OS_TYPE_INVALID'), 200);
+        }
+        $os_type = is_scalar($os_type) ? strtolower((string)$os_type) : '';
+        if($os_type && $os_type != "ios" && $os_type != "android"){
             $this->response($this->error->setError('OS_TYPE_INVALID'), 200);
         }
 
@@ -2197,7 +2202,7 @@ class Player extends REST2_Controller
             'device_token'=>$this->input->post('device_token'),
             'device_description'=>$this->input->post('device_description'),
             'device_name'=>$this->input->post('device_name'),
-            'os_type'=>strtolower($this->input->post('os_type'))
+            'os_type'=>$os_type
         );
 
         $code = $this->player_model->generateOTPCode($player['_id'], $deviceInfo);
@@ -2225,7 +2230,12 @@ class Player extends REST2_Controller
             $this->response($this->error->setError('USER_PHONE_INVALID'), 200);
         }
 
-        if($this->input->post('os_type') && strtolower($this->input->post('os_type')) != "ios" && strtolower($this->input->post('os_type')) != "android"){
+        $os_type = $this->input->post('os_type');
+        if (!is_scalar($os_type) && $os_type !== null) {
+            $this->response($this->error->setError('OS_TYPE_INVALID'), 200);
+        }
+        $os_type = is_scalar($os_type) ? strtolower((string)$os_type) : '';
+        if($os_type && $os_type != "ios" && $os_type != "android"){
             $this->response($this->error->setError('OS_TYPE_INVALID'), 200);
         }
 
@@ -2234,7 +2244,7 @@ class Player extends REST2_Controller
             'device_token'=>$this->input->post('device_token'),
             'device_description'=>$this->input->post('device_description'),
             'device_name'=>$this->input->post('device_name'),
-            'os_type'=>strtolower($this->input->post('os_type'))
+            'os_type'=>$os_type
         );
 
         $player = $this->player_model->getPlayerByPlayerId($this->site_id, $player_id);
