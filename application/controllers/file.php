@@ -30,6 +30,14 @@ class File extends REST2_Controller
             reset($array);
             $image = $_FILES[key($array)];
         }
+        if (!isset($image['name'], $image['tmp_name'], $image['size'], $image['error']) ||
+            is_array($image['name']) ||
+            is_array($image['tmp_name']) ||
+            is_array($image['size']) ||
+            is_array($image['error'])
+        ) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('file')), 200);
+        }
 
         $pb_player_id = null;
         $user_id = null;
