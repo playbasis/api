@@ -1452,8 +1452,14 @@ class Player extends REST2_Controller
             $reward_id = null;
         }
 
+        $order = $this->input->get('order');
+        if ($order !== null && $order !== false && !is_scalar($order)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('order')), 200);
+        }
+        $order = ($order !== null && $order !== false) ? (string)$order : null;
+
         $respondThis['points'] = $this->player_model->getPointHistoryFromPlayerID($pb_player_id, $this->site_id,
-            $reward_id, $offset, $limit, $this->input->get('order'));
+            $reward_id, $offset, $limit, $order);
 
         $this->response($this->resp->setRespond($respondThis), 200);
     }
@@ -2876,20 +2882,40 @@ class Player extends REST2_Controller
         }
 
         $month = $this->input->get('month');
+        if ($month !== null && $month !== false && !is_scalar($month)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('month')), 200);
+        }
         if (!$month) {
             $month = date("m", time());
+        } else {
+            $month = (string)$month;
         }
         $year = $this->input->get('year');
+        if ($year !== null && $year !== false && !is_scalar($year)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('year')), 200);
+        }
         if (!$year) {
             $year = date("Y", time());
+        } else {
+            $year = (string)$year;
         }
         $action = $this->input->get('action');
+        if ($action !== null && $action !== false && !is_scalar($action)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('action')), 200);
+        }
         if (!$action) {
             $action = "sell";
+        } else {
+            $action = (string)$action;
         }
         $parameter = $this->input->get('parameter');
+        if ($parameter !== null && $parameter !== false && !is_scalar($parameter)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('parameter')), 200);
+        }
         if (!$parameter) {
             $parameter = "amount";
+        } else {
+            $parameter = (string)$parameter;
         }
 
         $parent_node = $this->store_org_model->getAssociatedNodeOfPlayer($this->validToken['client_id'],
@@ -2954,25 +2980,49 @@ class Player extends REST2_Controller
         }
 
         $count = $this->input->get('count');
-        if (!$count) {
+        if ($count !== null && $count !== false && !is_scalar($count)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('count')), 200);
+        }
+        $count = $count ? intval($count) : 1;
+        if ($count < 1) {
             $count = 1;
         }
 
         $month = $this->input->get('month');
+        if ($month !== null && $month !== false && !is_scalar($month)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('month')), 200);
+        }
         if (!$month) {
             $month = date("m", time());
+        } else {
+            $month = (string)$month;
         }
         $year = $this->input->get('year');
+        if ($year !== null && $year !== false && !is_scalar($year)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('year')), 200);
+        }
         if (!$year) {
             $year = date("Y", time());
+        } else {
+            $year = (string)$year;
         }
         $action = $this->input->get('action');
+        if ($action !== null && $action !== false && !is_scalar($action)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('action')), 200);
+        }
         if (!$action) {
             $action = "sell";
+        } else {
+            $action = (string)$action;
         }
         $parameter = $this->input->get('parameter');
+        if ($parameter !== null && $parameter !== false && !is_scalar($parameter)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('parameter')), 200);
+        }
         if (!$parameter) {
             $parameter = "amount";
+        } else {
+            $parameter = (string)$parameter;
         }
 
         $table = $this->player_model->getActionHistory($this->validToken['client_id'],
