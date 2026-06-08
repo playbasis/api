@@ -477,6 +477,10 @@ class Game extends REST2_Controller
         if ($required) {
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
         }
+        if (!is_scalar($query_data['game_name'])) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('game_name')), 200);
+        }
+        $query_data['game_name'] = (string)$query_data['game_name'];
 
         //validate playbasis player id
         $pb_player_id = $this->player_model->getPlaybasisId(array_merge($this->validToken, array(
