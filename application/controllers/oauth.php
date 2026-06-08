@@ -38,27 +38,39 @@ class Oauth extends CI_Controller
         $params = array();
 
         // Client id
-        if ($client_id = $this->input->get('client_id')) {
-            $params['client_id'] = trim($client_id);
+        $client_id = $this->input->get('client_id');
+        if (!$this->isScalarParam($client_id)) {
+            $this->failInvalidRequestParam('client_id');
+            return;
+        }
+        if ($client_id) {
+            $params['client_id'] = trim((string)$client_id);
         } else {
-            $this->_fail('invalid_request',
-                'The request is missing a required parameter, includes an invalid parameter value, or is otherwise malformed. See client_id.',
-                null, array(), 400);
+            $this->failInvalidRequestParam('client_id');
+            return;
         }
 
         // Client redirect uri
-        if ($redirect_uri = $this->input->get('redirect_uri')) {
-            $params['redirect_uri'] = trim($redirect_uri);
+        $redirect_uri = $this->input->get('redirect_uri');
+        if (!$this->isScalarParam($redirect_uri)) {
+            $this->failInvalidRequestParam('redirect_uri');
+            return;
+        }
+        if ($redirect_uri) {
+            $params['redirect_uri'] = trim((string)$redirect_uri);
         } else {
-            $this->_fail('invalid_request',
-                'The request is missing a required parameter, includes an invalid parameter value, or is otherwise malformed. See redirect_uri.',
-                null, array(), 400);
+            $this->failInvalidRequestParam('redirect_uri');
             return;
         }
 
         // Validate the response type
-        if ($response_type = $this->input->get('response_type')) {
-            $response_type = trim($response_type);
+        $response_type = $this->input->get('response_type');
+        if (!$this->isScalarParam($response_type)) {
+            $this->failInvalidRequestParam('response_type');
+            return;
+        }
+        if ($response_type) {
+            $response_type = trim((string)$response_type);
             $valid_response_types = array('code', 'token'); // array to allow for future expansion
 
             if (!in_array($response_type, $valid_response_types)) {
@@ -70,9 +82,7 @@ class Oauth extends CI_Controller
                 $params['response_type'] = $response_type;
             }
         } else {
-            $this->_fail('invalid_request',
-                'The request is missing a required parameter, includes an invalid parameter value, or is otherwise malformed. See response_type.',
-                null, array(), 400);
+            $this->failInvalidRequestParam('response_type');
             return;
         }
 
@@ -91,8 +101,13 @@ class Oauth extends CI_Controller
 
 
         // Get and validate the scope(s)
-        if ($scope_string = $this->input->get('scope')) {
-            $scopes = explode(',', $scope_string);
+        $scope_string = $this->input->get('scope');
+        if (!$this->isScalarParam($scope_string)) {
+            $this->failInvalidRequestParam('scope');
+            return;
+        }
+        if ($scope_string) {
+            $scopes = explode(',', (string)$scope_string);
             $params['scope'] = $scopes;
         } else {
             $params['scope'] = array();
@@ -120,8 +135,13 @@ class Oauth extends CI_Controller
         $this->session->set_userdata('client_details', $client_details);
 
         // Get the scope
-        if ($state = $this->input->get('state')) {
-            $params['state'] = trim($state);
+        $state = $this->input->get('state');
+        if (!$this->isScalarParam($state)) {
+            $this->failInvalidRequestParam('state');
+            return;
+        }
+        if ($state) {
+            $params['state'] = trim((string)$state);
         } else {
             $params['state'] = '';
         }
@@ -334,60 +354,73 @@ class Oauth extends CI_Controller
         $params = array();
 
         // Client id
-        if ($client_id = $this->input->post('client_id')) {
-            $params['client_id'] = trim($client_id);
+        $client_id = $this->input->post('client_id');
+        if (!$this->isScalarParam($client_id)) {
+            $this->failInvalidRequestParam('client_id', 'json');
+            return;
+        }
+        if ($client_id) {
+            $params['client_id'] = trim((string)$client_id);
         } else {
-            $this->_fail('invalid_request',
-                'The request is missing a required parameter, includes an invalid parameter value, or is otherwise malformed. See client_id.',
-                null, array(), 400, 'json');
+            $this->failInvalidRequestParam('client_id', 'json');
             return;
         }
 
         // Client secret
-        if ($client_secret = $this->input->post('client_secret')) {
-            $params['client_secret'] = trim($client_secret);
+        $client_secret = $this->input->post('client_secret');
+        if (!$this->isScalarParam($client_secret)) {
+            $this->failInvalidRequestParam('client_secret', 'json');
+            return;
+        }
+        if ($client_secret) {
+            $params['client_secret'] = trim((string)$client_secret);
         } else {
-            $this->_fail('invalid_request',
-                'The request is missing a required parameter, includes an invalid parameter value, or is otherwise malformed. See client_secret.',
-                null, array(), 400, 'json');
+            $this->failInvalidRequestParam('client_secret', 'json');
             return;
         }
 
         // Client redirect uri
-        if ($redirect_uri = $this->input->post('redirect_uri')) {
-            $params['redirect_uri'] = urldecode(trim($redirect_uri));
+        $redirect_uri = $this->input->post('redirect_uri');
+        if (!$this->isScalarParam($redirect_uri)) {
+            $this->failInvalidRequestParam('redirect_uri', 'json');
+            return;
+        }
+        if ($redirect_uri) {
+            $params['redirect_uri'] = urldecode(trim((string)$redirect_uri));
         } else {
-            $this->_fail('invalid_request',
-                'The request is missing a required parameter, includes an invalid parameter value, or is otherwise malformed. See redirect_uri.',
-                null, array(), 400, 'json');
+            $this->failInvalidRequestParam('redirect_uri', 'json');
             return;
         }
 
-        if ($code = $this->input->post('code')) {
-            $params['code'] = trim($code);
+        $code = $this->input->post('code');
+        if (!$this->isScalarParam($code)) {
+            $this->failInvalidRequestParam('code', 'json');
+            return;
+        }
+        if ($code) {
+            $params['code'] = trim((string)$code);
         } else {
-            $this->_fail('invalid_request',
-                'The request is missing a required parameter, includes an invalid parameter value, or is otherwise malformed. See code.',
-                null, array(), 400, 'json');
+            $this->failInvalidRequestParam('code', 'json');
             return;
         }
 
         // Validate the grant type
-        if ($grant_type = $this->input->post('grant_type')) {
-            $grant_type = trim($grant_type);
+        $grant_type = $this->input->post('grant_type');
+        if (!$this->isScalarParam($grant_type)) {
+            $this->failInvalidRequestParam('grant_type', 'json');
+            return;
+        }
+        if ($grant_type) {
+            $grant_type = trim((string)$grant_type);
 
             if (!in_array($grant_type, array('authorization_code'))) {
-                $this->_fail('invalid_request',
-                    'The request is missing a required parameter, includes an invalid parameter value, or is otherwise malformed. See grant_type.',
-                    null, array(), 400, 'json');
+                $this->failInvalidRequestParam('grant_type', 'json');
                 return;
             } else {
                 $params['grant_type'] = $grant_type;
             }
         } else {
-            $this->_fail('invalid_request',
-                'The request is missing a required parameter, includes an invalid parameter value, or is otherwise malformed. See grant_type.',
-                null, array(), 400, 'json');
+            $this->failInvalidRequestParam('grant_type', 'json');
             return;
         }
 
@@ -499,6 +532,18 @@ class Oauth extends CI_Controller
             }
 
         }
+    }
+
+    private function failInvalidRequestParam($param, $output = 'html')
+    {
+        $this->_fail('invalid_request',
+            'The request is missing a required parameter, includes an invalid parameter value, or is otherwise malformed. See ' . $param . '.',
+            null, array(), 400, $output);
+    }
+
+    private function isScalarParam($value)
+    {
+        return !is_array($value) && !is_object($value);
     }
 
 
