@@ -249,7 +249,12 @@ class Push extends REST2_Controller
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         }
 
-        if(strtolower($this->input->post('os_type')) != "ios" && strtolower($this->input->post('os_type')) != "android"){
+        $os_type = $this->input->post('os_type');
+        if (!is_scalar($os_type)) {
+            $this->response($this->error->setError('OS_TYPE_INVALID'), 200);
+        }
+        $os_type = strtolower((string)$os_type);
+        if($os_type != "ios" && $os_type != "android"){
             $this->response($this->error->setError('OS_TYPE_INVALID'), 200);
         }
 
@@ -260,7 +265,7 @@ class Push extends REST2_Controller
             'device_token' => $this->input->post('device_token'),
             'device_description' => $this->input->post('device_description'),
             'device_name' => $this->input->post('device_name'),
-            'os_type' => strtolower($this->input->post('os_type'))
+            'os_type' => $os_type
         ));
         if (!$result) {
             $this->response($this->error->setError('INTERNAL_ERROR'), 200);
