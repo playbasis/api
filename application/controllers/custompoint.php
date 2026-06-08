@@ -145,7 +145,10 @@ class Custompoint extends REST2_Controller
         $data = $this->input->get();
         $data['client_id'] = $this->validToken['client_id'];
         $data['site_id'] = $this->validToken['site_id'];
-        $data['sort'] = isset($data['sort']) && strtolower($data['sort']) == "desc" ? "desc" : "asc";
+        if (isset($data['sort']) && !is_scalar($data['sort'])) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('sort')), 200);
+        }
+        $data['sort'] = isset($data['sort']) && strtolower((string)$data['sort']) == "desc" ? "desc" : "asc";
         $data['pb_player_id'] = $this->player_model->getPlaybasisId(array_merge($this->validToken, array('cl_player_id' => $data['player_id'])));
         if (!$data['pb_player_id']) {
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
