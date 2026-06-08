@@ -15,6 +15,12 @@ class Location extends REST2_Controller
     public function list_get()
     {
         $data = $this->input->get();
+        if (isset($data['status']) && !is_scalar($data['status'])) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('status')), 200);
+        }
+        if (isset($data['status'])) {
+            $data['status'] = (string)$data['status'];
+        }
 
         $location_info = $this->location_model->getLocation($this->client_id, $this->site_id,$data);
         
