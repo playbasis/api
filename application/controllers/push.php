@@ -199,8 +199,15 @@ class Push extends REST2_Controller
     }
 
     function push_async_get (){
-        
-        parse_str($this->input->get('notification_info'), $notificationInfo);
+
+        $notification_info = $this->input->get('notification_info');
+        if (!is_scalar($notification_info) && $notification_info !== null) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('notification_info')), 200);
+        }
+        parse_str((string)$notification_info, $notificationInfo);
+        if (!isset($notificationInfo['data']) || !is_array($notificationInfo['data'])) {
+            $notificationInfo['data'] = array();
+        }
         $site_data = $this->auth_model->getClientSiteByApiKey($this->input->get('api_key'));
         $notificationInfo['data']['client_id'] = $site_data['client_id'];
         $notificationInfo['data']['site_id'] = $site_data['site_id'];
