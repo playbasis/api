@@ -62,7 +62,19 @@ class Timestamp extends REST2_Controller
             }
         }
 
-        $sort_order = $this->input->get('sort_order') ? $this->input->get('sort_order') : "desc";
+        $sort_order = $this->input->get('sort_order');
+        if (is_array($sort_order) || is_object($sort_order)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('sort_order')), 200);
+        }
+        if ($sort_order) {
+            $sort_order = mb_strtolower((string)$sort_order);
+            if (!in_array($sort_order, array('asc', 'desc'))) {
+                $sort_order = "desc";
+            }
+        } else {
+            $sort_order = "desc";
+        }
+
         $query_data = $this->input->get();
         $private_datas = array('player_id', 'token', 'XDEBUG_SESSION_START', 'XDEBUG_TRACE', 'api_key', 'iodocs', 'sort_order');
         foreach($private_datas as $private_data) {
