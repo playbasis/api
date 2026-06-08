@@ -212,7 +212,10 @@ class Push extends REST2_Controller
         $notificationInfo['data']['client_id'] = $site_data['client_id'];
         $notificationInfo['data']['site_id'] = $site_data['site_id'];
         $type = $this->input->get('type');
-        $this->push_model->initial($notificationInfo, $type);
+        if (!is_scalar($type) && $type !== null) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('type')), 200);
+        }
+        $this->push_model->initial($notificationInfo, (string)$type);
     }
     
     /*
@@ -365,6 +368,11 @@ class Push extends REST2_Controller
         }
 
         $since = $this->input->get('since');
+        if (!is_scalar($since) && $since !== null) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('since')), 200);
+        }
+        $since = $since ? strtotime((string)$since) : null;
+        $since = $since === false ? null : $since;
         $results = $this->push_model->recent($validToken['site_id'], $cl_player_id, $since);
         array_walk_recursive($results, array($this, 'convert_mongo_date'));
         $this->response($this->resp->setRespond($results), 200);
