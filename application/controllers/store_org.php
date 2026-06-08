@@ -164,11 +164,7 @@ class Store_org extends REST2_Controller
 
         $this->checkParams($node_id, $player_id);
 
-        $role_name = $this->input->post('role');
-        if (empty($role_name)) {
-            $this->response($this->error->setError('PARAMETER_MISSING', array('role')), 200);
-            die();
-        }
+        $role_name = $this->getRoleNameFromPost();
 
         $node_id = $this->findNodeId($node_id);
         $pb_player_id = $this->findPbPlayerId($player_id);
@@ -195,11 +191,7 @@ class Store_org extends REST2_Controller
 
         $this->checkParams($node_id, $player_id);
 
-        $role_name = $this->input->post('role');
-        if (empty($role_name)) {
-            $this->response($this->error->setError('PARAMETER_MISSING', array('role')), 200);
-            die();
-        }
+        $role_name = $this->getRoleNameFromPost();
         $node_id = $this->findNodeId($node_id);
         $pb_player_id = $this->findPbPlayerId($player_id);
 
@@ -231,11 +223,7 @@ class Store_org extends REST2_Controller
     {
         $this->benchmark->mark('start');
 
-        $role_name = $this->input->post('role');
-        if (empty($role_name)) {
-            $this->response($this->error->setError('PARAMETER_MISSING', array('role')), 200);
-            die();
-        }
+        $role_name = $this->getRoleNameFromPost();
 
         if (empty($node_id) || empty($content_node_id)) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('node_id', 'content_node_id')), 200);
@@ -267,11 +255,7 @@ class Store_org extends REST2_Controller
     {
         $this->benchmark->mark('start');
 
-        $role_name = $this->input->post('role');
-        if (empty($role_name)) {
-            $this->response($this->error->setError('PARAMETER_MISSING', array('role')), 200);
-            die();
-        }
+        $role_name = $this->getRoleNameFromPost();
 
         if (empty($node_id) || empty($content_node_id)) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('node_id', '$content_node_id')), 200);
@@ -313,6 +297,7 @@ class Store_org extends REST2_Controller
         $this->benchmark->mark('start');
 
         $query_data = $this->input->get(null, true);
+        $this->validateScalarQueryParams($query_data, array('id', 'search', 'sort', 'order', 'offset', 'limit'));
 
         if (isset($query_data['id']) && !empty($query_data['id'])) {
             try {
@@ -349,6 +334,7 @@ class Store_org extends REST2_Controller
         $this->benchmark->mark('start');
 
         $query_data = $this->input->get(null, true);
+        $this->validateScalarQueryParams($query_data, array('id', 'organize_id', 'parent_id', 'search', 'sort', 'order', 'offset', 'limit'));
 
         if (isset($query_data['id']) && !empty($query_data['id'])) {
             try {
@@ -413,6 +399,18 @@ class Store_org extends REST2_Controller
                 if (get_class($value) === 'MongoDate') {
                     $value = datetimeMongotoReadable($value);
                 }
+            }
+        }
+    }
+
+    private function validateScalarQueryParams(&$query_data, $param_names)
+    {
+        foreach ($param_names as $param_name) {
+            if (isset($query_data[$param_name])) {
+                if (!is_scalar($query_data[$param_name])) {
+                    $this->response($this->error->setError('PARAMETER_INVALID', array($param_name)), 200);
+                }
+                $query_data[$param_name] = (string)$query_data[$param_name];
             }
         }
     }
@@ -509,6 +507,22 @@ class Store_org extends REST2_Controller
         }
     }
 
+    private function getRoleNameFromPost()
+    {
+        $role_name = $this->input->post('role');
+        if (empty($role_name)) {
+            $this->response($this->error->setError('PARAMETER_MISSING', array('role')), 200);
+            die();
+        }
+
+        if (!is_scalar($role_name)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('role')), 200);
+            die();
+        }
+
+        return (string)$role_name;
+    }
+
     /**
      * @param $name
      * @return array
@@ -599,19 +613,22 @@ class Store_org extends REST2_Controller
             $this->response($this->error->setError('STORE_ORG_NODE_NOT_FOUND'), 200);
         }
 
-        $month = $this->input->get('month');
+        $input = $this->input->get();
+        $this->validateScalarQueryParams($input, array('month', 'year', 'action', 'parameter'));
+
+        $month = isset($input['month']) ? $input['month'] : null;
         if (!$month) {
             $month = date("m", time());
         }
-        $year = $this->input->get('year');
+        $year = isset($input['year']) ? $input['year'] : null;
         if (!$year) {
             $year = date("Y", time());
         }
-        $action = $this->input->get('action');
+        $action = isset($input['action']) ? $input['action'] : null;
         if (!$action) {
             $action = "sell";
         }
-        $parameter = $this->input->get('parameter');
+        $parameter = isset($input['parameter']) ? $input['parameter'] : null;
         if (!$parameter) {
             $parameter = "amount";
         }
@@ -676,19 +693,22 @@ class Store_org extends REST2_Controller
 
         }
 
-        $month = $this->input->get('month');
+        $input = $this->input->get();
+        $this->validateScalarQueryParams($input, array('month', 'year', 'action', 'parameter'));
+
+        $month = isset($input['month']) ? $input['month'] : null;
         if (!$month) {
             $month = date("m", time());
         }
-        $year = $this->input->get('year');
+        $year = isset($input['year']) ? $input['year'] : null;
         if (!$year) {
             $year = date("Y", time());
         }
-        $action = $this->input->get('action');
+        $action = isset($input['action']) ? $input['action'] : null;
         if (!$action) {
             $action = "sell";
         }
-        $parameter = $this->input->get('parameter');
+        $parameter = isset($input['parameter']) ? $input['parameter'] : null;
         if (!$parameter) {
             $parameter = "amount";
         }
@@ -747,28 +767,31 @@ class Store_org extends REST2_Controller
             )), 200);
         }
 
-        $month = $this->input->get('month');
+        $input = $this->input->get();
+        $this->validateScalarQueryParams($input, array('month', 'year', 'action', 'parameter', 'limit', 'page'));
+
+        $month = isset($input['month']) ? $input['month'] : null;
         if (!$month) {
             $month = date("m", time());
         }
-        $year = $this->input->get('year');
+        $year = isset($input['year']) ? $input['year'] : null;
         if (!$year) {
             $year = date("Y", time());
         }
-        $action = $this->input->get('action');
+        $action = isset($input['action']) ? $input['action'] : null;
         if (!$action) {
             $action = "sell";
         }
-        $parameter = $this->input->get('parameter');
+        $parameter = isset($input['parameter']) ? $input['parameter'] : null;
         if (!$parameter) {
             $parameter = "amount";
         }
 
-        $limit = $this->input->get('limit');
+        $limit = isset($input['limit']) ? (int)$input['limit'] : 0;
         if (!$limit) {
             $limit = RETURN_LIMIT_FOR_RANK;
         }
-        $page = $this->input->get('page');
+        $page = isset($input['page']) ? (int)$input['page'] : 0;
         if (!$page) {
             $page = 0;
         }
@@ -946,16 +969,17 @@ class Store_org extends REST2_Controller
         // Now, getting all input
         $this->benchmark->mark('rank_peer_start');
         $input = $this->input->get();
+        $this->validateScalarQueryParams($input, array('limit', 'year', 'month', 'under_org', 'role', 'page', 'player_id'));
 
-        $limit = isset($input['limit']) ? $input['limit'] : RETURN_LIMIT_FOR_RANK;
-        $year = isset($input['year']) ? $input['year'] : date("Y", time());
-        $month = isset($input['month']) ? $input['month'] : date("m", time());
+        $limit = isset($input['limit']) ? (int)$input['limit'] : RETURN_LIMIT_FOR_RANK;
+        $year = isset($input['year']) ? (int)$input['year'] : (int)date("Y", time());
+        $month = isset($input['month']) ? (int)$input['month'] : (int)date("m", time());
         $under_org = isset($input['under_org']) ? ($input['under_org'] == "true" ? true : false) : false;
         $client_id = $this->validToken['client_id'];
         $site_id = $this->validToken['site_id'];
         $backup_limit = $limit;
         $role = isset($input['role']) ? $input['role'] : null;
-        $page = isset($input['page']) ? $input['page'] : 1; // default is first page
+        $page = isset($input['page']) ? (int)$input['page'] : 1; // default is first page
         $list = array();
         $node_to_match = array();
         // get node list of this node id
@@ -1099,6 +1123,7 @@ class Store_org extends REST2_Controller
         // Now, getting all input
 
         $input = $this->input->get();
+        $this->validateScalarQueryParams($input, array('player_id', 'limit', 'year', 'month', 'page', 'role'));
         if (isset($input['player_id'])) {
             $given_player_id = $this->player_model->getPlaybasisId(array(
                 'client_id' => $client_id,
@@ -1106,10 +1131,10 @@ class Store_org extends REST2_Controller
                 'cl_player_id' => $input['player_id']
             ));
         }
-        $limit = isset($input['limit']) ? $input['limit'] : RETURN_LIMIT_FOR_RANK;
-        $year = isset($input['year']) ? $input['year'] : date("Y", time());
-        $month = isset($input['month']) ? $input['month'] : date("m", time());
-        $page = isset($input['page']) ? $input['page'] : 1; // default is first page
+        $limit = isset($input['limit']) ? (int)$input['limit'] : RETURN_LIMIT_FOR_RANK;
+        $year = isset($input['year']) ? (int)$input['year'] : (int)date("Y", time());
+        $month = isset($input['month']) ? (int)$input['month'] : (int)date("m", time());
+        $page = isset($input['page']) ? (int)$input['page'] : 1; // default is first page
         $role = isset($input['role']) ? $input['role'] : null;
 
         $this_month_time = strtotime($year . "-" . $month);
