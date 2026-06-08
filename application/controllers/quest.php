@@ -1769,7 +1769,10 @@ class Quest extends REST2_Controller
         /* filter to include only requested fields */
         $filter = $this->input->get('filter');
         if ($filter) {
-            $fields = explode(',', $filter);
+            if (!is_scalar($filter)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('filter')), 200);
+            }
+            $fields = explode(',', (string)$filter);
             if (isset($resp['quest'])) {
                 $resp['quest'] = $this->filterOnlyFields($fields, $resp['quest']);
             } else {
