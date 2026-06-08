@@ -69,6 +69,17 @@ class Quiz extends REST2_Controller
         $this->load->model('tracker_model');
     }
 
+    private function commaListParameter($value, $parameter, $emptyAsNull = true)
+    {
+        if (!is_scalar($value) && $value !== null) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($parameter)), 200);
+        }
+        if (!$value && $emptyAsNull) {
+            return null;
+        }
+        return explode(',', (string)$value);
+    }
+
     public function list_get()
     {
         $this->benchmark->mark('start');
@@ -90,7 +101,7 @@ class Quiz extends REST2_Controller
         }
 
         $type = $this->input->get('type');
-        $tags = $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null;
+        $tags = $this->commaListParameter($this->input->get('tags'), 'tags');
         $get_status = $this->input->get('get_status');
         if($get_status == "true" && $player_id !== false){
             $results = $this->quiz_model->find($this->client_id, $this->site_id, null, $type, $tags);
@@ -191,7 +202,7 @@ class Quiz extends REST2_Controller
         $arr = $this->quiz_model->find_quiz_done_by_player($this->client_id, $this->site_id, $pb_player_id);
         $nin = array_map('index_quiz_id', $arr);
         $type = $this->input->get('type');
-        $tags = $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null;
+        $tags = $this->commaListParameter($this->input->get('tags'), 'tags');
         $results = $this->quiz_model->find($this->client_id, $this->site_id, $type != 'poll' ? $nin : null, $type, $tags);
         $results = array_map('convert_MongoId_id', $results);
 
@@ -656,6 +667,11 @@ class Quiz extends REST2_Controller
         $option_id = $this->input->post('option_id');
         if ($option_id === false) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('option_id')), 200);
+        }
+
+        $answer_input = $this->input->post('answer');
+        if (!is_scalar($answer_input) && $answer_input !== null) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('answer')), 200);
         }
 
         $is_multiple_choice = isset($question['is_multiple_choices']) ? $question['is_multiple_choices'] : false;
