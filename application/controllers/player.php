@@ -864,8 +864,12 @@ class Player extends REST2_Controller
         $key = $this->input->post('key');
         if ($key) {
             $playerInfo['custom'] = array();
-            $keys = str_getcsv($this->input->post('key'));
-            $values = str_getcsv($this->input->post('value'));
+            $value = $this->input->post('value');
+            if (!is_scalar($key) || (!is_scalar($value) && $value !== null)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('key','value')), 200);
+            }
+            $keys = str_getcsv((string)$key, ',', '"', '\\');
+            $values = str_getcsv((string)$value, ',', '"', '\\');
             foreach ($keys as $i => $key) {
                 $playerInfo['custom'][$key] = isset($values[$i]) ? $values[$i] : null;
             }
