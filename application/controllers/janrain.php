@@ -40,6 +40,10 @@ class Janrain extends REST2_Controller
             $this->response($this->error->setError('TOKEN_REQUIRED', $required), 200);
         }
         $token = $this->input->post('token');
+        if (!is_scalar($token)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('token')), 200);
+        }
+        $token = (string)$token;
         if (strlen($token) != 40) //test the length of the token; it should be 40 characters
         {
             $this->response($this->error->setError('INVALID_TOKEN'), 200);
