@@ -197,7 +197,11 @@ class Email extends REST2_Controller
             }
             $message = $template['body'];
         } else {
-            $message = $this->input->post('message');
+            $message_input = $this->input->post('message');
+            if (!is_scalar($message_input) && $message_input !== null) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('message')), 200);
+            }
+            $message = (string)$message_input;
         }
         if (!isset($player['code']) && strpos($message, '{{code}}') !== false) {
             $player['code'] = $this->player_model->generateCode($pb_player_id);
@@ -270,7 +274,11 @@ class Email extends REST2_Controller
             }
             $message = $template['body'];
         } else {
-            $message = $this->input->post('message');
+            $message_input = $this->input->post('message');
+            if (!is_scalar($message_input) && $message_input !== null) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('message')), 200);
+            }
+            $message = (string)$message_input;
         }
         if (!isset($player['code']) && strpos($message, '{{code}}') !== false) {
             $player['code'] = $this->player_model->generateCode($pb_player_id);
