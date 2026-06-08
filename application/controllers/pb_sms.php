@@ -128,7 +128,11 @@ class Pb_sms extends REST2_Controller
                 }
                 $message = $template['body'];
             } else {
-                $message = $this->input->post('message');
+                $message_input = $this->input->post('message');
+                if (!is_scalar($message_input) && $message_input !== null) {
+                    $this->response($this->error->setError('PARAMETER_INVALID', array('message')), 200);
+                }
+                $message = (string)$message_input;
             }
             if (!isset($player['code']) && strpos($message, '{{code}}') !== false) {
                 $player['code'] = $this->player_model->generateCode($pb_player_id);
@@ -223,8 +227,12 @@ class Pb_sms extends REST2_Controller
         }
 
         $since = $this->input->get('since');
+        if (!is_scalar($since) && $since !== null) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('since')), 200);
+        }
+        $since = $since ? strtotime((string)$since) : null;
         $results = $this->sms_model->recent($validToken['site_id'],
-            isset($player['phone_number']) ? $player['phone_number'] : null, $since ? strtotime($since) : null);
+            isset($player['phone_number']) ? $player['phone_number'] : null, $since);
         array_walk_recursive($results, array($this, 'convert_mongo_date'));
         $this->response($this->resp->setRespond($results), 200);
     }
