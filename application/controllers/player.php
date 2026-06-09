@@ -431,13 +431,17 @@ class Player extends REST2_Controller
         if ($instagramId) {
             $playerInfo['instagram_id'] = $instagramId;
         }
+        $password = $this->input->post('password');
+        if (is_array($password) || is_object($password)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('password')), 200);
+        }
+
         if ($this->password_validation($this->validToken['client_id'], $this->validToken['site_id'],
             $playerInfo['username'])
         ) {
             $this->player_model->unlockPlayer($this->validToken['site_id'], $pb_player_id);
-            $password = $this->input->post('password');
             if ($password) {
-                $playerInfo['password'] = do_hash($password);
+                $playerInfo['password'] = do_hash((string)$password);
             }
         } else {
             $this->response($this->error->setError('FORM_VALIDATION_FAILED', $this->validation_errors()[0]), 200);
