@@ -3339,12 +3339,17 @@ class Player_model extends MY_Model
 
     public function storeDeviceToken($data)
     {
+        if (!isset($data['device_token']) || $data['device_token'] === false || $data['device_token'] === null || $data['device_token'] === '' || !is_scalar($data['device_token'])) {
+            return false;
+        }
+
+        $device_token = (string)$data['device_token'];
         $this->mongo_db->select(null);
         $this->mongo_db->where(array(
             'client_id' => new MongoId($data['client_id']),
             'site_id' => new MongoId($data['site_id']),
             'pb_player_id' => new MongoId($data['pb_player_id']),
-            'device_token' => $data['device_token']
+            'device_token' => $device_token
         ));
         $this->mongo_db->limit(1);
         $results = $this->mongo_db->get('playbasis_player_device');
@@ -3353,7 +3358,7 @@ class Player_model extends MY_Model
                 'client_id' => new MongoId($data['client_id']),
                 'site_id' => new MongoId($data['site_id']),
                 'pb_player_id' => new MongoId($data['pb_player_id']),
-                'device_token' => $data['device_token'],
+                'device_token' => $device_token,
                 'device_description' => $data['device_description'],
                 'device_name' => $data['device_name'],
                 'os_type' => $data['os_type'],
@@ -3365,7 +3370,7 @@ class Player_model extends MY_Model
             $this->mongo_db->where('client_id', new MongoId($data['client_id']));
             $this->mongo_db->where('site_id', new MongoId($data['site_id']));
             $this->mongo_db->where('pb_player_id', new MongoId($data['pb_player_id']));
-            $this->mongo_db->where('device_token', $data['device_token']);
+            $this->mongo_db->where('device_token', $device_token);
 
             $this->mongo_db->set('device_description', $data['device_description']);
             $this->mongo_db->set('device_name', $data['device_name']);
@@ -3394,6 +3399,16 @@ class Player_model extends MY_Model
 
     public function deRegisterDevices($client_id, $site_id, $pb_player_id = null,$device_token = null)
     {
+        if (!$pb_player_id && !$device_token) {
+            return false;
+        }
+        if ($device_token !== null) {
+            if ($device_token === false || $device_token === '' || !is_scalar($device_token)) {
+                return false;
+            }
+            $device_token = (string)$device_token;
+        }
+
         $this->mongo_db->where(array(
             'client_id' => $client_id,
             'site_id' => $site_id,
@@ -3411,6 +3426,11 @@ class Player_model extends MY_Model
 
     public function getDeviceByToken($client_id, $site_id, $device_token)
     {
+        if ($device_token === false || $device_token === null || $device_token === '' || !is_scalar($device_token)) {
+            return null;
+        }
+
+        $device_token = (string)$device_token;
         $this->mongo_db->where(array(
             'client_id' => $client_id,
             'site_id' => $site_id,
