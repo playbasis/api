@@ -365,7 +365,7 @@ class Email extends REST2_Controller
         if ($this->email_model->isEmailInBlackList($email, $this->site_id)) {
             $this->response($this->error->setError('EMAIL_ALREADY_IN_BLACKLIST', $email), 200);
         }
-        $this->email_model->addIntoBlackList($this->site_id, $email, 'API');
+        $this->email_model->addIntoBlackList($this->site_id, $email, 'API', 'API');
         $this->response($this->resp->setRespond('Add email into blacklist successfully'), 200);
     }
 
