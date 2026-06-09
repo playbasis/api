@@ -2958,6 +2958,11 @@ class Player_model extends MY_Model
 
     public function findPlayerByCode($site_id, $code, $fields)
     {
+        if ($code === false || $code === null || $code === '' || !is_scalar($code)) {
+            return array();
+        }
+
+        $code = (string)$code;
         $this->set_site_mongodb($site_id);
         if ($fields) {
             $this->mongo_db->select($fields);

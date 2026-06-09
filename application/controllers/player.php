@@ -587,8 +587,11 @@ class Player extends REST2_Controller
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
         }
 
-        $cl_player_id_B = $this->input->post('player_id');
-        $referral_code = $this->input->post('referral_code');
+        $cl_player_id_B = $this->scalarPost('player_id');
+        if (!$this->validClPlayerId($cl_player_id_B)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('player_id')), 200);
+        }
+        $referral_code = $this->scalarPost('referral_code');
         $client_id = $this->validToken["client_id"];
         $site_id = $this->validToken["site_id"];
         
@@ -2730,6 +2733,16 @@ class Player extends REST2_Controller
     private function validClPlayerId($cl_player_id)
     {
         return (!preg_match("/^([a-zA-Z0-9-_=]+)+$/i", $cl_player_id)) ? false : true;
+    }
+
+    private function scalarPost($field)
+    {
+        $value = $this->input->post($field);
+        if ($value === false || $value === null || $value === '' || !is_scalar($value)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($field)), 200);
+        }
+
+        return (string)$value;
     }
 
     private function validTelephonewithCountry($number)
