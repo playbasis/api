@@ -17,6 +17,21 @@ class Auth extends REST2_Controller
         $this->load->library('form_validation');
     }
 
+    private function apiCredentials()
+    {
+        $api_key = $this->input->post('api_key');
+        $api_secret = $this->input->post('api_secret');
+
+        if (!is_scalar($api_key) || !is_scalar($api_secret)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('api_key', 'api_secret')), 200);
+        }
+
+        return array(
+            'key' => (string)$api_key,
+            'secret' => (string)$api_secret
+        );
+    }
+
     public function index_post()
     {
         $required = $this->input->checkParam(array(
@@ -26,8 +41,7 @@ class Auth extends REST2_Controller
         if ($required) {
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
         }
-        $API['key'] = $this->input->post('api_key');
-        $API['secret'] = $this->input->post('api_secret');
+        $API = $this->apiCredentials();
         $clientInfo = $this->auth_model->getApiInfo($API);
         if ($clientInfo) {
             $token = $this->auth_model->generateToken(array_merge($clientInfo, $API));
@@ -46,8 +60,7 @@ class Auth extends REST2_Controller
         if ($required) {
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
         }
-        $API['key'] = $this->input->post('api_key');
-        $API['secret'] = $this->input->post('api_secret');
+        $API = $this->apiCredentials();
         $clientInfo = $this->auth_model->getApiInfo($API);
         if ($clientInfo) {
             $token = $this->auth_model->renewToken(array_merge($clientInfo, $API));
