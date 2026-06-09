@@ -103,6 +103,13 @@ class Auth extends REST2_Controller
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
         }
 
+        $api_key = $this->input->post('api_key');
+        $refresh_token = $this->input->post('refresh_token');
+        if ($refresh_token === false || $refresh_token === null || $refresh_token === '' || !is_scalar($refresh_token)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('refresh_token')), 200);
+        }
+        $refresh_token = (string)$refresh_token;
+
         $clientInfo = $this->auth_model->getApiInfo(array('key' => $this->input->post('api_key')));
         $pb_player_id = $this->player_model->getPlaybasisId(array_merge($clientInfo, array(
             'cl_player_id' => $player_id
@@ -112,11 +119,11 @@ class Auth extends REST2_Controller
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         } else {
             $clientInfo['pb_player_id'] = $pb_player_id;
-            $clientInfo['key'] = $this->input->post('api_key');
-            $clientInfo['refresh_token'] = $this->input->post('refresh_token');
+            $clientInfo['key'] = $api_key;
+            $clientInfo['refresh_token'] = $refresh_token;
         }
 
-        $player = $this->auth_model->getPlayerToken($clientInfo, $this->input->post('refresh_token'));
+        $player = $this->auth_model->getPlayerToken($clientInfo, $refresh_token);
         if(!$player) {
             $this->response($this->error->setError('REFRESH_TOKEN_INCORRECT'), 200);
         }

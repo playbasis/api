@@ -228,8 +228,11 @@ class Auth_model extends MY_Model
         ));
 
         if($check_player){
-            if ($refresh_token) {
-                $this->mongo_db->where('refresh_token', $refresh_token);
+            if ($refresh_token !== false) {
+                if ($refresh_token === null || $refresh_token === '' || !is_scalar($refresh_token)) {
+                    return array();
+                }
+                $this->mongo_db->where('refresh_token', (string)$refresh_token);
             } else {
                 $this->mongo_db->where_gt('date_expire', new MongoDate(time()));
             }
