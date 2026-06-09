@@ -558,7 +558,7 @@ class Goods_model extends MY_Model
         $pb_player_id,
         $amount,
         $is_sponsor = false,
-        &$total
+        &$total = null
     ) {
         $msg = array();
         $goodsList = $this->getGoodsByGroup($is_sponsor ? null : $client_id, $is_sponsor ? null : $site_id, $group, 0, 1);
