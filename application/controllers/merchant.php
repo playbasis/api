@@ -32,16 +32,17 @@ class Merchant extends REST2_Controller
 
         $result = $this->merchant_model->getAvailableBranchByGoodsGroup($client_id,$site_id,$goods_group);
         if($result && is_array($result)) foreach ($result as $index_m => $merchant){
-            $result[$index_m]['branch'] =  $merchant['branch'][0];
+            $branch = isset($merchant['branch']) && is_array($merchant['branch']) && isset($merchant['branch'][0]) && is_array($merchant['branch'][0])
+                ? $merchant['branch'][0]
+                : array();
+            if (isset($branch['b_id'])) {
+                $branch['b_id'] = $branch['b_id'] . "";
+            }
+            $result[$index_m]['branch'] = $branch;
             $merchant_data = $this->merchant_model->getMerchantById($client_id, $site_id, $merchant['_id']);
             $result[$index_m]['merchant']['id'] = $merchant['_id']."";
             $result[$index_m]['merchant']['name'] = $merchant_data['name'];
             unset($result[$index_m]['_id']);
-        }
-        if($result && is_array($result)) foreach ($result as $index_m => $merchant){
-            foreach ($merchant['branch'] as $index_r => $res) {
-                $result[$index_m]['branch'][$index_r]['b_id'] = $res['b_id'] . "";
-            }
         }
 
         $this->response($this->resp->setRespond($result), 200);
