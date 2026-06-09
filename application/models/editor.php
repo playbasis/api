@@ -193,16 +193,22 @@ class Editor extends CI_Model
     }
 
     //update rule status
-    public function updateRuleStatus($ruleId)
+    public function updateRuleStatus($ruleId, $clientId = null, $siteId = null)
     {
         $sql = "UPDATE `playbasis_rule` SET `active_status` = NOT `active_status` WHERE `rule_id` = ?";
 
         $bindData = array($ruleId);
+        if ($clientId !== null && $siteId !== null) {
+            $sql .= " AND `client_id` = ? AND `site_id` = ?";
+            $bindData[] = $clientId;
+            $bindData[] = $siteId;
+        }
 
         // clear memcached on this table
         $table = "playbasis_rule";
         $this->memcached_library->update_delete($table);
 
         $result = $this->db->query($sql, $bindData);
+        return $result;
     }
 }
