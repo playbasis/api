@@ -325,7 +325,7 @@ $route['StoreOrg/nodes/'.ANY_STRING.'/saleBoard/'.ANY_STRING] = 'store_org/saleB
 
 $route['StoreOrg/rankPeer/'.ANY_STRING.'/'.ANY_STRING] = 'store_org/rankPeer/$1/$2';
 $route['StoreOrg/rankPeer/'.ANY_STRING] = 'store_org/rankPeer/$1/point';
-$route['StoreOrg/rankPeer'] = 'store_org/rankParam/0/point';
+$route['StoreOrg/rankPeer'] = 'store_org/rankPeer/0/point';
 
 $route['StoreOrg/rankPeerByAccAction/'.ANY_STRING.'/'.ANY_STRING.'/'.ANY_STRING] = 'store_org/rankPeerByAccumulateAction/$1/$2/$3';
 $route['StoreOrg/rankPeerByAccAction/'.ANY_STRING.'/'.ANY_STRING] = 'store_org/rankPeerByAccumulateAction/$1/$2/0';
