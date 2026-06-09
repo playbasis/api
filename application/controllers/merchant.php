@@ -250,7 +250,17 @@ class Merchant extends REST2_Controller
         $site_id = $this->validToken['site_id'];
         $goods_name = $this->input->post('goods_name');
         $cl_player_id = $this->input->post('player_id');
-        $amount = $this->input->post('amount') ? (int)$this->input->post('amount') : 1;
+        $amount = $this->input->post('amount');
+        if ($amount === false || $amount === null || $amount === '') {
+            $amount = 1;
+        } elseif (!is_scalar($amount) || filter_var($amount, FILTER_VALIDATE_INT) === false) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('amount')), 200);
+        } else {
+            $amount = (int)$amount;
+            if ($amount < 1) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('amount')), 200);
+            }
+        }
 
         $pb_player_id = $this->player_model->getPlaybasisId(array(
             'client_id' => $client_id,
