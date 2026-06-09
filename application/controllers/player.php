@@ -1229,6 +1229,10 @@ class Player extends REST2_Controller
     public function forgotPasswordEmail_post()
     {
         $email = $this->input->post('email');
+        if ($email === false || $email === null || $email === '' || !is_scalar($email)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('email')), 200);
+        }
+        $email = (string)$email;
         $player = $this->player_model->getPlayerByEmail($this->site_id, $email);
         if (!$player) {
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);

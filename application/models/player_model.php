@@ -3128,6 +3128,11 @@ class Player_model extends MY_Model
 
     public function getPlayerByEmail($site_id, $email)
     {
+        if ($email === false || $email === null || $email === '' || !is_scalar($email)) {
+            return array();
+        }
+
+        $email = (string)$email;
         $this->mongo_db->select(array(
             '_id',
             'cl_player_id',
