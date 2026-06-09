@@ -782,6 +782,9 @@ class Player extends REST2_Controller
             $playerInfo['device_id'] = $deviceId;
         }
         $password = $this->input->post('password');
+        if (is_array($password) || is_object($password)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('password')), 200);
+        }
         if ($password) {
             if (!isset($username) || $username == '') {
                 $username = $this->player_model->readPlayer($pb_player_id, $this->site_id,
@@ -789,7 +792,7 @@ class Player extends REST2_Controller
             }
             if ($this->password_validation($this->validToken['client_id'], $this->validToken['site_id'], $username)) {
                 $this->player_model->unlockPlayer($this->validToken['site_id'], $pb_player_id);
-                $playerInfo['password'] = do_hash($password);
+                $playerInfo['password'] = do_hash((string)$password);
             } else {
                 $this->response($this->error->setError('FORM_VALIDATION_FAILED', $this->validation_errors()), 200);
             }
