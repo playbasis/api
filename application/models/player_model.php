@@ -296,12 +296,16 @@ class Player_model extends MY_Model
         if (!$clientData) {
             return null;
         }
+        if (!isset($clientData['cl_player_id']) || $clientData['cl_player_id'] === false || $clientData['cl_player_id'] === null || $clientData['cl_player_id'] === '' || !is_scalar($clientData['cl_player_id'])) {
+            return null;
+        }
+        $cl_player_id = (string)$clientData['cl_player_id'];
         $this->set_site_mongodb($clientData['site_id']);
         $this->mongo_db->select(array('_id'));
         $this->mongo_db->where(array(
             'client_id' => $clientData['client_id'],
             'site_id' => $clientData['site_id'],
-            'cl_player_id' => $clientData['cl_player_id']
+            'cl_player_id' => $cl_player_id
         ));
         $this->mongo_db->limit(1);
         $id = $this->mongo_db->get('playbasis_player');

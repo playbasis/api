@@ -41,6 +41,10 @@ class Redeem extends REST2_Controller
         }
         //get playbasis player id from client player id
         $cl_player_id = $this->input->post('player_id');
+        if ($cl_player_id === false || $cl_player_id === null || $cl_player_id === '' || !is_scalar($cl_player_id)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('player_id')), 200);
+        }
+        $cl_player_id = (string)$cl_player_id;
         $validToken = array_merge($this->validToken, array(
             'cl_player_id' => $cl_player_id
         ));
