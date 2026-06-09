@@ -17,6 +17,28 @@ class Merchant extends REST2_Controller
         $this->load->model('tool/respond', 'resp');
     }
 
+    private function requireScalarInput($value, $field)
+    {
+        if ($value === false || $value === null || $value === '' || !is_scalar($value)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($field)), 200);
+        }
+
+        return (string)$value;
+    }
+
+    private function optionalScalarInput($value, $field)
+    {
+        if ($value === false || $value === null || $value === '') {
+            return null;
+        }
+
+        if (!is_scalar($value)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($field)), 200);
+        }
+
+        return (string)$value;
+    }
+
     public function availableBranchGoodsGroup_get()
     {
         $required = $this->input->checkParam(array(
@@ -59,10 +81,10 @@ class Merchant extends REST2_Controller
 
         $client_id = $this->validToken['client_id'];
         $site_id = $this->validToken['site_id'];
-        $group = $this->input->get('goods_group');
-        $code = $this->input->get('coupon_code');
-        $pin_code = $this->input->get('pin_code');
-        $cl_player_id = $this->input->get('player_id');
+        $group = $this->requireScalarInput($this->input->get('goods_group'), 'goods_group');
+        $code = $this->requireScalarInput($this->input->get('coupon_code'), 'coupon_code');
+        $pin_code = $this->optionalScalarInput($this->input->get('pin_code'), 'pin_code');
+        $cl_player_id = $this->optionalScalarInput($this->input->get('player_id'), 'player_id');
 
         $goods_info = $this->goods_model->getGoodsByGroupAndCode($client_id, $site_id, $group, $code);
 
@@ -136,10 +158,10 @@ class Merchant extends REST2_Controller
 
         $client_id = $this->validToken['client_id'];
         $site_id = $this->validToken['site_id'];
-        $group = $this->input->post('goods_group');
-        $code = $this->input->post('coupon_code');
-        $pin_code = $this->input->post('pin_code');
-        $cl_player_id = $this->input->post('player_id');
+        $group = $this->requireScalarInput($this->input->post('goods_group'), 'goods_group');
+        $code = $this->requireScalarInput($this->input->post('coupon_code'), 'coupon_code');
+        $pin_code = $this->optionalScalarInput($this->input->post('pin_code'), 'pin_code');
+        $cl_player_id = $this->optionalScalarInput($this->input->post('player_id'), 'player_id');
 
         $goods_info = $this->goods_model->getGoodsByGroupAndCode($client_id, $site_id, $group, $code, array('goods_id'), true);
 
