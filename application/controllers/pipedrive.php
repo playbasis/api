@@ -11,6 +11,33 @@ class Pipedrive extends REST2_Controller
         $this->load->model('tool/error', 'error');
     }
 
+    private function requiredScalarParameter($data, $parameter)
+    {
+        if (!isset($data[$parameter])) {
+            $this->response($this->error->setError('PARAMETER_MISSING', $parameter), 200);
+        }
+        if (!is_scalar($data[$parameter])) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($parameter)), 200);
+        }
+
+        $value = trim((string)$data[$parameter]);
+        if ($value === '') {
+            $this->response($this->error->setError('PARAMETER_MISSING', $parameter), 200);
+        }
+
+        return $value;
+    }
+
+    private function requiredNumericParameter($data, $parameter)
+    {
+        $value = $this->requiredScalarParameter($data, $parameter);
+        if (!is_numeric($value)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($parameter)), 200);
+        }
+
+        return (float)$value;
+    }
+
     public function send_post()
     {
         $required = $this->input->checkParam(array(
@@ -24,18 +51,19 @@ class Pipedrive extends REST2_Controller
         if ($required) {
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
         }
-        $orgName = $this->input->post('company');
-        $personName = $this->input->post('person');
-        $email = $this->input->post('email');
-        $userSize = $this->input->post('users_size');
-        $budget = $this->input->post('budget');
-        $url = $this->input->post('url');
+        $query_data = $this->input->post();
+        $orgName = $this->requiredScalarParameter($query_data, 'company');
+        $personName = $this->requiredScalarParameter($query_data, 'person');
+        $email = $this->requiredScalarParameter($query_data, 'email');
+        $userSize = $this->requiredScalarParameter($query_data, 'users_size');
+        $budget = $this->requiredNumericParameter($query_data, 'budget');
+        $url = $this->requiredScalarParameter($query_data, 'url');
         $token = $this->auth();
         if (!$token) {
             $this->response('pipedrive err: unable to login', 200);
         }
         $org = $this->createOrg($token, $orgName);
-        if (!$token) {
+        if (!$org) {
             $this->response('pipedrive err: unable create organization', 200);
         }
         $person = $this->createPerson($token, $personName, $org, $email);
