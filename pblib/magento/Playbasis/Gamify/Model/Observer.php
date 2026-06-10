@@ -13,8 +13,8 @@ require_once('pblib/playbasis.php');
 class Playbasis_Gamify_Model_Observer
 {
 	private $pb = null;
-	const api_key = 'abc';
-	const api_secret = 'abcde';
+	const api_key = '';
+	const api_secret = '';
 	const addToCartAction = 'like';
 	const addToWishlistAction = 'want';
 	const placeOrderAction = 'order';
