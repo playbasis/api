@@ -539,6 +539,10 @@ class Notification extends Engine
                                     200);
                             } else {
                                 if (strpos($_SERVER['HTTP_USER_AGENT'], STRIPE_USER_AGENT) === false ? false : true) {
+                                    if (!STRIPE_API_KEY) {
+                                        log_message('error', 'Missing STRIPE_API_KEY for Stripe notification handling');
+                                        $this->response($this->error->setError('STRIPE_NOT_CONFIGURED'), 500);
+                                    }
                                     require_once(APPPATH . '/libraries/stripe/init.php');
                                     \Stripe\Stripe::setApiKey(STRIPE_API_KEY);
                                     /* Verify that the request is authentic */
