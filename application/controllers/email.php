@@ -70,6 +70,17 @@ class Email extends REST2_Controller
 
     public function goodsAlert_get()
     {
+        $goodsAlertData = array(
+            'to' => $this->input->get('to'),
+            'goods_name' => $this->input->get('goods_name'),
+            'goods_image' => $this->input->get('goods_image'),
+            'alert_threshold' => $this->input->get('alert_threshold'),
+            'signature' => $this->input->get('signature')
+        );
+        if (!$this->email_model->isValidGoodsAlertSignature($goodsAlertData, $this->client_id, $this->site_id)) {
+            $this->response($this->error->setError('INVALID_TOKEN'), 200);
+        }
+
         /* process parameters */
         $required_to = $this->input->checkParam(array('to'));
         if ($required_to) {
