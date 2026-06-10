@@ -9,6 +9,14 @@
  */
 class Test_amazon_ses extends CI_Controller
 {
+    public function __construct()
+    {
+        parent::__construct();
+
+        if (!$this->input->is_cli_request()) {
+            show_error('This test controller can only be run from the command line.', 403);
+        }
+    }
 
     function index()
     {
