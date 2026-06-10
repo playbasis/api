@@ -332,6 +332,9 @@ class Service extends REST2_Controller
 
     public function reset_point_post()
     {
+        show_404('Service/reset_point');
+        return;
+
         $reward_name = $this->input->post('point_name');
 
         if (strtolower($reward_name) == "exp") {
