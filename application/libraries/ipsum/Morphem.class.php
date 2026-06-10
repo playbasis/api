@@ -58,6 +58,10 @@ class Morphem {
      * @method Morphem
      * @desc constructor
      */
+    function __construct(){
+        $this->Morphem();
+    }
+
     function Morphem(){
         $this->init();
     }

@@ -48,6 +48,10 @@ class Lexer{
      * @param string $source 
      * @desc constructor
      */
+    function __construct($source){
+        $this->Lexer($source);
+    }
+
     function Lexer($source){
         $this->_source = $source;
         $this->_morphem = new Morphem();
@@ -60,7 +64,7 @@ class Lexer{
      * @method init
      * @desc initalizes the _userFunctions table
      */
-    function init(){
+    static function init(){
         if(!Lexer::$_initialized)
              Lexer::$_userFunctions = array('sin' => 'sin',
                                       'cos' => 'cos',

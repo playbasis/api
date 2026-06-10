@@ -46,6 +46,10 @@ class Calculator {
      * @method Calculator
      * @desc constructor
      */
+    function __construct(){
+        $this->Calculator();
+    }
+
     function Calculator(){
         $this->_x = 'x';
         $this->_from = 0;
