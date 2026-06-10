@@ -2412,6 +2412,7 @@ class Quest extends REST2_Controller
             );
 
             $api_key = $this->auth_model->getApikeyBySite($input['site_id']);
+            $notificationInfo = $this->push_model->signAsyncPayload($notificationInfo, $device['os_type'], $input['client_id'], $input['site_id']);
             $params = array('notification_info' => http_build_query($notificationInfo) ,'type' => $device['os_type'], 'api_key' => $api_key);
             $this->utility->request('Push','sendPush', http_build_query($params, '', '&'));
         }
@@ -2459,6 +2460,7 @@ class Quest extends REST2_Controller
                 )
             );
             $api_key = $this->auth_model->getApikeyBySite($input['site_id']);
+            $notificationInfo = $this->push_model->signAsyncPayload($notificationInfo, $device['os_type'], $input['client_id'], $input['site_id']);
             $params = array('notification_info' => http_build_query($notificationInfo) ,'type' => $device['os_type'], 'api_key' => $api_key);
             $this->utility->request('Push','sendPush', http_build_query($params, '', '&'));
         }

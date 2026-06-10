@@ -92,6 +92,7 @@ class Push extends REST2_Controller
                     'badge_number' => 1
                 );
                 $api_key = $this->auth_model->getApikeyBySite($this->site_id);
+                $notificationInfo = $this->push_model->signAsyncPayload($notificationInfo, $device['os_type'], $this->client_id, $this->site_id);
                 $params = array('notification_info' => http_build_query($notificationInfo) ,'type' => $device['os_type'], 'api_key' => $api_key);
                 $this->utility->request('Push','sendPush', http_build_query($params, '', '&'));
                 $this->push_model->log($notificationInfo, $device, $pb_player_id, $player_id);
@@ -190,6 +191,7 @@ class Push extends REST2_Controller
                     'badge_number' => 1
                 );
                 $api_key = $this->auth_model->getApikeyBySite($this->site_id);
+                $notificationInfo = $this->push_model->signAsyncPayload($notificationInfo, $device['os_type'], $this->client_id, $this->site_id);
                 $params = array('notification_info' => http_build_query($notificationInfo) ,'type' => $device['os_type'], 'api_key' => $api_key);
                 $this->utility->request('Push','sendPush', http_build_query($params, '', '&'));
                 $this->push_model->log($notificationInfo, $device, $pb_player_id, $cl_player_id);

@@ -7,12 +7,93 @@ class Push_model extends MY_Model
     public function __construct()
     {
         parent::__construct();
+        $this->load->model('auth_model');
         $this->load->model('tool/utility', 'utility');
         $this->load->library('mongo_db');
     }
 
+    public function signAsyncPayload($notificationInfo, $type, $client_id, $site_id)
+    {
+        $signedInfo = $notificationInfo;
+        if (!isset($signedInfo['data']) || !is_array($signedInfo['data'])) {
+            $signedInfo['data'] = array();
+        }
+
+        $signedInfo['data']['client_id'] = $client_id;
+        $signedInfo['data']['site_id'] = $site_id;
+
+        $platform = $this->auth_model->getOnePlatform($client_id, $site_id);
+        if (!empty($platform['api_secret'])) {
+            $notificationInfo['signature'] = $this->asyncSignature($signedInfo, $type, $platform['api_secret']);
+        }
+
+        return $notificationInfo;
+    }
+
+    private function asyncSignature($data, $type, $secret)
+    {
+        $parts = array(
+            isset($data['data']['client_id']) ? (string)$data['data']['client_id'] : '',
+            isset($data['data']['site_id']) ? (string)$data['data']['site_id'] : '',
+            strtolower((string)$type),
+            isset($data['device_token']) ? (string)$data['device_token'] : '',
+            isset($data['messages']) ? (string)$data['messages'] : '',
+            isset($data['badge_number']) ? (string)$data['badge_number'] : ''
+        );
+
+        return hash_hmac('sha256', implode('|', $parts), (string)$secret);
+    }
+
+    private function stringsMatch($expected, $actual)
+    {
+        if (function_exists('hash_equals')) {
+            return hash_equals($expected, $actual);
+        }
+
+        return is_string($expected) && is_string($actual) && strlen($expected) === strlen($actual) && $expected === $actual;
+    }
+
+    private function isRegisteredDevice($data, $type)
+    {
+        if (empty($data['data']['client_id']) || empty($data['data']['site_id']) || empty($data['device_token'])) {
+            return false;
+        }
+
+        $this->set_site_mongodb($data['data']['site_id']);
+        $this->mongo_db->where(array(
+            'client_id' => $data['data']['client_id'],
+            'site_id' => $data['data']['site_id'],
+            'device_token' => $data['device_token'],
+            'os_type' => strtolower((string)$type)
+        ));
+        $this->mongo_db->where_ne('deleted', true);
+        $this->mongo_db->limit(1);
+
+        return (bool)$this->mongo_db->get('playbasis_player_device');
+    }
+
+    private function isValidAsyncPayload($data, $type)
+    {
+        if (empty($data['signature']) || empty($data['data']['client_id']) || empty($data['data']['site_id'])) {
+            return false;
+        }
+
+        $platform = $this->auth_model->getOnePlatform($data['data']['client_id'], $data['data']['site_id']);
+        if (empty($platform['api_secret'])) {
+            return false;
+        }
+
+        $expected = $this->asyncSignature($data, $type, $platform['api_secret']);
+        return $this->stringsMatch($expected, (string)$data['signature']) && $this->isRegisteredDevice($data, $type);
+    }
+
     public function initial($data, $type = null)
     {
+        if (!$this->isValidAsyncPayload($data, $type)) {
+            log_message('error', 'Invalid push async dispatch payload');
+            return false;
+        }
+
         $type = strtolower($type);
         switch ($type) {
             case "ios":
