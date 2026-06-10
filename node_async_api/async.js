@@ -12,7 +12,6 @@ var express = require('express')
   , io = require('socket.io')
   ,	request = require('request')
   , redis = require('redis')
-  , mysql = require('mysql')
   , fs = require('fs');
 
 var app = express();
@@ -57,20 +56,35 @@ var REDIS_SERVER_ADDRESS = '127.0.0.1';//'46.137.248.96';
 var BASE_URL = 'https://api.pbapp.net/';
 var CHANNEL_PREFIX = 'res_';
 
-/*var sqlcon = mysql.createConnection({
-  host     : 'db.pbapp.net',
-  user     : 'playbasis_admin',
-  password : 'databaseplaybasisproduction',
-  database : 'core'
-});
-sqlcon.connect();*/
-
 //connect to mongodb
 var dbReady = false;
 var mongoose = require('mongoose');
 
+function requiredEnv(name) {
+    if (!process.env[name]) {
+        throw new Error('Missing required environment variable: ' + name);
+    }
+    return process.env[name];
+}
+
+function mongoPort() {
+    var port = parseInt(requiredEnv('MONGO_HOST_PORT'), 10);
+    if (isNaN(port)) {
+        throw new Error('MONGO_HOST_PORT must be a number');
+    }
+    return port;
+}
+
+function mongoConnectionOptions() {
+    return {
+        user: requiredEnv('MONGO_HOST_USERNAME'),
+        pass: requiredEnv('MONGO_HOST_PASSWORD'),
+        auth: { authSource: process.env['MONGO_HOST_AUTH_SOURCE'] || 'admin' }
+    };
+}
+
 var ClientSite;
-db = mongoose.createConnection('dbv2.pbapp.net', 'core', 27017, { user: 'admin', pass: 'mongodbpasswordplaybasis', auth: { authSource: "admin" } });
+db = mongoose.createConnection(requiredEnv('MONGO_HOST_ADDR'), 'core', mongoPort(), mongoConnectionOptions());
 //db = mongoose.createConnection('localhost', 'core', 27017);
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function callback(){

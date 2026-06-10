@@ -78,29 +78,40 @@ server.listen(app.get('port'), function(){
 	console.log("Express server listening on port " + app.get('port'));
 });
 
-/*var sqlcon = mysql.createConnection({
-  host     : 'db.pbapp.net',
-  user     : 'playbasis_admin',
-  password : 'databaseplaybasisproduction',
-  database : 'core'
-});
-sqlcon.connect();*/
-
 //connect to mongodb
 var dbReady = false;
 var mongoose = require('mongoose');
 
+function requiredEnv(name) {
+    if (!process.env[name]) {
+        throw new Error('Missing required environment variable: ' + name);
+    }
+    return process.env[name];
+}
+
+function mongoPort() {
+    var port = parseInt(requiredEnv('MONGO_HOST_PORT'), 10);
+    if (isNaN(port)) {
+        throw new Error('MONGO_HOST_PORT must be a number');
+    }
+    return port;
+}
+
+function mongoConnectionOptions() {
+    return {
+        user: requiredEnv('MONGO_HOST_USERNAME'),
+        pass: requiredEnv('MONGO_HOST_PASSWORD'),
+        auth: { authSource: process.env['MONGO_HOST_AUTH_SOURCE'] || 'admin' }
+    };
+}
+
 var ClientSite;
 var NodeLog;
 db = mongoose.createConnection(
-    process.env['MONGO_HOST_ADDR'] || 'dbv2.pbapp.net',
+    requiredEnv('MONGO_HOST_ADDR'),
     'core',
-    process.env['MONGO_HOST_PORT'] || 27017,
-    {
-        user: process.env['MONGO_HOST_USERNAME'] || 'admin',
-        pass: process.env['MONGO_HOST_PASSWORD'] || 'mongodbpasswordplaybasis', //
-        auth: process.env['MONGO_HOST_AUTH']     || { authSource: "admin" }   //
-    });
+    mongoPort(),
+    mongoConnectionOptions());
 //db = mongoose.createConnection(process.env['MONGO_HOST_ADDR'] || '192.168.10.1', 'core', 27017);
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function callback(){
