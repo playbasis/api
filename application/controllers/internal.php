@@ -26,8 +26,11 @@ class Internal extends REST2_Controller
 
 
         $client_id = $this->input->get('client_id');
+        if ((string)$client_id !== (string)$this->client_id) {
+            $this->response($this->error->setError('ACCESS_DENIED'), 200);
+        }
         $feature_group = $this->input->get('feature_group');
-        $result = $this->plan_model->getLimitPlanByClientId($client_id, $feature_group);
+        $result = $this->plan_model->getLimitPlanByClientId((string)$this->client_id, $feature_group);
         $this->response($this->resp->setRespond($result), 200);
 
     }
