@@ -34,14 +34,27 @@ Class TwilioMini
 
         $this->config = $config;
 
-        $this->mode        = $config['mode'];
-        $this->account_sid = $config['account_sid'];
-        $this->auth_token  = $config['auth_token'];
-        $this->api_version = $config['api_version'];
-        $this->number      = $config['number'];
+        $this->mode        = isset($config['mode']) ? $config['mode'] : 'sandbox';
+        $this->account_sid = isset($config['account_sid']) ? $config['account_sid'] : '';
+        $this->auth_token  = isset($config['auth_token']) ? $config['auth_token'] : '';
+        $this->api_version = isset($config['api_version']) ? $config['api_version'] : '2010-04-01';
+        $this->number      = isset($config['number']) ? $config['number'] : '';
+
+        if (!$this->account_sid || !$this->auth_token) {
+            log_message('error', 'Missing Twilio configuration: account_sid and auth_token are required');
+            return;
+        }
 
         //initialize the client
         $this->_twilio = new Services_Twilio($this->account_sid, $this->auth_token);
+    }
+
+    private function configurationErrorResponse()
+    {
+        $res = (object)array();
+        $res->IsError = true;
+        $res->error_message = 'Missing Twilio configuration: account_sid and auth_token are required';
+        return $res;
     }
 
 
@@ -57,6 +70,10 @@ Class TwilioMini
      */
     public function dial($from, $to, $make, $optional = array())
     {
+
+        if (!$this->_twilio) {
+            return $this->configurationErrorResponse();
+        }
 
         try {
             // make call
@@ -86,6 +103,10 @@ Class TwilioMini
      */
     public function sms($from, $to, $message)
     {
+
+        if (!$this->_twilio) {
+            return $this->configurationErrorResponse();
+        }
 
         try {
             // make sms
