@@ -29,11 +29,18 @@ function handler(req, res) {
 	});
 }
 
+function requiredSocialEnv(name) {
+	if (!process.env[name]) {
+		throw new Error('Missing required environment variable: ' + name);
+	}
+	return process.env[name];
+}
+
 var twit = new twitter({
-	consumer_key: 'zPUFYp3SERsStcB6lsLjg',
-	consumer_secret: 'QUtQz6ID4BMj5tQZwXHueDOqhByngSQ16Jmm4BprRs',
-	access_token_key: '19943348-YSYM1cQI8EzUvf6Oepx78LBInnrhENpsQYSTrQCNu',
-	access_token_secret: '66Tmt1uAObidzLUS86rwjnCrkT4n0l9w5XcklizOQ'
+	consumer_key: requiredSocialEnv('TWITTER_PBAPP_CONSUMER_KEY'),
+	consumer_secret: requiredSocialEnv('TWITTER_PBAPP_CONSUMER_SECRET'),
+	access_token_key: requiredSocialEnv('TWITTER_PBAPP_ACCESS_TOKEN_KEY'),
+	access_token_secret: requiredSocialEnv('TWITTER_PBAPP_ACCESS_TOKEN_SECRET')
 });
 
 var TRACKING = '#pbapp,#playbasis';

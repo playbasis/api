@@ -108,11 +108,18 @@ function handler(req, res) {
 	});
 }
 
+function requiredSocialEnv(name) {
+    if (!process.env[name]) {
+        throw new Error('Missing required environment variable: ' + name);
+    }
+    return process.env[name];
+}
+
 var twit = new twitter({
-	consumer_key: 'TtqjsKAIuGTs2fqDCTv3rA',
-	consumer_secret: '72pEMZYZQIJ0RKlPql9ENWr9emjeBopfkb6nMfwN0',
-	access_token_key: '205222126-Fa7P5OFT2k4WJndxfuWq9D1ie3lMXEnugTDphc97',
-	access_token_secret: 'yBiEFLNcVXmOEj320lrE92SppPwY4ejA2cQSRv5FLM'
+	consumer_key: requiredSocialEnv('TWITTER_LEADERBOARD_CONSUMER_KEY'),
+	consumer_secret: requiredSocialEnv('TWITTER_LEADERBOARD_CONSUMER_SECRET'),
+	access_token_key: requiredSocialEnv('TWITTER_LEADERBOARD_ACCESS_TOKEN_KEY'),
+	access_token_secret: requiredSocialEnv('TWITTER_LEADERBOARD_ACCESS_TOKEN_SECRET')
 });
 
 var dateObj = new Date();
@@ -139,8 +146,11 @@ function stringObj(s){
     return o;
 };
 
+var BASIC_AUTH_USER = requiredSocialEnv('TWITTER_LEADERBOARD_BASIC_AUTH_USER');
+var BASIC_AUTH_PASSWORD = requiredSocialEnv('TWITTER_LEADERBOARD_BASIC_AUTH_PASSWORD');
+
 var auth = express.basicAuth(function(user, pass){
-    return user === 'abc' && pass === '777';
+    return user === BASIC_AUTH_USER && pass === BASIC_AUTH_PASSWORD;
 });
 
 function getTweetFeed(){

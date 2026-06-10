@@ -83,9 +83,19 @@ server.listen(app.get('port'), function(){
 	console.log('Express server listening on port ' + app.get('port'));
 });
 
-instagram.set('client_id', '0aa6b0bcdff544e0b8f202797b0c117e');
-instagram.set('client_secret', 'a610840147e54cb981f53da99a78d975');
+function requiredSocialEnv(name) {
+	if (!process.env[name]) {
+		throw new Error('Missing required environment variable: ' + name);
+	}
+	return process.env[name];
+}
+
+instagram.set('client_id', requiredSocialEnv('INSTAGRAM_CLIENT_ID'));
+instagram.set('client_secret', requiredSocialEnv('INSTAGRAM_CLIENT_SECRET'));
 instagram.set('callback_url', 'https://instagram.pbapp.net/feed');
+
+var BASIC_AUTH_USER = requiredSocialEnv('INSTAGRAM_BASIC_AUTH_USER');
+var BASIC_AUTH_PASSWORD = requiredSocialEnv('INSTAGRAM_BASIC_AUTH_PASSWORD');
 
 io.sockets.on('connection', function(socket){
 	var dateObj = new Date();
@@ -97,7 +107,7 @@ app.get('/hello', function(req, res){
 });
 
 var auth = express.basicAuth(function(user, pass){
-	return user === 'abc' && pass === '777';
+	return user === BASIC_AUTH_USER && pass === BASIC_AUTH_PASSWORD;
 });
 
 app.get('/subscribe/tag/:tag', auth, function(req, res)
