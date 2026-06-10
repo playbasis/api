@@ -7,8 +7,11 @@
   },
   "dependencies": {
     "express": "3.0.6",
-    "jade": "*",
-    "redis": "*",
-    "socket.io": "*"
+    "jade": "0.28.1",
+    "mongoose": "3.6.16",
+    "mysql": "2.0.0-alpha8",
+    "newrelic": "1.11.1",
+    "redis": "0.8.2",
+    "socket.io": "1.1.0"
   }
 }
