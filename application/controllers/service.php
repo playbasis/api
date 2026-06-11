@@ -230,6 +230,9 @@ class Service extends REST2_Controller
         $offset = ($this->input->get('offset')) ? $this->input->get('offset') : 0;
         $limit = ($this->input->get('limit')) ? $this->input->get('limit') : 50;
         $last_read_activity_id = ($this->input->get('last_read_activity_id')) ? $this->input->get('last_read_activity_id') : null;
+        if ($last_read_activity_id && !$this->isValidMongoId($last_read_activity_id)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('last_read_activity_id')), 200);
+        }
 
         $player_id = ($this->input->get('player_id')) ? $this->input->get('player_id') : 0;
         $pb_player_id = $player_id ? $this->player_model->getPlaybasisId(array_merge($this->validToken,
