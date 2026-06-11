@@ -594,37 +594,44 @@ class jigsaw extends MY_Model
             return false;
         }
 
+        if (!is_scalar($input['condition-rewardtype']) || !is_scalar($input['condition-rewardname']) || !is_scalar($input['condition-quantity'])) {
+            return false;
+        }
+
+        $reward_type = strtolower((string)$input['condition-rewardtype']);
+        $reward_name = (string)$input['condition-rewardname'];
+
         $point = 0;
-        if(strtolower($input['condition-rewardtype']) == "badge"){
-            $badge_id = $this->badge_model->getBadgeIDByName($input['client_id'], $input['site_id'], $input['condition-rewardname']);
+        if($reward_type == "badge"){
+            $badge_id = $this->badge_model->getBadgeIDByName($input['client_id'], $input['site_id'], $reward_name);
             if (!$badge_id) {
                 return false;
             }
             foreach ($input['player_badge'] as $key => $badge) {
-                if (($badge['name'] == $input['condition-rewardname']) ) {
+                if (($badge['name'] == $reward_name) ) {
                     $point = $badge['amount'];
                     break;
                 }
             }
-        }else if(strtolower($input['condition-rewardtype']) == "goods"){
-            $goods_id = $this->goods_model->getGoodsIDByName($input['client_id'], $input['site_id'], $input['condition-rewardname']);
+        }else if($reward_type == "goods"){
+            $goods_id = $this->goods_model->getGoodsIDByName($input['client_id'], $input['site_id'], $reward_name);
             if (!$goods_id) {
                 return false;
             }
-            $player_point = $this->getPlayerGoodsQuantityByName($input['client_id'], $input['site_id'],$input['pb_player_id'],$input['condition-rewardname']);
+            $player_point = $this->getPlayerGoodsQuantityByName($input['client_id'], $input['site_id'],$input['pb_player_id'],$reward_name);
             $point = is_null($player_point) ? 0 : $player_point;
-        }else if(strtolower($input['condition-rewardtype']) == "goods_group"){
-            $goods_id = $this->goods_model->getGoodsIDByName($input['client_id'], $input['site_id'], null,$input['condition-rewardname']);
+        }else if($reward_type == "goods_group"){
+            $goods_id = $this->goods_model->getGoodsIDByName($input['client_id'], $input['site_id'], null,$reward_name);
             if (!$goods_id) {
                 return false;
             }
-            $player_point = $this->getPlayerGoodsGroupQuantityByName($input['client_id'], $input['site_id'],$input['pb_player_id'],$input['condition-rewardname']);
+            $player_point = $this->getPlayerGoodsGroupQuantityByName($input['client_id'], $input['site_id'],$input['pb_player_id'],$reward_name);
             $point = is_null($player_point) ? 0 : $player_point;
-        }else if(strtolower($input['condition-rewardtype']) == "point"){
-            if($input['condition-rewardname'] == "exp"){
+        }else if($reward_type == "point"){
+            if($reward_name == "exp"){
                 $point = $input['user_profile']['exp'];
             }else{
-                $point = $this->getPlayerPointByName( $input['client_id'], $input['site_id'],$input['pb_player_id'],$input['condition-rewardname']);
+                $point = $this->getPlayerPointByName( $input['client_id'], $input['site_id'],$input['pb_player_id'],$reward_name);
             }
         }
 
