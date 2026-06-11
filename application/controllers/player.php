@@ -2812,14 +2812,18 @@ class Player extends REST2_Controller
                 'node_id'
             )), 200);
         }
+        if (!preg_match('/^[0-9a-f]{24}$/i', (string)$node_id)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('node_id')), 200);
+        }
 
-        $node = $this->store_org_model->retrieveNodeById($this->validToken['site_id'], new MongoId($node_id));
+        $node_mongo_id = new MongoId($node_id);
+        $node = $this->store_org_model->retrieveNodeById($this->validToken['site_id'], $node_mongo_id);
         if (!$node) {
             $this->response($this->error->setError('STORE_ORG_NODE_NOT_FOUND'), 200);
         }
 
         $role_info = $this->store_org_model->getRoleOfPlayer($this->validToken['client_id'],
-            $this->validToken['site_id'], $pb_player_id, new MongoId($node_id));
+            $this->validToken['site_id'], $pb_player_id, $node_mongo_id);
         if (!$role_info) {
             $this->response($this->error->setError('STORE_ORG_PLAYER_NOT_EXISTS_WITH_NODE'), 200);
         } else {
