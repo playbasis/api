@@ -37,6 +37,12 @@ class Link_model extends MY_Model
     public function findByLink($client_id, $site_id, $link=null)
     {
         $this->set_site_mongodb($site_id);
+        if ($link !== null && (!$link || !is_scalar($link))) {
+            return null;
+        }
+        if ($link !== null) {
+            $link = (string)$link;
+        }
         $this->mongo_db->where(array(
             'client_id' => $client_id,
             'site_id' => $site_id,
