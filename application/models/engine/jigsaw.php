@@ -1694,7 +1694,7 @@ class jigsaw extends MY_Model
         return ($result) ? $result[0] : $result;
     }
 
-    private function checkBadge($badgeId, $pb_player_id, $site_id, $quantity = 0, &$exInfo)
+    private function checkBadge($badgeId, $pb_player_id, $site_id, $quantity, &$exInfo)
     {
         //get badge properties
         $this->set_site_mongodb($site_id);
@@ -1762,7 +1762,7 @@ class jigsaw extends MY_Model
         return true;
     }
 
-    private function checkGoodsWithCache(&$cache, $goodsId, $pb_player_id, $client_id, $site_id, $quantity = 0, &$exInfo)
+    private function checkGoodsWithCache(&$cache, $goodsId, $pb_player_id, $client_id, $site_id, $quantity, &$exInfo)
     {
         $key = $goodsId . '-' . $pb_player_id . '-' . $site_id . '-' . $quantity;
         if (!array_key_exists($key, $cache)) {
@@ -1772,7 +1772,7 @@ class jigsaw extends MY_Model
         return $cache[$key];
     }
 
-    private function checkGoods($goodsId, $pb_player_id, $client_id, $site_id, $quantity = 0, &$exInfo)
+    private function checkGoods($goodsId, $pb_player_id, $client_id, $site_id, $quantity, &$exInfo)
     {
         if (!$quantity) {
             return true;

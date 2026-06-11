@@ -497,8 +497,8 @@ class Store_org_model extends MY_Model
         $node_list,
         $action,
         $parameter,
-        $month = null,
-        $year = null,
+        $month,
+        $year,
         $count
     ) {
         $result = array();

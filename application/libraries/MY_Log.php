@@ -56,7 +56,7 @@ class MY_Log {
             // to a Raven misconfiguration or error.
         }
     }
-    public function write_log($level = 'error', $msg, $php_error = FALSE)
+    public function write_log($level, $msg, $php_error = FALSE)
     {
         // Environment check
         if (!isset($this->config['raven_environments']) || !in_array(ENVIRONMENT, $this->config['raven_environments'])) return;
