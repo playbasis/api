@@ -522,7 +522,7 @@ class Redeem extends REST2_Controller
                 $event = array(
                     'event_type' => 'POINT_NOT_ENOUGH',
                     'message' => 'user point not enough',
-                    'incomplete' => (int)($goods['redeem']['point']["point_value"] * $amount) - (int)($player_point[0]['value'] * $amount)
+                    'incomplete' => (int)($goods['redeem']['point']["point_value"] * $amount) - (int)($player_point * $amount)
                 );
                 array_push($redeemResult['events'], $event);
             }
