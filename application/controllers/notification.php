@@ -31,6 +31,138 @@ class Notification extends Engine
         $this->load->library('curl');
     }
 
+    private function isValidSnsSubscriptionConfirmation($message)
+    {
+        if (!is_array($message)) {
+            return false;
+        }
+
+        $required = array(
+            'Type',
+            'MessageId',
+            'Token',
+            'TopicArn',
+            'Message',
+            'SubscribeURL',
+            'Timestamp',
+            'SignatureVersion',
+            'Signature',
+            'SigningCertURL'
+        );
+
+        foreach ($required as $field) {
+            if (!array_key_exists($field, $message) || !is_string($message[$field]) || $message[$field] === '') {
+                return false;
+            }
+        }
+
+        return $message['Type'] === 'SubscriptionConfirmation'
+            && in_array($message['SignatureVersion'], array('1', '2'), true)
+            && $this->matchesSnsHeaders($message)
+            && $this->isAwsSnsUrl($message['SubscribeURL'])
+            && $this->isAwsSnsUrl($message['SigningCertURL'])
+            && $this->verifySnsSignature($message, array(
+                'Message',
+                'MessageId',
+                'SubscribeURL',
+                'Timestamp',
+                'Token',
+                'TopicArn',
+                'Type'
+            ));
+    }
+
+    private function matchesSnsHeaders($message)
+    {
+        if (isset($_SERVER['HTTP_X_AMZ_SNS_MESSAGE_TYPE']) && $_SERVER['HTTP_X_AMZ_SNS_MESSAGE_TYPE'] !== $message['Type']) {
+            return false;
+        }
+
+        if (isset($_SERVER['HTTP_X_AMZ_SNS_TOPIC_ARN']) && $_SERVER['HTTP_X_AMZ_SNS_TOPIC_ARN'] !== $message['TopicArn']) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function verifySnsSignature($message, $fields)
+    {
+        if (!function_exists('openssl_get_publickey') || !function_exists('openssl_verify')) {
+            return false;
+        }
+
+        $cert = $this->curl->simple_get($message['SigningCertURL'], array(), $this->snsCurlOptions());
+        if (!is_string($cert) || $cert === '') {
+            return false;
+        }
+
+        $public_key = openssl_get_publickey($cert);
+        if (!$public_key) {
+            return false;
+        }
+
+        $signature = base64_decode($message['Signature'], true);
+        if ($signature === false) {
+            openssl_free_key($public_key);
+            return false;
+        }
+
+        $algo = $message['SignatureVersion'] === '2' ? OPENSSL_ALGO_SHA256 : OPENSSL_ALGO_SHA1;
+        $verified = openssl_verify($this->snsStringToSign($message, $fields), $signature, $public_key, $algo) === 1;
+        openssl_free_key($public_key);
+
+        return $verified;
+    }
+
+    private function snsStringToSign($message, $fields)
+    {
+        $string = '';
+        foreach ($fields as $field) {
+            $string .= $field . "\n" . $message[$field] . "\n";
+        }
+
+        return $string;
+    }
+
+    private function snsCurlOptions()
+    {
+        $options = array(
+            CURLOPT_CONNECTTIMEOUT => 2,
+            CURLOPT_TIMEOUT => 5,
+            CURLOPT_FOLLOWLOCATION => false
+        );
+
+        if (defined('CURLOPT_PROTOCOLS') && defined('CURLPROTO_HTTPS')) {
+            $options[CURLOPT_PROTOCOLS] = CURLPROTO_HTTPS;
+        }
+
+        if (defined('CURLOPT_REDIR_PROTOCOLS') && defined('CURLPROTO_HTTPS')) {
+            $options[CURLOPT_REDIR_PROTOCOLS] = CURLPROTO_HTTPS;
+        }
+
+        return $options;
+    }
+
+    private function isAwsSnsUrl($url)
+    {
+        if (!is_string($url)) {
+            return false;
+        }
+
+        $parts = parse_url($url);
+        if (!is_array($parts) || !isset($parts['scheme']) || !isset($parts['host'])) {
+            return false;
+        }
+
+        if (strtolower($parts['scheme']) !== 'https') {
+            return false;
+        }
+
+        $host = strtolower($parts['host']);
+        return $host === 'sns.amazonaws.com'
+            || preg_match('/^sns\.[a-z0-9-]+\.amazonaws\.com(\.cn)?$/', $host) === 1;
+    }
+
     public function index_get()
     {
         $messages = $this->notification_model->list_messages($this->site_id);
@@ -58,7 +190,11 @@ class Notification extends Engine
                         break;
                     }
                     log_message('debug', 'SubscribeURL = ' . print_r($message['SubscribeURL'], true));
-                    $response = $this->curl->simple_get($message['SubscribeURL']); // http://philsturgeon.co.uk/code/codeigniter-curl
+                    if (!$this->isValidSnsSubscriptionConfirmation($message)) {
+                        $this->response($this->error->setError('PARAMETER_INVALID', array('SubscribeURL')), 200);
+                    }
+                    $response = $this->curl->simple_get($message['SubscribeURL'], array(),
+                        $this->snsCurlOptions()); // http://philsturgeon.co.uk/code/codeigniter-curl
                     log_message('debug', 'response = ' . $response);
                     break;
                 case 'Notification': // http://docs.aws.amazon.com/sns/latest/dg/json-formats.html#http-notification-json
