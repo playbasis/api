@@ -2,11 +2,30 @@
 
 class Editor extends CI_Model
 {
+    private $database_available = false;
+
     //constructor
     public function __construct()
     {
         parent::__construct();
         $this->load->library('memcached_library');
+        $this->database_available = $this->loadDatabase();
+    }
+
+    private function loadDatabase()
+    {
+        if (!file_exists(APPPATH . 'config/database.php')) {
+            return false;
+        }
+
+        $this->load->database();
+
+        return isset($this->db) && is_object($this->db);
+    }
+
+    private function hasDatabase()
+    {
+        return $this->database_available && isset($this->db) && is_object($this->db);
     }
 
     //get client
@@ -33,6 +52,10 @@ class Editor extends CI_Model
 
 
         // so if cannot get any result
+        if (!$this->hasDatabase()) {
+            return array();
+        }
+
         $bindData = array($clientId);
         $result = $this->db->query($sql, $bindData);
 
@@ -65,6 +88,10 @@ class Editor extends CI_Model
 
 
         // so if cannot get any result
+        if (!$this->hasDatabase()) {
+            return array();
+        }
+
         $bindData = array($siteId);
         $result = $this->db->query($sql, $bindData);
 
@@ -97,6 +124,10 @@ class Editor extends CI_Model
         }
 
         // so if cannot get any result
+        if (!$this->hasDatabase()) {
+            return array();
+        }
+
         $bindData = array($siteId);
         $result = $this->db->query($sql, $bindData);
 
@@ -128,6 +159,10 @@ class Editor extends CI_Model
         }
 
         // so if cannot get any result
+        if (!$this->hasDatabase()) {
+            return array();
+        }
+
         $bindData = array($ruleId);
         $result = $this->db->query($sql, $bindData);
 
@@ -139,6 +174,10 @@ class Editor extends CI_Model
     //add new rule
     public function addRule($data)
     {
+        if (!$this->hasDatabase()) {
+            return false;
+        }
+
         $sql = "INSERT INTO `playbasis_rule` SET `client_id` = ? , `site_id` = ? , `rule_name` = ? , `rule_description` = ? , `date_added` = ? , `date_modified` = ?";
 
         $bindData = array(
@@ -184,6 +223,10 @@ class Editor extends CI_Model
         }
 
         // so if cannot get any result
+        if (!$this->hasDatabase()) {
+            return array('jigsaw_set' => array());
+        }
+
         $bindData = array($ruleId);
         $result = $this->db->query($sql, $bindData);
 
@@ -192,17 +235,113 @@ class Editor extends CI_Model
         return $result->row_array();
     }
 
-    //update rule status
-    public function updateRuleStatus($ruleId)
+    private function ensureSqlDatabase()
     {
+        if (isset($this->db) && is_object($this->db)) {
+            return true;
+        }
+
+        if (!file_exists(APPPATH . 'config/database.php')) {
+            return false;
+        }
+
+        $this->load->database();
+
+        return isset($this->db) && is_object($this->db);
+    }
+
+    private function getScopedCacheKey($sql, $bindData, $table)
+    {
+        return 'sql_' . md5($sql . '|' . serialize($bindData)) . "." . $table;
+    }
+
+    public function getScopedRules($clientId, $siteId)
+    {
+        if (!$this->ensureSqlDatabase()) {
+            return array();
+        }
+
+        $sql = "SELECT `rule_id`,`rule_name`,`rule_description`,`active_status` FROM `playbasis_rule` WHERE `client_id` = ? AND `site_id` = ?";
+        $bindData = array($clientId, $siteId);
+        $table = "playbasis_rule";
+        $cacheKey = $this->getScopedCacheKey($sql, $bindData, $table);
+
+        $results = $this->memcached_library->get($cacheKey);
+        if ($results) {
+            return $results;
+        }
+
+        $result = $this->db->query($sql, $bindData);
+        $this->memcached_library->add($cacheKey, $result->result_array());
+
+        return $result->result_array();
+    }
+
+    public function getScopedRule($ruleId, $clientId, $siteId)
+    {
+        if (!$this->ensureSqlDatabase()) {
+            return array();
+        }
+
+        $sql = "SELECT `rule_id`,`rule_name`,`rule_description`,`active_status` FROM `playbasis_rule` WHERE `rule_id` = ? AND `client_id` = ? AND `site_id` = ?";
+        $bindData = array($ruleId, $clientId, $siteId);
+        $table = "playbasis_rule";
+        $cacheKey = $this->getScopedCacheKey($sql, $bindData, $table);
+
+        $results = $this->memcached_library->get($cacheKey);
+        if ($results) {
+            return $results;
+        }
+
+        $result = $this->db->query($sql, $bindData);
+        $this->memcached_library->add($cacheKey, $result->result_array());
+
+        return $result->result_array();
+    }
+
+    public function getScopedJigsaw($ruleId, $clientId, $siteId)
+    {
+        if (!$this->ensureSqlDatabase()) {
+            return array();
+        }
+
+        $sql = "SELECT `jigsaw_set` FROM `playbasis_rule` WHERE `rule_id` = ? AND `client_id` = ? AND `site_id` = ?";
+        $bindData = array($ruleId, $clientId, $siteId);
+        $table = "playbasis_rule";
+        $cacheKey = $this->getScopedCacheKey($sql, $bindData, $table);
+
+        $results = $this->memcached_library->get($cacheKey);
+        if ($results) {
+            return $results;
+        }
+
+        $result = $this->db->query($sql, $bindData);
+        $this->memcached_library->add($cacheKey, $result->row_array());
+
+        return $result->row_array();
+    }
+
+    //update rule status
+    public function updateRuleStatus($ruleId, $clientId = null, $siteId = null)
+    {
+        if (!$this->hasDatabase()) {
+            return false;
+        }
+
         $sql = "UPDATE `playbasis_rule` SET `active_status` = NOT `active_status` WHERE `rule_id` = ?";
 
         $bindData = array($ruleId);
+        if ($clientId !== null && $siteId !== null) {
+            $sql .= " AND `client_id` = ? AND `site_id` = ?";
+            $bindData[] = $clientId;
+            $bindData[] = $siteId;
+        }
 
         // clear memcached on this table
         $table = "playbasis_rule";
         $this->memcached_library->update_delete($table);
 
         $result = $this->db->query($sql, $bindData);
+        return $result;
     }
 }

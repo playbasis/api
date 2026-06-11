@@ -6,7 +6,7 @@ class Custom_reward_model extends MY_Model
 
     public function retrieveCustomRewardByID($client_id, $site_id, $item_id)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         $this->mongo_db->where('client_id', new MongoId($client_id));
         $this->mongo_db->where('site_id', new MongoId($site_id));

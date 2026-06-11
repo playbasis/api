@@ -29,7 +29,7 @@ class Engine extends Quest
         $this->load->model('email_model');
         $this->load->model('sms_model');
         $this->load->model('store_org_model');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/utility', 'utility');
         $this->load->model('tool/respond', 'resp');
         $this->load->model('tool/node_stream', 'node');
@@ -202,6 +202,9 @@ class Engine extends Quest
         if (!$rule_id) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('rule_id')), 200);
         }
+        if (!preg_match('/^[0-9a-f]{24}$/i', (string)$rule_id)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('rule_id')), 200);
+        }
         $pb_player_id = null;
         $player_id = $this->input->get('player_id');
         if ($player_id !== false) {
@@ -368,6 +371,10 @@ class Engine extends Quest
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
         }
 
+        if (!$test && (!is_string($data['pb_player_id']) || !preg_match('/^[0-9a-f]{24}$/i', $data['pb_player_id']))) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('pb_player_id')), 200);
+        }
+
         $api_key = $data['api_key'];
 
         if (!$test) {
@@ -426,6 +433,9 @@ class Engine extends Quest
         }
 
         if (isset($data['pb_player_id-2'])) {
+            if (!is_string($data['pb_player_id-2']) || !preg_match('/^[0-9a-f]{24}$/i', $data['pb_player_id-2'])) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('pb_player_id-2')), 200);
+            }
             $input['pb_player_id-2'] = new MongoId($data['pb_player_id-2']);
         }
 
@@ -442,7 +452,7 @@ class Engine extends Quest
 
         if (!$test) {
             //Log validated action
-            $action_dataset = $this->jigsaw_model->getActionDatasetInfo($input['action_name']);
+            $action_dataset = $this->jigsaw_model->getActionDatasetInfo($input['action_name'], isset($input['site_id']) ? $input['site_id'] : null);
             $input['parameters'] = array();
             if (is_array($action_dataset)) {
                 foreach ($action_dataset as $dataset) {
@@ -583,9 +593,25 @@ class Engine extends Quest
                 if (!$test) {
                     $validToken = $this->validToken;
                 } else {
+                    $required = $this->input->checkParam(array('client_id', 'site_id'));
+                    if ($required) {
+                        $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
+                    }
+                    $client_id = $this->input->post("client_id");
+                    $site_id = $this->input->post("site_id");
+                    $invalid = array();
+                    if (!$this->isMongoId($client_id)) {
+                        array_push($invalid, 'client_id');
+                    }
+                    if (!$this->isMongoId($site_id)) {
+                        array_push($invalid, 'site_id');
+                    }
+                    if ($invalid) {
+                        $this->response($this->error->setError('PARAMETER_INVALID', $invalid), 200);
+                    }
                     $validToken = array(
-                        "client_id" => new MongoId($this->input->post("client_id")),
-                        "site_id" => new MongoId($this->input->post("site_id")),
+                        "client_id" => new MongoId($client_id),
+                        "site_id" => new MongoId($site_id),
                         "site_name" => null
                     );
                 }
@@ -685,6 +711,7 @@ class Engine extends Quest
                 }
 
                 $postData = $this->input->post();
+                $this->validateSpecialRewardConditionInput($postData);
                 $input = array_merge($postData, $validToken, array(
                     'pb_player_id' => $pb_player_id,
                     'action_id' => $actionId,
@@ -710,7 +737,7 @@ class Engine extends Quest
         //Log validated action
         if (!$test) {
             // populate input parameter of the action
-            $action_dataset = $this->jigsaw_model->getActionDatasetInfo($input['action_name']);
+            $action_dataset = $this->jigsaw_model->getActionDatasetInfo($input['action_name'], isset($input['site_id']) ? $input['site_id'] : null);
             $input['parameters'] = array();
             if (is_array($action_dataset)) {
                 foreach ($action_dataset as $dataset) {
@@ -744,6 +771,11 @@ class Engine extends Quest
         $this->response($this->resp->setRespond($apiResult), 200);
     }
 
+    private function isMongoId($id)
+    {
+        return is_string($id) && preg_match('/^[0-9a-f]{24}$/i', $id) === 1;
+    }
+
     private function levelup($lv, &$apiResult, $input)
     {
         if(!isset($input['input']['hidden_reward']) || $input['input']['hidden_reward']=="false") {
@@ -760,6 +792,18 @@ class Engine extends Quest
             'amount' => $lv
         )));
         return $eventMessage;
+    }
+
+    private function validateSpecialRewardConditionInput(&$postData)
+    {
+        foreach (array('condition-rewardtype', 'condition-rewardname', 'condition-quantity') as $param_name) {
+            if (isset($postData[$param_name])) {
+                if (!is_scalar($postData[$param_name])) {
+                    $this->response($this->error->setError('PARAMETER_INVALID', array($param_name)), 200);
+                }
+                $postData[$param_name] = (string)$postData[$param_name];
+            }
+        }
     }
 
     public function processRule(&$input, $validToken, $fbData, $twData, $time = null)
@@ -797,7 +841,7 @@ class Engine extends Quest
         if (!$input["test"]) {
 
             // populate input parameter of the action
-            $action_dataset = $this->jigsaw_model->getActionDatasetInfo($input['action_name']);
+            $action_dataset = $this->jigsaw_model->getActionDatasetInfo($input['action_name'], isset($input['site_id']) ? $input['site_id'] : null);
             $input['parameters'] = array();
             if (is_array($action_dataset)) {
                 foreach ($action_dataset as $dataset) {
@@ -1058,9 +1102,14 @@ class Engine extends Quest
                 }
 
                 if($processor=="groupNot" || $processor=="groupOr"){
+                    if (!isset($jigsawConfig['condition_group_container']) || !is_array($jigsawConfig['condition_group_container'])) {
+                        $jigsawConfig['condition_group_container'] = array();
+                    }
+
+                    $condition_group_names = array_column($jigsawConfig['condition_group_container'], 'param_name');
                     // check if condition group containing item group
-                    if( (array_search("badge", array_column($jigsawConfig['condition_group_container'], 'param_name')) !== false) ||
-                        (array_search("specialRewardCondition", array_column($jigsawConfig['condition_group_container'], 'param_name')) !== false)){
+                    if( (array_search("badge", $condition_group_names) !== false) ||
+                        (array_search("specialRewardCondition", $condition_group_names) !== false)){
                         //read player badge information
                         $badge = $this->player_model->getBadge($input['pb_player_id'], $this->site_id);
                         $input['player_badge'] = $badge;
@@ -1594,10 +1643,10 @@ class Engine extends Quest
                         array_push($code_array, array_key_exists('code', $goods_group_rewards[$index]) ? $goods_group_rewards[$index]['code'] : null);
                     }
                 }
-                $event['value'] = sizeof($rand_goods);
-                $event['reward_data']['code'] = sizeof($rand_goods) == 1 ? $code_array[0]:$code_array;
-                $event['reward_data']['goods_id'] = sizeof($rand_goods) == 1 ? $id_array[0]:$id_array;
-                $event['log_id'] = sizeof($rand_goods) == 1 ? $log_array[0]:$log_array;
+                $event['value'] = sizeof($id_array);
+                $event['reward_data']['code'] = sizeof($id_array) == 1 ? $code_array[0] : (sizeof($id_array) > 1 ? $code_array : null);
+                $event['reward_data']['goods_id'] = sizeof($id_array) == 1 ? $id_array[0] : (sizeof($id_array) > 1 ? $id_array : null);
+                $event['log_id'] = sizeof($id_array) == 1 ? $log_array[0] : (sizeof($id_array) > 1 ? $log_array : null);
             } else {
                 $event['value'] = 0;
                 $event['log_id'] = null;

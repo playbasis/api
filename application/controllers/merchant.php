@@ -13,8 +13,30 @@ class Merchant extends REST2_Controller
         $this->load->model('reward_model');
         $this->load->model('player_model');
         $this->load->model('tool/utility', 'utility');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/respond', 'resp');
+    }
+
+    private function requireScalarInput($value, $field)
+    {
+        if ($value === false || $value === null || $value === '' || !is_scalar($value)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($field)), 200);
+        }
+
+        return (string)$value;
+    }
+
+    private function optionalScalarInput($value, $field)
+    {
+        if ($value === false || $value === null || $value === '') {
+            return null;
+        }
+
+        if (!is_scalar($value)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($field)), 200);
+        }
+
+        return (string)$value;
     }
 
     public function availableBranchGoodsGroup_get()
@@ -32,16 +54,17 @@ class Merchant extends REST2_Controller
 
         $result = $this->merchant_model->getAvailableBranchByGoodsGroup($client_id,$site_id,$goods_group);
         if($result && is_array($result)) foreach ($result as $index_m => $merchant){
-            $result[$index_m]['branch'] =  $merchant['branch'][0];
+            $branch = isset($merchant['branch']) && is_array($merchant['branch']) && isset($merchant['branch'][0]) && is_array($merchant['branch'][0])
+                ? $merchant['branch'][0]
+                : array();
+            if (isset($branch['b_id'])) {
+                $branch['b_id'] = $branch['b_id'] . "";
+            }
+            $result[$index_m]['branch'] = $branch;
             $merchant_data = $this->merchant_model->getMerchantById($client_id, $site_id, $merchant['_id']);
             $result[$index_m]['merchant']['id'] = $merchant['_id']."";
             $result[$index_m]['merchant']['name'] = $merchant_data['name'];
             unset($result[$index_m]['_id']);
-        }
-        if($result && is_array($result)) foreach ($result as $index_m => $merchant){
-            foreach ($merchant['branch'] as $index_r => $res) {
-                $result[$index_m]['branch'][$index_r]['b_id'] = $res['b_id'] . "";
-            }
         }
 
         $this->response($this->resp->setRespond($result), 200);
@@ -59,10 +82,10 @@ class Merchant extends REST2_Controller
 
         $client_id = $this->validToken['client_id'];
         $site_id = $this->validToken['site_id'];
-        $group = $this->input->get('goods_group');
-        $code = $this->input->get('coupon_code');
-        $pin_code = $this->input->get('pin_code');
-        $cl_player_id = $this->input->get('player_id');
+        $group = $this->requireScalarInput($this->input->get('goods_group'), 'goods_group');
+        $code = $this->requireScalarInput($this->input->get('coupon_code'), 'coupon_code');
+        $pin_code = $this->optionalScalarInput($this->input->get('pin_code'), 'pin_code');
+        $cl_player_id = $this->optionalScalarInput($this->input->get('player_id'), 'player_id');
 
         $goods_info = $this->goods_model->getGoodsByGroupAndCode($client_id, $site_id, $group, $code);
 
@@ -136,10 +159,10 @@ class Merchant extends REST2_Controller
 
         $client_id = $this->validToken['client_id'];
         $site_id = $this->validToken['site_id'];
-        $group = $this->input->post('goods_group');
-        $code = $this->input->post('coupon_code');
-        $pin_code = $this->input->post('pin_code');
-        $cl_player_id = $this->input->post('player_id');
+        $group = $this->requireScalarInput($this->input->post('goods_group'), 'goods_group');
+        $code = $this->requireScalarInput($this->input->post('coupon_code'), 'coupon_code');
+        $pin_code = $this->optionalScalarInput($this->input->post('pin_code'), 'pin_code');
+        $cl_player_id = $this->optionalScalarInput($this->input->post('player_id'), 'player_id');
 
         $goods_info = $this->goods_model->getGoodsByGroupAndCode($client_id, $site_id, $group, $code, array('goods_id'), true);
 
@@ -250,7 +273,17 @@ class Merchant extends REST2_Controller
         $site_id = $this->validToken['site_id'];
         $goods_name = $this->input->post('goods_name');
         $cl_player_id = $this->input->post('player_id');
-        $amount = $this->input->post('amount') ? (int)$this->input->post('amount') : 1;
+        $amount = $this->input->post('amount');
+        if ($amount === false || $amount === null || $amount === '') {
+            $amount = 1;
+        } elseif (!is_scalar($amount) || filter_var($amount, FILTER_VALIDATE_INT) === false) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('amount')), 200);
+        } else {
+            $amount = (int)$amount;
+            if ($amount < 1) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('amount')), 200);
+            }
+        }
 
         $pb_player_id = $this->player_model->getPlaybasisId(array(
             'client_id' => $client_id,

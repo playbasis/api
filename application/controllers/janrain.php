@@ -14,7 +14,31 @@ class Janrain extends REST2_Controller
         $this->load->model('tracker_model');
         $this->load->model('tool/utility', 'utility');
         $this->load->model('tool/node_stream', 'node');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
+    }
+
+    private function isSafeRedirectUrl($url)
+    {
+        if (!is_string($url) || $url === '' || preg_match('/[\r\n\\\\]/', $url)) {
+            return false;
+        }
+
+        $parts = parse_url($url);
+        if ($parts === false) {
+            return false;
+        }
+
+        if (isset($parts['scheme']) && !in_array(strtolower($parts['scheme']), array('http', 'https'), true)) {
+            return false;
+        }
+
+        if (isset($parts['host'])) {
+            $request_host = $this->input->server('HTTP_HOST');
+            $request_parts = parse_url('http://' . $request_host);
+            return isset($request_parts['host']) && strtolower($parts['host']) === strtolower($request_parts['host']);
+        }
+
+        return true;
     }
 
     public function token_post($option = "")
@@ -25,7 +49,7 @@ class Janrain extends REST2_Controller
         //var_dump($host);
         $client = $this->social_model->getClientFromHost($host);
         if (!$client) {
-            $this->response($this->error->setError('ACCESS_DENIED', $required), 200);
+            $this->response($this->error->setError('ACCESS_DENIED'), 200);
         }
         $client_id = $client['client_id'];
         $site_id = $client['site_id'];
@@ -40,6 +64,10 @@ class Janrain extends REST2_Controller
             $this->response($this->error->setError('TOKEN_REQUIRED', $required), 200);
         }
         $token = $this->input->post('token');
+        if (!is_scalar($token)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('token')), 200);
+        }
+        $token = (string)$token;
         if (strlen($token) != 40) //test the length of the token; it should be 40 characters
         {
             $this->response($this->error->setError('INVALID_TOKEN'), 200);
@@ -56,19 +84,19 @@ class Janrain extends REST2_Controller
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
         curl_setopt($curl, CURLOPT_HEADER, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($curl, CURLOPT_FAILONERROR, true);
         $result = curl_exec($curl);
-        if ($result == false) {
-            echo "\n" . 'Curl error: ' . curl_error($curl);
-            echo "\n" . 'HTTP code: ' . curl_errno($curl);
-            echo "\n";
-            var_dump($post_data);
+        if ($result === false) {
+            log_message('error', 'Janrain auth_info curl error: ' . curl_error($curl) . ' (' . curl_errno($curl) . ')');
+            curl_close($curl);
+            $this->response($this->error->setError('INVALID_TOKEN'), 200);
         }
         curl_close($curl);
         $auth_info = json_decode($result, true);
         //var_dump($auth_info);
-        if ($auth_info['stat'] != 'ok') {
+        if (!is_array($auth_info) || !isset($auth_info['stat']) || $auth_info['stat'] != 'ok') {
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         }
         $profile = $auth_info['profile'];
@@ -160,6 +188,13 @@ class Janrain extends REST2_Controller
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
         }
         $redir = $this->input->post('redir');
+        if (!is_scalar($redir)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('redir')), 200);
+        }
+        $redir = (string)$redir;
+        if (!$this->isSafeRedirectUrl($redir)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('redir')), 200);
+        }
         $user = urlencode($identifier);
         $provider = urlencode($provider);
         if (preg_match('/\?/', $redir)) {

@@ -69,7 +69,15 @@ class Quiz_model extends MY_Model
         $this->mongo_db->limit(1);
         $results = $this->mongo_db->get('playbasis_quiz_to_player');
 
-        return $results ? $results[0] : null;
+        if (!$results) {
+            return null;
+        }
+
+        $result = $results[0];
+        $result['questions'] = (isset($result['questions']) && is_array($result['questions'])) ? $result['questions'] : array();
+        $result['answers'] = (isset($result['answers']) && is_array($result['answers'])) ? $result['answers'] : array();
+
+        return $result;
     }
 
     public function find_quiz_by_player($client_id, $site_id, $pb_player_id, $limit = -1)
@@ -96,8 +104,11 @@ class Quiz_model extends MY_Model
             foreach ($results as $result) {
                 $quiz_id = $result['quiz_id'];
                 $quiz = $this->find_by_id($client_id, $site_id, $quiz_id);
-                $total_questions = count($quiz['questions']);
-                $completed_questions = count($result['questions']);
+                if (!$quiz) {
+                    continue;
+                }
+                $total_questions = (isset($quiz['questions']) && is_array($quiz['questions'])) ? count($quiz['questions']) : 0;
+                $completed_questions = (isset($result['questions']) && is_array($result['questions'])) ? count($result['questions']) : 0;
                 $pending = (isset($result['completed']) && ($result['completed'] == true)) ? false : ($completed_questions < $total_questions);
                 $result['total_completed_questions'] = $completed_questions;
                 $result['name'] = $quiz['name'];
@@ -213,8 +224,8 @@ class Quiz_model extends MY_Model
     ) {
         $d = new MongoDate(time());
         $result = $this->find_quiz_by_quiz_and_player($client_id, $site_id, $quiz_id, $pb_player_id);
-        $questions = $result ? $result['questions'] : array();
-        $answers = $result ? $result['answers'] : array();
+        $questions = (is_array($result) && isset($result['questions']) && is_array($result['questions'])) ? $result['questions'] : array();
+        $answers = (is_array($result) && isset($result['answers']) && is_array($result['answers'])) ? $result['answers'] : array();
         array_push($questions, $question_id);
         $answer_info = array('option_id' => $option_id, 'score' => $score, 'date_added' => $d, 'is_multiple_choice' => $is_multiple_choice);
         if(!is_null($answer)) $answer_info['answer'] = $answer;
@@ -263,8 +274,8 @@ class Quiz_model extends MY_Model
     ) {
         $d = new MongoDate(time());
         $result = $this->find_quiz_by_quiz_and_player($client_id, $site_id, $quiz_id, $pb_player_id);
-        $questions = $result ? $result['questions'] : array();
-        $answers = $result ? $result['answers'] : array();
+        $questions = (is_array($result) && isset($result['questions']) && is_array($result['questions'])) ? $result['questions'] : array();
+        $answers = (is_array($result) && isset($result['answers']) && is_array($result['answers'])) ? $result['answers'] : array();
         array_push($questions, $question_id);
         array_push($answers, array('option_id' => Null, 'score' => 0, 'date_added' => $d, 'is_multiple_choice' => $is_multiple_choice));
 

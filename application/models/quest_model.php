@@ -32,6 +32,7 @@ class Quest_model extends MY_Model
         $this->mongo_db->limit(1);
         $result = $this->mongo_db->get('playbasis_quest_to_client');
         $result = $result ? $result[0] : array();
+        $result = $this->normalizeMissions($result);
 
         array_walk_recursive($result, array($this, "change_image_path"));
         return $result;
@@ -52,6 +53,7 @@ class Quest_model extends MY_Model
         }
         $this->mongo_db->where_ne('deleted', true);
         $result = $this->mongo_db->get('playbasis_quest_to_client');
+        $result = $this->normalizeMissionList($result);
 
         array_walk_recursive($result, array($this, "change_image_path"));
         return $result;
@@ -140,7 +142,7 @@ class Quest_model extends MY_Model
         if ($filter_id) {
             $this->mongo_db->where_not_in('pb_player_id', $filter_id);
         }
-        return $this->mongo_db->get('playbasis_quest_to_player');
+        return $this->normalizeMissionList($this->mongo_db->get('playbasis_quest_to_player'));
     }
 
     public function getLeaderboardCompletion($activity, $completion_filter, $filter, $completion_option='sum', $query_player=array(), $gt=0)
@@ -224,6 +226,7 @@ class Quest_model extends MY_Model
         $this->mongo_db->limit(1);
         $result = $this->mongo_db->get('playbasis_quest_to_player');
         $result = $result ? $result[0] : array();
+        $result = $this->normalizeMissions($result);
 
         array_walk_recursive($result, array($this, "change_image_path"));
         return $result;
@@ -241,6 +244,7 @@ class Quest_model extends MY_Model
         }
         $this->mongo_db->where_ne('deleted', true);
         $result = $this->mongo_db->get('playbasis_quest_to_player');
+        $result = $this->normalizeMissionList($result);
 
         array_walk_recursive($result, array($this, "change_image_path"));
         return $result;
@@ -345,6 +349,33 @@ class Quest_model extends MY_Model
         $this->mongo_db->where('pb_player_id', new MongoId($pb_player_id));
         $this->mongo_db->set('deleted', true);
         $this->mongo_db->update_all('playbasis_quest_to_player');
+    }
+
+    private function normalizeMissionList($quests)
+    {
+        if (!$quests || !is_array($quests)) {
+            return array();
+        }
+
+        foreach ($quests as &$quest) {
+            $quest = $this->normalizeMissions($quest);
+        }
+        unset($quest);
+
+        return $quests;
+    }
+
+    private function normalizeMissions($quest)
+    {
+        if (!$quest || !is_array($quest)) {
+            return array();
+        }
+
+        if (!isset($quest['missions']) || !is_array($quest['missions'])) {
+            $quest['missions'] = array();
+        }
+
+        return $quest;
     }
 
     private function change_image_path(&$item, $key)

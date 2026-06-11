@@ -11,7 +11,7 @@ class Game extends REST2_Controller
         $this->load->model('game_model');
         $this->load->model('reward_model');
         $this->load->model('player_model');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/respond', 'resp');
     }
 
@@ -24,8 +24,30 @@ class Game extends REST2_Controller
             $query_data['tags'] = explode(',', $query_data['tags']);
         }
 
-        if (!isset($query_data['status']) || (strtolower($query_data['status']) !== 'all')){
-            $query_data['status'] = (isset($query_data['status']) && (strtolower($query_data['status'])==='false')) ? false : true;
+        if (isset($query_data['game_id']) && !empty($query_data['game_id']) &&
+            preg_match('/^[0-9a-f]{24}$/i', (string)$query_data['game_id']) !== 1) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('game_id')), 200);
+        }
+        if (isset($query_data['game_name']) && !is_scalar($query_data['game_name'])) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('game_name')), 200);
+        }
+        if (isset($query_data['game_name'])) {
+            $query_data['game_name'] = (string)$query_data['game_name'];
+        }
+        if (isset($query_data['order']) && !is_scalar($query_data['order'])) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('order')), 200);
+        }
+        if (isset($query_data['order'])) {
+            $query_data['order'] = (string)$query_data['order'];
+        }
+
+        if (isset($query_data['status']) && !is_scalar($query_data['status'])) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('status')), 200);
+        }
+
+        $status = isset($query_data['status']) ? strtolower((string)$query_data['status']) : null;
+        if ($status !== 'all'){
+            $query_data['status'] = ($status === 'false') ? false : true;
         }else{
             unset($query_data['status']);
         }
@@ -152,6 +174,10 @@ class Game extends REST2_Controller
         }
 
         $game_name = $this->input->get('game_name');
+        if (!is_scalar($game_name)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('game_name')), 200);
+        }
+        $game_name = (string)$game_name;
         $campaign_name = $this->input->get('campaign_name');
         $game = $this->game_model->retrieveGame($this->client_id, $this->site_id, array(
             'game_name' => $game_name,
@@ -184,6 +210,10 @@ class Game extends REST2_Controller
         }
 
         $game_name = $this->input->get('game_name');
+        if (!is_scalar($game_name)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('game_name')), 200);
+        }
+        $game_name = (string)$game_name;
         $game = $this->game_model->retrieveGame($this->client_id, $this->site_id, array(
             'game_name' => $game_name,
             'order' => 'desc'
@@ -269,6 +299,10 @@ class Game extends REST2_Controller
         if ($required) {
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
         }
+        if (!is_scalar($query_data['game_name'])) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('game_name')), 200);
+        }
+        $query_data['game_name'] = (string)$query_data['game_name'];
 
         //validate playbasis player id
         $pb_player_id = $this->player_model->getPlaybasisId(array_merge($this->validToken, array(
@@ -287,6 +321,9 @@ class Game extends REST2_Controller
             $this->response($this->error->setError('GAME_NOT_FOUND'), 200);
         }
         $game_id = $game[0]['_id'];
+        if (isset($query_data['item_id']) && $query_data['item_id'] && !$this->isValidMongoId($query_data['item_id'])) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('item_id')), 200);
+        }
 
         $response = array();
 
@@ -371,6 +408,14 @@ class Game extends REST2_Controller
         if ($required) {
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
         }
+        if (!is_scalar($query_data['game_name'])) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('game_name')), 200);
+        }
+        $query_data['game_name'] = (string)$query_data['game_name'];
+        if (!$this->isValidMongoId($query_data['item_id'])) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('item_id')), 200);
+        }
+        $item_mongo_id = new MongoId($query_data['item_id']);
 
         //validate playbasis player id
         $pb_player_id = $this->player_model->getPlaybasisId(array_merge($this->validToken, array(
@@ -395,26 +440,31 @@ class Game extends REST2_Controller
             $this->response($this->error->setError('GAME_STAGE_NOT_FOUND'), 200);
         }
         $stage_info = $stage_info[0];
-        if (!in_array(new MongoId($query_data['item_id']), $stage_info['item_list'])) {
+        if (!in_array($item_mongo_id, $stage_info['item_list'])) {
             $this->response($this->error->setError('GAME_ITEM_NOT_IN_STAGE'), 200);
         }
 
+        if (!is_scalar($query_data['item_status'])) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('item_status')), 200);
+        }
+        $item_status = strtolower((string)$query_data['item_status']);
+
         if(strtolower($query_data['game_name']) == "farm") {
-            if(strtolower($query_data['item_status']) == "harvested"){
+            if($item_status == "harvested"){
                 $stage_to_player = $this->game_model->getStageToPlayer($this->client_id, $this->site_id, $game_id, $pb_player_id, array('stage_level' => $query_data['stage_level']));
                 $harvested_item = array();
                 if ($stage_to_player) {
                     //todo: update
                     $harvested_item = $stage_to_player['harvested_item'];
-                    if (!in_array(new MongoId($query_data['item_id']), $stage_to_player['harvested_item'])) {
-                        $harvested_item = array_merge($harvested_item,array(new MongoId($query_data['item_id'])));
+                    if (!in_array($item_mongo_id, $stage_to_player['harvested_item'])) {
+                        $harvested_item = array_merge($harvested_item,array($item_mongo_id));
                         $this->game_model->updateStageToPlayer($this->client_id, $this->site_id, $game_id, $query_data['stage_level'], $pb_player_id,
                             array( 'harvested_item'=> $harvested_item));
                     }
 
                 }else{
                     //todo: insert
-                    $harvested_item = array(new MongoId($query_data['item_id']));
+                    $harvested_item = array($item_mongo_id);
                     $this->game_model->setStageToPlayer($this->client_id, $this->site_id, $game_id, $query_data['stage_level'], $pb_player_id,
                         array( 'harvested_item'=> $harvested_item));
                 }
@@ -465,6 +515,11 @@ class Game extends REST2_Controller
         $this->response($this->resp->setRespond(array('stage_finished'=>$stage_finished , 'next_stage'=>$next_stage)), 200);
     }
 
+    private function isValidMongoId($id)
+    {
+        return preg_match('/^[0-9a-f]{24}$/i', (string)$id) === 1;
+    }
+
     public function setCurrentStage_post()
     {
         //$this->benchmark->mark('start');
@@ -477,6 +532,10 @@ class Game extends REST2_Controller
         if ($required) {
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
         }
+        if (!is_scalar($query_data['game_name'])) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('game_name')), 200);
+        }
+        $query_data['game_name'] = (string)$query_data['game_name'];
 
         //validate playbasis player id
         $pb_player_id = $this->player_model->getPlaybasisId(array_merge($this->validToken, array(

@@ -21,7 +21,7 @@ class Player extends REST2_Controller
         $this->load->model('goods_model');
         $this->load->model('energy_model');
         $this->load->model('email_model');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/utility', 'utility');
         $this->load->model('tool/respond', 'resp');
         $this->load->model('tool/node_stream', 'node');
@@ -29,6 +29,17 @@ class Player extends REST2_Controller
         $this->load->library('form_validation');
         $this->load->library('parser');
         $this->load->model('sms_model');
+    }
+
+    private function commaListParameter($value, $parameter, $emptyAsNull = true)
+    {
+        if (!is_scalar($value) && $value !== null) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($parameter)), 200);
+        }
+        if (!$value && $emptyAsNull) {
+            return null;
+        }
+        return explode(',', (string)$value);
     }
 
     public function index_get($player_id = '')
@@ -132,9 +143,9 @@ class Player extends REST2_Controller
     public function list_post()
     {
         if(isset($_POST['list_player_id']) && $_POST['list_player_id']) {
-            $list_player_id = explode(",", $this->input->post('list_player_id'));
+            $list_player_id = $this->commaListParameter($this->input->post('list_player_id'), 'list_player_id');
         }else {
-            $filter['tags'] = explode(",", $this->input->post('tags'));
+            $filter['tags'] = $this->commaListParameter($this->input->post('tags'), 'tags', false);
             $player_list = $this->player_model->readPlayersWithFilter( $this->site_id, array('cl_player_id'), $filter);
             $list_player_id = array();
             foreach($player_list as $player){
@@ -418,7 +429,7 @@ class Player extends REST2_Controller
                 $this->response($this->error->setError('USER_PHONE_INVALID'), 200);
             }
         }
-        $playerInfo['tags'] = $this->input->post('tags') && !is_null($this->input->post('tags')) ? explode(',', $this->input->post('tags')) : null;
+        $playerInfo['tags'] = $this->commaListParameter($this->input->post('tags'), 'tags');
         $facebookId = $this->input->post('facebook_id');
         if ($facebookId) {
             $playerInfo['facebook_id'] = $facebookId;
@@ -431,13 +442,17 @@ class Player extends REST2_Controller
         if ($instagramId) {
             $playerInfo['instagram_id'] = $instagramId;
         }
+        $password = $this->input->post('password');
+        if (is_array($password) || is_object($password)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('password')), 200);
+        }
+
         if ($this->password_validation($this->validToken['client_id'], $this->validToken['site_id'],
             $playerInfo['username'])
         ) {
             $this->player_model->unlockPlayer($this->validToken['site_id'], $pb_player_id);
-            $password = $this->input->post('password');
             if ($password) {
-                $playerInfo['password'] = do_hash($password);
+                $playerInfo['password'] = do_hash((string)$password);
             }
         } else {
             $this->response($this->error->setError('FORM_VALIDATION_FAILED', $this->validation_errors()[0]), 200);
@@ -587,8 +602,11 @@ class Player extends REST2_Controller
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
         }
 
-        $cl_player_id_B = $this->input->post('player_id');
-        $referral_code = $this->input->post('referral_code');
+        $cl_player_id_B = $this->scalarPost('player_id');
+        if (!$this->validClPlayerId($cl_player_id_B)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('player_id')), 200);
+        }
+        $referral_code = $this->scalarPost('referral_code');
         $client_id = $this->validToken["client_id"];
         $site_id = $this->validToken["site_id"];
         
@@ -666,7 +684,22 @@ class Player extends REST2_Controller
     
     public function registerBatch_post()
     {
-        $batch_data = json_decode($this->input->post()['batch'],true);
+        $required = $this->input->checkParam(array(
+            'batch'
+        ));
+        if ($required) {
+            $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
+        }
+
+        $batch_data = json_decode($this->input->post('batch'), true);
+        if (!is_array($batch_data)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('batch')), 200);
+        }
+        foreach ($batch_data as $player_data) {
+            if (!is_array($player_data)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('batch')), 200);
+            }
+        }
 
         try {
             $player_limit = $this->client_model->getPlanLimitById(
@@ -758,11 +791,15 @@ class Player extends REST2_Controller
                 $this->response($this->error->setError('USER_PHONE_INVALID'), 200);
             }
         }
-        if ($this->input->post('tags')){
-            if(strtolower($this->input->post('tags')) == "null"){
+        $tags = $this->input->post('tags');
+        if ($tags){
+            if (!is_scalar($tags)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('tags')), 200);
+            }
+            if(strtolower((string)$tags) == "null"){
                 $playerInfo['tags'] = null;
             }else{
-                $playerInfo['tags'] = explode(',', $this->input->post('tags'));
+                $playerInfo['tags'] = $this->commaListParameter($tags, 'tags');
             }
         }
         $facebookId = $this->input->post('facebook_id');
@@ -782,6 +819,9 @@ class Player extends REST2_Controller
             $playerInfo['device_id'] = $deviceId;
         }
         $password = $this->input->post('password');
+        if (is_array($password) || is_object($password)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('password')), 200);
+        }
         if ($password) {
             if (!isset($username) || $username == '') {
                 $username = $this->player_model->readPlayer($pb_player_id, $this->site_id,
@@ -789,7 +829,7 @@ class Player extends REST2_Controller
             }
             if ($this->password_validation($this->validToken['client_id'], $this->validToken['site_id'], $username)) {
                 $this->player_model->unlockPlayer($this->validToken['site_id'], $pb_player_id);
-                $playerInfo['password'] = do_hash($password);
+                $playerInfo['password'] = do_hash((string)$password);
             } else {
                 $this->response($this->error->setError('FORM_VALIDATION_FAILED', $this->validation_errors()), 200);
             }
@@ -864,8 +904,12 @@ class Player extends REST2_Controller
         $key = $this->input->post('key');
         if ($key) {
             $playerInfo['custom'] = array();
-            $keys = str_getcsv($this->input->post('key'));
-            $values = str_getcsv($this->input->post('value'));
+            $value = $this->input->post('value');
+            if (!is_scalar($key) || (!is_scalar($value) && $value !== null)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('key','value')), 200);
+            }
+            $keys = str_getcsv((string)$key, ',', '"', '\\');
+            $values = str_getcsv((string)$value, ',', '"', '\\');
             foreach ($keys as $i => $key) {
                 $playerInfo['custom'][$key] = isset($values[$i]) ? $values[$i] : null;
             }
@@ -924,7 +968,7 @@ class Player extends REST2_Controller
         if ($anonymousFeature) {
             $sessions = $this->player_model->findBySessionId($this->client_id, $this->site_id,
                 $this->input->post('session_id'), true);
-            if (count($sessions) > 0) {
+            if (!empty($sessions)) {
                 $anonymousUser = $this->player_model->isAnonymous($this->client_id, $this->site_id, null,
                     $sessions['pb_player_id']);
                 if ($anonymousUser) {
@@ -1021,7 +1065,10 @@ class Player extends REST2_Controller
         /* Optionally, remove session */
         $session_id = $this->input->post('session_id');
         if ($session_id) {
-            $this->player_model->logout($this->client_id, $this->site_id, $session_id);
+            if (!is_scalar($session_id)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('session_id')), 200);
+            }
+            $this->player_model->logout($this->client_id, $this->site_id, (string)$session_id, $pb_player_id);
         }
 
         // [rule] logout
@@ -1089,7 +1136,11 @@ class Player extends REST2_Controller
     {
         $username = $this->input->post('username');
         $email = $this->input->post('email');
-        $password = do_hash($this->input->post('password'));
+        $password_input = $this->input->post('password');
+        if (is_array($password_input) || is_object($password_input)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('password')), 200);
+        }
+        $password = do_hash((string)$password_input);
 
         $player = null;
         if ($email) {
@@ -1229,6 +1280,10 @@ class Player extends REST2_Controller
     public function forgotPasswordEmail_post()
     {
         $email = $this->input->post('email');
+        if ($email === false || $email === null || $email === '' || !is_scalar($email)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('email')), 200);
+        }
+        $email = (string)$email;
         $player = $this->player_model->getPlayerByEmail($this->site_id, $email);
         if (!$player) {
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
@@ -1452,8 +1507,14 @@ class Player extends REST2_Controller
             $reward_id = null;
         }
 
+        $order = $this->input->get('order');
+        if ($order !== null && $order !== false && !is_scalar($order)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('order')), 200);
+        }
+        $order = ($order !== null && $order !== false) ? (string)$order : null;
+
         $respondThis['points'] = $this->player_model->getPointHistoryFromPlayerID($pb_player_id, $this->site_id,
-            $reward_id, $offset, $limit, $this->input->get('order'));
+            $reward_id, $offset, $limit, $order);
 
         $this->response($this->resp->setRespond($respondThis), 200);
     }
@@ -1510,8 +1571,8 @@ class Player extends REST2_Controller
                 $this->response($this->error->setError('ACTION_NOT_FOUND'), 200);
             }
             if($this->input->get('key') && $this->input->get('value')){
-                $key = explode(',', $this->input->get('key'));
-                $value =  explode(',', $this->input->get('value'));
+                $key = $this->commaListParameter($this->input->get('key'), 'key');
+                $value =  $this->commaListParameter($this->input->get('value'), 'value');
                 if (sizeof($key) != sizeof($value)){
                     $this->response($this->error->setError('SIZE_KEY_VAL_NOT_MATCH'), 200);
                 }
@@ -1552,7 +1613,7 @@ class Player extends REST2_Controller
             'cl_player_id' => $player_id,
         );
         if($this->input->get('action_name')){
-            $action_name = explode(',',$this->input->get('action_name'));
+            $action_name = $this->commaListParameter($this->input->get('action_name'), 'action_name');
             foreach ($action_name as $item) {
                 $action_id = $this->action_model->findAction(array_merge($this->validToken, array(
                     'action_name' => $item
@@ -1590,8 +1651,19 @@ class Player extends REST2_Controller
         $client_id = new MongoId($this->validToken['client_id']);
         $site_id = new MongoId($this->validToken['site_id']);
         $site_name = $this->validToken['site_name'];
-        $gift_id = new MongoId($this->input->post('gift_id'));
+        $gift_id = $this->input->post('gift_id');
+        if (!preg_match('/^[0-9a-f]{24}$/i', (string)$gift_id)) {
+            $this->response($this->error->setError('GIFT_NOT_EXIST'), 200);
+        }
+        $gift_id = new MongoId($gift_id);
         $gift_value = $this->input->post('amount');
+        if (!is_scalar($gift_value) || filter_var($gift_value, FILTER_VALIDATE_INT) === false) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('amount')), 200);
+        }
+        $gift_value = (int)$gift_value;
+        if ($gift_value < 1) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('amount')), 200);
+        }
         $received_player_id = $this->input->post('received_player_id');
         $gift_type = strtoupper($gift_type);
         $gift_data = array();
@@ -1743,7 +1815,7 @@ class Player extends REST2_Controller
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         }
         //get player badge
-        $badgeList = $this->player_model->getBadge($pb_player_id, $this->site_id, $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null, true);
+        $badgeList = $this->player_model->getBadge($pb_player_id, $this->site_id, $this->commaListParameter($this->input->get('tags'), 'tags'), true);
         $this->response($this->resp->setRespond($badgeList), 200);
     }
 
@@ -1759,7 +1831,7 @@ class Player extends REST2_Controller
             }
         }
         $badges = $this->badge_model->getAllBadges(array_merge($this->validToken, array(
-            'tags' => $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null
+            'tags' => $this->commaListParameter($this->input->get('tags'), 'tags')
         )), true);
         if ($badges && $pb_player_id) {
             foreach ($badges as &$badge) {
@@ -1987,7 +2059,7 @@ class Player extends REST2_Controller
         }
         //get player goods
         $goodsList['goods'] = $this->player_model->getGoods($this->client_id, $this->site_id, $pb_player_id,
-                              $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null, $status);
+                              $this->commaListParameter($this->input->get('tags'), 'tags'), $status);
 
         $null_list = array();
         $not_null_list = array();
@@ -2103,7 +2175,7 @@ class Player extends REST2_Controller
         }
         //get player goods
         $n = $this->player_model->getGoodsCount($this->client_id, $this->site_id, $pb_player_id,
-            $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null, $status);
+            $this->commaListParameter($this->input->get('tags'), 'tags'), $status);
 
         $this->response($this->resp->setRespond(array('n' => $n)), 200);
     }
@@ -2188,7 +2260,12 @@ class Player extends REST2_Controller
             $this->response($this->error->setError('SMS_VERIFICATION_PHONE_NUMBER_NOT_FOUND'), 200);
         }
 
-        if($this->input->post('os_type') && strtolower($this->input->post('os_type')) != "ios" && strtolower($this->input->post('os_type')) != "android"){
+        $os_type = $this->input->post('os_type');
+        if (!is_scalar($os_type) && $os_type !== null) {
+            $this->response($this->error->setError('OS_TYPE_INVALID'), 200);
+        }
+        $os_type = is_scalar($os_type) ? strtolower((string)$os_type) : '';
+        if($os_type && $os_type != "ios" && $os_type != "android"){
             $this->response($this->error->setError('OS_TYPE_INVALID'), 200);
         }
 
@@ -2197,7 +2274,7 @@ class Player extends REST2_Controller
             'device_token'=>$this->input->post('device_token'),
             'device_description'=>$this->input->post('device_description'),
             'device_name'=>$this->input->post('device_name'),
-            'os_type'=>strtolower($this->input->post('os_type'))
+            'os_type'=>$os_type
         );
 
         $code = $this->player_model->generateOTPCode($player['_id'], $deviceInfo);
@@ -2225,7 +2302,12 @@ class Player extends REST2_Controller
             $this->response($this->error->setError('USER_PHONE_INVALID'), 200);
         }
 
-        if($this->input->post('os_type') && strtolower($this->input->post('os_type')) != "ios" && strtolower($this->input->post('os_type')) != "android"){
+        $os_type = $this->input->post('os_type');
+        if (!is_scalar($os_type) && $os_type !== null) {
+            $this->response($this->error->setError('OS_TYPE_INVALID'), 200);
+        }
+        $os_type = is_scalar($os_type) ? strtolower((string)$os_type) : '';
+        if($os_type && $os_type != "ios" && $os_type != "android"){
             $this->response($this->error->setError('OS_TYPE_INVALID'), 200);
         }
 
@@ -2234,7 +2316,7 @@ class Player extends REST2_Controller
             'device_token'=>$this->input->post('device_token'),
             'device_description'=>$this->input->post('device_description'),
             'device_name'=>$this->input->post('device_name'),
-            'os_type'=>strtolower($this->input->post('os_type'))
+            'os_type'=>$os_type
         );
 
         $player = $this->player_model->getPlayerByPlayerId($this->site_id, $player_id);
@@ -2374,7 +2456,13 @@ class Player extends REST2_Controller
 
         /* param "amount" */
         $amount = $this->input->post('amount');
-        $amount = intval($amount);
+        if (!is_scalar($amount) || filter_var($amount, FILTER_VALIDATE_INT) === false) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('amount')), 200);
+        }
+        $amount = (int)$amount;
+        if ($amount < 1) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('amount')), 200);
+        }
 
         /* param "force" */
         $force = $this->input->post('force');
@@ -2435,7 +2523,14 @@ class Player extends REST2_Controller
         }
 
         /* param "amount" */
-        $amount = intval($this->input->post('amount'));
+        $amount = $this->input->post('amount');
+        if (!is_scalar($amount) || filter_var($amount, FILTER_VALIDATE_INT) === false) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('amount')), 200);
+        }
+        $amount = (int)$amount;
+        if ($amount < 1) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('amount')), 200);
+        }
 
         /* param "force" */
         $force = $this->input->post('force');
@@ -2497,8 +2592,8 @@ class Player extends REST2_Controller
         );
 
         $now = new Datetime();
-        $startDate = new DateTime($this->input->get('from', true));
-        $endDate = new DateTime($this->input->get('to', true));
+        $startDate = $this->getDateQuery('from');
+        $endDate = $this->getDateQuery('to');
 
         $log = array();
         $prev = null;
@@ -2732,10 +2827,24 @@ class Player extends REST2_Controller
         return (!preg_match("/^([a-zA-Z0-9-_=]+)+$/i", $cl_player_id)) ? false : true;
     }
 
+    private function scalarPost($field)
+    {
+        $value = $this->input->post($field);
+        if ($value === false || $value === null || $value === '' || !is_scalar($value)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($field)), 200);
+        }
+
+        return (string)$value;
+    }
+
     private function validTelephonewithCountry($number)
     {
+        if (!is_scalar($number)) {
+            return false;
+        }
+
         return (!preg_match("/\+(9[976]\d|8[987530]\d|6[987]\d|5[90]\d|42\d|3[875]\d| 2[98654321]\d|9[8543210]|8[6421]|6[6543210]|5[87654321]| 4[987654310]|3[9643210]|2[70]|7|1)\d{1,14}$/",
-            $number)) ? false : true;
+            (string)$number)) ? false : true;
     }
 
     /**
@@ -2808,14 +2917,18 @@ class Player extends REST2_Controller
                 'node_id'
             )), 200);
         }
+        if (!preg_match('/^[0-9a-f]{24}$/i', (string)$node_id)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('node_id')), 200);
+        }
 
-        $node = $this->store_org_model->retrieveNodeById($this->validToken['site_id'], new MongoId($node_id));
+        $node_mongo_id = new MongoId($node_id);
+        $node = $this->store_org_model->retrieveNodeById($this->validToken['site_id'], $node_mongo_id);
         if (!$node) {
             $this->response($this->error->setError('STORE_ORG_NODE_NOT_FOUND'), 200);
         }
 
         $role_info = $this->store_org_model->getRoleOfPlayer($this->validToken['client_id'],
-            $this->validToken['site_id'], $pb_player_id, new MongoId($node_id));
+            $this->validToken['site_id'], $pb_player_id, $node_mongo_id);
         if (!$role_info) {
             $this->response($this->error->setError('STORE_ORG_PLAYER_NOT_EXISTS_WITH_NODE'), 200);
         } else {
@@ -2876,20 +2989,40 @@ class Player extends REST2_Controller
         }
 
         $month = $this->input->get('month');
+        if ($month !== null && $month !== false && !is_scalar($month)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('month')), 200);
+        }
         if (!$month) {
             $month = date("m", time());
+        } else {
+            $month = (string)$month;
         }
         $year = $this->input->get('year');
+        if ($year !== null && $year !== false && !is_scalar($year)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('year')), 200);
+        }
         if (!$year) {
             $year = date("Y", time());
+        } else {
+            $year = (string)$year;
         }
         $action = $this->input->get('action');
+        if ($action !== null && $action !== false && !is_scalar($action)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('action')), 200);
+        }
         if (!$action) {
             $action = "sell";
+        } else {
+            $action = (string)$action;
         }
         $parameter = $this->input->get('parameter');
+        if ($parameter !== null && $parameter !== false && !is_scalar($parameter)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('parameter')), 200);
+        }
         if (!$parameter) {
             $parameter = "amount";
+        } else {
+            $parameter = (string)$parameter;
         }
 
         $parent_node = $this->store_org_model->getAssociatedNodeOfPlayer($this->validToken['client_id'],
@@ -2954,25 +3087,49 @@ class Player extends REST2_Controller
         }
 
         $count = $this->input->get('count');
-        if (!$count) {
+        if ($count !== null && $count !== false && !is_scalar($count)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('count')), 200);
+        }
+        $count = $count ? intval($count) : 1;
+        if ($count < 1) {
             $count = 1;
         }
 
         $month = $this->input->get('month');
+        if ($month !== null && $month !== false && !is_scalar($month)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('month')), 200);
+        }
         if (!$month) {
             $month = date("m", time());
+        } else {
+            $month = (string)$month;
         }
         $year = $this->input->get('year');
+        if ($year !== null && $year !== false && !is_scalar($year)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('year')), 200);
+        }
         if (!$year) {
             $year = date("Y", time());
+        } else {
+            $year = (string)$year;
         }
         $action = $this->input->get('action');
+        if ($action !== null && $action !== false && !is_scalar($action)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('action')), 200);
+        }
         if (!$action) {
             $action = "sell";
+        } else {
+            $action = (string)$action;
         }
         $parameter = $this->input->get('parameter');
+        if ($parameter !== null && $parameter !== false && !is_scalar($parameter)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('parameter')), 200);
+        }
         if (!$parameter) {
             $parameter = "amount";
+        } else {
+            $parameter = (string)$parameter;
         }
 
         $table = $this->player_model->getActionHistory($this->validToken['client_id'],
@@ -3076,6 +3233,21 @@ class Player extends REST2_Controller
             return false;
         }
         return true;
+    }
+
+    private function getDateQuery($name)
+    {
+        $value = $this->input->get($name, true);
+        if ($value === false || $value === null || $value === '') {
+            return new DateTime();
+        }
+
+        try {
+            return new DateTime($value);
+        } catch (Exception $e) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($name)), 200);
+            return new DateTime();
+        }
     }
 
 }

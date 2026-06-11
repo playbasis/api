@@ -12,6 +12,21 @@
  */
 class Oauth_resource_server
 {
+	/**
+	 * CodeIgniter instance.
+	 *
+	 * @var $ci
+	 * @access protected
+	 */
+	protected $ci;
+
+	/**
+	 * Whether the SQL database can be used by the OAuth resource server.
+	 *
+	 * @var bool
+	 * @access protected
+	 */
+	protected $database_available = FALSE;
 
 	/**
 	 * The access token.
@@ -54,7 +69,37 @@ class Oauth_resource_server
 	public function __construct()
 	{
 		$this->ci = get_instance();
+		$this->database_available = $this->load_database();
 		$this->init();
+	}
+
+	/**
+	 * Load SQL only when the app has a database configuration.
+	 *
+	 * @access protected
+	 * @return bool
+	 */
+	protected function load_database()
+	{
+		if ( ! file_exists(APPPATH . 'config/database.php'))
+		{
+			return FALSE;
+		}
+
+		$this->ci->load->database();
+
+		return isset($this->ci->db) && is_object($this->ci->db);
+	}
+
+	/**
+	 * Test whether SQL can be used safely.
+	 *
+	 * @access protected
+	 * @return bool
+	 */
+	protected function has_database()
+	{
+		return $this->database_available && isset($this->ci->db) && is_object($this->ci->db);
 	}
 	
 	/**
@@ -113,6 +158,13 @@ class Oauth_resource_server
 					$access_token = $raw_token;
 				}
 			}
+		}
+
+		if ( ! $this->has_database())
+		{
+			$this->ci->output->set_status_header(403);
+			$this->ci->output->set_output($access_token ? 'Invalid access token' : 'Missing access token');
+			return;
 		}
 		
 		if ($access_token)

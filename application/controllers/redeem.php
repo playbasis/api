@@ -16,16 +16,35 @@ class Redeem extends REST2_Controller
         $this->load->model('setting_model');
         $this->load->model('user_model');
         $this->load->model('sms_model');
+        $this->load->model('email_model');
         $this->load->model('merchant_model');
         $this->load->model('store_org_model');
         $this->load->model('client_model');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/utility', 'utility');
         $this->load->model('tool/respond', 'resp');
         $this->load->model('tool/node_stream', 'node');
         $this->load->model('tracker_model');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/respond', 'resp');
+    }
+
+    private function redeemAmount($source)
+    {
+        $amount = $source == 'get' ? $this->input->get('amount') : $this->input->post('amount');
+        if ($amount === false || $amount === null || $amount === '') {
+            return 1;
+        }
+        if (!is_scalar($amount) || filter_var($amount, FILTER_VALIDATE_INT) === false) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('amount')), 200);
+        }
+
+        $amount = (int)$amount;
+        if ($amount < 1) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('amount')), 200);
+        }
+
+        return $amount;
     }
 
     public function goods_post()
@@ -41,6 +60,10 @@ class Redeem extends REST2_Controller
         }
         //get playbasis player id from client player id
         $cl_player_id = $this->input->post('player_id');
+        if ($cl_player_id === false || $cl_player_id === null || $cl_player_id === '' || !is_scalar($cl_player_id)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('player_id')), 200);
+        }
+        $cl_player_id = (string)$cl_player_id;
         $validToken = array_merge($this->validToken, array(
             'cl_player_id' => $cl_player_id
         ));
@@ -62,6 +85,9 @@ class Redeem extends REST2_Controller
         }
 
         $goods_id = $this->input->post('goods_id');
+        if (!preg_match('/^[0-9a-f]{24}$/i', (string)$goods_id)) {
+            $this->response($this->error->setError('GOODS_NOT_FOUND'), 200);
+        }
         $goods = $this->goods_model->getGoods(array_merge($validToken, array(
             'goods_id' => new MongoId($goods_id)
         )));
@@ -75,7 +101,7 @@ class Redeem extends REST2_Controller
                 $this->response($this->error->setError('GOODS_NOT_FOUND'), 200);
             }
         }
-        $amount = $this->input->post('amount') ? (int)$this->input->post('amount') : 1;
+        $amount = $this->redeemAmount('post');
 
         $redeemResult = null;
         try {
@@ -152,11 +178,14 @@ class Redeem extends REST2_Controller
         }
 
         $goods_id = $this->input->post('goods_id');
+        if (!preg_match('/^[0-9a-f]{24}$/i', (string)$goods_id)) {
+            $this->response($this->error->setError('GOODS_NOT_FOUND'), 200);
+        }
         $goods = $this->goods_model->getGoods(array_merge($validToken, array(
             'goods_id' => new MongoId($goods_id)
         )), true);
 
-        $amount = $this->input->post('amount') ? (int)$this->input->post('amount') : 1;
+        $amount = $this->redeemAmount('post');
 
         $redeemResult = null;
         try {
@@ -199,7 +228,7 @@ class Redeem extends REST2_Controller
 
         $group = $this->input->get('group');
 
-        $amount = $this->input->get('amount') ? (int)$this->input->get('amount') : 1;
+        $amount = $this->redeemAmount('get');
 
         $n = $this->goods_model->countGoodsByGroup($this->validToken['client_id'], $this->validToken['site_id'], $group,
             $pb_player_id, $amount);
@@ -228,7 +257,7 @@ class Redeem extends REST2_Controller
 
         $group = $this->input->get('group');
 
-        $amount = $this->input->get('amount') ? (int)$this->input->get('amount') : 1;
+        $amount = $this->redeemAmount('get');
 
         $n = $this->goods_model->countGoodsByGroup($this->validToken['client_id'], $this->validToken['site_id'], $group,
             $pb_player_id, $amount, true);
@@ -258,7 +287,7 @@ class Redeem extends REST2_Controller
 
         $group = $this->input->post('group');
 
-        $amount = $this->input->post('amount') ? (int)$this->input->post('amount') : 1;
+        $amount = $this->redeemAmount('post');
 
         $org_list = $this->store_org_model->retrieveNodeByPBPlayerID($this->client_id, $this->site_id, $pb_player_id);
         $org_id_list = array();
@@ -377,17 +406,18 @@ class Redeem extends REST2_Controller
 
         $group = $this->input->post('group');
 
-        $amount = $this->input->post('amount') ? (int)$this->input->post('amount') : 1;
+        $amount = $this->redeemAmount('post');
 
+        $total = null;
         $goods = $this->goods_model->getGoodsByGroupAndPlayerId($this->validToken['client_id'],
-            $this->validToken['site_id'], $group, $pb_player_id, $amount);
+            $this->validToken['site_id'], $group, $pb_player_id, $amount, true, $total);
         if ($goods && !isset($goods['error'])) {
             for ($i = 0; $i < MAX_REDEEM_TRIES; $i++) { // try to redeem for a few times before giving up
                 log_message('debug', 'random = ' . $goods['goods_id']);
                 /* actual redemption */
                 try {
                     $redeemResult = $this->redeem($validToken['client_id'], $validToken['site_id'], $pb_player_id, $goods, $amount, $validToken,
-                        false, true, true);
+                        false, true, true, $total);
                     $this->benchmark->mark('goods_redeem_end');
                     $redeemResult['processing_time'] = $this->benchmark->elapsed_time('goods_redeem_start', 'goods_redeem_end');
                     $this->response($this->resp->setRespond($redeemResult), 200);
@@ -411,7 +441,7 @@ class Redeem extends REST2_Controller
                     }
                 }
                 $goods = $this->goods_model->getGoodsByGroupAndPlayerId($this->validToken['client_id'],
-                    $this->validToken['site_id'], $group, $pb_player_id, $amount);
+                    $this->validToken['site_id'], $group, $pb_player_id, $amount, true, $total);
             }
         } else {
             if(isset($goods['error'])) {
@@ -516,7 +546,7 @@ class Redeem extends REST2_Controller
                 $event = array(
                     'event_type' => 'POINT_NOT_ENOUGH',
                     'message' => 'user point not enough',
-                    'incomplete' => (int)($goods['redeem']['point']["point_value"] * $amount) - (int)($player_point[0]['value'] * $amount)
+                    'incomplete' => (int)($goods['redeem']['point']["point_value"] * $amount) - (int)($player_point * $amount)
                 );
                 array_push($redeemResult['events'], $event);
             }
@@ -668,13 +698,14 @@ class Redeem extends REST2_Controller
 
                             // send Email
                             $platform = $this->auth_model->getOnePlatform($this->client_id, $this->site_id);
-                            $this->utility->request('Email', 'goodsAlert', http_build_query(array(
+                            $goodsAlertData = $this->email_model->signGoodsAlert(array(
                                 'api_key' => $platform['api_key'],
                                 'to' => implode(',', $email_to),
                                 'goods_name' => $goods_distinct_info['name'],
                                 'goods_image' => $goods_distinct_info['image'],
                                 'alert_threshold' => $goods_distinct_info['alert_threshold'],
-                            )));
+                            ), $this->client_id, $this->site_id);
+                            $this->utility->request('Email', 'goodsAlert', http_build_query($goodsAlertData));
                         }
                     }
                 }
@@ -742,7 +773,8 @@ class Redeem extends REST2_Controller
             $reward_id = $this->point_model->findPoint($input);
             $reward_id = new MongoId($reward_id);
             $player_point = $this->player_model->getPlayerPoint($validToken['client_id'], $validToken['site_id'], $pb_player_id, $reward_id);
-            if ((int)$player_point[0]['value'] * $amount >= (int)$goods['redeem']['point']["point_value"] * $amount) {
+            $player_point_value = isset($player_point[0]['value']) ? $player_point[0]['value'] : 0;
+            if ((int)$player_point_value * $amount >= (int)$goods['redeem']['point']["point_value"] * $amount) {
                 $this->client_model->updatePlayerPointReward($reward_id,
                     (-1 * $goods['redeem']['point']["point_value"] * $amount), $pb_player_id,
                     $validToken['cl_player_id'], $validToken['client_id'], $validToken['site_id']);
@@ -783,7 +815,8 @@ class Redeem extends REST2_Controller
                 $customArray['reward_id'] = $customid;
                 $customArray['reward_name'] = $custom_name;
 
-                if ((int)($player_custom[0]['value'] * $amount) >= (int)($customobj["custom_value"] * $amount)) {
+                $player_custom_value = isset($player_custom[0]['value']) ? $player_custom[0]['value'] : 0;
+                if ((int)($player_custom_value * $amount) >= (int)($customobj["custom_value"] * $amount)) {
                     $this->client_model->updateCustomReward($custom_name, (-1 * $customobj["custom_value"] * $amount),
                         array_merge($validToken, array('pb_player_id' => $pb_player_id, 'player_id' => $validToken['cl_player_id'])), $customArray);
                     $this->client_model->updateRewardExpiration($validToken['client_id'], $validToken['site_id'], $pb_player_id, $customid, (int)($customobj["custom_value"] * $amount));

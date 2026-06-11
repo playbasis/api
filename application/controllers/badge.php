@@ -9,17 +9,18 @@ class Badge extends REST2_Controller
         parent::__construct();
         $this->load->model('auth_model');
         $this->load->model('badge_model');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/respond', 'resp');
     }
 
     public function index_get($badgeId = 0)
     {
         $data = $this->validToken;
+        $tags = $this->tagsFromQuery();
 
-        if ($this->input->get('tags')){
+        if ($tags) {
             $data = array_merge($data, array(
-                'tags' => explode(',', $this->input->get('tags'))
+                'tags' => $tags
             ));
         }
 
@@ -43,11 +44,23 @@ class Badge extends REST2_Controller
         } else {
             //get all badge relate to  clients
             $badgesList['badges'] = $this->badge_model->getAllBadges(array_merge($data, array(
-                'tags' => $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null,
+                'tags' => $tags,
                 'status' => true
             )));
             $this->response($this->resp->setRespond($badgesList), 200);
         }
+    }
+
+    private function tagsFromQuery()
+    {
+        $tags = $this->input->get('tags');
+        if (!$tags) {
+            return null;
+        }
+        if (!is_scalar($tags)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('tags')), 200);
+        }
+        return explode(',', $tags);
     }
 
     public function test_get()

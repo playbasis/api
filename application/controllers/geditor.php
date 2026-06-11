@@ -12,6 +12,19 @@ class Geditor extends REST2_Controller
         $this->load->model('Editor', 'gameModel');
     }
 
+    private function requireScopedReadRequest()
+    {
+        if (!empty($this->validToken) && !empty($this->client_id) && !empty($this->site_id)) {
+            return;
+        }
+
+        if (isset($this->auth_method) && $this->auth_method == 'api_key') {
+            $this->response($this->error->setError('INVALID_API_KEY_OR_SECRET'), 200);
+        }
+
+        $this->response($this->error->setError('INVALID_TOKEN'), 200);
+    }
+
     // public function index_get(){
     // 	$this->response(array(1,2,3,4,5),200);
     // }
@@ -20,6 +33,7 @@ class Geditor extends REST2_Controller
     //parameter :: site_id,[rule_id]
     public function rules_get($siteId = '', $ruleId = '')
     {
+        $this->requireScopedReadRequest();
 
         //check site_id
         if (empty($siteId)) {
@@ -31,8 +45,7 @@ class Geditor extends REST2_Controller
             $this->response($data, 200);
         }
 
-        //validate client_id and site_id
-        if (!$this->gameModel->getSite($siteId)) {
+        if ((string)$siteId !== (string)$this->site_id) {
             $data = array(
                 'status' => false,
                 'message' => 'site_id invalid',
@@ -43,7 +56,7 @@ class Geditor extends REST2_Controller
 
         //get specific rule
         if (!empty($ruleId)) {
-            $rule = $this->gameModel->getRule($ruleId);
+            $rule = $this->gameModel->getScopedRule($ruleId, $this->client_id, $this->site_id);
 
             $data = array(
                 'status' => true,
@@ -56,7 +69,7 @@ class Geditor extends REST2_Controller
             $this->response($data, 200);
         } //get all game rule
         else {
-            $rules = $this->gameModel->getRules($siteId);
+            $rules = $this->gameModel->getScopedRules($this->client_id, $this->site_id);
 
             $data = array(
                 'status' => true,
@@ -74,6 +87,8 @@ class Geditor extends REST2_Controller
     //parameter :: rule_id
     public function jigsaws_get($ruleId = '')
     {
+        $this->requireScopedReadRequest();
+
         //check rule_id
         if (empty($ruleId)) {
             $data = array(
@@ -84,7 +99,15 @@ class Geditor extends REST2_Controller
             $this->response($data, 200);
         }
 
-        $jigsawSet = $this->gameModel->getJigsaw($ruleId);
+        $jigsawSet = $this->gameModel->getScopedJigsaw($ruleId, $this->client_id, $this->site_id);
+        if (!is_array($jigsawSet) || !array_key_exists('jigsaw_set', $jigsawSet)) {
+            $data = array(
+                'status' => false,
+                'message' => 'rule_id invalid',
+            );
+
+            $this->response($data, 200);
+        }
 
         //unserialize data
         $jigsawSet = $jigsawSet['jigsaw_set'];
@@ -105,6 +128,8 @@ class Geditor extends REST2_Controller
     //update rule status use POST
     public function ruleStatus_post($ruleId = '')
     {
+        $this->requireAuthenticatedRequest();
+
         //check rule_id
         if (empty($ruleId)) {
             $data = array(
@@ -115,7 +140,14 @@ class Geditor extends REST2_Controller
             $this->response($data, 200);
         }
 
-        $this->gameModel->updateRuleStatus($ruleId);
+        if (!$this->gameModel->updateRuleStatus($ruleId, $this->client_id, $this->site_id)) {
+            $data = array(
+                'status' => false,
+                'message' => 'rule_id invalid',
+            );
+
+            $this->response($data, 200);
+        }
 
         $data = array(
             'status' => true,
@@ -129,6 +161,7 @@ class Geditor extends REST2_Controller
     //create new rule use POST
     public function addRule_post()
     {
+        $this->requireAuthenticatedRequest();
 
         if (!$this->input->post('client_id')) {
             $data = array(
@@ -157,8 +190,29 @@ class Geditor extends REST2_Controller
             $this->response($data, 200);
         }
 
+        if ((string)$this->input->post('client_id') !== (string)$this->client_id) {
+            $data = array(
+                'status' => false,
+                'message' => 'client_id invalid',
+            );
+
+            $this->response($data, 200);
+        }
+
+        if ((string)$this->input->post('site_id') !== (string)$this->site_id) {
+            $data = array(
+                'status' => false,
+                'message' => 'site_id invalid',
+            );
+
+            $this->response($data, 200);
+        }
+
         //add new rule
-        $rule = $this->gameModel->addRule($this->input->post());
+        $post = $this->input->post();
+        $post['client_id'] = $this->client_id;
+        $post['site_id'] = $this->site_id;
+        $rule = $this->gameModel->addRule($post);
 
         $data = array(
             'status' => true,
@@ -169,6 +223,19 @@ class Geditor extends REST2_Controller
         );
 
         $this->response($data, 200);
+    }
+
+    private function requireAuthenticatedRequest()
+    {
+        if (!empty($this->validToken) && !empty($this->client_id) && !empty($this->site_id)) {
+            return;
+        }
+
+        if (isset($this->auth_method) && $this->auth_method == 'api_key') {
+            $this->response($this->error->setError('INVALID_API_KEY_OR_SECRET'), 200);
+        }
+
+        $this->response($this->error->setError('INVALID_TOKEN'), 200);
     }
 
     //update rule data include jigsaw use POST

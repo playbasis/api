@@ -21,6 +21,14 @@ class Oauth_server
 	protected $ci;
 
 	/**
+	 * Whether the SQL database can be used by the OAuth server.
+	 *
+	 * @var bool
+	 * @access protected
+	 */
+	protected $database_available = FALSE;
+
+	/**
 	 * Constructor
 	 * 
 	 * @access public
@@ -30,6 +38,36 @@ class Oauth_server
 	public function __construct()
 	{
 		$this->ci = get_instance();
+		$this->database_available = $this->load_database();
+	}
+
+	/**
+	 * Load SQL only when the app has a database configuration.
+	 *
+	 * @access protected
+	 * @return bool
+	 */
+	protected function load_database()
+	{
+		if ( ! file_exists(APPPATH . 'config/database.php'))
+		{
+			return FALSE;
+		}
+
+		$this->ci->load->database();
+
+		return isset($this->ci->db) && is_object($this->ci->db);
+	}
+
+	/**
+	 * Test whether SQL can be used safely.
+	 *
+	 * @access protected
+	 * @return bool
+	 */
+	protected function has_database()
+	{
+		return $this->database_available && isset($this->ci->db) && is_object($this->ci->db);
 	}
 		
 	/**
@@ -44,6 +82,11 @@ class Oauth_server
 	 */
 	public function validate_client($client_id = '', $client_secret = NULL, $redirect_uri = NULL)
 	{
+		if ( ! $this->has_database())
+		{
+			return FALSE;
+		}
+
 		$params = array(
 			'client_id' => $client_id,
 		);
@@ -87,6 +130,11 @@ class Oauth_server
 	 */
 	public function new_auth_code($client_id = '', $user_id = '', $redirect_uri = '', $scopes = array(), $access_token = NULL)
 	{		
+		if ( ! $this->has_database())
+		{
+			return FALSE;
+		}
+
 		// Update an existing session with the new code
 		if ($access_token !== NULL)
 		{
@@ -168,6 +216,11 @@ class Oauth_server
 	 */
 	public function validate_auth_code($code = '', $client_id = '', $redirect_uri = '')
 	{
+		if ( ! $this->has_database())
+		{
+			return FALSE;
+		}
+
 		$validate = $this->ci->db
 								->select(array('id', 'type_id'))
 								->get_where('oauth_sessions', array(
@@ -197,6 +250,11 @@ class Oauth_server
 	 */
 	public function get_access_token($session_id = '')
 	{
+		if ( ! $this->has_database())
+		{
+			return FALSE;
+		}
+
 		// Check if an access token exists already
 		$exists_query = $this->ci->db
 									->select('access_token')
@@ -260,6 +318,11 @@ class Oauth_server
 	 */
 	public function validate_access_token($access_token = '', $scopes = array())
 	{
+		if ( ! $this->has_database())
+		{
+			return FALSE;
+		}
+
 		// Validate the token exists
 		$valid_token = $this->ci->db
 									->where(array(
@@ -317,6 +380,11 @@ class Oauth_server
 	 */
 	public function access_token_exists($user_id = '', $client_id = '')
 	{
+		if ( ! $this->has_database())
+		{
+			return FALSE;
+		}
+
 		$token_query = $this->ci->db
 									->select('access_token')
 									->get_where('oauth_sessions', array(
@@ -348,6 +416,11 @@ class Oauth_server
 	 */
 	public function scope_exists($scope = '')
 	{
+		if ( ! $this->has_database())
+		{
+			return FALSE;
+		}
+
 		$exists = $this->ci->db
 							->where('scope', $scope)
 							->from('scopes')
@@ -366,6 +439,11 @@ class Oauth_server
 	 */
 	public function scope_details($scopes)
 	{
+		if ( ! $this->has_database())
+		{
+			return array();
+		}
+
 		if (is_array($scopes))
 		{
 			$scope_details = $this->ci->db

@@ -13,7 +13,7 @@ class Content extends REST2_Controller
         $this->load->model('store_org_model');
         $this->load->model('language_model');
         $this->load->model('tool/utility', 'utility');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/respond', 'resp');
     }
 
@@ -24,6 +24,23 @@ class Content extends REST2_Controller
         $content_ids_to_player = array();
         $content_ids_to_feedback = array();
         $pb_player_id = null;
+        $language_name = isset($query_data['language']) ? $query_data['language'] : null;
+        if (is_array($language_name) || is_object($language_name)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('language')), 200);
+        }
+        $language_name = $language_name ? (string)$language_name : null;
+        foreach (array('node_id', 'title', 'sort', 'order', 'offset', 'limit') as $param_name) {
+            if (isset($query_data[$param_name]) && $query_data[$param_name] !== null) {
+                if (!is_scalar($query_data[$param_name])) {
+                    $this->response($this->error->setError('PARAMETER_INVALID', array($param_name)), 200);
+                }
+                $query_data[$param_name] = (string)$query_data[$param_name];
+            }
+        }
+        $sort_name = isset($query_data['sort']) ? strtolower($query_data['sort']) : null;
+        if ($sort_name !== null) {
+            $query_data['sort'] = $sort_name;
+        }
 
         if (isset($query_data['player_id']) && !empty($query_data['player_id'])) {
             $pb_player_id = $this->player_model->getPlaybasisId(array(
@@ -36,8 +53,8 @@ class Content extends REST2_Controller
             }
         }
 
-        if (isset($query_data['language']) && !empty($query_data['language']) && strtolower($query_data['language']) != "english") {
-            $language = $this->language_model->retrieveLanguageByName($this->validToken['client_id'], $this->validToken['site_id'], $query_data['language']);
+        if ($language_name && strtolower($language_name) != "english") {
+            $language = $this->language_model->retrieveLanguageByName($this->validToken['client_id'], $this->validToken['site_id'], $language_name);
             if(!$language){
                 $this->response($this->error->setError('CONTENT_LANGUAGE_NOT_FOUND'), 200);
             }
@@ -61,8 +78,10 @@ class Content extends REST2_Controller
         //$content_ids_to_player = array_merge($content_ids_to_player, $content_ids_to_feedback);
         //$content_ids_to_player = array_unique($content_ids_to_player);
 
-        if (isset($query_data['limit']) && isset($query_data['sort']) && ((strtolower($query_data['sort']) === 'followup')
-                || (strtolower($query_data['sort']) === 'action') ||  strtolower($query_data['sort'] === 'random'))) {
+        if (isset($query_data['limit']) && in_array($sort_name, array('followup', 'action', 'random'))) {
+            if (!is_numeric($query_data['limit'])) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('limit')), 200);
+            }
             $query_data['_limit'] = $query_data['limit'];
             $query_data['limit'] += count($content_ids_to_player);
         }
@@ -108,7 +127,7 @@ class Content extends REST2_Controller
         }
         if (isset($query_data['tags']) && !empty($query_data['tags'])) {
             $query_data = array_merge($query_data, array(
-                'tags' => explode(',', $this->input->get('tags'))
+                'tags' => $this->commaListParameter($query_data['tags'], 'tags')
             ));
         }
 
@@ -364,7 +383,7 @@ class Content extends REST2_Controller
         }
 
 
-        if (isset($query_data['language']) && !empty($query_data['language']) && strtolower($query_data['language']) != "english") {
+        if ($language_name && strtolower($language_name) != "english") {
             if(isset($language['_id'])){
                 foreach($result as &$res){
                     $content_to_language = $this->content_model->getContentToLanguage($this->validToken['client_id'], $this->validToken['site_id'], $res['_id'] , $language['_id']);
@@ -406,6 +425,26 @@ class Content extends REST2_Controller
         $query_data = $this->input->get();
         $content_ids_to_player = array();
         $content_ids_to_feedback = array();
+        foreach (array(
+                     'player_id',
+                     'node_id',
+                     'title',
+                     'category',
+                     'tags',
+                     'status',
+                     'only_new_content',
+                     'only_new_feedback',
+                     'pin',
+                     'id',
+                     'date_check'
+                 ) as $param_name) {
+            if (isset($query_data[$param_name]) && $query_data[$param_name] !== null) {
+                if (!is_scalar($query_data[$param_name])) {
+                    $this->response($this->error->setError('PARAMETER_INVALID', array($param_name)), 200);
+                }
+                $query_data[$param_name] = (string)$query_data[$param_name];
+            }
+        }
 
         if (isset($query_data['player_id']) && !empty($query_data['player_id'])) {
             $pb_player_id = $this->player_model->getPlaybasisId(array(
@@ -476,7 +515,7 @@ class Content extends REST2_Controller
 
         if (isset($query_data['tags']) && !empty($query_data['tags'])) {
             $query_data = array_merge($query_data, array(
-                'tags' => explode(',', $this->input->get('tags'))
+                'tags' => $this->commaListParameter($query_data['tags'], 'tags')
             ));
         }
 
@@ -501,6 +540,15 @@ class Content extends REST2_Controller
         $this->benchmark->mark('start');
 
         $query_data = $this->input->get(null, true);
+
+        foreach (array('id', 'name', 'sort', 'order', 'offset', 'limit') as $param_name) {
+            if (isset($query_data[$param_name]) && $query_data[$param_name] !== null) {
+                if (!is_scalar($query_data[$param_name])) {
+                    $this->response($this->error->setError('PARAMETER_INVALID', array($param_name)), 200);
+                }
+                $query_data[$param_name] = (string)$query_data[$param_name];
+            }
+        }
 
         if (isset($query_data['id'])) {
             try {
@@ -550,18 +598,23 @@ class Content extends REST2_Controller
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
         }
 
-        if($this->input->post('node_id')) {
-            if (strpos($this->input->post('node_id'), ' ') > 0) {
+        $nodeId = $this->input->post('node_id');
+        if($nodeId) {
+            if (!is_scalar($nodeId)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('node_id')), 200);
+            }
+            $nodeId = (string)$nodeId;
+            if (strpos($nodeId, ' ') > 0) {
                 $this->response($this->error->setError('CONTENT_NODE_ID_SPACE_EXIST'), 200);
             }
             else
             {
-                $check_node_id = $this->content_model->findContent($this->client_id, $this->site_id, $this->input->post('node_id'));
+                $check_node_id = $this->content_model->findContent($this->client_id, $this->site_id, $nodeId);
                 if($check_node_id)
                 {
                     $this->response($this->error->setError('CONTENT_NODE_ID_ALREADY_EXISTS'), 200);
                 }
-                $contentInfo['node_id'] = $this->input->post('node_id');
+                $contentInfo['node_id'] = $nodeId;
             }
         }
         else{
@@ -601,17 +654,26 @@ class Content extends REST2_Controller
         $contentInfo['image']      = ($this->input->post('image')) ? $this->input->post('image') : "no_image.jpg";
         $contentInfo['date_start'] = !empty($this->input->post('date_start')) ? new MongoDate(strtotime($this->input->post('date_start'))) : null;
         $contentInfo['date_end']   = !empty($this->input->post('date_end')) ? new MongoDate(strtotime($this->input->post('date_end'))) : null;
-        $contentInfo['status']     = strtolower($this->input->post('status')) == 'true';
+        $status = $this->input->post('status');
+        if (!is_scalar($status) && $status !== null) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('status')), 200);
+        }
+        $contentInfo['status']     = strtolower((string)$status) == 'true';
 
         if ($this->input->post('pin')){
             $contentInfo['pin'] = $this->input->post('pin');
         }
-        $contentInfo['tags'] = $this->input->post('tags') && !is_null($this->input->post('tags')) ? explode(',', $this->input->post('tags')) : null;
+        $contentInfo['tags'] = $this->commaListParameter($this->input->post('tags'), 'tags');
 
-        if ($this->input->post('key')) {
+        $key = $this->input->post('key');
+        if ($key) {
             $data['custom'] = array();
-            $keys = str_getcsv($this->input->post('key'));
-            $values = str_getcsv($this->input->post('value'));
+            $value = $this->input->post('value');
+            if (!is_scalar($key) || (!is_scalar($value) && $value !== null)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('key','value')), 200);
+            }
+            $keys = str_getcsv((string)$key, ',', '"', '\\');
+            $values = str_getcsv((string)$value, ',', '"', '\\');
             foreach ($keys as $i => $key) {
                 $contentInfo['custom'][$key] = isset($values[$i]) ? $values[$i] : null;
             }
@@ -680,8 +742,12 @@ class Content extends REST2_Controller
             $contentInfo['image'] = $this->input->post('image');
         }
 
-        if($this->input->post('status')){
-            $contentInfo['status'] = strtolower($this->input->post('status'))=='true';
+        $status = $this->input->post('status');
+        if($status){
+            if (!is_scalar($status)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('status')), 200);
+            }
+            $contentInfo['status'] = strtolower((string)$status)=='true';
         }
 
         if ($this->input->post('pin')){
@@ -689,13 +755,18 @@ class Content extends REST2_Controller
         }
 
         if ($this->input->post('tags')){
-            $contentInfo['tags'] = explode(',', $this->input->post('tags'));
+            $contentInfo['tags'] = $this->commaListParameter($this->input->post('tags'), 'tags');
         }
 
-        if ($this->input->post('key')) {
+        $key = $this->input->post('key');
+        if ($key) {
             $data['custom'] = array();
-            $keys = str_getcsv($this->input->post('key'));
-            $values = str_getcsv($this->input->post('value'));
+            $value = $this->input->post('value');
+            if (!is_scalar($key) || (!is_scalar($value) && $value !== null)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('key','value')), 200);
+            }
+            $keys = str_getcsv((string)$key, ',', '"', '\\');
+            $values = str_getcsv((string)$value, ',', '"', '\\');
             foreach ($keys as $i => $key) {
                 $contentInfo['custom'][$key] = isset($values[$i]) ? $values[$i] : null;
             }
@@ -752,8 +823,12 @@ class Content extends REST2_Controller
 
         $key = $this->input->post('key');
         if ($key) {
-            $keys = str_getcsv($key);
-            $values = str_getcsv($this->input->post('value'));
+            $value = $this->input->post('value');
+            if (!is_scalar($key) || (!is_scalar($value) && $value !== null)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('key','value')), 200);
+            }
+            $keys = str_getcsv((string)$key, ',', '"', '\\');
+            $values = str_getcsv((string)$value, ',', '"', '\\');
             if (count($values) != count($keys)){
                 $this->response($this->error->setError('PARAMETER_INVALID', array('key','value')), 200);
             }
@@ -865,8 +940,12 @@ class Content extends REST2_Controller
         $key = $this->input->post('key');
         if ($key) {
             $data['custom'] = array();
-            $keys = str_getcsv($key);
-            $values = str_getcsv($this->input->post('value'));
+            $value = $this->input->post('value');
+            if (!is_scalar($key) || (!is_scalar($value) && $value !== null)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('key','value')), 200);
+            }
+            $keys = str_getcsv((string)$key, ',', '"', '\\');
+            $values = str_getcsv((string)$value, ',', '"', '\\');
             if (count($values) != count($keys)){
                 $this->response($this->error->setError('PARAMETER_INVALID', array('key','value')), 200);
             }
@@ -1040,6 +1119,17 @@ class Content extends REST2_Controller
             $this->response($this->error->setError('CONTENT_NOT_FOUND'), 200);
         }
         return $contents;
+    }
+
+    private function commaListParameter($value, $parameter)
+    {
+        if (!$value) {
+            return null;
+        }
+        if (!is_scalar($value)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($parameter)), 200);
+        }
+        return explode(',', $value);
     }
 
     private function getPlayerIdListForSameType($pb_player_id, $organize=null)

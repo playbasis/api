@@ -11,7 +11,7 @@ class CMS extends REST2_Controller
         $this->load->model('client_model');
         $this->load->model('player_model');
         $this->load->model('CMS_model');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/respond', 'resp');
     }
 
@@ -35,12 +35,19 @@ class CMS extends REST2_Controller
         $this->response($this->resp->setRespond($results), 200);
     }
 
-    public function getArticle_get($article_id)
+    public function getArticle_get($article_id = null)
     {
+        if ($article_id === null || $article_id === '') {
+            $this->response($this->error->setError('PARAMETER_MISSING', array('article_id')), 200);
+        }
+        if (!is_scalar($article_id)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('article_id')), 200);
+        }
+
         $data = array(
             'client_id' => $this->client_id,
             'site_id' => $this->site_id,
-            'id' => $article_id
+            'id' => (string)$article_id
         );
         $results = $this->CMS_model->getArticleByID($data);
         $this->response($this->resp->setRespond($results), 200);
@@ -48,4 +55,3 @@ class CMS extends REST2_Controller
 
     }
 }
-

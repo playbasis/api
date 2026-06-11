@@ -24,15 +24,155 @@ class Notification extends Engine
         $this->load->model('jive_model');
         $this->load->model('lithium_model');
         $this->load->model('googles_model');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/utility', 'utility');
         $this->load->model('tool/respond', 'resp');
         $this->load->model('tool/node_stream', 'node');
         $this->load->library('curl');
     }
 
+    private function isValidSnsSubscriptionConfirmation($message)
+    {
+        if (!is_array($message)) {
+            return false;
+        }
+
+        $required = array(
+            'Type',
+            'MessageId',
+            'Token',
+            'TopicArn',
+            'Message',
+            'SubscribeURL',
+            'Timestamp',
+            'SignatureVersion',
+            'Signature',
+            'SigningCertURL'
+        );
+
+        foreach ($required as $field) {
+            if (!array_key_exists($field, $message) || !is_string($message[$field]) || $message[$field] === '') {
+                return false;
+            }
+        }
+
+        return $message['Type'] === 'SubscriptionConfirmation'
+            && in_array($message['SignatureVersion'], array('1', '2'), true)
+            && $this->matchesSnsHeaders($message)
+            && $this->isAwsSnsUrl($message['SubscribeURL'])
+            && $this->isAwsSnsUrl($message['SigningCertURL'])
+            && $this->verifySnsSignature($message, array(
+                'Message',
+                'MessageId',
+                'SubscribeURL',
+                'Timestamp',
+                'Token',
+                'TopicArn',
+                'Type'
+            ));
+    }
+
+    private function matchesSnsHeaders($message)
+    {
+        if (isset($_SERVER['HTTP_X_AMZ_SNS_MESSAGE_TYPE']) && $_SERVER['HTTP_X_AMZ_SNS_MESSAGE_TYPE'] !== $message['Type']) {
+            return false;
+        }
+
+        if (isset($_SERVER['HTTP_X_AMZ_SNS_TOPIC_ARN']) && $_SERVER['HTTP_X_AMZ_SNS_TOPIC_ARN'] !== $message['TopicArn']) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function verifySnsSignature($message, $fields)
+    {
+        if (!function_exists('openssl_get_publickey') || !function_exists('openssl_verify')) {
+            return false;
+        }
+
+        $cert = $this->curl->simple_get($message['SigningCertURL'], array(), $this->snsCurlOptions());
+        if (!is_string($cert) || $cert === '') {
+            return false;
+        }
+
+        $public_key = openssl_get_publickey($cert);
+        if (!$public_key) {
+            return false;
+        }
+
+        $signature = base64_decode($message['Signature'], true);
+        if ($signature === false) {
+            openssl_free_key($public_key);
+            return false;
+        }
+
+        $algo = $message['SignatureVersion'] === '2' ? OPENSSL_ALGO_SHA256 : OPENSSL_ALGO_SHA1;
+        $verified = openssl_verify($this->snsStringToSign($message, $fields), $signature, $public_key, $algo) === 1;
+        openssl_free_key($public_key);
+
+        return $verified;
+    }
+
+    private function snsStringToSign($message, $fields)
+    {
+        $string = '';
+        foreach ($fields as $field) {
+            $string .= $field . "\n" . $message[$field] . "\n";
+        }
+
+        return $string;
+    }
+
+    private function snsCurlOptions()
+    {
+        $options = array(
+            CURLOPT_CONNECTTIMEOUT => 2,
+            CURLOPT_TIMEOUT => 5,
+            CURLOPT_FOLLOWLOCATION => false
+        );
+
+        if (defined('CURLOPT_PROTOCOLS') && defined('CURLPROTO_HTTPS')) {
+            $options[CURLOPT_PROTOCOLS] = CURLPROTO_HTTPS;
+        }
+
+        if (defined('CURLOPT_REDIR_PROTOCOLS') && defined('CURLPROTO_HTTPS')) {
+            $options[CURLOPT_REDIR_PROTOCOLS] = CURLPROTO_HTTPS;
+        }
+
+        return $options;
+    }
+
+    private function isAwsSnsUrl($url)
+    {
+        if (!is_string($url)) {
+            return false;
+        }
+
+        $parts = parse_url($url);
+        if (!is_array($parts) || !isset($parts['scheme']) || !isset($parts['host'])) {
+            return false;
+        }
+
+        if (strtolower($parts['scheme']) !== 'https') {
+            return false;
+        }
+
+        $host = strtolower($parts['host']);
+        return $host === 'sns.amazonaws.com'
+            || preg_match('/^sns\.[a-z0-9-]+\.amazonaws\.com(\.cn)?$/', $host) === 1;
+    }
+
     public function index_get()
     {
+        if (empty($this->validToken) || empty($this->client_id) || empty($this->site_id)) {
+            if (isset($this->auth_method) && $this->auth_method == 'api_key') {
+                $this->response($this->error->setError('INVALID_API_KEY_OR_SECRET'), 200);
+            }
+
+            $this->response($this->error->setError('INVALID_TOKEN'), 200);
+        }
+
         $messages = $this->notification_model->list_messages($this->site_id);
         $this->response($this->resp->setRespond($messages), 200);
     }
@@ -42,6 +182,9 @@ class Notification extends Engine
         // headers = HTTP_X_AMZ_SNS_MESSAGE_TYPE, HTTP_X_AMZ_SNS_MESSAGE_ID, HTTP_X_AMZ_SNS_TOPIC_ARN, HTTP_X_AMZ_SNS_SUBSCRIPTION_ARN
         // body = $this->request->body
         $message = !empty($this->request->body) ? $this->request->body : $_POST;
+        if (!is_array($message)) {
+            $message = array('raw_message' => $message);
+        }
         log_message('debug', '_SERVER = ' . print_r($_SERVER, true));
         log_message('debug', 'message = ' . print_r($message, true));
         $log_id = $this->notification_model->log($this->site_id, $message);
@@ -51,12 +194,23 @@ class Notification extends Engine
             switch ($_SERVER['HTTP_X_AMZ_SNS_MESSAGE_TYPE']) {
                 case 'SubscriptionConfirmation': // http://docs.aws.amazon.com/sns/latest/dg/json-formats.html#http-subscription-confirmation-json
                     // fields: Type, MessageId, Token, TopicArn, Message, SubscribeURL, Timestamp, SignatureVersion, Signature, SigningCertURL
+                    if (!array_key_exists('SubscribeURL', $message) || !is_string($message['SubscribeURL'])) {
+                        break;
+                    }
                     log_message('debug', 'SubscribeURL = ' . print_r($message['SubscribeURL'], true));
-                    $response = $this->curl->simple_get($message['SubscribeURL']); // http://philsturgeon.co.uk/code/codeigniter-curl
+                    if (!$this->isValidSnsSubscriptionConfirmation($message)) {
+                        $this->response($this->error->setError('PARAMETER_INVALID', array('SubscribeURL')), 200);
+                    }
+                    $response = $this->curl->simple_get($message['SubscribeURL'], array(),
+                        $this->snsCurlOptions()); // http://philsturgeon.co.uk/code/codeigniter-curl
                     log_message('debug', 'response = ' . $response);
                     break;
                 case 'Notification': // http://docs.aws.amazon.com/sns/latest/dg/json-formats.html#http-notification-json
                     // fields: Type, MessageId, TopicArn, Subject, Message, Timestamp, SignatureVersion, Signature, SigningCertURL, UnsubscribeURL
+                    if (!array_key_exists('Message', $message) || !is_string($message['Message'])) {
+                        $response = false;
+                        break;
+                    }
                     log_message('debug', 'message = ' . $message['Message']);
                     $response = $this->handleNotification($this->convertToJson($message['Message']));
                     log_message('debug', 'response = ' . $response);
@@ -127,12 +281,21 @@ class Notification extends Engine
                 // inspect IPN validation result and act accordingly
                 if (strcmp($res, PAYPAL_IPN_VERIFIED) == 0) { // The IPN is verified
                     // extract 'client_id' and 'plan_id' from 'custom' field in IPN message
-                    $custom = $_POST['custom'];
+                    $custom = isset($_POST['custom']) ? $_POST['custom'] : '';
                     $pieces = explode(',', $custom);
-                    $client_id = new MongoId($pieces[0]);
-                    $plan_id = new MongoId($pieces[1]);
+                    $client_id_value = isset($pieces[0]) ? trim($pieces[0]) : null;
+                    $plan_id_value = isset($pieces[1]) ? trim($pieces[1]) : null;
+                    if (!$this->isMongoId($client_id_value) || !$this->isMongoId($plan_id_value)) {
+                        log_message('error', 'Invalid PayPal IPN custom field: ' . print_r($custom, true));
+                        $this->response($this->error->setError('INVALID_PAYPAL_IPN', $custom), 200);
+                    }
+                    $client_id = new MongoId($client_id_value);
+                    $plan_id = new MongoId($plan_id_value);
 
                     log_message('debug', 'process: _POST = ' . print_r($_POST, true));
+                    if (!$log_id) {
+                        $log_id = $this->notification_model->log($this->site_id, $_POST, true);
+                    }
                     $result = $this->payment_model->processVerifiedIPN($client_id, $plan_id, $_POST, $log_id);
                     log_message('debug', 'process: result = ' . $result);
 
@@ -164,7 +327,7 @@ class Notification extends Engine
                                 log_message('error', 'Unknown tenant ID: ' . $tenent_id);
                                 $this->response($this->error->setError('INVALID_JIVE_TENANT_ID', $tenent_id), 200);
                             }
-                            if (!array_key_exists('activity', $message)) {
+                            if (!array_key_exists('activity', $message) || !is_array($message['activity'])) {
                                 log_message('error', 'Invalid Jive message');
                                 $this->response($this->error->setError('INVALID_JIVE_MESSAGE'), 200);
                             }
@@ -195,6 +358,9 @@ class Notification extends Engine
                         } else {
                             /* register/unregister */
                             log_message('debug', 'arg = ' . print_r($arg, true));
+                            if (!isset($arg) || preg_match('/^[0-9a-f]{24}$/i', $arg) !== 1) {
+                                $this->response($this->error->setError('PARAMETER_INVALID', array('arg')), 200);
+                            }
                             $site_id = new MongoId($arg);
                             log_message('debug', 'site_id = ' . print_r($site_id, true));
                             $this->handleJive($site_id, $message);
@@ -420,6 +586,21 @@ class Notification extends Engine
                         } else {
                             if (strpos($_SERVER['HTTP_USER_AGENT'], GOOGLE_USER_AGENT) === false ? false : true) {
                                 $this->load->library('GoogleApi');
+                                $required_google_headers = array(
+                                    'HTTP_X_GOOG_CHANNEL_ID',
+                                    'HTTP_X_GOOG_CHANNEL_TOKEN',
+                                    'HTTP_X_GOOG_RESOURCE_ID',
+                                    'HTTP_X_GOOG_RESOURCE_URI',
+                                    'HTTP_X_GOOG_RESOURCE_STATE',
+                                );
+                                foreach ($required_google_headers as $header) {
+                                    if (!isset($_SERVER[$header]) || $_SERVER[$header] === '') {
+                                        $this->response($this->error->setError('PARAMETER_MISSING', array($header)), 200);
+                                    }
+                                }
+                                if (!preg_match('/^[0-9a-f]{24}$/i', (string)$_SERVER['HTTP_X_GOOG_CHANNEL_TOKEN'])) {
+                                    $this->response($this->error->setError('PARAMETER_INVALID', array('HTTP_X_GOOG_CHANNEL_TOKEN')), 200);
+                                }
                                 $channel_id = $_SERVER['HTTP_X_GOOG_CHANNEL_ID'];
                                 $site_id = new MongoId($_SERVER['HTTP_X_GOOG_CHANNEL_TOKEN']);
                                 $subscription = $this->googles_model->getSubscription($site_id, $channel_id);
@@ -599,7 +780,15 @@ class Notification extends Engine
                                             $plan_id = null;
                                             foreach ($event['data']['lines']['data'] as $line) {
                                                 if ($line['type'] == 'subscription') {
-                                                    $plan_id = new MongoId($line['plan']['id']);
+                                                    $plan_id_value = isset($line['plan']['id']) ? $line['plan']['id'] : null;
+                                                    if (!$this->isMongoId($plan_id_value)) {
+                                                        log_message('error',
+                                                            'Invalid Stripe invoice plan id: ' . print_r($plan_id_value,
+                                                                true));
+                                                        $this->response($this->error->setError('INVALID_STRIPE_EVENT'),
+                                                            400);
+                                                    }
+                                                    $plan_id = new MongoId($plan_id_value);
                                                     break;
                                                 }
                                             }
@@ -611,6 +800,16 @@ class Notification extends Engine
                                             }
                                             $client = $this->payment_model->getClientById($client_id);
                                             $plan = $this->payment_model->getPlanById($plan_id);
+                                            if (!$client) {
+                                                log_message('error',
+                                                    'Cannot find customer client for client_id: ' . $client_id);
+                                                $this->response($this->error->setError('CANNOT_FIND_CLIENT_ID'), 404);
+                                            }
+                                            if (!$plan) {
+                                                log_message('error',
+                                                    'Cannot find invoice plan for plan_id: ' . $plan_id);
+                                                $this->response($this->error->setError('INVALID_STRIPE_EVENT'), 404);
+                                            }
                                             switch ($event['type']) {
                                                 case INVOICE_CREATED:
                                                     $this->payment_model->invoiceCreated($client, $plan,
@@ -625,8 +824,11 @@ class Notification extends Engine
                                                         $subscription_id);
                                                     break;
                                                 case INVOICE_PAYMENT_FAILED:
+                                                    $retry_at = isset($event['data']['object']['attempt_count']) && is_scalar($event['data']['object']['attempt_count'])
+                                                        ? (int)$event['data']['object']['attempt_count']
+                                                        : 0;
                                                     $this->payment_model->invoicePaymentFailed($client, $plan,
-                                                        $subscription_id);
+                                                        $subscription_id, $retry_at);
                                                     break;
                                             }
                                             break;
@@ -654,6 +856,11 @@ class Notification extends Engine
                                                 $this->response($this->error->setError('CANNOT_FIND_CLIENT_ID'), 404);
                                             }
                                             $client = $this->payment_model->getClientById($client_id);
+                                            if (!$client) {
+                                                log_message('error',
+                                                    'Cannot find customer client for client_id: ' . $client_id);
+                                                $this->response($this->error->setError('CANNOT_FIND_CLIENT_ID'), 404);
+                                            }
                                             $this->payment_model->log($client_id, PAYMENT_CHANNEL_STRIPE, $event_id,
                                                 $txn_id, $amount, $currency, $status, $failure_code, $failure_message);
                                             if ($event['type'] == CHARGE_SUCCEEDED) {
@@ -676,7 +883,14 @@ class Notification extends Engine
                                         case SUBSCRIPTION_DELETED: // from paid to free, (1) cancel (2) after 3 failed payments
                                         case SUBSCRIPTION_TRIAL_WILL_END: // email (3 days before the end of trial period)
                                             $subscription_id = $event['data']['object']['id'];
-                                            $plan_id = new MongoId($event['data']['object']['plan']['id']);
+                                            $plan_id_value = isset($event['data']['object']['plan']['id']) ? $event['data']['object']['plan']['id'] : null;
+                                            if (!$this->isMongoId($plan_id_value)) {
+                                                log_message('error',
+                                                    'Invalid Stripe subscription plan id: ' . print_r($plan_id_value,
+                                                        true));
+                                                $this->response($this->error->setError('INVALID_STRIPE_EVENT'), 400);
+                                            }
+                                            $plan_id = new MongoId($plan_id_value);
                                             $stripe_id = $event['data']['object']['customer'];
                                             $period_start = $event['data']['object']['current_period_start'];
                                             $period_end = $event['data']['object']['current_period_end'];
@@ -692,6 +906,16 @@ class Notification extends Engine
                                             $plan = $this->payment_model->getPlanById($plan_id);
                                             $myplan_id = $this->payment_model->getPlanIdByClientId($client_id);
                                             $myplan = $this->payment_model->getPlanById($myplan_id);
+                                            if (!$client) {
+                                                log_message('error',
+                                                    'Cannot find customer client for client_id: ' . $client_id);
+                                                $this->response($this->error->setError('CANNOT_FIND_CLIENT_ID'), 404);
+                                            }
+                                            if (!$plan || !$myplan) {
+                                                log_message('error',
+                                                    'Cannot find subscription plan for plan_id: ' . $plan_id . ', myplan_id: ' . $myplan_id);
+                                                $this->response($this->error->setError('INVALID_STRIPE_EVENT'), 404);
+                                            }
                                             switch ($event['type']) {
                                                 case SUBSCRIPTION_CREATED:
                                                     $this->payment_model->subscriptionCreated($client, $plan, $myplan,
@@ -730,6 +954,11 @@ class Notification extends Engine
             }
         }
         $this->response($this->error->setError('UNKNOWN_NOTIFICATION_MESSAGE'), 200);
+    }
+
+    private function isMongoId($id)
+    {
+        return is_string($id) && preg_match('/^[0-9a-f]{24}$/i', $id) === 1;
     }
 
     private function getPlayerFromService($validToken, $player, $service)
@@ -1030,6 +1259,9 @@ class Notification extends Engine
     private function handleNotification($message)
     {
         $ret = false;
+        if (!is_array($message)) {
+            return $ret;
+        }
         if (!empty($message)) {
             if (array_key_exists('notificationType',
                 $message)) { // http://docs.aws.amazon.com/ses/latest/DeveloperGuide/notification-examples.html
@@ -1097,6 +1329,9 @@ class Notification extends Engine
     private function handleJive($site_id, $message)
     {
         $ret = false;
+        if (!is_array($message)) {
+            return $ret;
+        }
         if (!empty($message) && array_key_exists('tenantId', $message)) {
             $this->jive_model->delete($site_id);
             if (!array_key_exists('uninstalled', $message)) {

@@ -11,8 +11,22 @@ class import extends REST2_Controller
         $this->load->model('import_model');
         $this->load->model('player_model');
         $this->load->model('tool/utility', 'utility');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/respond', 'resp');
+    }
+
+    private function scalarPost($field)
+    {
+        $value = $this->input->post($field);
+        if ($value === null || $value === '') {
+            return null;
+        }
+        if (!is_scalar($value)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($field)), 200);
+        }
+
+        $value = (string)$value;
+        return $this->utility->is_not_empty($value) ? $value : null;
     }
 
     public function importSetting_post()
@@ -39,40 +53,22 @@ class import extends REST2_Controller
         }
         */
 
-        $name = $this->input->post('name');
-        if ($this->utility->is_not_empty($name)) {
-            $playerInfo['name'] = $name;
+        $playerInfo = array();
+        $missing = array();
+        $requiredFields = array('name', 'url', 'port', 'user_name', 'password', 'import_type');
+        foreach ($requiredFields as $field) {
+            $value = $this->scalarPost($field);
+            if ($value === null) {
+                $missing[] = $field;
+                continue;
+            }
+            $playerInfo[$field] = $value;
+        }
+        if ($missing) {
+            $this->response($this->error->setError('PARAMETER_MISSING', $missing), 200);
         }
 
-        $url = $this->input->post('url');
-        if ($this->utility->is_not_empty($url)) {
-            $playerInfo['url'] = $url;
-        }
-
-        $port = $this->input->post('port');
-        if ($this->utility->is_not_empty($port)) {
-            $playerInfo['port'] = $port;
-        }
-
-        $username = $this->input->post('user_name');
-        if ($this->utility->is_not_empty($username)) {
-            $playerInfo['user_name'] = $username;
-        }
-
-        $password = $this->input->post('password');
-        if ($this->utility->is_not_empty($password)) {
-            $playerInfo['password'] = $password;
-        }
-
-        $importType = $this->input->post('import_type');
-        if ($this->utility->is_not_empty($importType)) {
-            $playerInfo['import_type'] = $importType;
-        }
-
-        $date = $this->input->post('routine');
-        if ($date) {
-            $playerInfo['routine'] = $date;
-        }
+        $playerInfo['routine'] = $this->scalarPost('routine');
 
         $result = $this->import_model->insertData(
         array_merge($this->validToken, $playerInfo), 0);
@@ -96,8 +92,16 @@ class import extends REST2_Controller
 
     public function processImport_post()
     {
-        $importType = $this->input->post('import_type');
-        $importData = $this->import_model->retrieveDataByImportType($importType);
+        $importType = $this->scalarPost('import_type');
+        if ($importType === null) {
+            $this->response($this->error->setError('PARAMETER_MISSING', array('import_type')), 200);
+        }
+
+        $importRows = $this->import_model->retrieveDataByImportType($this->client_id, $this->site_id, $importType);
+        $importData = $importRows ? $importRows[0] : null;
+        if (!$importData) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('import_type')), 200);
+        }
 
         $data = array(
             'client_id' => $importData['client_id'],

@@ -13,7 +13,7 @@ class Push extends REST2_Controller
         $this->load->model('push_model');
         $this->load->model('redeem_model');
         $this->load->model('tool/utility', 'utility');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/respond', 'resp');
     }
 
@@ -22,6 +22,16 @@ class Push extends REST2_Controller
         // TODO: implement push notification here
 
         $this->response($this->resp->setRespond(array('to' => $to, 'from' => $from, 'message' => $message)), 200);
+    }
+
+    private function scalarPost($field)
+    {
+        $value = $this->input->post($field);
+        if ($value === false || $value === null || $value === '' || !is_scalar($value)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($field)), 200);
+        }
+
+        return (string)$value;
     }
 
     public function send_post()
@@ -92,6 +102,7 @@ class Push extends REST2_Controller
                     'badge_number' => 1
                 );
                 $api_key = $this->auth_model->getApikeyBySite($this->site_id);
+                $notificationInfo = $this->push_model->signAsyncPayload($notificationInfo, $device['os_type'], $this->client_id, $this->site_id);
                 $params = array('notification_info' => http_build_query($notificationInfo) ,'type' => $device['os_type'], 'api_key' => $api_key);
                 $this->utility->request('Push','sendPush', http_build_query($params, '', '&'));
                 $this->push_model->log($notificationInfo, $device, $pb_player_id, $player_id);
@@ -152,6 +163,9 @@ class Push extends REST2_Controller
         }
 
         $ref_id = $this->input->post('ref_id');
+        if (!preg_match('/^[0-9a-f]{24}$/i', (string)$ref_id)) {
+            $this->response($this->error->setError('REFERENCE_ID_INVALID'), 200);
+        }
         $redeemData = $this->redeem_model->findByReferenceId('goods', new MongoId($ref_id));
         if (!$redeemData) {
             $this->response($this->error->setError('REFERENCE_ID_INVALID'), 200);
@@ -167,7 +181,11 @@ class Push extends REST2_Controller
             }
             $message = $template['body'];
         } else {
-            $message = $this->input->post('message');
+            $message_input = $this->input->post('message');
+            if (!is_scalar($message_input) && $message_input !== null) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('message')), 200);
+            }
+            $message = (string)$message_input;
         }
 
         if (!isset($player['code']) && strpos($message, '{{code}}') !== false) {
@@ -190,6 +208,7 @@ class Push extends REST2_Controller
                     'badge_number' => 1
                 );
                 $api_key = $this->auth_model->getApikeyBySite($this->site_id);
+                $notificationInfo = $this->push_model->signAsyncPayload($notificationInfo, $device['os_type'], $this->client_id, $this->site_id);
                 $params = array('notification_info' => http_build_query($notificationInfo) ,'type' => $device['os_type'], 'api_key' => $api_key);
                 $this->utility->request('Push','sendPush', http_build_query($params, '', '&'));
                 $this->push_model->log($notificationInfo, $device, $pb_player_id, $cl_player_id);
@@ -199,13 +218,23 @@ class Push extends REST2_Controller
     }
 
     function push_async_get (){
-        
-        parse_str($this->input->get('notification_info'), $notificationInfo);
+
+        $notification_info = $this->input->get('notification_info');
+        if (!is_scalar($notification_info) && $notification_info !== null) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('notification_info')), 200);
+        }
+        parse_str((string)$notification_info, $notificationInfo);
+        if (!isset($notificationInfo['data']) || !is_array($notificationInfo['data'])) {
+            $notificationInfo['data'] = array();
+        }
         $site_data = $this->auth_model->getClientSiteByApiKey($this->input->get('api_key'));
         $notificationInfo['data']['client_id'] = $site_data['client_id'];
         $notificationInfo['data']['site_id'] = $site_data['site_id'];
         $type = $this->input->get('type');
-        $this->push_model->initial($notificationInfo, $type);
+        if (!is_scalar($type) && $type !== null) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('type')), 200);
+        }
+        $this->push_model->initial($notificationInfo, (string)$type);
     }
     
     /*
@@ -240,16 +269,24 @@ class Push extends REST2_Controller
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
         }
 
+        $player_id = $this->scalarPost('player_id');
+        $device_token = $this->scalarPost('device_token');
+
         //get playbasis player id
         $pb_player_id = $this->player_model->getPlaybasisId(array_merge($this->validToken, array(
-            'cl_player_id' => $this->input->post('player_id')
+            'cl_player_id' => $player_id
         )));
 
         if (!$pb_player_id) {
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         }
 
-        if(strtolower($this->input->post('os_type')) != "ios" && strtolower($this->input->post('os_type')) != "android"){
+        $os_type = $this->input->post('os_type');
+        if (!is_scalar($os_type)) {
+            $this->response($this->error->setError('OS_TYPE_INVALID'), 200);
+        }
+        $os_type = strtolower((string)$os_type);
+        if($os_type != "ios" && $os_type != "android"){
             $this->response($this->error->setError('OS_TYPE_INVALID'), 200);
         }
 
@@ -257,10 +294,10 @@ class Push extends REST2_Controller
             'client_id' => $this->client_id,
             'site_id' => $this->site_id,
             'pb_player_id' => $pb_player_id,
-            'device_token' => $this->input->post('device_token'),
+            'device_token' => $device_token,
             'device_description' => $this->input->post('device_description'),
             'device_name' => $this->input->post('device_name'),
-            'os_type' => strtolower($this->input->post('os_type'))
+            'os_type' => $os_type
         ));
         if (!$result) {
             $this->response($this->error->setError('INTERNAL_ERROR'), 200);
@@ -283,9 +320,11 @@ class Push extends REST2_Controller
         }
 
         if (!$not_player_id){
+            $player_id = $this->scalarPost('player_id');
+
             //get playbasis player id
             $pb_player_id = $this->player_model->getPlaybasisId(array_merge($this->validToken, array(
-                'cl_player_id' => $this->input->post('player_id')
+                'cl_player_id' => $player_id
             )));
 
             if (!$pb_player_id) {
@@ -294,7 +333,7 @@ class Push extends REST2_Controller
         }
         
         if (!$not_device_token) {
-            $device_token = $this->input->post('device_token');
+            $device_token = $this->scalarPost('device_token');
             $devices = $this->player_model->getDeviceByToken($this->client_id, $this->site_id,$device_token);
             if (is_null($devices)) {
                 $this->response($this->error->setError('DEVICE_NOT_EXIST'), 200);
@@ -358,6 +397,11 @@ class Push extends REST2_Controller
         }
 
         $since = $this->input->get('since');
+        if (!is_scalar($since) && $since !== null) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('since')), 200);
+        }
+        $since = $since ? strtotime((string)$since) : null;
+        $since = $since === false ? null : $since;
         $results = $this->push_model->recent($validToken['site_id'], $cl_player_id, $since);
         array_walk_recursive($results, array($this, 'convert_mongo_date'));
         $this->response($this->resp->setRespond($results), 200);

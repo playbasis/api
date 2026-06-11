@@ -4,7 +4,7 @@ require_once APPPATH . '/libraries/REST2_Controller.php';
 
 function index_weight($obj)
 {
-    return $obj['weight'];
+    return isset($obj['weight']) ? $obj['weight'] : 0;
 }
 
 function index_quiz_id($obj)
@@ -62,11 +62,22 @@ class Quiz extends REST2_Controller
         $this->load->model('email_model');
         $this->load->model('sms_model');
         $this->load->model('push_model');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/utility', 'utility');
         $this->load->model('tool/respond', 'resp');
         $this->load->model('tool/node_stream', 'node');
         $this->load->model('tracker_model');
+    }
+
+    private function commaListParameter($value, $parameter, $emptyAsNull = true)
+    {
+        if (!is_scalar($value) && $value !== null) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($parameter)), 200);
+        }
+        if (!$value && $emptyAsNull) {
+            return null;
+        }
+        return explode(',', (string)$value);
     }
 
     public function list_get()
@@ -90,7 +101,7 @@ class Quiz extends REST2_Controller
         }
 
         $type = $this->input->get('type');
-        $tags = $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null;
+        $tags = $this->commaListParameter($this->input->get('tags'), 'tags');
         $get_status = $this->input->get('get_status');
         if($get_status == "true" && $player_id !== false){
             $results = $this->quiz_model->find($this->client_id, $this->site_id, null, $type, $tags);
@@ -118,11 +129,15 @@ class Quiz extends REST2_Controller
         if (empty($quiz_id)) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('quiz_id')), 200);
         }
+        if (!$this->is_valid_mongo_id($quiz_id)) {
+            $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
+        }
         $quiz_id = new MongoId($quiz_id);
         $result = $this->quiz_model->find_by_id($this->client_id, $this->site_id, $quiz_id);
         if ($result === null) {
             $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
         }
+        $result = $this->normalizeQuizQuestions($result);
 
         /* param "player_id" */
         $player_id = $this->input->get('player_id');
@@ -156,7 +171,7 @@ class Quiz extends REST2_Controller
         unset($result['questions']);
 
         if ($record) {
-            $result['questions'] = count($record['questions']);
+            $result['questions'] = count($this->getQuizRecordQuestions($record));
             $result['total_score'] = $record['value'];
             $result['grade'] = $record['grade'];
             $result['date_join'] = $record['date_added']; // date which player start doing this quiz
@@ -191,7 +206,7 @@ class Quiz extends REST2_Controller
         $arr = $this->quiz_model->find_quiz_done_by_player($this->client_id, $this->site_id, $pb_player_id);
         $nin = array_map('index_quiz_id', $arr);
         $type = $this->input->get('type');
-        $tags = $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null;
+        $tags = $this->commaListParameter($this->input->get('tags'), 'tags');
         $results = $this->quiz_model->find($this->client_id, $this->site_id, $type != 'poll' ? $nin : null, $type, $tags);
         $results = array_map('convert_MongoId_id', $results);
 
@@ -275,13 +290,16 @@ class Quiz extends REST2_Controller
         if (empty($quiz_id)) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('quiz_id')), 200);
         }
+        if (!$this->is_valid_mongo_id($quiz_id)) {
+            $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
+        }
         $quiz_id = new MongoId($quiz_id);
         $quiz = $this->quiz_model->find_by_id($this->client_id, $this->site_id, $quiz_id);
         if ($quiz === null) {
             $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
         }
 
-        $quiz['questions'] = isset($quiz['questions']) ? $quiz['questions'] : array();
+        $quiz = $this->normalizeQuizQuestions($quiz);
 
         $total_max_score = 0;
         if (is_array($quiz['questions'])) foreach ($quiz['questions'] as $questions) {
@@ -322,7 +340,7 @@ class Quiz extends REST2_Controller
             $quiz['questions'] = $this->sortArray($quiz['questions'], "question_number", "question");
         }
 
-        $completed_questions = $result ? $result['questions'] : array();
+        $completed_questions = $this->getQuizRecordQuestions($result);
         $question = null;
         $index = -1;
         $remain_count = count($completed_questions) > count($quiz['questions']) ? count($completed_questions) - count($quiz['questions']) : count($quiz['questions']) - count($completed_questions);
@@ -447,11 +465,15 @@ class Quiz extends REST2_Controller
         if (empty($quiz_id)) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('quiz_id')), 200);
         }
+        if (!$this->is_valid_mongo_id($quiz_id)) {
+            $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
+        }
         $quiz_id = new MongoId($quiz_id);
         $quiz = $this->quiz_model->find_by_id($this->client_id, $this->site_id, $quiz_id);
         if ($quiz === null) {
             $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
         }
+        $quiz = $this->normalizeQuizQuestions($quiz);
 
         $total_max_score = 0;
         if (is_array($quiz['questions'])) foreach ($quiz['questions'] as $questions) {
@@ -490,7 +512,7 @@ class Quiz extends REST2_Controller
             $quiz['questions'] = $this->sortArray($quiz['questions'], "question_number", "question");
         }
 
-        $completed_questions = $result ? $result['questions'] : array();
+        $completed_questions = $this->getQuizRecordQuestions($result);
         $question = null;
         $index = -1;
         $remain_count = count($completed_questions) - count($quiz['questions']);
@@ -614,11 +636,15 @@ class Quiz extends REST2_Controller
         if (empty($quiz_id)) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('quiz_id')), 200);
         }
+        if (!$this->is_valid_mongo_id($quiz_id)) {
+            $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
+        }
         $quiz_id = new MongoId($quiz_id);
         $quiz = $this->quiz_model->find_by_id($this->client_id, $this->site_id, $quiz_id);
         if ($quiz === null) {
             $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
         }
+        $quiz = $this->normalizeQuizQuestions($quiz);
 
         /* param "player_id" */
         $player_id = $this->input->post('player_id');
@@ -639,6 +665,9 @@ class Quiz extends REST2_Controller
         if ($question_id === false) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('question_id')), 200);
         }
+        if (!$this->is_valid_mongo_id($question_id)) {
+            $this->response($this->error->setError('QUIZ_QUESTION_NOT_FOUND'), 200);
+        }
         $question_id = new MongoId($question_id);
         $question = null;
         $total_max_score = 0;
@@ -658,8 +687,28 @@ class Quiz extends REST2_Controller
             $this->response($this->error->setError('PARAMETER_MISSING', array('option_id')), 200);
         }
 
+        $answer_input = $this->input->post('answer');
+        if (!is_scalar($answer_input) && $answer_input !== null) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('answer')), 200);
+        }
+
         $is_multiple_choice = isset($question['is_multiple_choices']) ? $question['is_multiple_choices'] : false;
-        $option_id = $is_multiple_choice ? explode(',',$option_id) : new MongoId($option_id);
+        if (!is_scalar($option_id)) {
+            $this->response($this->error->setError('QUIZ_OPTION_NOT_FOUND'), 200);
+        }
+        $option_id = $is_multiple_choice ? explode(',',$option_id) : $option_id;
+        if ($is_multiple_choice) {
+            foreach ($option_id as $optionId) {
+                if (!$this->is_valid_mongo_id(trim($optionId))) {
+                    $this->response($this->error->setError('QUIZ_OPTION_NOT_FOUND'), 200);
+                }
+            }
+        } else {
+            if (!$this->is_valid_mongo_id($option_id)) {
+                $this->response($this->error->setError('QUIZ_OPTION_NOT_FOUND'), 200);
+            }
+            $option_id = new MongoId($option_id);
+        }
         $answer = $is_multiple_choice ? explode(',',$this->input->post('answer')) : $this->input->post('answer');
         $ans = null;
         $option = $is_multiple_choice ? array() : null;
@@ -703,7 +752,7 @@ class Quiz extends REST2_Controller
 
         /* check to see if the question has already been answered by the player */
         $result = $this->quiz_model->find_quiz_by_quiz_and_player($this->client_id, $this->site_id, $quiz_id, $pb_player_id);
-        $completed_questions = $result ? $result['questions'] : array();
+        $completed_questions = $this->getQuizRecordQuestions($result);
         if (in_array($question_id, $completed_questions)) {
             $this->response($this->error->setError('QUIZ_QUESTION_ALREADY_COMPLETED'), 200);
         }
@@ -969,6 +1018,9 @@ class Quiz extends REST2_Controller
         if (empty($quiz_id)) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('quiz_id')), 200);
         }
+        if (!$this->is_valid_mongo_id($quiz_id)) {
+            $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
+        }
         $quiz_id = new MongoId($quiz_id);
         $quiz = $this->quiz_model->find_by_id($this->client_id, $this->site_id, $quiz_id);
         if ($quiz === null) {
@@ -1016,11 +1068,15 @@ class Quiz extends REST2_Controller
         if (empty($quiz_id)) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('quiz_id')), 200);
         }
+        if (!$this->is_valid_mongo_id($quiz_id)) {
+            $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
+        }
         $quiz_id = new MongoId($quiz_id);
         $quiz = $this->quiz_model->find_by_id($this->client_id, $this->site_id, $quiz_id);
         if ($quiz === null) {
             $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
         }
+        $quiz = $this->normalizeQuizQuestions($quiz);
 
         $result = array();
         $stat = $this->quiz_model->calculate_frequency($this->client_id, $this->site_id, $quiz_id);
@@ -1079,6 +1135,9 @@ class Quiz extends REST2_Controller
         if (empty($quiz_id)) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('quiz_id')), 200);
         }
+        if (!$this->is_valid_mongo_id($quiz_id)) {
+            $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
+        }
         $quiz_id = new MongoId($quiz_id);
         $quiz = $this->quiz_model->find_by_id($this->client_id, $this->site_id, $quiz_id);
         if ($quiz === null) {
@@ -1114,7 +1173,11 @@ class Quiz extends REST2_Controller
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         }
 
-        $quiz_id = $this->input->post('quiz_id') ? new MongoId($this->input->post('quiz_id')) : null;
+        $quiz_id = $this->input->post('quiz_id');
+        if ($quiz_id && !$this->is_valid_mongo_id($quiz_id)) {
+            $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
+        }
+        $quiz_id = $quiz_id ? new MongoId($quiz_id) : null;
         $results = $this->quiz_model->delete($this->client_id, $this->site_id, $pb_player_id, $quiz_id);
 
         $this->benchmark->mark('end');
@@ -1238,6 +1301,11 @@ class Quiz extends REST2_Controller
             }
         }
         return $events;
+    }
+
+    private function is_valid_mongo_id($id)
+    {
+        return is_scalar($id) && preg_match('/^[0-9a-f]{24}$/i', (string)$id) === 1;
     }
 
     private function publish_event($client_id, $site_id, $pb_player_id, $cl_player_id, $quiz, $site_name, $event)
@@ -1365,16 +1433,21 @@ class Quiz extends REST2_Controller
     private function random_weight($weights)
     {
         if (!is_array($weights) || !(count($weights) > 0)) {
-            throw new Exception("$weights is not a non-empty array");
+            throw new Exception("weights is not a non-empty array");
         }
         $sum = 0;
         $acc = array();
         foreach ($weights as $weight) {
+            $weight = is_numeric($weight) ? (float)$weight : 0;
+            $weight = ($weight > 0) ? $weight : 0;
             $sum += $weight;
             array_push($acc, $sum);
         }
-        $max = $acc[count($acc) - 1];
-        $ran = rand(0, $max - 1);
+        if ($sum <= 0) {
+            return rand(0, count($weights) - 1);
+        }
+
+        $ran = (mt_rand() / mt_getrandmax()) * $sum;
         foreach ($acc as $i => $value) {
             if ($ran < $value) {
                 return $i;
@@ -1559,6 +1632,7 @@ class Quiz extends REST2_Controller
                 )
             );
             $api_key = $this->auth_model->getApikeyBySite($input['site_id']);
+            $notificationInfo = $this->push_model->signAsyncPayload($notificationInfo, $device['os_type'], $input['client_id'], $input['site_id']);
             $params = array('notification_info' => http_build_query($notificationInfo) ,'type' => $device['os_type'], 'api_key' => $api_key);
             $this->utility->request('Push','sendPush', http_build_query($params, '', '&'));
         }
@@ -1635,6 +1709,25 @@ class Quiz extends REST2_Controller
                 $item = $this->config->item('IMG_PATH') . "no_image.jpg";
             }
         }
+    }
+
+    private function normalizeQuizQuestions($quiz)
+    {
+        if (!is_array($quiz)) {
+            return array('questions' => array());
+        }
+        if (!isset($quiz['questions']) || !is_array($quiz['questions'])) {
+            $quiz['questions'] = array();
+        }
+        return $quiz;
+    }
+
+    private function getQuizRecordQuestions($record)
+    {
+        if (!is_array($record) || !isset($record['questions']) || !is_array($record['questions'])) {
+            return array();
+        }
+        return $record['questions'];
     }
 
     private function sortArray($list, $sort_by, $name)

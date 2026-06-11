@@ -11,7 +11,7 @@ class Custompoint extends REST2_Controller
         $this->load->model('point_model');
         $this->load->model('player_model');
         $this->load->model('client_model');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/respond', 'resp');
     }
 
@@ -31,7 +31,7 @@ class Custompoint extends REST2_Controller
             $data['from'] = new MongoDate(strtotime($data['from']));
         }
         if (isset($data['player_list']) && !empty($data['player_list'])){
-            $data['player_list'] = array_map('trim', explode(",",$data['player_list']));
+            $data['player_list'] = $this->splitCommaParameter($data['player_list'], 'player_list');
         }
         $pending_list = $this->reward_model->listPendingRewards($data);
         foreach ($pending_list as &$item)
@@ -92,7 +92,7 @@ class Custompoint extends REST2_Controller
             'site_id' => $this->validToken['site_id']
         );
         $approve = $this->input->post('approve') === "true" ? true : false;
-        $transaction_list = array_map('trim', explode(",",$this->input->post('transaction_list')));
+        $transaction_list = $this->splitCommaParameter($this->input->post('transaction_list'), 'transaction_list');
         $response = array();
         if (is_array($transaction_list)) foreach ($transaction_list as $transaction_id){
             try{
@@ -145,7 +145,10 @@ class Custompoint extends REST2_Controller
         $data = $this->input->get();
         $data['client_id'] = $this->validToken['client_id'];
         $data['site_id'] = $this->validToken['site_id'];
-        $data['sort'] = isset($data['sort']) && strtolower($data['sort']) == "desc" ? "desc" : "asc";
+        if (isset($data['sort']) && !is_scalar($data['sort'])) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('sort')), 200);
+        }
+        $data['sort'] = isset($data['sort']) && strtolower((string)$data['sort']) == "desc" ? "desc" : "asc";
         $data['pb_player_id'] = $this->player_model->getPlaybasisId(array_merge($this->validToken, array('cl_player_id' => $data['player_id'])));
         if (!$data['pb_player_id']) {
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
@@ -172,15 +175,27 @@ class Custompoint extends REST2_Controller
         if ($required) {
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
         }
+        $log_id = $this->input->post('log_id');
+        if (!preg_match('/^[0-9a-f]{24}$/i', (string)$log_id)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('log_id')), 200);
+        }
         $data = array(
             'client_id' => $this->validToken['client_id'],
             'site_id' => $this->validToken['site_id'],
-            'log_id' => new MongoId($this->input->post('log_id')),
+            'log_id' => new MongoId($log_id),
             'status' => false
         );
 
         $response = $this->reward_model->setCustomLog($data);
         $this->response($this->resp->setRespond(), 200);
+    }
+
+    private function splitCommaParameter($value, $parameter)
+    {
+        if (!is_scalar($value)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($parameter)), 200);
+        }
+        return array_map('trim', explode(",", $value));
     }
 
     private function convert_mongo_object(&$item, $key)

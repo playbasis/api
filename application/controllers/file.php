@@ -14,7 +14,7 @@ class File extends REST2_Controller
         $this->load->model('player_model');
         $this->load->model('plan_model');
         $this->load->model('user_model');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/respond', 'resp');
         $this->load->model('tool/utility', 'utility');
     }
@@ -29,6 +29,14 @@ class File extends REST2_Controller
             $array = $_FILES;
             reset($array);
             $image = $_FILES[key($array)];
+        }
+        if (!isset($image['name'], $image['tmp_name'], $image['size'], $image['error']) ||
+            is_array($image['name']) ||
+            is_array($image['tmp_name']) ||
+            is_array($image['size']) ||
+            is_array($image['error'])
+        ) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('file')), 200);
         }
 
         $pb_player_id = null;
@@ -72,7 +80,7 @@ class File extends REST2_Controller
             if ($limit_images && ($size + $image['size'] > $limit_images)) {
                 $this->response($this->error->setError('UPLOAD_EXCEED_LIMIT'), 200);
             }
-            $directory = isset($input['directory']) ? str_replace('../', '', $input['directory']) : null;
+            $directory = $this->normalizeDirectory(isset($input['directory']) ? $input['directory'] : null);
             $filename = basename(html_entity_decode($image['name'], ENT_QUOTES, 'UTF-8'));
 
             $t = explode('.', $filename);
@@ -88,7 +96,7 @@ class File extends REST2_Controller
             $local_directory = rtrim(DIR_IMAGE . $directory, '/');
 
             if (!is_dir($local_directory)) {
-                @mkdir($local_directory);
+                @mkdir($local_directory, 0777, true);
             }
 
             if ($image['size'] > MAX_UPLOADED_FILE_SIZE) {
@@ -152,7 +160,7 @@ class File extends REST2_Controller
         if ($result) {
             $json['url'] = rtrim(S3_IMAGE . S3_DATA_FOLDER . $directory, '/') . "/" . urlencode($filename);
             @copy(rtrim(S3_IMAGE . S3_DATA_FOLDER . $directory, '/') . "/" . urlencode($filename),
-                $directory . '/' . $filename);
+                $local_directory . '/' . $filename);
             if ($directory) {
                 $uri = $directory . "/" . $filename;
             } else {
@@ -183,11 +191,11 @@ class File extends REST2_Controller
             $this->response($this->error->setError('PARAMETER_INVALID', array('file_name')), 200);
         }
 
-        if (!$this->image_model->getImageUrl($client_id, $site_id, $input['file_name'])) {
+        $directory = $this->normalizeDirectory(isset($input['directory']) ? $input['directory'] : null);
+
+        if (!$this->image_model->getImageUrl($client_id, $site_id, $input['file_name'], $directory)) {
             $this->response($this->error->setError('FILE_NOT_FOUND'), 200);
         }
-
-        $directory = isset($input['directory']) ? str_replace('../', '', $input['directory']) : null;
 
         if (!$this->image_model->deleteImage($client_id, $site_id, $input['file_name'], $directory)) {
             $this->response($this->error->setError('DELETE_FILE_FAILED'), 200);
@@ -198,45 +206,112 @@ class File extends REST2_Controller
         $this->response($this->resp->setRespond(array('processing_time' => $t)), 200);
     }
 
+    private function normalizeDirectory($directory)
+    {
+        if ($directory === null || $directory === '') {
+            return null;
+        }
+
+        if (strpos($directory, "\0") !== false) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('directory')), 200);
+        }
+
+        $directory = trim($directory);
+
+        if ($directory === '') {
+            return null;
+        }
+
+        if (strpos($directory, "\\") !== false ||
+            substr($directory, 0, 1) === '/' ||
+            preg_match('#^[a-z][a-z0-9+.-]*://#i', $directory) ||
+            !preg_match('#^[a-zA-Z0-9_./-]+$#', $directory)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('directory')), 200);
+        }
+
+        $has_trailing_slash = substr($directory, -1) === '/';
+        $parts = explode('/', $directory);
+        $safe_parts = array();
+
+        foreach ($parts as $part) {
+            if ($part === '' || $part === '.') {
+                continue;
+            }
+            if (strpos($part, '..') !== false) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('directory')), 200);
+            }
+            $safe_parts[] = $part;
+        }
+
+        if (empty($safe_parts)) {
+            return null;
+        }
+
+        return implode('/', $safe_parts) . ($has_trailing_slash ? '/' : '');
+    }
+
     public function list_get()
     {
         $this->benchmark->mark('start');
 
         $query_data = $this->input->get(null, true);
+        $filters = array();
+        foreach (array('id', 'player_id', 'username', 'sort', 'order') as $param_name) {
+            if (isset($query_data[$param_name]) && $query_data[$param_name] !== null) {
+                if (!is_scalar($query_data[$param_name])) {
+                    $this->response($this->error->setError('PARAMETER_INVALID', array($param_name)), 200);
+                }
+                $query_data[$param_name] = (string)$query_data[$param_name];
+            }
+        }
 
         if (isset($query_data['id']) && !empty($query_data['id'])) {
             try {
-                $query_data['id'] = new MongoId($query_data['id']);
+                new MongoId($query_data['id']);
+                $filters['id'] = $query_data['id'];
             } catch (Exception $e) {
                 $this->response($this->error->setError('PARAMETER_INVALID', array('id')), 200);
             }
         }
 
         if (isset($query_data['player_id']) && !empty($query_data['player_id'])){
-            $query_data['pb_player_id'] = new MongoId($this->player_model->getPlaybasisId(array_merge($this->validToken,
+            $pb_player_id = $this->player_model->getPlaybasisId(array_merge($this->validToken,
                 array(
                     'cl_player_id' => $query_data['player_id']
-                ))));
+                )));
+            if (!$pb_player_id) {
+                $this->response($this->error->setError('USER_NOT_EXIST'), 200);
+            }
+            $filters['pb_player_id'] = (string)$pb_player_id;
         }
 
         if (isset($query_data['username']) && !empty($query_data['username'])){
             if ($query_data['username'] == 'all') {
-                $query_data['user_id'] = 'all';
+                $filters['user_id'] = 'all';
             } else {
-                $user = isset($input['username']) ? $this->user_model->getByUsername($input['username']) : null;
+                $user = $this->user_model->getByUsername($query_data['username']);
                 if (!$user) {
                     $this->response($this->error->setError('USER_NOT_EXIST'), 200);
                 }
                 $user_id = isset($user) ? $user['_id'] : null;
                 try {
-                    $query_data['user_id'] = new MongoId($user_id);
+                    new MongoId($user_id);
+                    $filters['user_id'] = (string)$user_id;
                 } catch (Exception $e) {
                     $this->response($this->error->setError('PARAMETER_INVALID', array('id')), 200);
                 }
             }
         }
 
-        $files = $this->image_model->retrieveData($this->client_id, $this->site_id, $query_data);
+        if (isset($query_data['sort'])) {
+            $filters['sort'] = $query_data['sort'];
+        }
+
+        if (isset($query_data['order'])) {
+            $filters['order'] = $query_data['order'];
+        }
+
+        $files = $this->image_model->retrieveData($this->client_id, $this->site_id, $filters);
 
         foreach ( $files as &$file ){
             $extension = substr(strrchr($file['url'],'.'), 0);

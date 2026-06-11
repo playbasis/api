@@ -14,7 +14,7 @@ class jigsaw extends MY_Model
     {
         assert($config != false);
         assert(is_array($config));
-        $data_set = $this->getActionDatasetInfo($config['action_name']);
+        $data_set = $this->getActionDatasetInfo($config['action_name'], isset($input['site_id']) ? $input['site_id'] : null);
         $required = array();
         if (is_array($data_set)) {
             foreach ($data_set as $param) {
@@ -37,9 +37,13 @@ class jigsaw extends MY_Model
         return true;
     }
 
-    public function getActionDatasetInfo($action_name)
+    public function getActionDatasetInfo($action_name, $site_id = null)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        if (isset($site_id) && $site_id !== '') {
+            $this->set_site_mongodb($site_id);
+        } else {
+            $this->set_site_mongodb($this->session->userdata('site_id'));
+        }
 
         $this->mongo_db->where(array(
             'name' => $action_name
@@ -590,37 +594,44 @@ class jigsaw extends MY_Model
             return false;
         }
 
+        if (!is_scalar($input['condition-rewardtype']) || !is_scalar($input['condition-rewardname']) || !is_scalar($input['condition-quantity'])) {
+            return false;
+        }
+
+        $reward_type = strtolower((string)$input['condition-rewardtype']);
+        $reward_name = (string)$input['condition-rewardname'];
+
         $point = 0;
-        if(strtolower($input['condition-rewardtype']) == "badge"){
-            $badge_id = $this->badge_model->getBadgeIDByName($input['client_id'], $input['site_id'], $input['condition-rewardname']);
+        if($reward_type == "badge"){
+            $badge_id = $this->badge_model->getBadgeIDByName($input['client_id'], $input['site_id'], $reward_name);
             if (!$badge_id) {
                 return false;
             }
             foreach ($input['player_badge'] as $key => $badge) {
-                if (($badge['name'] == $input['condition-rewardname']) ) {
+                if (($badge['name'] == $reward_name) ) {
                     $point = $badge['amount'];
                     break;
                 }
             }
-        }else if(strtolower($input['condition-rewardtype']) == "goods"){
-            $goods_id = $this->goods_model->getGoodsIDByName($input['client_id'], $input['site_id'], $input['condition-rewardname']);
+        }else if($reward_type == "goods"){
+            $goods_id = $this->goods_model->getGoodsIDByName($input['client_id'], $input['site_id'], $reward_name);
             if (!$goods_id) {
                 return false;
             }
-            $player_point = $this->getPlayerGoodsQuantityByName($input['client_id'], $input['site_id'],$input['pb_player_id'],$input['condition-rewardname']);
+            $player_point = $this->getPlayerGoodsQuantityByName($input['client_id'], $input['site_id'],$input['pb_player_id'],$reward_name);
             $point = is_null($player_point) ? 0 : $player_point;
-        }else if(strtolower($input['condition-rewardtype']) == "goods_group"){
-            $goods_id = $this->goods_model->getGoodsIDByName($input['client_id'], $input['site_id'], null,$input['condition-rewardname']);
+        }else if($reward_type == "goods_group"){
+            $goods_id = $this->goods_model->getGoodsIDByName($input['client_id'], $input['site_id'], null,$reward_name);
             if (!$goods_id) {
                 return false;
             }
-            $player_point = $this->getPlayerGoodsGroupQuantityByName($input['client_id'], $input['site_id'],$input['pb_player_id'],$input['condition-rewardname']);
+            $player_point = $this->getPlayerGoodsGroupQuantityByName($input['client_id'], $input['site_id'],$input['pb_player_id'],$reward_name);
             $point = is_null($player_point) ? 0 : $player_point;
-        }else if(strtolower($input['condition-rewardtype']) == "point"){
-            if($input['condition-rewardname'] == "exp"){
+        }else if($reward_type == "point"){
+            if($reward_name == "exp"){
                 $point = $input['user_profile']['exp'];
             }else{
-                $point = $this->getPlayerPointByName( $input['client_id'], $input['site_id'],$input['pb_player_id'],$input['condition-rewardname']);
+                $point = $this->getPlayerPointByName( $input['client_id'], $input['site_id'],$input['pb_player_id'],$reward_name);
             }
         }
 
@@ -1305,7 +1316,7 @@ class jigsaw extends MY_Model
     public function distinct($config, $input, &$exInfo = array())
     {
         $params = array();
-        $data_set = $this->getActionDatasetInfo($input['action_name']);
+        $data_set = $this->getActionDatasetInfo($input['action_name'], isset($input['site_id']) ? $input['site_id'] : null);
         if (is_array($data_set)) {
             foreach ($data_set as $param) {
                 $param_name = $param['param_name'];
@@ -1694,7 +1705,7 @@ class jigsaw extends MY_Model
         return ($result) ? $result[0] : $result;
     }
 
-    private function checkBadge($badgeId, $pb_player_id, $site_id, $quantity = 0, &$exInfo)
+    private function checkBadge($badgeId, $pb_player_id, $site_id, $quantity, &$exInfo)
     {
         //get badge properties
         $this->set_site_mongodb($site_id);
@@ -1762,7 +1773,7 @@ class jigsaw extends MY_Model
         return true;
     }
 
-    private function checkGoodsWithCache(&$cache, $goodsId, $pb_player_id, $client_id, $site_id, $quantity = 0, &$exInfo)
+    private function checkGoodsWithCache(&$cache, $goodsId, $pb_player_id, $client_id, $site_id, $quantity, &$exInfo)
     {
         $key = $goodsId . '-' . $pb_player_id . '-' . $site_id . '-' . $quantity;
         if (!array_key_exists($key, $cache)) {
@@ -1772,7 +1783,7 @@ class jigsaw extends MY_Model
         return $cache[$key];
     }
 
-    private function checkGoods($goodsId, $pb_player_id, $client_id, $site_id, $quantity = 0, &$exInfo)
+    private function checkGoods($goodsId, $pb_player_id, $client_id, $site_id, $quantity, &$exInfo)
     {
         if (!$quantity) {
             return true;

@@ -15,12 +15,36 @@ class Email extends REST2_Controller
         parent::__construct();
         $this->load->model('tool/respond', 'resp');
         $this->load->model('tool/utility', 'utility');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('email_model');
         $this->load->model('client_model');
         $this->load->model('redeem_model');
         $this->load->model('player_model');
         $this->load->library('parser');
+    }
+
+    private function commaListParameter($value, $parameter)
+    {
+        if (!is_scalar($value) && $value !== null) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($parameter)), 200);
+        }
+        if (!$value) {
+            return array();
+        }
+
+        return explode(',', (string)$value);
+    }
+
+    private function scalarParameter($value, $parameter, $default = null)
+    {
+        if ($value !== null && $value !== false && !is_scalar($value)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($parameter)), 200);
+        }
+        if (!$value) {
+            return $default;
+        }
+
+        return (string)$value;
     }
 
     public function send_post()
@@ -56,20 +80,28 @@ class Email extends REST2_Controller
         }
 
         /* variables */
-        $from = $this->input->post('from');
-        $to = $this->input->post('to') ? explode(',', $this->input->post('to')) : array();
-        $bcc = $this->input->post('bcc') ? explode(',', $this->input->post('bcc')) : array();
-        $subject = $this->input->post('subject');
-        $message = $this->input->post('message');
-        if ($message == false) {
-            $message = '';
-        } // $message is optional
+        $from = $this->scalarParameter($this->input->post('from'), 'from');
+        $to = $this->commaListParameter($this->input->post('to'), 'to');
+        $bcc = $this->commaListParameter($this->input->post('bcc'), 'bcc');
+        $subject = $this->scalarParameter($this->input->post('subject'), 'subject');
+        $message = $this->scalarParameter($this->input->post('message'), 'message', '');
 
         $this->processEmail($from, $to, $bcc, $subject, $message);
     }
 
     public function goodsAlert_get()
     {
+        $goodsAlertData = array(
+            'to' => $this->input->get('to'),
+            'goods_name' => $this->input->get('goods_name'),
+            'goods_image' => $this->input->get('goods_image'),
+            'alert_threshold' => $this->input->get('alert_threshold'),
+            'signature' => $this->input->get('signature')
+        );
+        if (!$this->email_model->isValidGoodsAlertSignature($goodsAlertData, $this->client_id, $this->site_id)) {
+            $this->response($this->error->setError('INVALID_TOKEN'), 200);
+        }
+
         /* process parameters */
         $required_to = $this->input->checkParam(array('to'));
         if ($required_to) {
@@ -79,15 +111,21 @@ class Email extends REST2_Controller
         if ($required) {
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
         }
+        foreach (array('goods_name', 'goods_image', 'alert_threshold') as $param) {
+            $value = $this->input->get($param);
+            if (!is_scalar($value) && $value !== null) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array($param)), 200);
+            }
+        }
 
         /* setup to send email */
         $from = "Playbasis";
-        $to = $this->input->get('to') ? explode(',', $this->input->get('to')) : array();
+        $to = $this->commaListParameter($this->input->get('to'), 'to');
         $cc = array("piya.p@playbasis.com", "pongsakorn.ruadsong@playbasis.com");
         $bcc = array("rob@playbasis.com");
         $subject = "[Playbasis] Goods Alert";
         $goods_name = $this->input->get('goods_name');
-        $goods_image = $this->input->get('goods_image');
+        $goods_image = (string)$this->input->get('goods_image');
         $goods_image = $this->config->item('IMG_PATH').'cache/' .utf8_substr($goods_image, 0, utf8_strrpos($goods_image, '.')) . '-240x240' . utf8_substr($goods_image, utf8_strrpos($goods_image, '.') );
         $alert_threshold = $this->input->get('alert_threshold');
 
@@ -183,6 +221,9 @@ class Email extends REST2_Controller
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         }
         $ref_id = $this->input->post('ref_id');
+        if (!preg_match('/^[0-9a-f]{24}$/i', (string)$ref_id)) {
+            $this->response($this->error->setError('REFERENCE_ID_INVALID'), 200);
+        }
         $redeemData = $this->redeem_model->findByReferenceId('goods', new MongoId($ref_id));
         if (!$redeemData) {
             $this->response($this->error->setError('REFERENCE_ID_INVALID'), 200);
@@ -197,7 +238,11 @@ class Email extends REST2_Controller
             }
             $message = $template['body'];
         } else {
-            $message = $this->input->post('message');
+            $message_input = $this->input->post('message');
+            if (!is_scalar($message_input) && $message_input !== null) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('message')), 200);
+            }
+            $message = (string)$message_input;
         }
         if (!isset($player['code']) && strpos($message, '{{code}}') !== false) {
             $player['code'] = $this->player_model->generateCode($pb_player_id);
@@ -270,7 +315,11 @@ class Email extends REST2_Controller
             }
             $message = $template['body'];
         } else {
-            $message = $this->input->post('message');
+            $message_input = $this->input->post('message');
+            if (!is_scalar($message_input) && $message_input !== null) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('message')), 200);
+            }
+            $message = (string)$message_input;
         }
         if (!isset($player['code']) && strpos($message, '{{code}}') !== false) {
             $player['code'] = $this->player_model->generateCode($pb_player_id);
@@ -365,7 +414,7 @@ class Email extends REST2_Controller
         if ($this->email_model->isEmailInBlackList($email, $this->site_id)) {
             $this->response($this->error->setError('EMAIL_ALREADY_IN_BLACKLIST', $email), 200);
         }
-        $this->email_model->addIntoBlackList($this->site_id, $email, 'API');
+        $this->email_model->addIntoBlackList($this->site_id, $email, 'API', 'API');
         $this->response($this->resp->setRespond('Add email into blacklist successfully'), 200);
     }
 
@@ -406,7 +455,7 @@ class Email extends REST2_Controller
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         }
 
-        $since = $this->input->get('since');
+        $since = $this->scalarParameter($this->input->get('since'), 'since');
         $results = $this->email_model->recent($validToken['site_id'], $player['email'],
             $since ? strtotime($since) : null);
         array_walk_recursive($results, array($this, 'convert_mongo_date'));

@@ -8,7 +8,7 @@ class Link extends REST2_Controller
     {
         parent::__construct();
         $this->load->model('link_model');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/respond', 'resp');
         $this->load->model('tool/utility', 'utility');
         $this->load->library('curl');
@@ -22,6 +22,12 @@ class Link extends REST2_Controller
                 'link'
             )), 200);
         }
+        if (!is_scalar($link)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array(
+                'link'
+            )), 200);
+        }
+        $link = (string)$link;
         $data = $this->link_model->findByLink($this->client_id, $this->site_id, $link);
         if (!$data) {
             $conf = $this->link_model->getConfig($this->client_id, $this->site_id);

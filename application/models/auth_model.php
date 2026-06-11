@@ -11,6 +11,15 @@ class Auth_model extends MY_Model
 
     public function getApiInfo($data)
     {
+        if (!isset($data['key']) || !is_scalar($data['key']) ||
+            (isset($data['secret']) && !is_scalar($data['secret']))
+        ) {
+            return array();
+        }
+
+        $api_key = (string)$data['key'];
+        $api_secret = isset($data['secret']) ? (string)$data['secret'] : null;
+
         $this->set_site_mongodb(0);
 
         $this->mongo_db->select(array(
@@ -18,13 +27,13 @@ class Auth_model extends MY_Model
             'client_id'
         ));
         $this->mongo_db->where(array(
-            'api_key' => $data['key'],
+            'api_key' => $api_key,
             'status' => true,
             'deleted' => false
         ));
         
         if (isset($data['secret'])){
-            $this->mongo_db->where('api_secret', $data['secret']);
+            $this->mongo_db->where('api_secret', $api_secret);
         }
         $this->mongo_db->limit(1);
         $cl_info = $this->mongo_db->get('playbasis_platform_client_site');
@@ -228,8 +237,11 @@ class Auth_model extends MY_Model
         ));
 
         if($check_player){
-            if ($refresh_token) {
-                $this->mongo_db->where('refresh_token', $refresh_token);
+            if ($refresh_token !== false) {
+                if ($refresh_token === null || $refresh_token === '' || !is_scalar($refresh_token)) {
+                    return array();
+                }
+                $this->mongo_db->where('refresh_token', (string)$refresh_token);
             } else {
                 $this->mongo_db->where_gt('date_expire', new MongoDate(time()));
             }
@@ -242,6 +254,11 @@ class Auth_model extends MY_Model
 
     public function findToken($token)
     {
+        if ($token === false || $token === null || $token === '' || !is_scalar($token)) {
+            return null;
+        }
+
+        $token = (string)$token;
         $this->set_site_mongodb(0);
         $this->mongo_db->select(array(
             'client_id',
@@ -310,6 +327,11 @@ class Auth_model extends MY_Model
 
     public function createTokenFromAPIKey($apiKey)
     {
+        if ($apiKey === false || $apiKey === null || $apiKey === '' || !is_scalar($apiKey)) {
+            return null;
+        }
+
+        $apiKey = (string)$apiKey;
         $this->set_site_mongodb(0);
         $this->auth_method = "api_key";
         $this->mongo_db->select(array(

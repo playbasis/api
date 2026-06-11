@@ -684,7 +684,7 @@ class Mongo_db
 	 * @access public
 	 * @return object
 	 */
-	public function where_between_ne($field = '', $value_x, $value_y)
+	public function where_between_ne($field, $value_x, $value_y)
 	{
 		$this->_where_init($field);
 		$this->wheres[$field]['$gt'] = $value_x;
@@ -707,7 +707,7 @@ class Mongo_db
 	 * @access public
 	 * @return object
 	 */
-	public function where_ne($field = '', $value)
+	public function where_ne($field, $value)
 	{
 		$this->_where_init($field);
 		$this->wheres[$field]['$ne'] = $value;

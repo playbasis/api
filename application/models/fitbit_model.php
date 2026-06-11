@@ -16,7 +16,7 @@ class Fitbit_model extends MY_Model
         $this->mongo_db->where('pb_player_id', new MongoID($pb_player_id));
         $this->mongo_db->where('deleted', false);
         $result = $this->mongo_db->get('playbasis_fitbit');
-        return $result[0];
+        return ($result && isset($result[0])) ? $result[0] : array();
     }
 
     public function findFitbitPlayer($client_id, $site_id, $pb_player_id)

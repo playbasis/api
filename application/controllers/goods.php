@@ -12,7 +12,7 @@ class Goods extends REST2_Controller
         $this->load->model('player_model');
         $this->load->model('store_org_model');
         $this->load->model('tool/utility', 'utility');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/respond', 'resp');
     }
 
@@ -52,6 +52,10 @@ class Goods extends REST2_Controller
         /* main */
         if ($goodsId) // given specified goods_id
         {
+            if (!preg_match('/^[0-9a-f]{24}$/i', (string)$goodsId)) {
+                $this->response($this->error->setError('GOODS_NOT_FOUND'), 200);
+            }
+
             $goods['goods'] = $this->goods_model->getGoods(array_merge($this->validToken, array('goods_id' => new MongoId($goodsId))));
 
             // return an error if
@@ -93,13 +97,18 @@ class Goods extends REST2_Controller
         } else // list all
         {
             $data = $this->validToken;
+            $tags = $this->commaListQueryParameter('tags');
+            $selected_fields = $this->commaListQueryParameter('selected_field');
+            $custom_param = $this->commaListQueryParameter('custom_param');
+            $not_custom_param = $this->commaListQueryParameter('not_custom_param');
+            $has_custom_filter = !empty($custom_param) || !empty($not_custom_param);
 
-            if ($this->input->get('tags')) {
-                $data['tags'] = explode(',', $this->input->get('tags'));
+            if ($tags) {
+                $data['tags'] = $tags;
             }
 
-            if ($this->input->get('selected_field')) {
-                $data['selected_field'] = explode(',', $this->input->get('selected_field'));
+            if ($selected_fields) {
+                $data['selected_field'] = $selected_fields;
                 foreach ($data['selected_field'] as $index => $field) {
                     if (!$field) {
                         unset($data['selected_field'][$index]);
@@ -134,12 +143,11 @@ class Goods extends REST2_Controller
             }
 
             $filter_goods_name = $this->input->get('name') ? $this->input->get('name') : null;
-            if ($this->input->get('custom_param') || $this->input->get('not_custom_param')) {
+            if ($has_custom_filter) {
                 $custom_array = array();
                 $not_custom_array = array();
 
-                if($this->input->get('custom_param')) {
-                    $custom_param = explode(',', $this->input->get('custom_param'));
+                if($custom_param) {
                     foreach ($custom_param as $param) {
                         $param_data = explode('|', $param);
                         if (isset($param_data[0]) && isset($param_data[1]) && isset($param_data[2])) {
@@ -182,8 +190,7 @@ class Goods extends REST2_Controller
                         }
                     }
                 }
-                if($this->input->get('not_custom_param')) {
-                    $not_custom_param = explode(',', $this->input->get('not_custom_param'));
+                if($not_custom_param) {
                     foreach ($not_custom_param as $not_param) {
                         $not_param_data = explode('|', $not_param);
                         if (isset($not_param_data[0]) && isset($not_param_data[1]) && isset($not_param_data[2])) {
@@ -254,15 +261,15 @@ class Goods extends REST2_Controller
                 }
             }
             if ($filter_goods_name) {
-                $data['specific'] = $this->input->get('custom_param') || $this->input->get('not_custom_param') ?
+                $data['specific'] = $has_custom_filter ?
                     array('$or' => array(array("group" => array('$exists' => false) , 'goods_id'=> array('$in' => $goods_param_id), 'name'=> array('$regex' => new MongoRegex("/" . preg_quote(mb_strtolower($filter_goods_name)) . "/i"))), array("goods_id" => array('$in' => $in_goods)))) :
                     array('$or' => array(array("group" => array('$exists' => false) , 'name'=> array('$regex' => new MongoRegex("/" . preg_quote(mb_strtolower($filter_goods_name)) . "/i"))), array("goods_id" => array('$in' => $in_goods))));
             } else {
-                $data['specific'] = $this->input->get('custom_param') || $this->input->get('not_custom_param') ?
+                $data['specific'] = $has_custom_filter ?
                     array('$or' => array(array("group" => array('$exists' => false) , 'goods_id'=> array('$in' => $goods_param_id)), array("goods_id" => array('$in' => $in_goods)))) :
                     array('$or' => array(array("group" => array('$exists' => false)), array("goods_id" => array('$in' => $in_goods))));
             }
-            $goodsList['goods_list'] = $this->input->get('custom_param') && !$custom_goods ? array() : $this->goods_model->getAllGoods($data);
+            $goodsList['goods_list'] = $custom_param && !$custom_goods ? array() : $this->goods_model->getAllGoods($data);
 
             if (is_array($goodsList['goods_list'])) {
                 foreach ($goodsList['goods_list'] as $key => &$goods) {
@@ -334,7 +341,12 @@ class Goods extends REST2_Controller
                 // Sorting
                 $sort_data = array('name', 'quantity', 'description', 'date_start', 'date_expire', 'sort_order');
 
-                if ($this->input->get('order') && (mb_strtolower($this->input->get('order')) == 'desc')) {
+                $order_input = $this->input->get('order');
+                if ($order_input !== null && $order_input !== false && !is_scalar($order_input)) {
+                    $this->response($this->error->setError('PARAMETER_INVALID', array('order')), 200);
+                }
+
+                if ($order_input && (mb_strtolower((string)$order_input) == 'desc')) {
                     $order = SORT_DESC;
                 } else {
                     $order = SORT_ASC;
@@ -346,6 +358,7 @@ class Goods extends REST2_Controller
                     $sort = "sort_order";
                 }
 
+                $sorter = array();
                 foreach ($goodsList['goods_list'] as $key => $row) {
                     $sorter[$key] = $row[$sort];
                 }
@@ -378,6 +391,10 @@ class Goods extends REST2_Controller
         /* main */
         if ($goodsId) // given specified goods_id
         {
+            if (!preg_match('/^[0-9a-f]{24}$/i', (string)$goodsId)) {
+                $this->response($this->error->setError('GOODS_NOT_FOUND'), 200);
+            }
+
             $goods['goods'] = $this->goods_model->getGoods(array_merge($validToken_ad, array(
                 'goods_id' => new MongoId($goodsId)
             )));
@@ -502,6 +519,18 @@ class Goods extends REST2_Controller
             }
         }
         return $ret;
+    }
+
+    private function commaListQueryParameter($parameter)
+    {
+        $value = $this->input->get($parameter);
+        if (!$value) {
+            return null;
+        }
+        if (!is_scalar($value)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($parameter)), 200);
+        }
+        return explode(',', $value);
     }
 
     private function convert_mongo_object(&$item, $key)

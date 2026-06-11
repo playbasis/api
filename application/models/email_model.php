@@ -6,7 +6,56 @@ class Email_model extends MY_Model
     public function __construct()
     {
         parent::__construct();
+        $this->load->model('auth_model');
         $this->load->library('mongo_db');
+    }
+
+    public function signGoodsAlert($data, $client_id, $site_id)
+    {
+        $platform = $this->auth_model->getOnePlatform($client_id, $site_id);
+        if (!empty($platform['api_secret'])) {
+            $data['signature'] = $this->goodsAlertSignature($data, $client_id, $site_id, $platform['api_secret']);
+        }
+
+        return $data;
+    }
+
+    public function isValidGoodsAlertSignature($data, $client_id, $site_id)
+    {
+        if (empty($data['signature'])) {
+            return false;
+        }
+
+        $platform = $this->auth_model->getOnePlatform($client_id, $site_id);
+        if (empty($platform['api_secret'])) {
+            return false;
+        }
+
+        $expected = $this->goodsAlertSignature($data, $client_id, $site_id, $platform['api_secret']);
+        return $this->stringsMatch($expected, (string)$data['signature']);
+    }
+
+    private function goodsAlertSignature($data, $client_id, $site_id, $secret)
+    {
+        $parts = array(
+            (string)$client_id,
+            (string)$site_id,
+            isset($data['to']) ? (string)$data['to'] : '',
+            isset($data['goods_name']) ? (string)$data['goods_name'] : '',
+            isset($data['goods_image']) ? (string)$data['goods_image'] : '',
+            isset($data['alert_threshold']) ? (string)$data['alert_threshold'] : ''
+        );
+
+        return hash_hmac('sha256', implode('|', $parts), (string)$secret);
+    }
+
+    private function stringsMatch($expected, $actual)
+    {
+        if (function_exists('hash_equals')) {
+            return hash_equals($expected, $actual);
+        }
+
+        return is_string($expected) && is_string($actual) && strlen($expected) === strlen($actual) && $expected === $actual;
     }
 
     public function listBlackListEmails($site_id)

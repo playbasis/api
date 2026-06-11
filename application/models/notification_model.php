@@ -11,12 +11,24 @@ class Notification_model extends MY_Model
 
     public function list_messages($site_id)
     {
+        if ($site_id === null || $site_id === '' || $site_id === false) {
+            return array();
+        }
+
         $this->set_site_mongodb($site_id);
         return $this->mongo_db->get('playbasis_notification_log');
     }
 
-    public function log($site_id, $data)
+    public function log($site_id, $data, $allow_default = false)
     {
+        if (!is_array($data)) {
+            return null;
+        }
+
+        if (($site_id === null || $site_id === '' || $site_id === false) && !$allow_default) {
+            return null;
+        }
+
         $mongoDate = new MongoDate(time());
         $this->set_site_mongodb($site_id);
         $data['date_added'] = $mongoDate;

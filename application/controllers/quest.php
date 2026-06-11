@@ -21,7 +21,7 @@ class Quest extends REST2_Controller
         $this->load->model('sms_model');
         $this->load->model('push_model');
         $this->load->model('store_org_model');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/utility', 'utility');
         $this->load->model('tool/respond', 'resp');
         $this->load->model('tool/node_stream', 'node');
@@ -818,7 +818,12 @@ class Quest extends REST2_Controller
                 if(isset($reward['reward_data']['group']) && ($reward['reward_type'] == 'GOODS') && ($reward['reward_value'] > 0))
                 {
                     $goods_group_rewards = $this->goods_model->getGoodsByGroup($validToken['client_id'], $validToken['site_id'], $reward['reward_data']['group'] , null , null , 1 );
-                    $rand_goods = array_rand($goods_group_rewards, (int)$reward['reward_value']);
+                    if (!is_array($goods_group_rewards) || count($goods_group_rewards) == 0) {
+                        unset($mission["missions"][0]["rewards"][$rewardkey]);
+                        continue;
+                    }
+
+                    $rand_goods = array_rand($goods_group_rewards, min(count($goods_group_rewards), (int)$reward['reward_value']));
                     if(!is_array($rand_goods)){
                         $rand_goods = array($rand_goods);
                     }
@@ -878,8 +883,8 @@ class Quest extends REST2_Controller
                 if(isset($reward['reward_data']['group']) && ($reward['reward_type'] == 'GOODS') && ($reward['reward_value'] > 0))
                 {
                     $goods_group_rewards = $this->goods_model->getGoodsByGroup($validToken['client_id'], $validToken['site_id'], $reward['reward_data']['group'] , null , null , 1 );
-                    if($goods_group_rewards) {
-                        $rand_goods = array_rand($goods_group_rewards, (int)$reward['reward_value']);
+                    if(is_array($goods_group_rewards) && count($goods_group_rewards) > 0) {
+                        $rand_goods = array_rand($goods_group_rewards, min(count($goods_group_rewards), (int)$reward['reward_value']));
                         if(!is_array($rand_goods)){
                             $rand_goods = array($rand_goods);
                         }
@@ -1769,7 +1774,10 @@ class Quest extends REST2_Controller
         /* filter to include only requested fields */
         $filter = $this->input->get('filter');
         if ($filter) {
-            $fields = explode(',', $filter);
+            if (!is_scalar($filter)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('filter')), 200);
+            }
+            $fields = explode(',', (string)$filter);
             if (isset($resp['quest'])) {
                 $resp['quest'] = $this->filterOnlyFields($fields, $resp['quest']);
             } else {
@@ -1872,7 +1880,14 @@ class Quest extends REST2_Controller
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         }
 
-        $quest_id = $this->input->post('quest_id') ? new MongoId($this->input->post('quest_id')) : null;
+        $quest_id = null;
+        if ($this->input->post('quest_id')) {
+            try {
+                $quest_id = new MongoId($this->input->post('quest_id'));
+            } catch (Exception $e) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('quest_id')), 200);
+            }
+        }
         $results = $this->quest_model->delete($this->client_id, $this->site_id, $pb_player_id, $quest_id);
 
         $this->benchmark->mark('end');
@@ -2412,6 +2427,7 @@ class Quest extends REST2_Controller
             );
 
             $api_key = $this->auth_model->getApikeyBySite($input['site_id']);
+            $notificationInfo = $this->push_model->signAsyncPayload($notificationInfo, $device['os_type'], $input['client_id'], $input['site_id']);
             $params = array('notification_info' => http_build_query($notificationInfo) ,'type' => $device['os_type'], 'api_key' => $api_key);
             $this->utility->request('Push','sendPush', http_build_query($params, '', '&'));
         }
@@ -2459,6 +2475,7 @@ class Quest extends REST2_Controller
                 )
             );
             $api_key = $this->auth_model->getApikeyBySite($input['site_id']);
+            $notificationInfo = $this->push_model->signAsyncPayload($notificationInfo, $device['os_type'], $input['client_id'], $input['site_id']);
             $params = array('notification_info' => http_build_query($notificationInfo) ,'type' => $device['os_type'], 'api_key' => $api_key);
             $this->utility->request('Push','sendPush', http_build_query($params, '', '&'));
         }

@@ -21,7 +21,13 @@ class Location_model extends MY_Model
         ));
 
         if(isset($data['location_id']) && $data['location_id']){
-            $this->mongo_db->where('_id',new MongoID($data['location_id']));
+            if ($this->isMongoIdObject($data['location_id'])) {
+                $this->mongo_db->where('_id', $data['location_id']);
+            } elseif ($this->isMongoId($data['location_id'])) {
+                $this->mongo_db->where('_id', new MongoID($data['location_id']));
+            } else {
+                return array();
+            }
         }
 
         if(isset($data['status']) && $data['status']){
@@ -38,5 +44,15 @@ class Location_model extends MY_Model
         }
 
         return $result ? $result : array();
+    }
+
+    private function isMongoId($id)
+    {
+        return is_string($id) && preg_match('/^[0-9a-f]{24}$/i', $id) === 1;
+    }
+
+    private function isMongoIdObject($id)
+    {
+        return is_object($id) && strtolower(get_class($id)) === 'mongoid';
     }
 }

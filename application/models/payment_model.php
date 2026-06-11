@@ -23,6 +23,12 @@ class Payment_model extends MY_Model
         /* find details of the subscribed plan of the client */
         $plan = $this->getPlanById($plan_id);
 
+        if (!is_array($client) || !is_array($myplan) || !is_array($plan)) {
+            log_message('error',
+                'Cannot process PayPal IPN because client or plan document is missing. client_id=' . $client_id . ', plan_id=' . $plan_id);
+            return false;
+        }
+
         /* process PayPal IPN message differently according to 'txn_type' */
         log_message('info', 'IPN PayPal txn_type: ' . $POST['txn_type']);
         switch ($POST['txn_type']) {

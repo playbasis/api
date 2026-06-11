@@ -12,7 +12,7 @@ class Pb_sms extends REST2_Controller
         $this->load->model('player_model');
         $this->load->model('sms_model');
         $this->load->model('redeem_model');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/utility', 'utility');
         $this->load->model('tool/respond', 'resp');
         $this->load->model('tool/node_stream', 'node');
@@ -128,7 +128,11 @@ class Pb_sms extends REST2_Controller
                 }
                 $message = $template['body'];
             } else {
-                $message = $this->input->post('message');
+                $message_input = $this->input->post('message');
+                if (!is_scalar($message_input) && $message_input !== null) {
+                    $this->response($this->error->setError('PARAMETER_INVALID', array('message')), 200);
+                }
+                $message = (string)$message_input;
             }
             if (!isset($player['code']) && strpos($message, '{{code}}') !== false) {
                 $player['code'] = $this->player_model->generateCode($pb_player_id);
@@ -170,7 +174,13 @@ class Pb_sms extends REST2_Controller
         if (array_key_exists('phone_number', $player) && !empty($player['phone_number'])) {
 
             $ref_id = $this->input->post('ref_id');
+            if (!preg_match('/^[0-9a-f]{24}$/i', (string)$ref_id)) {
+                $this->response($this->error->setError('REFERENCE_ID_INVALID'), 200);
+            }
             $redeemData = $this->redeem_model->findByReferenceId('goods', new MongoId($ref_id));
+            if (!$redeemData) {
+                $this->response($this->error->setError('REFERENCE_ID_INVALID'), 200);
+            }
 
             /* check valid template_id */
             $message = null;
@@ -223,8 +233,12 @@ class Pb_sms extends REST2_Controller
         }
 
         $since = $this->input->get('since');
+        if (!is_scalar($since) && $since !== null) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('since')), 200);
+        }
+        $since = $since ? strtotime((string)$since) : null;
         $results = $this->sms_model->recent($validToken['site_id'],
-            isset($player['phone_number']) ? $player['phone_number'] : null, $since ? strtotime($since) : null);
+            isset($player['phone_number']) ? $player['phone_number'] : null, $since);
         array_walk_recursive($results, array($this, 'convert_mongo_date'));
         $this->response($this->resp->setRespond($results), 200);
     }
