@@ -601,7 +601,11 @@ class Content extends REST2_Controller
         $contentInfo['image']      = ($this->input->post('image')) ? $this->input->post('image') : "no_image.jpg";
         $contentInfo['date_start'] = !empty($this->input->post('date_start')) ? new MongoDate(strtotime($this->input->post('date_start'))) : null;
         $contentInfo['date_end']   = !empty($this->input->post('date_end')) ? new MongoDate(strtotime($this->input->post('date_end'))) : null;
-        $contentInfo['status']     = strtolower($this->input->post('status')) == 'true';
+        $status = $this->input->post('status');
+        if (!is_scalar($status) && $status !== null) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('status')), 200);
+        }
+        $contentInfo['status']     = strtolower((string)$status) == 'true';
 
         if ($this->input->post('pin')){
             $contentInfo['pin'] = $this->input->post('pin');
@@ -680,8 +684,12 @@ class Content extends REST2_Controller
             $contentInfo['image'] = $this->input->post('image');
         }
 
-        if($this->input->post('status')){
-            $contentInfo['status'] = strtolower($this->input->post('status'))=='true';
+        $status = $this->input->post('status');
+        if($status){
+            if (!is_scalar($status)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('status')), 200);
+            }
+            $contentInfo['status'] = strtolower((string)$status)=='true';
         }
 
         if ($this->input->post('pin')){
