@@ -100,6 +100,12 @@ class Email extends REST2_Controller
         if ($required) {
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
         }
+        foreach (array('goods_name', 'goods_image', 'alert_threshold') as $param) {
+            $value = $this->input->get($param);
+            if (!is_scalar($value) && $value !== null) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array($param)), 200);
+            }
+        }
 
         /* setup to send email */
         $from = "Playbasis";
@@ -108,7 +114,7 @@ class Email extends REST2_Controller
         $bcc = array("rob@playbasis.com");
         $subject = "[Playbasis] Goods Alert";
         $goods_name = $this->input->get('goods_name');
-        $goods_image = $this->input->get('goods_image');
+        $goods_image = (string)$this->input->get('goods_image');
         $goods_image = $this->config->item('IMG_PATH').'cache/' .utf8_substr($goods_image, 0, utf8_strrpos($goods_image, '.')) . '-240x240' . utf8_substr($goods_image, utf8_strrpos($goods_image, '.') );
         $alert_threshold = $this->input->get('alert_threshold');
 
