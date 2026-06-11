@@ -24,6 +24,16 @@ class Push extends REST2_Controller
         $this->response($this->resp->setRespond(array('to' => $to, 'from' => $from, 'message' => $message)), 200);
     }
 
+    private function scalarPost($field)
+    {
+        $value = $this->input->post($field);
+        if ($value === false || $value === null || $value === '' || !is_scalar($value)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($field)), 200);
+        }
+
+        return (string)$value;
+    }
+
     public function send_post()
     {
         /* check permission to send push notification in this bill cycle */
@@ -257,9 +267,12 @@ class Push extends REST2_Controller
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
         }
 
+        $player_id = $this->scalarPost('player_id');
+        $device_token = $this->scalarPost('device_token');
+
         //get playbasis player id
         $pb_player_id = $this->player_model->getPlaybasisId(array_merge($this->validToken, array(
-            'cl_player_id' => $this->input->post('player_id')
+            'cl_player_id' => $player_id
         )));
 
         if (!$pb_player_id) {
@@ -279,7 +292,7 @@ class Push extends REST2_Controller
             'client_id' => $this->client_id,
             'site_id' => $this->site_id,
             'pb_player_id' => $pb_player_id,
-            'device_token' => $this->input->post('device_token'),
+            'device_token' => $device_token,
             'device_description' => $this->input->post('device_description'),
             'device_name' => $this->input->post('device_name'),
             'os_type' => $os_type
@@ -305,9 +318,11 @@ class Push extends REST2_Controller
         }
 
         if (!$not_player_id){
+            $player_id = $this->scalarPost('player_id');
+
             //get playbasis player id
             $pb_player_id = $this->player_model->getPlaybasisId(array_merge($this->validToken, array(
-                'cl_player_id' => $this->input->post('player_id')
+                'cl_player_id' => $player_id
             )));
 
             if (!$pb_player_id) {
@@ -316,7 +331,7 @@ class Push extends REST2_Controller
         }
         
         if (!$not_device_token) {
-            $device_token = $this->input->post('device_token');
+            $device_token = $this->scalarPost('device_token');
             $devices = $this->player_model->getDeviceByToken($this->client_id, $this->site_id,$device_token);
             if (is_null($devices)) {
                 $this->response($this->error->setError('DEVICE_NOT_EXIST'), 200);
