@@ -126,6 +126,7 @@ class Quiz extends REST2_Controller
         if ($result === null) {
             $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
         }
+        $result = $this->normalizeQuizQuestions($result);
 
         /* param "player_id" */
         $player_id = $this->input->get('player_id');
@@ -159,7 +160,7 @@ class Quiz extends REST2_Controller
         unset($result['questions']);
 
         if ($record) {
-            $result['questions'] = count($record['questions']);
+            $result['questions'] = count($this->getQuizRecordQuestions($record));
             $result['total_score'] = $record['value'];
             $result['grade'] = $record['grade'];
             $result['date_join'] = $record['date_added']; // date which player start doing this quiz
@@ -287,7 +288,7 @@ class Quiz extends REST2_Controller
             $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
         }
 
-        $quiz['questions'] = isset($quiz['questions']) ? $quiz['questions'] : array();
+        $quiz = $this->normalizeQuizQuestions($quiz);
 
         $total_max_score = 0;
         if (is_array($quiz['questions'])) foreach ($quiz['questions'] as $questions) {
@@ -328,7 +329,7 @@ class Quiz extends REST2_Controller
             $quiz['questions'] = $this->sortArray($quiz['questions'], "question_number", "question");
         }
 
-        $completed_questions = $result ? $result['questions'] : array();
+        $completed_questions = $this->getQuizRecordQuestions($result);
         $question = null;
         $index = -1;
         $remain_count = count($completed_questions) > count($quiz['questions']) ? count($completed_questions) - count($quiz['questions']) : count($quiz['questions']) - count($completed_questions);
@@ -461,6 +462,7 @@ class Quiz extends REST2_Controller
         if ($quiz === null) {
             $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
         }
+        $quiz = $this->normalizeQuizQuestions($quiz);
 
         $total_max_score = 0;
         if (is_array($quiz['questions'])) foreach ($quiz['questions'] as $questions) {
@@ -499,7 +501,7 @@ class Quiz extends REST2_Controller
             $quiz['questions'] = $this->sortArray($quiz['questions'], "question_number", "question");
         }
 
-        $completed_questions = $result ? $result['questions'] : array();
+        $completed_questions = $this->getQuizRecordQuestions($result);
         $question = null;
         $index = -1;
         $remain_count = count($completed_questions) - count($quiz['questions']);
@@ -631,6 +633,7 @@ class Quiz extends REST2_Controller
         if ($quiz === null) {
             $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
         }
+        $quiz = $this->normalizeQuizQuestions($quiz);
 
         /* param "player_id" */
         $player_id = $this->input->post('player_id');
@@ -733,7 +736,7 @@ class Quiz extends REST2_Controller
 
         /* check to see if the question has already been answered by the player */
         $result = $this->quiz_model->find_quiz_by_quiz_and_player($this->client_id, $this->site_id, $quiz_id, $pb_player_id);
-        $completed_questions = $result ? $result['questions'] : array();
+        $completed_questions = $this->getQuizRecordQuestions($result);
         if (in_array($question_id, $completed_questions)) {
             $this->response($this->error->setError('QUIZ_QUESTION_ALREADY_COMPLETED'), 200);
         }
@@ -1057,6 +1060,7 @@ class Quiz extends REST2_Controller
         if ($quiz === null) {
             $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
         }
+        $quiz = $this->normalizeQuizQuestions($quiz);
 
         $result = array();
         $stat = $this->quiz_model->calculate_frequency($this->client_id, $this->site_id, $quiz_id);
@@ -1683,6 +1687,25 @@ class Quiz extends REST2_Controller
                 $item = $this->config->item('IMG_PATH') . "no_image.jpg";
             }
         }
+    }
+
+    private function normalizeQuizQuestions($quiz)
+    {
+        if (!is_array($quiz)) {
+            return array('questions' => array());
+        }
+        if (!isset($quiz['questions']) || !is_array($quiz['questions'])) {
+            $quiz['questions'] = array();
+        }
+        return $quiz;
+    }
+
+    private function getQuizRecordQuestions($record)
+    {
+        if (!is_array($record) || !isset($record['questions']) || !is_array($record['questions'])) {
+            return array();
+        }
+        return $record['questions'];
     }
 
     private function sortArray($list, $sort_by, $name)
