@@ -593,9 +593,25 @@ class Engine extends Quest
                 if (!$test) {
                     $validToken = $this->validToken;
                 } else {
+                    $required = $this->input->checkParam(array('client_id', 'site_id'));
+                    if ($required) {
+                        $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
+                    }
+                    $client_id = $this->input->post("client_id");
+                    $site_id = $this->input->post("site_id");
+                    $invalid = array();
+                    if (!$this->isMongoId($client_id)) {
+                        array_push($invalid, 'client_id');
+                    }
+                    if (!$this->isMongoId($site_id)) {
+                        array_push($invalid, 'site_id');
+                    }
+                    if ($invalid) {
+                        $this->response($this->error->setError('PARAMETER_INVALID', $invalid), 200);
+                    }
                     $validToken = array(
-                        "client_id" => new MongoId($this->input->post("client_id")),
-                        "site_id" => new MongoId($this->input->post("site_id")),
+                        "client_id" => new MongoId($client_id),
+                        "site_id" => new MongoId($site_id),
                         "site_name" => null
                     );
                 }
@@ -752,6 +768,11 @@ class Engine extends Quest
         $apiResult['processing_time'] = $this->benchmark->elapsed_time('engine_rule_start', 'engine_rule_end');
         array_walk_recursive($apiResult, array($this, "convert_mongo_object"));
         $this->response($this->resp->setRespond($apiResult), 200);
+    }
+
+    private function isMongoId($id)
+    {
+        return is_string($id) && preg_match('/^[0-9a-f]{24}$/i', $id) === 1;
     }
 
     private function levelup($lv, &$apiResult, $input)
