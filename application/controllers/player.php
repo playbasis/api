@@ -666,7 +666,22 @@ class Player extends REST2_Controller
     
     public function registerBatch_post()
     {
-        $batch_data = json_decode($this->input->post()['batch'],true);
+        $required = $this->input->checkParam(array(
+            'batch'
+        ));
+        if ($required) {
+            $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
+        }
+
+        $batch_data = json_decode($this->input->post('batch'), true);
+        if (!is_array($batch_data)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('batch')), 200);
+        }
+        foreach ($batch_data as $player_data) {
+            if (!is_array($player_data)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('batch')), 200);
+            }
+        }
 
         try {
             $player_limit = $this->client_model->getPlanLimitById(
