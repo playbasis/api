@@ -205,6 +205,9 @@ class Notification extends Engine
                         } else {
                             /* register/unregister */
                             log_message('debug', 'arg = ' . print_r($arg, true));
+                            if (!isset($arg) || preg_match('/^[0-9a-f]{24}$/i', $arg) !== 1) {
+                                $this->response($this->error->setError('PARAMETER_INVALID', array('arg')), 200);
+                            }
                             $site_id = new MongoId($arg);
                             log_message('debug', 'site_id = ' . print_r($site_id, true));
                             $this->handleJive($site_id, $message);
