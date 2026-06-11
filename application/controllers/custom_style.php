@@ -9,7 +9,7 @@ class Custom_style extends REST2_Controller
         parent::__construct();
         $this->load->model('custom_style_model');
         $this->load->model('tool/utility', 'utility');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/respond', 'resp');
     }
 

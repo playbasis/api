@@ -8,7 +8,7 @@ class Pipedrive extends REST2_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
     }
 
     public function send_post()

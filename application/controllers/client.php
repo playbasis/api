@@ -12,7 +12,7 @@ class Client extends REST2_Controller
         $this->load->model('player_model');
         $this->load->model('point_model');
         $this->load->model('badge_model');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/respond', 'resp');
     }
 

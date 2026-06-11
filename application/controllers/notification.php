@@ -24,7 +24,7 @@ class Notification extends Engine
         $this->load->model('jive_model');
         $this->load->model('lithium_model');
         $this->load->model('googles_model');
-        $this->load->model('tool/error', 'error');
+        $this->load->model('tool/error_model', 'error');
         $this->load->model('tool/utility', 'utility');
         $this->load->model('tool/respond', 'resp');
         $this->load->model('tool/node_stream', 'node');
