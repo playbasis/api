@@ -100,12 +100,19 @@ io.sockets.on('connection', function(socket){
 
 var BASE_URL = 'https://foursquare.pbapp.net';
 
+function requiredSocialEnv(name) {
+	if (!process.env[name]) {
+		throw new Error('Missing required environment variable: ' + name);
+	}
+	return process.env[name];
+}
+
 var config =
 {
 	'secrets' :
 	{
-		'clientId' : 'UGPSGBGD20UCCN2QFHK14YXRVB0Q3IEVLECC30OY4ASDLTGV',
-		'clientSecret' : 'IG0KHUMO12AVMKR2QB2Z0RNQI0WUWG54GLO4VUGSSQFOQLCJ',
+		'clientId' : requiredSocialEnv('FOURSQUARE_CLIENT_ID'),
+		'clientSecret' : requiredSocialEnv('FOURSQUARE_CLIENT_SECRET'),
 		'redirectUrl' : BASE_URL + '/login/callback'
 	}
 }

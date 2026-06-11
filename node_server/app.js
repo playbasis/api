@@ -33,7 +33,7 @@ function feedParser(req, res, next){
 	req.setEncoding('utf8');
 	req.on('data', function(chunk){
 		data += chunk;
-	});
+});
 	req.on('end', function(){
 		req.body = data;
 		next();
@@ -286,10 +286,20 @@ io.sockets.on('disconnection', function(socket){
             socket.leave(host);
         });
     })
-});
+	});
+
+function requiredSocialEnv(name) {
+	if (!process.env[name]) {
+		throw new Error('Missing required environment variable: ' + name);
+	}
+	return process.env[name];
+}
+
+var BASIC_AUTH_USER = requiredSocialEnv('NODE_SERVER_BASIC_AUTH_USER');
+var BASIC_AUTH_PASSWORD = requiredSocialEnv('NODE_SERVER_BASIC_AUTH_PASSWORD');
 
 var auth = express.basicAuth(function(user, pass){
-	return user === 'planes' && pass === 'capetorment852456';
+	return user === BASIC_AUTH_USER && pass === BASIC_AUTH_PASSWORD;
 });
 
 //publish event through post request

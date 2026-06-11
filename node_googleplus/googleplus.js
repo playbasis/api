@@ -84,7 +84,14 @@ function handler(req, res) {
 }
 
 var dateObj = new Date();
-var GOOGLE_PLUS_API_KEY = 'AIzaSyCsLAX-6RLXKPRsLUzz-0Il81-oMpFeWc8';
+function requiredSocialEnv(name) {
+	if (!process.env[name]) {
+		throw new Error('Missing required environment variable: ' + name);
+	}
+	return process.env[name];
+}
+
+var GOOGLE_PLUS_API_KEY = requiredSocialEnv('GOOGLE_PLUS_API_KEY');
 var TRACKING = [ '#facebook', '#instagram' ];
 var POLL_FREQ = 60000;
 var MAX_NEXT_PAGE_FETCH = 5;
