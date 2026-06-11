@@ -31,7 +31,7 @@ class Custompoint extends REST2_Controller
             $data['from'] = new MongoDate(strtotime($data['from']));
         }
         if (isset($data['player_list']) && !empty($data['player_list'])){
-            $data['player_list'] = array_map('trim', explode(",",$data['player_list']));
+            $data['player_list'] = $this->splitCommaParameter($data['player_list'], 'player_list');
         }
         $pending_list = $this->reward_model->listPendingRewards($data);
         foreach ($pending_list as &$item)
@@ -92,7 +92,7 @@ class Custompoint extends REST2_Controller
             'site_id' => $this->validToken['site_id']
         );
         $approve = $this->input->post('approve') === "true" ? true : false;
-        $transaction_list = array_map('trim', explode(",",$this->input->post('transaction_list')));
+        $transaction_list = $this->splitCommaParameter($this->input->post('transaction_list'), 'transaction_list');
         $response = array();
         if (is_array($transaction_list)) foreach ($transaction_list as $transaction_id){
             try{
@@ -185,6 +185,14 @@ class Custompoint extends REST2_Controller
 
         $response = $this->reward_model->setCustomLog($data);
         $this->response($this->resp->setRespond(), 200);
+    }
+
+    private function splitCommaParameter($value, $parameter)
+    {
+        if (!is_scalar($value)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($parameter)), 200);
+        }
+        return array_map('trim', explode(",", $value));
     }
 
     private function convert_mongo_object(&$item, $key)
