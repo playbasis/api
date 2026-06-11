@@ -1590,7 +1590,11 @@ class Player extends REST2_Controller
         $client_id = new MongoId($this->validToken['client_id']);
         $site_id = new MongoId($this->validToken['site_id']);
         $site_name = $this->validToken['site_name'];
-        $gift_id = new MongoId($this->input->post('gift_id'));
+        $gift_id = $this->input->post('gift_id');
+        if (!preg_match('/^[0-9a-f]{24}$/i', (string)$gift_id)) {
+            $this->response($this->error->setError('GIFT_NOT_EXIST'), 200);
+        }
+        $gift_id = new MongoId($gift_id);
         $gift_value = $this->input->post('amount');
         $received_player_id = $this->input->post('received_player_id');
         $gift_type = strtoupper($gift_type);
