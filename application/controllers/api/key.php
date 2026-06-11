@@ -17,6 +17,12 @@ require(APPPATH . '/libraries/REST_Controller.php');
 
 class Key extends REST_Controller
 {
+    public function __construct()
+    {
+        parent::__construct();
+        show_404('api/key');
+    }
+
     protected $methods = array(
         'index_put' => array('level' => 10, 'limit' => 10),
         'index_delete' => array('level' => 10),
