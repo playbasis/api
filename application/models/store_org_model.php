@@ -11,7 +11,7 @@ class Store_org_model extends MY_Model
 
     public function retrieveNode($client_id, $site_id, $optionalParams = array())
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         // Searching
         if (isset($optionalParams['search']) && !empty($optionalParams['search'])) {
@@ -88,7 +88,7 @@ class Store_org_model extends MY_Model
 
     public function retrieveOrganize($client_id, $site_id, $optionalParams = array())
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         // Searching
         if (isset($optionalParams['search']) && !empty($optionalParams['search'])) {
@@ -149,7 +149,7 @@ class Store_org_model extends MY_Model
 
     public function retrieveNodeById($site_id, $id)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         $this->mongo_db->where('site_id', new MongoId($site_id));
 
@@ -166,7 +166,7 @@ class Store_org_model extends MY_Model
 
     public function retrieveNodeByNameInOrg($client_id, $site_id, $name, $org_id)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         $this->mongo_db->where('client_id', new MongoId($client_id));
         $this->mongo_db->where('site_id', new MongoId($site_id));
@@ -185,7 +185,7 @@ class Store_org_model extends MY_Model
 
     public function retrieveOrganizeById($client_id, $site_id, $id)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         $this->mongo_db->where('client_id', new MongoId($client_id));
         $this->mongo_db->where('site_id', new MongoId($site_id));
@@ -203,7 +203,7 @@ class Store_org_model extends MY_Model
 
     public function retrieveOrganizeByName($client_id, $site_id, $name)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         $this->mongo_db->where('client_id', new MongoId($client_id));
         $this->mongo_db->where('site_id', new MongoId($site_id));
@@ -221,7 +221,7 @@ class Store_org_model extends MY_Model
 
     public function createPlayerToNode($client_id, $site_id, $pb_player_id, $node_id)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         $insert_data = array(
             'client_id' => $client_id,
@@ -238,7 +238,7 @@ class Store_org_model extends MY_Model
 
     public function createContentToNode($client_id, $site_id, $content_id, $node_id)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         $insert_data = array(
             'client_id' => new MongoId($client_id),
@@ -254,7 +254,7 @@ class Store_org_model extends MY_Model
 
     public function retrievePlayerToNode($client_id, $site_id, $pb_player_id, $node_id, $role_name = null)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         $this->mongo_db->where('client_id', new MongoId($client_id));
         $this->mongo_db->where('site_id', new MongoId($site_id));
@@ -277,7 +277,7 @@ class Store_org_model extends MY_Model
 
     public function retrieveContentToNode($client_id, $site_id, $content_id, $node_id, $role_name = null)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         $this->mongo_db->where('client_id', new MongoId($client_id));
         $this->mongo_db->where('site_id', new MongoId($site_id));
@@ -300,7 +300,7 @@ class Store_org_model extends MY_Model
 
     public function retrieveAllContentToNode($client_id, $site_id, $node_id = null)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         $this->mongo_db->where('client_id', new MongoId($client_id));
         $this->mongo_db->where('site_id', new MongoId($site_id));
@@ -314,7 +314,7 @@ class Store_org_model extends MY_Model
 
     public function deletePlayerToNode($client_id, $site_id, $pb_player_id, $node_id)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         $this->mongo_db->where('client_id', new MongoId($client_id));
         $this->mongo_db->where('site_id', new MongoId($site_id));
@@ -332,7 +332,7 @@ class Store_org_model extends MY_Model
 
     public function deleteContentToNode($client_id, $site_id, $content_id, $node_id)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         $this->mongo_db->where('client_id', new MongoId($client_id));
         $this->mongo_db->where('site_id', new MongoId($site_id));
@@ -350,7 +350,7 @@ class Store_org_model extends MY_Model
 
     public function setPlayerRoleToNode($client_id, $site_id, $pb_player_id, $node_id, $role)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         $this->mongo_db->where('client_id', new MongoId($client_id));
         $this->mongo_db->where('site_id', new MongoId($site_id));
@@ -366,7 +366,7 @@ class Store_org_model extends MY_Model
 
     public function unsetPlayerRoleToNode($client_id, $site_id, $pb_player_id, $node_id, $role_name_to_unset)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         $this->mongo_db->where('client_id', new MongoId($client_id));
         $this->mongo_db->where('site_id', new MongoId($site_id));
@@ -382,7 +382,7 @@ class Store_org_model extends MY_Model
 
     public function setContentRoleToNode($client_id, $site_id, $content_id, $node_id, $role)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         $this->mongo_db->where('client_id', new MongoId($client_id));
         $this->mongo_db->where('site_id', new MongoId($site_id));
@@ -398,7 +398,7 @@ class Store_org_model extends MY_Model
 
     public function unsetContentRoleToNode($client_id, $site_id, $content_id, $node_id, $role_name_to_unset)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         $this->mongo_db->where('client_id', new MongoId($client_id));
         $this->mongo_db->where('site_id', new MongoId($site_id));
@@ -414,7 +414,7 @@ class Store_org_model extends MY_Model
 
     public function retrieveNodeByPBPlayerID($client_id, $site_id, $pb_player_id)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        $this->set_site_mongodb($site_id);
 
         $this->mongo_db->where('client_id', new MongoId($client_id));
         $this->mongo_db->where('site_id', new MongoId($site_id));
@@ -433,6 +433,8 @@ class Store_org_model extends MY_Model
 
     public function getOrgInfoOfNode($client_id, $site_id, $node_id)
     {
+        $this->set_site_mongodb($site_id);
+
         $this->mongo_db->select(array(
             'name',
             'description',
@@ -451,6 +453,8 @@ class Store_org_model extends MY_Model
 
     public function findAdjacentChildNode($client_id, $site_id, $node_id)
     {
+        $this->set_site_mongodb($site_id);
+
         $this->mongo_db->select(array(
             'name',
             'organize',
@@ -472,6 +476,8 @@ class Store_org_model extends MY_Model
 
     public function getPlayersByNodeId($client_id, $site_id, $node_id, $role = null)
     {
+        $this->set_site_mongodb($site_id);
+
         $this->mongo_db->select(array('pb_player_id'));
 
         $this->mongo_db->where(array(
@@ -501,6 +507,8 @@ class Store_org_model extends MY_Model
         $year,
         $count
     ) {
+        $this->set_site_mongodb($site_id);
+
         $result = array();
 
         $node_to_match = array();
@@ -667,6 +675,8 @@ class Store_org_model extends MY_Model
 
     private function getRewardIdByName($client_id, $site_id, $name)
     {
+        $this->set_site_mongodb($site_id);
+
         $this->mongo_db->select(array('reward_id'));
         $this->mongo_db->where(array(
             'client_id' => $client_id,
@@ -707,6 +717,7 @@ class Store_org_model extends MY_Model
 
     public function getAssociatedNodeOfPlayer($client_id, $site_id, $player_id)
     {
+        $this->set_site_mongodb($site_id);
 
         $this->mongo_db->select(array(
             'node_id',
@@ -723,6 +734,7 @@ class Store_org_model extends MY_Model
 
     public function getAssociatedNodeOfContent($client_id, $site_id, $content_id)
     {
+        $this->set_site_mongodb($site_id);
 
         $this->mongo_db->select(array(
             'node_id',
@@ -739,6 +751,8 @@ class Store_org_model extends MY_Model
 
     public function aggregateAssociatedNodeOfContent($client_id, $site_id, $content_list)
     {
+        $this->set_site_mongodb($site_id);
+
         $match_condition = array(
             'client_id' => new MongoId($client_id),
             'site_id' => new MongoId($site_id),
@@ -760,6 +774,7 @@ class Store_org_model extends MY_Model
 
     public function getRoleOfPlayer($client_id, $site_id, $player_id, $node_id)
     {
+        $this->set_site_mongodb($site_id);
 
         $this->mongo_db->select(array(
             'roles',
