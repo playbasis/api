@@ -16,6 +16,7 @@ class Redeem extends REST2_Controller
         $this->load->model('setting_model');
         $this->load->model('user_model');
         $this->load->model('sms_model');
+        $this->load->model('email_model');
         $this->load->model('merchant_model');
         $this->load->model('store_org_model');
         $this->load->model('client_model');
@@ -697,13 +698,14 @@ class Redeem extends REST2_Controller
 
                             // send Email
                             $platform = $this->auth_model->getOnePlatform($this->client_id, $this->site_id);
-                            $this->utility->request('Email', 'goodsAlert', http_build_query(array(
+                            $goodsAlertData = $this->email_model->signGoodsAlert(array(
                                 'api_key' => $platform['api_key'],
                                 'to' => implode(',', $email_to),
                                 'goods_name' => $goods_distinct_info['name'],
                                 'goods_image' => $goods_distinct_info['image'],
                                 'alert_threshold' => $goods_distinct_info['alert_threshold'],
-                            )));
+                            ), $this->client_id, $this->site_id);
+                            $this->utility->request('Email', 'goodsAlert', http_build_query($goodsAlertData));
                         }
                     }
                 }
