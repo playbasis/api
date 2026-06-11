@@ -61,6 +61,11 @@ class Insurance extends REST2_Controller
             $quiz[$quiz_id] = $this->quiz_model->find_by_id($client_id, $site_id, new MongoId($quiz_id));
             $quiz_player[$quiz_id] = $this->quiz_model->find_quiz_by_quiz_and_player($client_id, $site_id, new MongoId($quiz_id), $pb_player_id);
             foreach ($value as $key => $val){
+                if (!isset($quiz_player[$quiz_id]) || !is_array($quiz_player[$quiz_id]) ||
+                    !isset($quiz_player[$quiz_id]['questions']) || !is_array($quiz_player[$quiz_id]['questions'])) {
+                    $answer[$key] = null;
+                    continue;
+                }
                 $q_index = array_search(new MongoId($val), $quiz_player[$quiz_id]['questions']);
                 if(isset($quiz_player[$quiz_id]['answers'][$q_index]) && $q_index !== false){
                     if(isset($quiz_player[$quiz_id]['answers'][$q_index]['answer'])){
