@@ -2446,7 +2446,13 @@ class Player extends REST2_Controller
 
         /* param "amount" */
         $amount = $this->input->post('amount');
-        $amount = intval($amount);
+        if (!is_scalar($amount) || filter_var($amount, FILTER_VALIDATE_INT) === false) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('amount')), 200);
+        }
+        $amount = (int)$amount;
+        if ($amount < 1) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('amount')), 200);
+        }
 
         /* param "force" */
         $force = $this->input->post('force');
@@ -2507,7 +2513,14 @@ class Player extends REST2_Controller
         }
 
         /* param "amount" */
-        $amount = intval($this->input->post('amount'));
+        $amount = $this->input->post('amount');
+        if (!is_scalar($amount) || filter_var($amount, FILTER_VALIDATE_INT) === false) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('amount')), 200);
+        }
+        $amount = (int)$amount;
+        if ($amount < 1) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('amount')), 200);
+        }
 
         /* param "force" */
         $force = $this->input->post('force');
