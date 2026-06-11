@@ -23,6 +23,30 @@ class Email extends REST2_Controller
         $this->load->library('parser');
     }
 
+    private function commaListParameter($value, $parameter)
+    {
+        if (!is_scalar($value) && $value !== null) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($parameter)), 200);
+        }
+        if (!$value) {
+            return array();
+        }
+
+        return explode(',', (string)$value);
+    }
+
+    private function scalarParameter($value, $parameter, $default = null)
+    {
+        if ($value !== null && $value !== false && !is_scalar($value)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($parameter)), 200);
+        }
+        if (!$value) {
+            return $default;
+        }
+
+        return (string)$value;
+    }
+
     public function send_post()
     {
         /* check permission to send email in this bill cycle */
@@ -56,14 +80,11 @@ class Email extends REST2_Controller
         }
 
         /* variables */
-        $from = $this->input->post('from');
-        $to = $this->input->post('to') ? explode(',', $this->input->post('to')) : array();
-        $bcc = $this->input->post('bcc') ? explode(',', $this->input->post('bcc')) : array();
-        $subject = $this->input->post('subject');
-        $message = $this->input->post('message');
-        if ($message == false) {
-            $message = '';
-        } // $message is optional
+        $from = $this->scalarParameter($this->input->post('from'), 'from');
+        $to = $this->commaListParameter($this->input->post('to'), 'to');
+        $bcc = $this->commaListParameter($this->input->post('bcc'), 'bcc');
+        $subject = $this->scalarParameter($this->input->post('subject'), 'subject');
+        $message = $this->scalarParameter($this->input->post('message'), 'message', '');
 
         $this->processEmail($from, $to, $bcc, $subject, $message);
     }
@@ -82,7 +103,7 @@ class Email extends REST2_Controller
 
         /* setup to send email */
         $from = "Playbasis";
-        $to = $this->input->get('to') ? explode(',', $this->input->get('to')) : array();
+        $to = $this->commaListParameter($this->input->get('to'), 'to');
         $cc = array("piya.p@playbasis.com", "pongsakorn.ruadsong@playbasis.com");
         $bcc = array("rob@playbasis.com");
         $subject = "[Playbasis] Goods Alert";
@@ -409,7 +430,7 @@ class Email extends REST2_Controller
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         }
 
-        $since = $this->input->get('since');
+        $since = $this->scalarParameter($this->input->get('since'), 'since');
         $results = $this->email_model->recent($validToken['site_id'], $player['email'],
             $since ? strtotime($since) : null);
         array_walk_recursive($results, array($this, 'convert_mongo_date'));
