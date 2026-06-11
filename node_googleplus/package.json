@@ -1,14 +1,14 @@
 {
-  "name": "application-name",
+  "name": "playbasis-googleplus",
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node echo.js"
+    "start": "node googleplus.js"
   },
   "dependencies": {
-    "express": "3.2.6",
-    "jade": "0.33.0",
+    "mongoose": "3.6.16",
     "newrelic": "1.11.1",
+    "request": "2.26.0",
     "socket.io": "1.1.0"
   }
 }
