@@ -17,6 +17,11 @@ class Custom_style extends REST2_Controller
     {
         $this->benchmark->mark('start');
         $query_data = $this->input->get(null, true);
+        foreach (array('name', 'key', 'order', 'sort', 'offset', 'limit', 'status') as $param) {
+            if (isset($query_data[$param]) && (is_array($query_data[$param]) || is_object($query_data[$param]))) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array($param)), 200);
+            }
+        }
 
         $result = $this->custom_style_model->retrieveStyle($this->validToken['client_id'],
             $this->validToken['site_id'], $query_data);
