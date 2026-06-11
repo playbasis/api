@@ -235,6 +235,92 @@ class Editor extends CI_Model
         return $result->row_array();
     }
 
+    private function ensureSqlDatabase()
+    {
+        if (isset($this->db) && is_object($this->db)) {
+            return true;
+        }
+
+        if (!file_exists(APPPATH . 'config/database.php')) {
+            return false;
+        }
+
+        $this->load->database();
+
+        return isset($this->db) && is_object($this->db);
+    }
+
+    private function getScopedCacheKey($sql, $bindData, $table)
+    {
+        return 'sql_' . md5($sql . '|' . serialize($bindData)) . "." . $table;
+    }
+
+    public function getScopedRules($clientId, $siteId)
+    {
+        if (!$this->ensureSqlDatabase()) {
+            return array();
+        }
+
+        $sql = "SELECT `rule_id`,`rule_name`,`rule_description`,`active_status` FROM `playbasis_rule` WHERE `client_id` = ? AND `site_id` = ?";
+        $bindData = array($clientId, $siteId);
+        $table = "playbasis_rule";
+        $cacheKey = $this->getScopedCacheKey($sql, $bindData, $table);
+
+        $results = $this->memcached_library->get($cacheKey);
+        if ($results) {
+            return $results;
+        }
+
+        $result = $this->db->query($sql, $bindData);
+        $this->memcached_library->add($cacheKey, $result->result_array());
+
+        return $result->result_array();
+    }
+
+    public function getScopedRule($ruleId, $clientId, $siteId)
+    {
+        if (!$this->ensureSqlDatabase()) {
+            return array();
+        }
+
+        $sql = "SELECT `rule_id`,`rule_name`,`rule_description`,`active_status` FROM `playbasis_rule` WHERE `rule_id` = ? AND `client_id` = ? AND `site_id` = ?";
+        $bindData = array($ruleId, $clientId, $siteId);
+        $table = "playbasis_rule";
+        $cacheKey = $this->getScopedCacheKey($sql, $bindData, $table);
+
+        $results = $this->memcached_library->get($cacheKey);
+        if ($results) {
+            return $results;
+        }
+
+        $result = $this->db->query($sql, $bindData);
+        $this->memcached_library->add($cacheKey, $result->result_array());
+
+        return $result->result_array();
+    }
+
+    public function getScopedJigsaw($ruleId, $clientId, $siteId)
+    {
+        if (!$this->ensureSqlDatabase()) {
+            return array();
+        }
+
+        $sql = "SELECT `jigsaw_set` FROM `playbasis_rule` WHERE `rule_id` = ? AND `client_id` = ? AND `site_id` = ?";
+        $bindData = array($ruleId, $clientId, $siteId);
+        $table = "playbasis_rule";
+        $cacheKey = $this->getScopedCacheKey($sql, $bindData, $table);
+
+        $results = $this->memcached_library->get($cacheKey);
+        if ($results) {
+            return $results;
+        }
+
+        $result = $this->db->query($sql, $bindData);
+        $this->memcached_library->add($cacheKey, $result->row_array());
+
+        return $result->row_array();
+    }
+
     //update rule status
     public function updateRuleStatus($ruleId, $clientId = null, $siteId = null)
     {
