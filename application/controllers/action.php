@@ -87,16 +87,7 @@ class Action extends REST2_Controller
 
     public function test_get()
     {
-        echo '<pre>';
-        $credential = array(
-            'key' => 'abc',
-            'secret' => 'abcde'
-        );
-        $token = $this->auth_model->getApiInfo($credential);
-        echo '<br>findAction:<br>';
-        $result = $this->action_model->findAction(array_merge($token, array('action_name' => 'like')));
-        print_r($result);
-        echo '</pre>';
+        show_404('Action/test');
     }
 
     private function getDateQuery($name)

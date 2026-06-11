@@ -15,19 +15,7 @@ class Point extends REST2_Controller
 
     public function test_get()
     {
-        echo '<pre>';
-        $credential = array(
-            'key' => 'abc',
-            'secret' => 'abcde'
-        );
-        $token = $this->auth_model->getApiInfo($credential);
-        echo '<br>findPoint:<br>';
-        $result = $this->point_model->findPoint(array_merge($token, array('reward_name' => 'point')));
-        print_r($result);
-        echo '<br>getRewardNameById:<br>';
-        $result = $this->point_model->getRewardNameById(array_merge($token, array('reward_id' => $result)));
-        print_r($result);
-        echo '</pre>';
+        show_404('Point/test');
     }
 }
 
