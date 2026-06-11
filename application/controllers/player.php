@@ -2501,8 +2501,8 @@ class Player extends REST2_Controller
         );
 
         $now = new Datetime();
-        $startDate = new DateTime($this->input->get('from', true));
-        $endDate = new DateTime($this->input->get('to', true));
+        $startDate = $this->getDateQuery('from');
+        $endDate = $this->getDateQuery('to');
 
         $log = array();
         $prev = null;
@@ -3084,6 +3084,21 @@ class Player extends REST2_Controller
             return false;
         }
         return true;
+    }
+
+    private function getDateQuery($name)
+    {
+        $value = $this->input->get($name, true);
+        if ($value === false || $value === null || $value === '') {
+            return new DateTime();
+        }
+
+        try {
+            return new DateTime($value);
+        } catch (Exception $e) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($name)), 200);
+            return new DateTime();
+        }
     }
 
 }
