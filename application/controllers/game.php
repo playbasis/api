@@ -174,6 +174,10 @@ class Game extends REST2_Controller
         }
 
         $game_name = $this->input->get('game_name');
+        if (!is_scalar($game_name)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('game_name')), 200);
+        }
+        $game_name = (string)$game_name;
         $campaign_name = $this->input->get('campaign_name');
         $game = $this->game_model->retrieveGame($this->client_id, $this->site_id, array(
             'game_name' => $game_name,
@@ -206,6 +210,10 @@ class Game extends REST2_Controller
         }
 
         $game_name = $this->input->get('game_name');
+        if (!is_scalar($game_name)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('game_name')), 200);
+        }
+        $game_name = (string)$game_name;
         $game = $this->game_model->retrieveGame($this->client_id, $this->site_id, array(
             'game_name' => $game_name,
             'order' => 'desc'
