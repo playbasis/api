@@ -202,6 +202,9 @@ class Engine extends Quest
         if (!$rule_id) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('rule_id')), 200);
         }
+        if (!preg_match('/^[0-9a-f]{24}$/i', (string)$rule_id)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('rule_id')), 200);
+        }
         $pb_player_id = null;
         $player_id = $this->input->get('player_id');
         if ($player_id !== false) {
