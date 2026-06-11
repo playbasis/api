@@ -29,8 +29,12 @@ class Parser {
      /**
       * @method Parser
       * @desc constructor
-      * @param  $value - expression 
+      * @param  $value - expression
       */
+    function __construct($value){
+        $this->Parser($value);
+    }
+
     function Parser($value){
         $this->_lexer = new Lexer($value); 
         $this->_lexer->init();
