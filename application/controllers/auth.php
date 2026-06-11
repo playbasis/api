@@ -67,8 +67,15 @@ class Auth extends REST2_Controller
         if ($required) {
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
         }
+        $password = $this->input->post('password');
+        if (!is_scalar($password)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('password')), 200);
+        }
 
         $clientInfo = $this->auth_model->getApiInfo(array('key' => $this->input->post('api_key')));
+        if (!$clientInfo) {
+            $this->response($this->error->setError('INVALID_API_KEY_OR_SECRET', $required), 200);
+        }
         $clientInfo['key'] = $this->input->post('api_key');
         $pb_player_id = $this->player_model->getPlaybasisId(array_merge($clientInfo, array(
             'cl_player_id' => $player_id
@@ -78,7 +85,7 @@ class Auth extends REST2_Controller
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         } else {
             $clientInfo['pb_player_id'] = $pb_player_id;
-            $clientInfo['password'] = do_hash($this->input->post('password'));
+            $clientInfo['password'] = do_hash((string)$password);
         }
         $player = $this->player_model->checkPlayerPassword($clientInfo);
         if(!$player) {
@@ -104,6 +111,9 @@ class Auth extends REST2_Controller
         }
 
         $clientInfo = $this->auth_model->getApiInfo(array('key' => $this->input->post('api_key')));
+        if (!$clientInfo) {
+            $this->response($this->error->setError('INVALID_API_KEY_OR_SECRET', $required), 200);
+        }
         $pb_player_id = $this->player_model->getPlaybasisId(array_merge($clientInfo, array(
             'cl_player_id' => $player_id
         )));
@@ -156,6 +166,10 @@ class Auth extends REST2_Controller
 
         if ($required) {
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
+        }
+        $password = $this->input->post('password');
+        if (!is_scalar($password)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('password')), 200);
         }
 
         if (!$player_id) {
@@ -214,13 +228,17 @@ class Auth extends REST2_Controller
         }
         $phoneNumber = $this->input->post('phone_number');
         if ($phoneNumber) {
-            if ($this->validTelephonewithCountry($phoneNumber)) {
-                $playerInfo['phone_number'] = $phoneNumber;
+            if (is_scalar($phoneNumber) && $this->validTelephonewithCountry((string)$phoneNumber)) {
+                $playerInfo['phone_number'] = (string)$phoneNumber;
             } else {
                 $this->response($this->error->setError('USER_PHONE_INVALID'), 200);
             }
         }
-        $playerInfo['tags'] = $this->input->post('tags') && !is_null($this->input->post('tags')) ? explode(',', $this->input->post('tags')) : null;
+        $tags = $this->input->post('tags');
+        if (is_array($tags) || is_object($tags)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('tags')), 200);
+        }
+        $playerInfo['tags'] = $tags ? explode(',', (string)$tags) : null;
         $facebookId = $this->input->post('facebook_id');
         if ($facebookId) {
             $playerInfo['facebook_id'] = $facebookId;
@@ -237,9 +255,8 @@ class Auth extends REST2_Controller
             $playerInfo['username'])
         ) {
             $this->player_model->unlockPlayer($clientInfo['site_id'], $pb_player_id);
-            $password = $this->input->post('password');
             if ($password) {
-                $playerInfo['password'] = do_hash($password);
+                $playerInfo['password'] = do_hash((string)$password);
             }
         } else {
             $this->response($this->error->setError('FORM_VALIDATION_FAILED', $this->validation_errors()[0]), 200);
@@ -250,7 +267,10 @@ class Auth extends REST2_Controller
         }
         $birthdate = $this->input->post('birth_date');
         if ($birthdate) {
-            $timestamp = strtotime($birthdate);
+            if (!is_scalar($birthdate)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('birth_date')), 200);
+            }
+            $timestamp = strtotime((string)$birthdate);
             $playerInfo['birth_date'] = date('Y-m-d', $timestamp);
         }
         $approve_status = $this->input->post('approve_status');
@@ -377,6 +397,12 @@ class Auth extends REST2_Controller
     private function validClPlayerId($cl_player_id)
     {
         return (!preg_match("/^([a-zA-Z0-9-_=]+)+$/i", $cl_player_id)) ? false : true;
+    }
+
+    private function validTelephonewithCountry($number)
+    {
+        return (!preg_match("/\+(9[976]\d|8[987530]\d|6[987]\d|5[90]\d|42\d|3[875]\d| 2[98654321]\d|9[8543210]|8[6421]|6[6543210]|5[87654321]| 4[987654310]|3[9643210]|2[70]|7|1)\d{1,14}$/",
+            $number)) ? false : true;
     }
 
     private function password_validation($client_id, $site_id, $inhibited_str = '')
