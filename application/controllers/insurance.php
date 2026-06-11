@@ -28,7 +28,11 @@ class Insurance extends REST2_Controller
         $client_id = $this->client_id;
         $site_id = $this->site_id;
         $player_id = $this->input->get('player_id');
-        $product_type = strtolower($this->input->get('product_type'));
+        $product_type = $this->input->get('product_type');
+        if (!is_scalar($product_type) || $product_type === '') {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('product_type')), 200);
+        }
+        $product_type = strtolower((string)$product_type);
         $quiz = $quiz_player = $swissre_quiz_id = $answer = array();
 
         $pb_player_id = $this->player_model->getPlaybasisId(array_merge($this->validToken, array(
