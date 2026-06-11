@@ -1872,7 +1872,14 @@ class Quest extends REST2_Controller
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         }
 
-        $quest_id = $this->input->post('quest_id') ? new MongoId($this->input->post('quest_id')) : null;
+        $quest_id = null;
+        if ($this->input->post('quest_id')) {
+            try {
+                $quest_id = new MongoId($this->input->post('quest_id'));
+            } catch (Exception $e) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('quest_id')), 200);
+            }
+        }
         $results = $this->quest_model->delete($this->client_id, $this->site_id, $pb_player_id, $quest_id);
 
         $this->benchmark->mark('end');
