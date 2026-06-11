@@ -452,7 +452,7 @@ class Engine extends Quest
 
         if (!$test) {
             //Log validated action
-            $action_dataset = $this->jigsaw_model->getActionDatasetInfo($input['action_name']);
+            $action_dataset = $this->jigsaw_model->getActionDatasetInfo($input['action_name'], isset($input['site_id']) ? $input['site_id'] : null);
             $input['parameters'] = array();
             if (is_array($action_dataset)) {
                 foreach ($action_dataset as $dataset) {
@@ -720,7 +720,7 @@ class Engine extends Quest
         //Log validated action
         if (!$test) {
             // populate input parameter of the action
-            $action_dataset = $this->jigsaw_model->getActionDatasetInfo($input['action_name']);
+            $action_dataset = $this->jigsaw_model->getActionDatasetInfo($input['action_name'], isset($input['site_id']) ? $input['site_id'] : null);
             $input['parameters'] = array();
             if (is_array($action_dataset)) {
                 foreach ($action_dataset as $dataset) {
@@ -807,7 +807,7 @@ class Engine extends Quest
         if (!$input["test"]) {
 
             // populate input parameter of the action
-            $action_dataset = $this->jigsaw_model->getActionDatasetInfo($input['action_name']);
+            $action_dataset = $this->jigsaw_model->getActionDatasetInfo($input['action_name'], isset($input['site_id']) ? $input['site_id'] : null);
             $input['parameters'] = array();
             if (is_array($action_dataset)) {
                 foreach ($action_dataset as $dataset) {

@@ -14,7 +14,7 @@ class jigsaw extends MY_Model
     {
         assert($config != false);
         assert(is_array($config));
-        $data_set = $this->getActionDatasetInfo($config['action_name']);
+        $data_set = $this->getActionDatasetInfo($config['action_name'], isset($input['site_id']) ? $input['site_id'] : null);
         $required = array();
         if (is_array($data_set)) {
             foreach ($data_set as $param) {
@@ -37,9 +37,13 @@ class jigsaw extends MY_Model
         return true;
     }
 
-    public function getActionDatasetInfo($action_name)
+    public function getActionDatasetInfo($action_name, $site_id = null)
     {
-        $this->set_site_mongodb($this->session->userdata('site_id'));
+        if (isset($site_id) && $site_id !== '') {
+            $this->set_site_mongodb($site_id);
+        } else {
+            $this->set_site_mongodb($this->session->userdata('site_id'));
+        }
 
         $this->mongo_db->where(array(
             'name' => $action_name
@@ -1305,7 +1309,7 @@ class jigsaw extends MY_Model
     public function distinct($config, $input, &$exInfo = array())
     {
         $params = array();
-        $data_set = $this->getActionDatasetInfo($input['action_name']);
+        $data_set = $this->getActionDatasetInfo($input['action_name'], isset($input['site_id']) ? $input['site_id'] : null);
         if (is_array($data_set)) {
             foreach ($data_set as $param) {
                 $param_name = $param['param_name'];
