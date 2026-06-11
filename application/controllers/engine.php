@@ -1630,10 +1630,10 @@ class Engine extends Quest
                         array_push($code_array, array_key_exists('code', $goods_group_rewards[$index]) ? $goods_group_rewards[$index]['code'] : null);
                     }
                 }
-                $event['value'] = sizeof($rand_goods);
-                $event['reward_data']['code'] = sizeof($rand_goods) == 1 ? $code_array[0]:$code_array;
-                $event['reward_data']['goods_id'] = sizeof($rand_goods) == 1 ? $id_array[0]:$id_array;
-                $event['log_id'] = sizeof($rand_goods) == 1 ? $log_array[0]:$log_array;
+                $event['value'] = sizeof($id_array);
+                $event['reward_data']['code'] = sizeof($id_array) == 1 ? $code_array[0] : (sizeof($id_array) > 1 ? $code_array : null);
+                $event['reward_data']['goods_id'] = sizeof($id_array) == 1 ? $id_array[0] : (sizeof($id_array) > 1 ? $id_array : null);
+                $event['log_id'] = sizeof($id_array) == 1 ? $log_array[0] : (sizeof($id_array) > 1 ? $log_array : null);
             } else {
                 $event['value'] = 0;
                 $event['log_id'] = null;
