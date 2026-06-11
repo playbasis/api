@@ -15,30 +15,36 @@
 	*
 	*/
 
+	$twilio_mode = getenv('TWILIO_MODE');
+	$twilio_account_sid = getenv('TWILIO_ACCOUNT_SID');
+	$twilio_auth_token = getenv('TWILIO_AUTH_TOKEN');
+	$twilio_api_version = getenv('TWILIO_API_VERSION');
+	$twilio_number = getenv('TWILIO_NUMBER');
+
 	/**
 	 * Mode ("sandbox" or "prod")
 	 **/
-	$config['mode']   = 'sandbox';
+	$config['mode']   = $twilio_mode !== false && $twilio_mode !== '' ? $twilio_mode : 'sandbox';
 
 	/**
 	 * Account SID
 	 **/
-	$config['account_sid']   = 'AC052be2798628a15062d53c8456ae82af';
+	$config['account_sid']   = $twilio_account_sid !== false ? $twilio_account_sid : '';
 
 	/**
 	 * Auth Token
 	 **/
-	$config['auth_token']    = '93c40641409313cf26d950f37201182e';
+	$config['auth_token']    = $twilio_auth_token !== false ? $twilio_auth_token : '';
 
 	/**
 	 * API Version
 	 **/
-	$config['api_version']   = '2010-04-01';
+	$config['api_version']   = $twilio_api_version !== false && $twilio_api_version !== '' ? $twilio_api_version : '2010-04-01';
 
 	/**
 	 * Twilio Phone Number
 	 **/
-	$config['number']        = '+14846042072';
+	$config['number']        = $twilio_number !== false ? $twilio_number : '';
 
 
 /* End of file twilio.php */
