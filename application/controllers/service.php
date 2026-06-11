@@ -17,6 +17,24 @@ class Service extends REST2_Controller
         $this->load->model('tool/respond', 'resp');
         $this->load->model('tool/node_stream', 'node');
     }
+
+    private function commaListParameter($value, $parameter, $uppercase = false)
+    {
+        if (!is_scalar($value) && $value !== null) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($parameter)), 200);
+        }
+        if (!$value) {
+            return null;
+        }
+
+        $value = (string)$value;
+        if ($uppercase) {
+            $value = strtoupper($value);
+        }
+
+        return explode(',', $value);
+    }
+
     /*public function index_get($param1)
     {
         $data = array(
@@ -246,9 +264,9 @@ class Service extends REST2_Controller
             $this->response($this->error->setError('PARAMETER_MISSING', array('player_id')), 200);
         }
 
-        $event_type = $this->input->get('event_type') ? explode(',',strtoupper($this->input->get('event_type'))) : null;
-        $action_name = $this->input->get('action_name') ? explode(',',$this->input->get('action_name')) : null;
-        $reward_name = $this->input->get('reward_name') ? explode(',',$this->input->get('reward_name')) : null;
+        $event_type = $this->commaListParameter($this->input->get('event_type'), 'event_type', true);
+        $action_name = $this->commaListParameter($this->input->get('action_name'), 'action_name');
+        $reward_name = $this->commaListParameter($this->input->get('reward_name'), 'reward_name');
         
         $respondThis['activities'] = $this->service_model->getRecentActivities($this->site_id, $offset,
             $limit > 500 ? 500 : $limit, $pb_player_id, $last_read_activity_id, $mode , $event_type, $action_name, $reward_name);
