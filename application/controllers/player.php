@@ -1065,7 +1065,10 @@ class Player extends REST2_Controller
         /* Optionally, remove session */
         $session_id = $this->input->post('session_id');
         if ($session_id) {
-            $this->player_model->logout($this->client_id, $this->site_id, $session_id);
+            if (!is_scalar($session_id)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('session_id')), 200);
+            }
+            $this->player_model->logout($this->client_id, $this->site_id, (string)$session_id, $pb_player_id);
         }
 
         // [rule] logout

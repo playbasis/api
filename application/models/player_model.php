@@ -3029,11 +3029,19 @@ class Player_model extends MY_Model
         }
     }
 
-    public function logout($client_id, $site_id, $session_id)
+    public function logout($client_id, $site_id, $session_id, $pb_player_id = null)
     {
+        if ($session_id === false || $session_id === null || $session_id === '' || !is_scalar($session_id)) {
+            return false;
+        }
+
         $this->set_site_mongodb($site_id);
+        $this->mongo_db->where('client_id', $client_id);
         $this->mongo_db->where('site_id', $site_id);
-        $this->mongo_db->where('session_id', $session_id);
+        $this->mongo_db->where('session_id', (string)$session_id);
+        if ($pb_player_id !== null) {
+            $this->mongo_db->where('pb_player_id', $pb_player_id);
+        }
         return $this->mongo_db->delete('playbasis_player_session');
     }
 
