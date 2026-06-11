@@ -14,6 +14,36 @@ class Fitbit extends REST2_Controller
         $this->load->model('tool/respond', 'resp');
     }
 
+    private function requireScalarPost($data, $parameter)
+    {
+        if (!isset($data[$parameter])) {
+            $this->response($this->error->setError('PARAMETER_MISSING', $parameter), 200);
+        }
+        if (!is_scalar($data[$parameter])) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($parameter)), 200);
+        }
+
+        $value = trim((string)$data[$parameter]);
+        if ($value === '') {
+            $this->response($this->error->setError('PARAMETER_MISSING', $parameter), 200);
+        }
+
+        return $value;
+    }
+
+    private function optionalScalarPost($data, $parameter, $default)
+    {
+        if (!isset($data[$parameter])) {
+            return $default;
+        }
+        if (!is_scalar($data[$parameter])) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($parameter)), 200);
+        }
+
+        $value = trim((string)$data[$parameter]);
+        return $value === '' ? $default : $value;
+    }
+
     public function getFitBitPlayer_get()
     {
         $this->benchmark->mark('start');
@@ -46,19 +76,15 @@ class Fitbit extends REST2_Controller
         $site_id = $this->validToken['site_id'];
         $query_data = $this->input->post();
 
-        if (isset($query_data['player_id']) && !empty($query_data['player_id'])) {
-            $pb_player_id = $this->player_model->getPlaybasisId(array(
-                'client_id' => $this->validToken['client_id'],
-                'site_id' => $this->validToken['site_id'],
-                'cl_player_id' => $query_data['player_id']
-            ));
-            if (empty($pb_player_id)) {
-                $this->response($this->error->setError('USER_NOT_EXIST'), 200);
-            }
-        }
-
-        if(!(isset($query_data['fitbit_token']) && !empty($query_data['fitbit_token']))){
-            $this->response($this->error->setError('PARAMETER_MISSING', 'fitbit_token'), 200);
+        $player_id = $this->requireScalarPost($query_data, 'player_id');
+        $fitbit_token = $this->requireScalarPost($query_data, 'fitbit_token');
+        $pb_player_id = $this->player_model->getPlaybasisId(array(
+            'client_id' => $this->validToken['client_id'],
+            'site_id' => $this->validToken['site_id'],
+            'cl_player_id' => $player_id
+        ));
+        if (empty($pb_player_id)) {
+            $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         }
 
         $count = $this->Fitbit_model->findFitbitPlayer($client_id, $site_id, $pb_player_id);
@@ -66,8 +92,8 @@ class Fitbit extends REST2_Controller
             $this->response($this->error->setError('FITBIT_PLAYER_ALREADY_EXIST'), 200);
         }
 
-        $result = $this->Fitbit_model->addFitbitPlayer($client_id, $site_id, $pb_player_id,$query_data['fitbit_token'],
-            isset($query_data['subscription_id']) && !empty($query_data['subscription_id']) ? $query_data['subscription_id'] : $pb_player_id."");
+        $subscription_id = $this->optionalScalarPost($query_data, 'subscription_id', $pb_player_id."");
+        $result = $this->Fitbit_model->addFitbitPlayer($client_id, $site_id, $pb_player_id, $fitbit_token, $subscription_id);
 
         $this->benchmark->mark('end');
         $t = $this->benchmark->elapsed_time('start', 'end');
