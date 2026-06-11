@@ -52,6 +52,10 @@ class Goods extends REST2_Controller
         /* main */
         if ($goodsId) // given specified goods_id
         {
+            if (!preg_match('/^[0-9a-f]{24}$/i', (string)$goodsId)) {
+                $this->response($this->error->setError('GOODS_NOT_FOUND'), 200);
+            }
+
             $goods['goods'] = $this->goods_model->getGoods(array_merge($this->validToken, array('goods_id' => new MongoId($goodsId))));
 
             // return an error if
@@ -378,6 +382,10 @@ class Goods extends REST2_Controller
         /* main */
         if ($goodsId) // given specified goods_id
         {
+            if (!preg_match('/^[0-9a-f]{24}$/i', (string)$goodsId)) {
+                $this->response($this->error->setError('GOODS_NOT_FOUND'), 200);
+            }
+
             $goods['goods'] = $this->goods_model->getGoods(array_merge($validToken_ad, array(
                 'goods_id' => new MongoId($goodsId)
             )));
