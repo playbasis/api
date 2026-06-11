@@ -170,6 +170,10 @@ class Error_model extends CI_Model
                 $errorData['message'] = "Cannot find client ID";
                 $errorData['error_code'] = '0013';
                 break;
+            case 'STRIPE_NOT_CONFIGURED':
+                $errorData['message'] = "Stripe payment processing is not configured";
+                $errorData['error_code'] = '0015';
+                break;
             case 'CLIENTSITE_NOTFOUND':
                 $errorData['message'] = "Cannot find client ID and site ID in playbasis_permission";
                 $errorData['error_code'] = '0014';
