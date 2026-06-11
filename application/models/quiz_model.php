@@ -96,8 +96,11 @@ class Quiz_model extends MY_Model
             foreach ($results as $result) {
                 $quiz_id = $result['quiz_id'];
                 $quiz = $this->find_by_id($client_id, $site_id, $quiz_id);
-                $total_questions = count($quiz['questions']);
-                $completed_questions = count($result['questions']);
+                if (!$quiz) {
+                    continue;
+                }
+                $total_questions = (isset($quiz['questions']) && is_array($quiz['questions'])) ? count($quiz['questions']) : 0;
+                $completed_questions = (isset($result['questions']) && is_array($result['questions'])) ? count($result['questions']) : 0;
                 $pending = (isset($result['completed']) && ($result['completed'] == true)) ? false : ($completed_questions < $total_questions);
                 $result['total_completed_questions'] = $completed_questions;
                 $result['name'] = $quiz['name'];
