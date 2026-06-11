@@ -106,7 +106,7 @@ define('CACHE_KEY_VERSION', 'version-api');
 define('CACHE_TTL_IN_SEC', 10*60);
 
 define('FULLCONTACT_API', 'https://api.fullcontact.com');
-define('FULLCONTACT_API_KEY', '8f10cefa2030457a');
+define('FULLCONTACT_API_KEY', getenv('FULLCONTACT_API_KEY') ?: '');
 define('FULLCONTACT_RATE_LIMIT', 1); // per sec
 define('FULLCONTACT_CALLBACK_URL', 'https://api.pbapp.net/notification/%s');
 define('FULLCONTACT_REQUEST_OK', 200);
@@ -133,7 +133,7 @@ define('STRIPE_USER_AGENT', 'Stripe');
 
 define('DEMO_SITE_ID', '52ea1eac8d8c89401c0000e5');
 
-define('GECKO_API_KEY', '3b28853ec6792fb3cc0e94ad891d1659');
+define('GECKO_API_KEY', getenv('GECKO_API_KEY') ?: '');
 define('GECKO_URL', 'https://push.geckoboard.com/v1/send/');
 
 define('DATE_FREE_ACCOUNT_SHOULD_SETUP_MOBILE', '2015-06-01');
@@ -160,6 +160,6 @@ define('MEDIA_MANAGER_LARGE_THUMBNAIL_HEIGHT', 240);
 define('TOKEN_CLIENT_EXPIRE', (3 * 24 * 3600)); // 3 days
 define('TOKEN_PLAYER_EXPIRE', (3 * 24 * 3600)); // 3 days
 
-define('DEBUG_KEY', 'playbasisthailand');
+define('DEBUG_KEY', getenv('DEBUG_KEY') ?: '');
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */

@@ -85,7 +85,7 @@ abstract class REST2_Controller extends REST_Controller
         $this->app_enable = $this->setting_model->appStatus($this->client_id, $this->site_id);
         $client_setting = $this->setting_model->retrieveSetting($this->client_id,$this->site_id);
         $this->player_auth_enable = isset($client_setting['player_authentication_enable']) ? $client_setting['player_authentication_enable'] : false;
-        if($this->request->method == "post" || (isset($this->_args["debug"]) && $this->_args["debug"] == DEBUG_KEY)) {
+        if($this->request->method == "post" || $this->isDebugRequest()) {
             $this->log_id = $this->rest_model->logRequest(array(
                 'client_id' => $this->client_id,
                 'site_id' => $this->site_id,
@@ -168,6 +168,21 @@ abstract class REST2_Controller extends REST_Controller
         }
     }
 
+    private function isDebugRequest()
+    {
+        if (!defined('DEBUG_KEY') || DEBUG_KEY === '' || !isset($this->_args["debug"])) {
+            return false;
+        }
+
+        if (!is_scalar($this->_args["debug"])) {
+            return false;
+        }
+
+        $expected = (string) DEBUG_KEY;
+        $actual = (string) $this->_args["debug"];
+        return function_exists('hash_equals') ? hash_equals($expected, $actual) : $expected === $actual;
+    }
+
     protected function find_method_uri($method){
         $method_uri = "";
         if(is_array($method) && isset($method["parameters"]) && isset($method["URI"])){
@@ -197,7 +212,7 @@ abstract class REST2_Controller extends REST_Controller
     {
         /* 1.2 Log class_name and method */
         $class_name = get_class($this);
-        if($this->request->method == "post" || (isset($this->_args["debug"]) && $this->_args["debug"] == DEBUG_KEY)) {
+        if($this->request->method == "post" || $this->isDebugRequest()) {
             $this->rest_model->logResponse($this->log_id, $this->site_id, array(
                 'class_name' => $class_name,
                 'class_method' => $method[1],
@@ -342,7 +357,7 @@ abstract class REST2_Controller extends REST_Controller
             log_message('error', $msg);
             /* 3.2 Log response (exception) */
             $data = $this->error->setError('INTERNAL_ERROR', $msg);
-            if($this->request->method == "post" || (isset($this->_args["debug"]) && $this->_args["debug"] == DEBUG_KEY)) {
+            if($this->request->method == "post" || $this->isDebugRequest()) {
                 $this->rest_model->logResponse($this->log_id, $this->site_id, array(
                     'response' => $data,
                     'format' => $this->response->format,
@@ -405,7 +420,7 @@ abstract class REST2_Controller extends REST_Controller
                  || ($check_response[$check_head]["-type"] == "number" && gettype($pointer_data[$data_head]) != "integer" && gettype($pointer_data[$data_head]) != "double" && gettype($pointer_data[$data_head]) != "long"))
             ){
                 $is_error = true;
-                if (isset($this->_args["debug"]) && $this->_args["debug"] == DEBUG_KEY){
+                if ($this->isDebugRequest()){
                     $static_pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid, ".strtoupper($data_head)." return type " .gettype($pointer_data[$data_head]). " instead of ". $check_response[$check_head]["-type"]);
                 } else {
                     $static_pointer_data = $this->error->setError('INTERNAL_ERROR', "Response type invalid");
@@ -441,7 +456,7 @@ abstract class REST2_Controller extends REST_Controller
                             && !(isset($check_response[$check_head][$key][1]) && array_key_exists('-optional', $check_response[$check_head][$key][1]) && $check_response[$check_head][$key][1]['-optional'] == "true")
                         ) {
                             $is_error = true;
-                            if (isset($this->_args["debug"]) && $this->_args["debug"] == DEBUG_KEY){
+                            if ($this->isDebugRequest()){
                                 $static_pointer_data = $this->error->setError('INTERNAL_ERROR', "Response result(s) missing ".strtoupper($key));
                             } else {
                                 $static_pointer_data = $this->error->setError('INTERNAL_ERROR', "Response result(s) missing");
@@ -526,7 +541,7 @@ abstract class REST2_Controller extends REST_Controller
         }
         /* 3.1 Log response (actual output) */
          ini_set('mongo.allow_empty_keys', TRUE); // allow empty keys to be inserted in MongoDB (for example, insight needs this)
-        if($this->request->method == "post" || (isset($this->_args["debug"]) && $this->_args["debug"] == DEBUG_KEY)) {
+        if($this->request->method == "post" || $this->isDebugRequest()) {
             $this->rest_model->logResponse($this->log_id, $this->site_id, array(
                 'response' => $data,
                 'format' => $this->response->format,
