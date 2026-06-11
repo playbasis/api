@@ -24,6 +24,23 @@ class Content extends REST2_Controller
         $content_ids_to_player = array();
         $content_ids_to_feedback = array();
         $pb_player_id = null;
+        $language_name = isset($query_data['language']) ? $query_data['language'] : null;
+        if (is_array($language_name) || is_object($language_name)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('language')), 200);
+        }
+        $language_name = $language_name ? (string)$language_name : null;
+        foreach (array('node_id', 'title', 'sort', 'order', 'offset', 'limit') as $param_name) {
+            if (isset($query_data[$param_name]) && $query_data[$param_name] !== null) {
+                if (!is_scalar($query_data[$param_name])) {
+                    $this->response($this->error->setError('PARAMETER_INVALID', array($param_name)), 200);
+                }
+                $query_data[$param_name] = (string)$query_data[$param_name];
+            }
+        }
+        $sort_name = isset($query_data['sort']) ? strtolower($query_data['sort']) : null;
+        if ($sort_name !== null) {
+            $query_data['sort'] = $sort_name;
+        }
 
         if (isset($query_data['player_id']) && !empty($query_data['player_id'])) {
             $pb_player_id = $this->player_model->getPlaybasisId(array(
@@ -36,8 +53,8 @@ class Content extends REST2_Controller
             }
         }
 
-        if (isset($query_data['language']) && !empty($query_data['language']) && strtolower($query_data['language']) != "english") {
-            $language = $this->language_model->retrieveLanguageByName($this->validToken['client_id'], $this->validToken['site_id'], $query_data['language']);
+        if ($language_name && strtolower($language_name) != "english") {
+            $language = $this->language_model->retrieveLanguageByName($this->validToken['client_id'], $this->validToken['site_id'], $language_name);
             if(!$language){
                 $this->response($this->error->setError('CONTENT_LANGUAGE_NOT_FOUND'), 200);
             }
@@ -61,8 +78,10 @@ class Content extends REST2_Controller
         //$content_ids_to_player = array_merge($content_ids_to_player, $content_ids_to_feedback);
         //$content_ids_to_player = array_unique($content_ids_to_player);
 
-        if (isset($query_data['limit']) && isset($query_data['sort']) && ((strtolower($query_data['sort']) === 'followup')
-                || (strtolower($query_data['sort']) === 'action') ||  strtolower($query_data['sort'] === 'random'))) {
+        if (isset($query_data['limit']) && in_array($sort_name, array('followup', 'action', 'random'))) {
+            if (!is_numeric($query_data['limit'])) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('limit')), 200);
+            }
             $query_data['_limit'] = $query_data['limit'];
             $query_data['limit'] += count($content_ids_to_player);
         }
@@ -364,7 +383,7 @@ class Content extends REST2_Controller
         }
 
 
-        if (isset($query_data['language']) && !empty($query_data['language']) && strtolower($query_data['language']) != "english") {
+        if ($language_name && strtolower($language_name) != "english") {
             if(isset($language['_id'])){
                 foreach($result as &$res){
                     $content_to_language = $this->content_model->getContentToLanguage($this->validToken['client_id'], $this->validToken['site_id'], $res['_id'] , $language['_id']);
@@ -406,6 +425,26 @@ class Content extends REST2_Controller
         $query_data = $this->input->get();
         $content_ids_to_player = array();
         $content_ids_to_feedback = array();
+        foreach (array(
+                     'player_id',
+                     'node_id',
+                     'title',
+                     'category',
+                     'tags',
+                     'status',
+                     'only_new_content',
+                     'only_new_feedback',
+                     'pin',
+                     'id',
+                     'date_check'
+                 ) as $param_name) {
+            if (isset($query_data[$param_name]) && $query_data[$param_name] !== null) {
+                if (!is_scalar($query_data[$param_name])) {
+                    $this->response($this->error->setError('PARAMETER_INVALID', array($param_name)), 200);
+                }
+                $query_data[$param_name] = (string)$query_data[$param_name];
+            }
+        }
 
         if (isset($query_data['player_id']) && !empty($query_data['player_id'])) {
             $pb_player_id = $this->player_model->getPlaybasisId(array(
@@ -501,6 +540,15 @@ class Content extends REST2_Controller
         $this->benchmark->mark('start');
 
         $query_data = $this->input->get(null, true);
+
+        foreach (array('id', 'name', 'sort', 'order', 'offset', 'limit') as $param_name) {
+            if (isset($query_data[$param_name]) && $query_data[$param_name] !== null) {
+                if (!is_scalar($query_data[$param_name])) {
+                    $this->response($this->error->setError('PARAMETER_INVALID', array($param_name)), 200);
+                }
+                $query_data[$param_name] = (string)$query_data[$param_name];
+            }
+        }
 
         if (isset($query_data['id'])) {
             try {
