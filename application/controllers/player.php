@@ -31,6 +31,17 @@ class Player extends REST2_Controller
         $this->load->model('sms_model');
     }
 
+    private function commaListParameter($value, $parameter, $emptyAsNull = true)
+    {
+        if (!is_scalar($value) && $value !== null) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array($parameter)), 200);
+        }
+        if (!$value && $emptyAsNull) {
+            return null;
+        }
+        return explode(',', (string)$value);
+    }
+
     public function index_get($player_id = '')
     {
         if (!$player_id) {
@@ -132,9 +143,9 @@ class Player extends REST2_Controller
     public function list_post()
     {
         if(isset($_POST['list_player_id']) && $_POST['list_player_id']) {
-            $list_player_id = explode(",", $this->input->post('list_player_id'));
+            $list_player_id = $this->commaListParameter($this->input->post('list_player_id'), 'list_player_id');
         }else {
-            $filter['tags'] = explode(",", $this->input->post('tags'));
+            $filter['tags'] = $this->commaListParameter($this->input->post('tags'), 'tags', false);
             $player_list = $this->player_model->readPlayersWithFilter( $this->site_id, array('cl_player_id'), $filter);
             $list_player_id = array();
             foreach($player_list as $player){
@@ -418,7 +429,7 @@ class Player extends REST2_Controller
                 $this->response($this->error->setError('USER_PHONE_INVALID'), 200);
             }
         }
-        $playerInfo['tags'] = $this->input->post('tags') && !is_null($this->input->post('tags')) ? explode(',', $this->input->post('tags')) : null;
+        $playerInfo['tags'] = $this->commaListParameter($this->input->post('tags'), 'tags');
         $facebookId = $this->input->post('facebook_id');
         if ($facebookId) {
             $playerInfo['facebook_id'] = $facebookId;
@@ -773,11 +784,15 @@ class Player extends REST2_Controller
                 $this->response($this->error->setError('USER_PHONE_INVALID'), 200);
             }
         }
-        if ($this->input->post('tags')){
-            if(strtolower($this->input->post('tags')) == "null"){
+        $tags = $this->input->post('tags');
+        if ($tags){
+            if (!is_scalar($tags)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('tags')), 200);
+            }
+            if(strtolower((string)$tags) == "null"){
                 $playerInfo['tags'] = null;
             }else{
-                $playerInfo['tags'] = explode(',', $this->input->post('tags'));
+                $playerInfo['tags'] = $this->commaListParameter($tags, 'tags');
             }
         }
         $facebookId = $this->input->post('facebook_id');
@@ -1525,8 +1540,8 @@ class Player extends REST2_Controller
                 $this->response($this->error->setError('ACTION_NOT_FOUND'), 200);
             }
             if($this->input->get('key') && $this->input->get('value')){
-                $key = explode(',', $this->input->get('key'));
-                $value =  explode(',', $this->input->get('value'));
+                $key = $this->commaListParameter($this->input->get('key'), 'key');
+                $value =  $this->commaListParameter($this->input->get('value'), 'value');
                 if (sizeof($key) != sizeof($value)){
                     $this->response($this->error->setError('SIZE_KEY_VAL_NOT_MATCH'), 200);
                 }
@@ -1567,7 +1582,7 @@ class Player extends REST2_Controller
             'cl_player_id' => $player_id,
         );
         if($this->input->get('action_name')){
-            $action_name = explode(',',$this->input->get('action_name'));
+            $action_name = $this->commaListParameter($this->input->get('action_name'), 'action_name');
             foreach ($action_name as $item) {
                 $action_id = $this->action_model->findAction(array_merge($this->validToken, array(
                     'action_name' => $item
@@ -1762,7 +1777,7 @@ class Player extends REST2_Controller
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         }
         //get player badge
-        $badgeList = $this->player_model->getBadge($pb_player_id, $this->site_id, $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null, true);
+        $badgeList = $this->player_model->getBadge($pb_player_id, $this->site_id, $this->commaListParameter($this->input->get('tags'), 'tags'), true);
         $this->response($this->resp->setRespond($badgeList), 200);
     }
 
@@ -1778,7 +1793,7 @@ class Player extends REST2_Controller
             }
         }
         $badges = $this->badge_model->getAllBadges(array_merge($this->validToken, array(
-            'tags' => $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null
+            'tags' => $this->commaListParameter($this->input->get('tags'), 'tags')
         )), true);
         if ($badges && $pb_player_id) {
             foreach ($badges as &$badge) {
@@ -2006,7 +2021,7 @@ class Player extends REST2_Controller
         }
         //get player goods
         $goodsList['goods'] = $this->player_model->getGoods($this->client_id, $this->site_id, $pb_player_id,
-                              $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null, $status);
+                              $this->commaListParameter($this->input->get('tags'), 'tags'), $status);
 
         $null_list = array();
         $not_null_list = array();
@@ -2122,7 +2137,7 @@ class Player extends REST2_Controller
         }
         //get player goods
         $n = $this->player_model->getGoodsCount($this->client_id, $this->site_id, $pb_player_id,
-            $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null, $status);
+            $this->commaListParameter($this->input->get('tags'), 'tags'), $status);
 
         $this->response($this->resp->setRespond(array('n' => $n)), 200);
     }
