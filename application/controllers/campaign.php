@@ -16,7 +16,7 @@ class Campaign extends REST2_Controller
     public function index_get()
     {
         $campaign_name = $this->input->get('campaign_name');
-        $tags = $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null;
+        $tags = $this->tagsFromQuery();
         $result = $this->campaign_model->getCampaign($this->client_id, $this->site_id, $campaign_name ? $campaign_name: false, $tags);
         foreach ($result as $index => $res){
             unset($result[$index]['_id']);
@@ -28,7 +28,7 @@ class Campaign extends REST2_Controller
 
     public function activeCampaign_get()
     {
-        $tags = $this->input->get('tags') ? explode(',', $this->input->get('tags')) : null;
+        $tags = $this->tagsFromQuery();
         $result = $this->campaign_model->getActiveCampaign($this->client_id, $this->site_id, $tags);
         if($result){
             unset($result['_id']);
@@ -36,6 +36,18 @@ class Campaign extends REST2_Controller
         }
 
         $this->response($this->resp->setRespond($result), 200);
+    }
+
+    private function tagsFromQuery()
+    {
+        $tags = $this->input->get('tags');
+        if (!$tags) {
+            return null;
+        }
+        if (!is_scalar($tags)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('tags')), 200);
+        }
+        return explode(',', $tags);
     }
 
     /**
