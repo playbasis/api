@@ -42,15 +42,25 @@ class Insurance extends REST2_Controller
         $swissre_config = $this->insurance_model->getInsuranceConfig($client_id, $site_id);
         foreach ($swissre_config as $key => $value){
             if (strpos($key, 'quiz_id')){
-                if(!isset($swissre_quiz_id[$value.""]) && !is_null($value)){
-                    $swissre_quiz_id[$value.""]=array();
+                $quiz_id = is_null($value) ? null : $value."";
+                if(!is_null($quiz_id) && $this->isMongoId($quiz_id) && !isset($swissre_quiz_id[$quiz_id])){
+                    $swissre_quiz_id[$quiz_id]=array();
                 }
             }
             elseif (strpos($key, 'question_id')){
                 $type = explode('_question_id', $key);
                 $quiz_id = is_null($swissre_config[$type[0]."_quiz_id"]) ? null : $swissre_config[$type[0]."_quiz_id"]."";
                 if(!is_null($quiz_id)){
-                    $swissre_quiz_id[$swissre_config[$type[0]."_quiz_id"].""][$type[0]] = is_null($value) ? null : $value."";
+                    if (!$this->isMongoId($quiz_id)) {
+                        $answer[$type[0]] = null;
+                        continue;
+                    }
+                    $question_id = is_null($value) ? null : $value."";
+                    if (!$this->isMongoId($question_id)) {
+                        $answer[$type[0]] = null;
+                        continue;
+                    }
+                    $swissre_quiz_id[$quiz_id][$type[0]] = $question_id;
                 } else {
                     $answer['non_smoker'] = 'non_smoker';
                 }
@@ -58,8 +68,9 @@ class Insurance extends REST2_Controller
         }
 
         foreach($swissre_quiz_id as $quiz_id => $value){
-            $quiz[$quiz_id] = $this->quiz_model->find_by_id($client_id, $site_id, new MongoId($quiz_id));
-            $quiz_player[$quiz_id] = $this->quiz_model->find_quiz_by_quiz_and_player($client_id, $site_id, new MongoId($quiz_id), $pb_player_id);
+            $mongo_quiz_id = new MongoId($quiz_id);
+            $quiz[$quiz_id] = $this->quiz_model->find_by_id($client_id, $site_id, $mongo_quiz_id);
+            $quiz_player[$quiz_id] = $this->quiz_model->find_quiz_by_quiz_and_player($client_id, $site_id, $mongo_quiz_id, $pb_player_id);
             foreach ($value as $key => $val){
                 if (!isset($quiz_player[$quiz_id]) || !is_array($quiz_player[$quiz_id]) ||
                     !isset($quiz_player[$quiz_id]['questions']) || !is_array($quiz_player[$quiz_id]['questions'])) {
@@ -129,6 +140,11 @@ class Insurance extends REST2_Controller
         }
 
         $this->response($this->resp->setRespond(array('information' => $answer, 'insurance' => $response)), 200);
+    }
+
+    private function isMongoId($id)
+    {
+        return is_string($id) && preg_match('/^[0-9a-f]{24}$/i', $id) === 1;
     }
 }
 
