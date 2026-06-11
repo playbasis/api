@@ -1123,7 +1123,11 @@ class Player extends REST2_Controller
     {
         $username = $this->input->post('username');
         $email = $this->input->post('email');
-        $password = do_hash($this->input->post('password'));
+        $password_input = $this->input->post('password');
+        if (is_array($password_input) || is_object($password_input)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('password')), 200);
+        }
+        $password = do_hash((string)$password_input);
 
         $player = null;
         if ($email) {
