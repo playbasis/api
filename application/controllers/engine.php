@@ -371,6 +371,10 @@ class Engine extends Quest
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
         }
 
+        if (!$test && (!is_string($data['pb_player_id']) || !preg_match('/^[0-9a-f]{24}$/i', $data['pb_player_id']))) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('pb_player_id')), 200);
+        }
+
         $api_key = $data['api_key'];
 
         if (!$test) {
@@ -429,6 +433,9 @@ class Engine extends Quest
         }
 
         if (isset($data['pb_player_id-2'])) {
+            if (!is_string($data['pb_player_id-2']) || !preg_match('/^[0-9a-f]{24}$/i', $data['pb_player_id-2'])) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('pb_player_id-2')), 200);
+            }
             $input['pb_player_id-2'] = new MongoId($data['pb_player_id-2']);
         }
 
