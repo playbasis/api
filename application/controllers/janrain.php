@@ -1,7 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 require_once APPPATH . '/libraries/REST2_Controller.php';
-define('API_KEY', 'f6c1a3300b67b87fe4405473c1f73c34412f10a9');
 
 class Janrain extends REST2_Controller
 {
@@ -72,9 +71,14 @@ class Janrain extends REST2_Controller
         {
             $this->response($this->error->setError('INVALID_TOKEN'), 200);
         }
+        $janrain_api_key = getenv('JANRAIN_API_KEY');
+        if ($janrain_api_key === false || $janrain_api_key === '') {
+            log_message('error', 'Missing Janrain configuration: JANRAIN_API_KEY is required');
+            $this->response($this->error->setError('INTERNAL_ERROR'), 200);
+        }
         $post_data = array(
             'token' => $token,
-            'apiKey' => API_KEY,
+            'apiKey' => $janrain_api_key,
             'format' => 'json',
             'extended' => 'true'
         ); //Extended is not available to Basic.
