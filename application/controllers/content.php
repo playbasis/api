@@ -550,18 +550,23 @@ class Content extends REST2_Controller
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
         }
 
-        if($this->input->post('node_id')) {
-            if (strpos($this->input->post('node_id'), ' ') > 0) {
+        $nodeId = $this->input->post('node_id');
+        if($nodeId) {
+            if (!is_scalar($nodeId)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('node_id')), 200);
+            }
+            $nodeId = (string)$nodeId;
+            if (strpos($nodeId, ' ') > 0) {
                 $this->response($this->error->setError('CONTENT_NODE_ID_SPACE_EXIST'), 200);
             }
             else
             {
-                $check_node_id = $this->content_model->findContent($this->client_id, $this->site_id, $this->input->post('node_id'));
+                $check_node_id = $this->content_model->findContent($this->client_id, $this->site_id, $nodeId);
                 if($check_node_id)
                 {
                     $this->response($this->error->setError('CONTENT_NODE_ID_ALREADY_EXISTS'), 200);
                 }
-                $contentInfo['node_id'] = $this->input->post('node_id');
+                $contentInfo['node_id'] = $nodeId;
             }
         }
         else{
@@ -612,10 +617,15 @@ class Content extends REST2_Controller
         }
         $contentInfo['tags'] = $this->commaListParameter($this->input->post('tags'), 'tags');
 
-        if ($this->input->post('key')) {
+        $key = $this->input->post('key');
+        if ($key) {
             $data['custom'] = array();
-            $keys = str_getcsv($this->input->post('key'));
-            $values = str_getcsv($this->input->post('value'));
+            $value = $this->input->post('value');
+            if (!is_scalar($key) || (!is_scalar($value) && $value !== null)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('key','value')), 200);
+            }
+            $keys = str_getcsv((string)$key, ',', '"', '\\');
+            $values = str_getcsv((string)$value, ',', '"', '\\');
             foreach ($keys as $i => $key) {
                 $contentInfo['custom'][$key] = isset($values[$i]) ? $values[$i] : null;
             }
@@ -700,10 +710,15 @@ class Content extends REST2_Controller
             $contentInfo['tags'] = $this->commaListParameter($this->input->post('tags'), 'tags');
         }
 
-        if ($this->input->post('key')) {
+        $key = $this->input->post('key');
+        if ($key) {
             $data['custom'] = array();
-            $keys = str_getcsv($this->input->post('key'));
-            $values = str_getcsv($this->input->post('value'));
+            $value = $this->input->post('value');
+            if (!is_scalar($key) || (!is_scalar($value) && $value !== null)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('key','value')), 200);
+            }
+            $keys = str_getcsv((string)$key, ',', '"', '\\');
+            $values = str_getcsv((string)$value, ',', '"', '\\');
             foreach ($keys as $i => $key) {
                 $contentInfo['custom'][$key] = isset($values[$i]) ? $values[$i] : null;
             }
@@ -760,8 +775,12 @@ class Content extends REST2_Controller
 
         $key = $this->input->post('key');
         if ($key) {
-            $keys = str_getcsv($key);
-            $values = str_getcsv($this->input->post('value'));
+            $value = $this->input->post('value');
+            if (!is_scalar($key) || (!is_scalar($value) && $value !== null)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('key','value')), 200);
+            }
+            $keys = str_getcsv((string)$key, ',', '"', '\\');
+            $values = str_getcsv((string)$value, ',', '"', '\\');
             if (count($values) != count($keys)){
                 $this->response($this->error->setError('PARAMETER_INVALID', array('key','value')), 200);
             }
@@ -873,8 +892,12 @@ class Content extends REST2_Controller
         $key = $this->input->post('key');
         if ($key) {
             $data['custom'] = array();
-            $keys = str_getcsv($key);
-            $values = str_getcsv($this->input->post('value'));
+            $value = $this->input->post('value');
+            if (!is_scalar($key) || (!is_scalar($value) && $value !== null)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('key','value')), 200);
+            }
+            $keys = str_getcsv((string)$key, ',', '"', '\\');
+            $values = str_getcsv((string)$value, ',', '"', '\\');
             if (count($values) != count($keys)){
                 $this->response($this->error->setError('PARAMETER_INVALID', array('key','value')), 200);
             }
