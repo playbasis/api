@@ -69,7 +69,15 @@ class Quiz_model extends MY_Model
         $this->mongo_db->limit(1);
         $results = $this->mongo_db->get('playbasis_quiz_to_player');
 
-        return $results ? $results[0] : null;
+        if (!$results) {
+            return null;
+        }
+
+        $result = $results[0];
+        $result['questions'] = (isset($result['questions']) && is_array($result['questions'])) ? $result['questions'] : array();
+        $result['answers'] = (isset($result['answers']) && is_array($result['answers'])) ? $result['answers'] : array();
+
+        return $result;
     }
 
     public function find_quiz_by_player($client_id, $site_id, $pb_player_id, $limit = -1)
