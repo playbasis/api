@@ -1647,6 +1647,13 @@ class Player extends REST2_Controller
         }
         $gift_id = new MongoId($gift_id);
         $gift_value = $this->input->post('amount');
+        if (!is_scalar($gift_value) || filter_var($gift_value, FILTER_VALIDATE_INT) === false) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('amount')), 200);
+        }
+        $gift_value = (int)$gift_value;
+        if ($gift_value < 1) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('amount')), 200);
+        }
         $received_player_id = $this->input->post('received_player_id');
         $gift_type = strtoupper($gift_type);
         $gift_data = array();
