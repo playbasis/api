@@ -11,6 +11,10 @@ class Notification_model extends MY_Model
 
     public function list_messages($site_id)
     {
+        if ($site_id === null || $site_id === '' || $site_id === false) {
+            return array();
+        }
+
         $this->set_site_mongodb($site_id);
         return $this->mongo_db->get('playbasis_notification_log');
     }

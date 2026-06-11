@@ -165,6 +165,14 @@ class Notification extends Engine
 
     public function index_get()
     {
+        if (empty($this->validToken) || empty($this->client_id) || empty($this->site_id)) {
+            if (isset($this->auth_method) && $this->auth_method == 'api_key') {
+                $this->response($this->error->setError('INVALID_API_KEY_OR_SECRET'), 200);
+            }
+
+            $this->response($this->error->setError('INVALID_TOKEN'), 200);
+        }
+
         $messages = $this->notification_model->list_messages($this->site_id);
         $this->response($this->resp->setRespond($messages), 200);
     }
