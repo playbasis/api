@@ -385,15 +385,16 @@ class Redeem extends REST2_Controller
 
         $amount = $this->input->post('amount') ? (int)$this->input->post('amount') : 1;
 
+        $total = null;
         $goods = $this->goods_model->getGoodsByGroupAndPlayerId($this->validToken['client_id'],
-            $this->validToken['site_id'], $group, $pb_player_id, $amount);
+            $this->validToken['site_id'], $group, $pb_player_id, $amount, true, $total);
         if ($goods && !isset($goods['error'])) {
             for ($i = 0; $i < MAX_REDEEM_TRIES; $i++) { // try to redeem for a few times before giving up
                 log_message('debug', 'random = ' . $goods['goods_id']);
                 /* actual redemption */
                 try {
                     $redeemResult = $this->redeem($validToken['client_id'], $validToken['site_id'], $pb_player_id, $goods, $amount, $validToken,
-                        false, true, true);
+                        false, true, true, $total);
                     $this->benchmark->mark('goods_redeem_end');
                     $redeemResult['processing_time'] = $this->benchmark->elapsed_time('goods_redeem_start', 'goods_redeem_end');
                     $this->response($this->resp->setRespond($redeemResult), 200);
@@ -417,7 +418,7 @@ class Redeem extends REST2_Controller
                     }
                 }
                 $goods = $this->goods_model->getGoodsByGroupAndPlayerId($this->validToken['client_id'],
-                    $this->validToken['site_id'], $group, $pb_player_id, $amount);
+                    $this->validToken['site_id'], $group, $pb_player_id, $amount, true, $total);
             }
         } else {
             if(isset($goods['error'])) {
