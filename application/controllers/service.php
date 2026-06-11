@@ -257,6 +257,9 @@ class Service extends REST2_Controller
         if (!$activity_id) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('activity_id')), 200);
         }
+        if (!$this->isValidMongoId($activity_id)) {
+            $this->response($this->error->setError('EVENT_NOT_EXIST'), 200);
+        }
         $event_id = new MongoId($activity_id);
         $activity = $this->service_model->getEventById($this->site_id, $event_id);
         if (!$activity) {
@@ -272,7 +275,11 @@ class Service extends REST2_Controller
         if (!$activity_id) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('activity_id')), 200);
         }
-        $activity = $this->service_model->getEventById($this->site_id, new MongoId($activity_id));
+        if (!$this->isValidMongoId($activity_id)) {
+            $this->response($this->error->setError('EVENT_NOT_EXIST'), 200);
+        }
+        $event_id = new MongoId($activity_id);
+        $activity = $this->service_model->getEventById($this->site_id, $event_id);
         if (!$activity) {
             $this->response($this->error->setError('EVENT_NOT_EXIST'), 200);
         }
@@ -300,7 +307,11 @@ class Service extends REST2_Controller
         if (!$activity_id) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('activity_id')), 200);
         }
-        $activity = $this->service_model->getEventById($this->site_id, new MongoId($activity_id));
+        if (!$this->isValidMongoId($activity_id)) {
+            $this->response($this->error->setError('EVENT_NOT_EXIST'), 200);
+        }
+        $event_id = new MongoId($activity_id);
+        $activity = $this->service_model->getEventById($this->site_id, $event_id);
         if (!$activity) {
             $this->response($this->error->setError('EVENT_NOT_EXIST'), 200);
         }
@@ -333,6 +344,10 @@ class Service extends REST2_Controller
     public function reset_point_post()
     {
         $reward_name = $this->input->post('point_name');
+        if (!is_scalar($reward_name) && $reward_name !== null) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('point_name')), 200);
+        }
+        $reward_name = $reward_name === null ? null : (string)$reward_name;
 
         if (strtolower($reward_name) == "exp") {
             $this->response($this->error->setError('REWARD_NOT_FOUND'), 200);
@@ -357,5 +372,10 @@ class Service extends REST2_Controller
         }
 
         $this->response($this->resp->setRespond(array("reset" => true)), 200);
+    }
+
+    private function isValidMongoId($id)
+    {
+        return preg_match('/^[0-9a-f]{24}$/i', (string)$id) === 1;
     }
 }
