@@ -118,6 +118,9 @@ class Quiz extends REST2_Controller
         if (empty($quiz_id)) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('quiz_id')), 200);
         }
+        if (!$this->is_valid_mongo_id($quiz_id)) {
+            $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
+        }
         $quiz_id = new MongoId($quiz_id);
         $result = $this->quiz_model->find_by_id($this->client_id, $this->site_id, $quiz_id);
         if ($result === null) {
@@ -274,6 +277,9 @@ class Quiz extends REST2_Controller
         /* param "quiz_id" */
         if (empty($quiz_id)) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('quiz_id')), 200);
+        }
+        if (!$this->is_valid_mongo_id($quiz_id)) {
+            $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
         }
         $quiz_id = new MongoId($quiz_id);
         $quiz = $this->quiz_model->find_by_id($this->client_id, $this->site_id, $quiz_id);
@@ -447,6 +453,9 @@ class Quiz extends REST2_Controller
         if (empty($quiz_id)) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('quiz_id')), 200);
         }
+        if (!$this->is_valid_mongo_id($quiz_id)) {
+            $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
+        }
         $quiz_id = new MongoId($quiz_id);
         $quiz = $this->quiz_model->find_by_id($this->client_id, $this->site_id, $quiz_id);
         if ($quiz === null) {
@@ -614,6 +623,9 @@ class Quiz extends REST2_Controller
         if (empty($quiz_id)) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('quiz_id')), 200);
         }
+        if (!$this->is_valid_mongo_id($quiz_id)) {
+            $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
+        }
         $quiz_id = new MongoId($quiz_id);
         $quiz = $this->quiz_model->find_by_id($this->client_id, $this->site_id, $quiz_id);
         if ($quiz === null) {
@@ -639,6 +651,9 @@ class Quiz extends REST2_Controller
         if ($question_id === false) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('question_id')), 200);
         }
+        if (!$this->is_valid_mongo_id($question_id)) {
+            $this->response($this->error->setError('QUIZ_QUESTION_NOT_FOUND'), 200);
+        }
         $question_id = new MongoId($question_id);
         $question = null;
         $total_max_score = 0;
@@ -659,7 +674,22 @@ class Quiz extends REST2_Controller
         }
 
         $is_multiple_choice = isset($question['is_multiple_choices']) ? $question['is_multiple_choices'] : false;
-        $option_id = $is_multiple_choice ? explode(',',$option_id) : new MongoId($option_id);
+        if (!is_scalar($option_id)) {
+            $this->response($this->error->setError('QUIZ_OPTION_NOT_FOUND'), 200);
+        }
+        $option_id = $is_multiple_choice ? explode(',',$option_id) : $option_id;
+        if ($is_multiple_choice) {
+            foreach ($option_id as $optionId) {
+                if (!$this->is_valid_mongo_id(trim($optionId))) {
+                    $this->response($this->error->setError('QUIZ_OPTION_NOT_FOUND'), 200);
+                }
+            }
+        } else {
+            if (!$this->is_valid_mongo_id($option_id)) {
+                $this->response($this->error->setError('QUIZ_OPTION_NOT_FOUND'), 200);
+            }
+            $option_id = new MongoId($option_id);
+        }
         $answer = $is_multiple_choice ? explode(',',$this->input->post('answer')) : $this->input->post('answer');
         $ans = null;
         $option = $is_multiple_choice ? array() : null;
@@ -969,6 +999,9 @@ class Quiz extends REST2_Controller
         if (empty($quiz_id)) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('quiz_id')), 200);
         }
+        if (!$this->is_valid_mongo_id($quiz_id)) {
+            $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
+        }
         $quiz_id = new MongoId($quiz_id);
         $quiz = $this->quiz_model->find_by_id($this->client_id, $this->site_id, $quiz_id);
         if ($quiz === null) {
@@ -1015,6 +1048,9 @@ class Quiz extends REST2_Controller
         /* param "quiz_id" */
         if (empty($quiz_id)) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('quiz_id')), 200);
+        }
+        if (!$this->is_valid_mongo_id($quiz_id)) {
+            $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
         }
         $quiz_id = new MongoId($quiz_id);
         $quiz = $this->quiz_model->find_by_id($this->client_id, $this->site_id, $quiz_id);
@@ -1079,6 +1115,9 @@ class Quiz extends REST2_Controller
         if (empty($quiz_id)) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('quiz_id')), 200);
         }
+        if (!$this->is_valid_mongo_id($quiz_id)) {
+            $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
+        }
         $quiz_id = new MongoId($quiz_id);
         $quiz = $this->quiz_model->find_by_id($this->client_id, $this->site_id, $quiz_id);
         if ($quiz === null) {
@@ -1114,7 +1153,11 @@ class Quiz extends REST2_Controller
             $this->response($this->error->setError('USER_NOT_EXIST'), 200);
         }
 
-        $quiz_id = $this->input->post('quiz_id') ? new MongoId($this->input->post('quiz_id')) : null;
+        $quiz_id = $this->input->post('quiz_id');
+        if ($quiz_id && !$this->is_valid_mongo_id($quiz_id)) {
+            $this->response($this->error->setError('QUIZ_NOT_FOUND'), 200);
+        }
+        $quiz_id = $quiz_id ? new MongoId($quiz_id) : null;
         $results = $this->quiz_model->delete($this->client_id, $this->site_id, $pb_player_id, $quiz_id);
 
         $this->benchmark->mark('end');
@@ -1238,6 +1281,11 @@ class Quiz extends REST2_Controller
             }
         }
         return $events;
+    }
+
+    private function is_valid_mongo_id($id)
+    {
+        return is_scalar($id) && preg_match('/^[0-9a-f]{24}$/i', (string)$id) === 1;
     }
 
     private function publish_event($client_id, $site_id, $pb_player_id, $cl_player_id, $quiz, $site_name, $event)
