@@ -38,7 +38,17 @@ abstract class REST2_Controller extends REST_Controller
         if (empty($api_key)) {
             $api_key = $this->input->post('api_key');
         }
+        $this->rejectNonScalarCredential($token, 'token');
+        $this->rejectNonScalarCredential($api_key, 'api_key');
         return $this->_early_checks($token, $api_key);
+    }
+
+    private function rejectNonScalarCredential($value, $field)
+    {
+        if ($value !== false && $value !== null && $value !== '' && !is_scalar($value)) {
+            $this->load->model('tool/error', 'error');
+            $this->response($this->error->setError('PARAMETER_INVALID', array($field)), 200);
+        }
     }
 
     protected function _early_checks($token=null, $api_key=null)

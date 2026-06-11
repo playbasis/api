@@ -251,6 +251,11 @@ class Auth_model extends MY_Model
 
     public function findToken($token)
     {
+        if ($token === false || $token === null || $token === '' || !is_scalar($token)) {
+            return null;
+        }
+
+        $token = (string)$token;
         $this->set_site_mongodb(0);
         $this->mongo_db->select(array(
             'client_id',
@@ -319,6 +324,11 @@ class Auth_model extends MY_Model
 
     public function createTokenFromAPIKey($apiKey)
     {
+        if ($apiKey === false || $apiKey === null || $apiKey === '' || !is_scalar($apiKey)) {
+            return null;
+        }
+
+        $apiKey = (string)$apiKey;
         $this->set_site_mongodb(0);
         $this->auth_method = "api_key";
         $this->mongo_db->select(array(
