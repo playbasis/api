@@ -15,8 +15,8 @@ import org.junit.Test;
  */
 public class PlaybasisTest {
 
-    public static final String authKey = "abc";
-    public static final String authSecret = "abcde";
+    public static final String authKey = "YOUR_API_KEY";
+    public static final String authSecret = "YOUR_API_SECRET";
     public static final String cl_player_id1 = "1";
     public static final String cl_player_id1_exp = "123";
     public static final String cl_player_id1_level = "11";

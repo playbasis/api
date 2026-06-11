@@ -5,7 +5,7 @@ include Test::Unit::Assertions
 pb = Playbasis.new()
 
 puts 'auth'
-result = pb.auth('abc','abcde')
+result = pb.auth('YOUR_API_KEY','YOUR_API_SECRET')
 pp result
 
 id = '1'

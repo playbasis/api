@@ -24,7 +24,7 @@ namespace test.pblib.NET
 		static void Main(string[] args)
 		{
 			var pb = new Playbasis();
-			if(!pb.auth("abc", "abcde"))
+			if(!pb.auth("YOUR_API_KEY", "YOUR_API_SECRET"))
 				Debug.Assert(false); //authentication failed
 
 			string id = "1";

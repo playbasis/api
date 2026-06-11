@@ -636,7 +636,7 @@ public class Playbasis
 	public static void main(String[] args) {
 		Playbasis pb = new Playbasis();
 		
-		boolean result = pb.auth("abc", "abcde");
+		boolean result = pb.auth("YOUR_API_KEY", "YOUR_API_SECRET");
 		System.out.println("testPlaybasis: Auth return is"+result);
 		if(result){
 			Request request = null;
