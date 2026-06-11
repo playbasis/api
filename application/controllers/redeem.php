@@ -62,6 +62,9 @@ class Redeem extends REST2_Controller
         }
 
         $goods_id = $this->input->post('goods_id');
+        if (!preg_match('/^[0-9a-f]{24}$/i', (string)$goods_id)) {
+            $this->response($this->error->setError('GOODS_NOT_FOUND'), 200);
+        }
         $goods = $this->goods_model->getGoods(array_merge($validToken, array(
             'goods_id' => new MongoId($goods_id)
         )));
@@ -152,6 +155,9 @@ class Redeem extends REST2_Controller
         }
 
         $goods_id = $this->input->post('goods_id');
+        if (!preg_match('/^[0-9a-f]{24}$/i', (string)$goods_id)) {
+            $this->response($this->error->setError('GOODS_NOT_FOUND'), 200);
+        }
         $goods = $this->goods_model->getGoods(array_merge($validToken, array(
             'goods_id' => new MongoId($goods_id)
         )), true);
