@@ -174,6 +174,9 @@ class Pb_sms extends REST2_Controller
                 $this->response($this->error->setError('REFERENCE_ID_INVALID'), 200);
             }
             $redeemData = $this->redeem_model->findByReferenceId('goods', new MongoId($ref_id));
+            if (!$redeemData) {
+                $this->response($this->error->setError('REFERENCE_ID_INVALID'), 200);
+            }
 
             /* check valid template_id */
             $message = null;
