@@ -172,10 +172,14 @@ class Custompoint extends REST2_Controller
         if ($required) {
             $this->response($this->error->setError('PARAMETER_MISSING', $required), 200);
         }
+        $log_id = $this->input->post('log_id');
+        if (!preg_match('/^[0-9a-f]{24}$/i', (string)$log_id)) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('log_id')), 200);
+        }
         $data = array(
             'client_id' => $this->validToken['client_id'],
             'site_id' => $this->validToken['site_id'],
-            'log_id' => new MongoId($this->input->post('log_id')),
+            'log_id' => new MongoId($log_id),
             'status' => false
         );
 
