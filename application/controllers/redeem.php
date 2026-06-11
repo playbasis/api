@@ -28,6 +28,24 @@ class Redeem extends REST2_Controller
         $this->load->model('tool/respond', 'resp');
     }
 
+    private function redeemAmount($source)
+    {
+        $amount = $source == 'get' ? $this->input->get('amount') : $this->input->post('amount');
+        if ($amount === false || $amount === null || $amount === '') {
+            return 1;
+        }
+        if (!is_scalar($amount) || filter_var($amount, FILTER_VALIDATE_INT) === false) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('amount')), 200);
+        }
+
+        $amount = (int)$amount;
+        if ($amount < 1) {
+            $this->response($this->error->setError('PARAMETER_INVALID', array('amount')), 200);
+        }
+
+        return $amount;
+    }
+
     public function goods_post()
     {
         $this->benchmark->mark('goods_redeem_start');
@@ -78,7 +96,7 @@ class Redeem extends REST2_Controller
                 $this->response($this->error->setError('GOODS_NOT_FOUND'), 200);
             }
         }
-        $amount = $this->input->post('amount') ? (int)$this->input->post('amount') : 1;
+        $amount = $this->redeemAmount('post');
 
         $redeemResult = null;
         try {
@@ -162,7 +180,7 @@ class Redeem extends REST2_Controller
             'goods_id' => new MongoId($goods_id)
         )), true);
 
-        $amount = $this->input->post('amount') ? (int)$this->input->post('amount') : 1;
+        $amount = $this->redeemAmount('post');
 
         $redeemResult = null;
         try {
@@ -205,7 +223,7 @@ class Redeem extends REST2_Controller
 
         $group = $this->input->get('group');
 
-        $amount = $this->input->get('amount') ? (int)$this->input->get('amount') : 1;
+        $amount = $this->redeemAmount('get');
 
         $n = $this->goods_model->countGoodsByGroup($this->validToken['client_id'], $this->validToken['site_id'], $group,
             $pb_player_id, $amount);
@@ -234,7 +252,7 @@ class Redeem extends REST2_Controller
 
         $group = $this->input->get('group');
 
-        $amount = $this->input->get('amount') ? (int)$this->input->get('amount') : 1;
+        $amount = $this->redeemAmount('get');
 
         $n = $this->goods_model->countGoodsByGroup($this->validToken['client_id'], $this->validToken['site_id'], $group,
             $pb_player_id, $amount, true);
@@ -264,7 +282,7 @@ class Redeem extends REST2_Controller
 
         $group = $this->input->post('group');
 
-        $amount = $this->input->post('amount') ? (int)$this->input->post('amount') : 1;
+        $amount = $this->redeemAmount('post');
 
         $org_list = $this->store_org_model->retrieveNodeByPBPlayerID($this->client_id, $this->site_id, $pb_player_id);
         $org_id_list = array();
@@ -383,7 +401,7 @@ class Redeem extends REST2_Controller
 
         $group = $this->input->post('group');
 
-        $amount = $this->input->post('amount') ? (int)$this->input->post('amount') : 1;
+        $amount = $this->redeemAmount('post');
 
         $total = null;
         $goods = $this->goods_model->getGoodsByGroupAndPlayerId($this->validToken['client_id'],
