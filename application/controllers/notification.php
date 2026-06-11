@@ -293,6 +293,9 @@ class Notification extends Engine
                     $plan_id = new MongoId($plan_id_value);
 
                     log_message('debug', 'process: _POST = ' . print_r($_POST, true));
+                    if (!$log_id) {
+                        $log_id = $this->notification_model->log($this->site_id, $_POST, true);
+                    }
                     $result = $this->payment_model->processVerifiedIPN($client_id, $plan_id, $_POST, $log_id);
                     log_message('debug', 'process: result = ' . $result);
 
