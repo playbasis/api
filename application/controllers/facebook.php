@@ -18,7 +18,11 @@ class Facebook extends REST2_Controller
         //$mode = $this->input->get('hub_mode');
         //$verifyToken = $this->input->get('hub_verify_token');
         $challenge = $this->input->get('hub_challenge');
-        echo $challenge;
+        if (!is_scalar($challenge)) {
+            $this->output->set_status_header('400');
+            return;
+        }
+        echo (string)$challenge;
     }
 
     public function realtimeupdate_post()

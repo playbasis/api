@@ -15,8 +15,13 @@ class Instagram extends REST2_Controller
     public function feed_get()
     {
         $hub_mode = $this->input->get('hub_mode');
-        if ($hub_mode == 'subscribe') {
-            echo $this->input->get('hub_challenge');
+        if (is_scalar($hub_mode) && (string)$hub_mode === 'subscribe') {
+            $challenge = $this->input->get('hub_challenge');
+            if (!is_scalar($challenge)) {
+                $this->output->set_status_header('400');
+                return;
+            }
+            echo (string)$challenge;
         } else {
             echo 'playbasis <3 instagram';
         }

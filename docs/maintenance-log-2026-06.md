@@ -27,6 +27,10 @@ These repositories do not currently rely on public CI checks as the merge gate. 
 - Preserve issue-specific checks for security, config, and tenant-guard changes.
 - Stop on conflicts, lint failures, or replay failures.
 
+## Continuation Ledger
+
+- 2026-06-13: Main session, `playbasis/api`, branch `codex/fix-social-callback-challenge-shape`; scope: guard Facebook and Instagram verification challenge callbacks against non-scalar `hub_challenge` values; intended files: `application/controllers/facebook.php`, `application/controllers/instagram.php`, and this ledger; status: PR branch prepared; blockers: none.
+
 ## Public Message
 
 The reset should be presented candidly:
