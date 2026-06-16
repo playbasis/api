@@ -109,18 +109,47 @@ class Playbasis extends REST2_Controller
         return $cache[$key] && array_key_exists($field, $cache[$key]) ? $cache[$key][$field] : null;
     }
 
+    private function requireDebugKey()
+    {
+        $debug_key = $this->input->get('debug_key');
+        if (!is_string($debug_key) || DEBUG_KEY === '') {
+            show_404();
+            return false;
+        }
+
+        $matches = function_exists('hash_equals') ? hash_equals(DEBUG_KEY, $debug_key) : DEBUG_KEY === $debug_key;
+        if (!$matches) {
+            show_404();
+            return false;
+        }
+
+        return true;
+    }
+
     public function test()
     {
+        if (!$this->requireDebugKey()) {
+            return;
+        }
+
         $this->load->view('playbasis/apitest');
     }
 
     public function fb()
     {
+        if (!$this->requireDebugKey()) {
+            return;
+        }
+
         $this->load->view('playbasis/fb');
     }
 
     public function login()
     {
+        if (!$this->requireDebugKey()) {
+            return;
+        }
+
         $this->load->view('playbasis/login');
     }
 

@@ -399,11 +399,8 @@ $route['Location'] = 'location/list';
 $route['Language'] = 'language/list';
 
 //misc
-//$route['test']	= 'playbasis/test';
-$route['test']	= 'notification/index';
 $route['fb'] = 'playbasis/fb';
 $route['login'] = 'playbasis/login';
-$route['memtest'] = 'playbasis/memtest';
 
 //Timestamp API
 $route['Timestamp']	= 'timestamp/index';
