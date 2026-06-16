@@ -270,6 +270,59 @@ class Notification extends Engine
         return is_string($path) && preg_match('/\.pem$/i', $path) === 1;
     }
 
+    private function isValidStripeWebhookSignature($payload, $signatureHeader)
+    {
+        if (!defined('STRIPE_WEBHOOK_SECRET') || STRIPE_WEBHOOK_SECRET === '') {
+            return true;
+        }
+
+        if (!is_string($payload) || $payload === '' || !is_string($signatureHeader) || $signatureHeader === '') {
+            return false;
+        }
+
+        $timestamp = null;
+        $signatures = array();
+        foreach (explode(',', $signatureHeader) as $part) {
+            $pair = explode('=', trim($part), 2);
+            if (count($pair) !== 2) {
+                continue;
+            }
+
+            if ($pair[0] === 't') {
+                $timestamp = $pair[1];
+            } elseif ($pair[0] === 'v1') {
+                $signatures[] = $pair[1];
+            }
+        }
+
+        if (!$timestamp || !ctype_digit($timestamp) || empty($signatures)) {
+            return false;
+        }
+
+        $timestamp = (int)$timestamp;
+        if (abs(time() - $timestamp) > 300) {
+            return false;
+        }
+
+        $expected = hash_hmac('sha256', $timestamp . '.' . $payload, STRIPE_WEBHOOK_SECRET);
+        foreach ($signatures as $signature) {
+            if ($this->constantTimeEquals($expected, $signature)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function constantTimeEquals($expected, $actual)
+    {
+        if (!is_string($expected) || !is_string($actual)) {
+            return false;
+        }
+
+        return function_exists('hash_equals') ? hash_equals($expected, $actual) : $expected === $actual;
+    }
+
     public function index_get()
     {
         if (empty($this->validToken) || empty($this->client_id) || empty($this->site_id)) {
@@ -837,6 +890,11 @@ class Notification extends Engine
                                     if (!STRIPE_API_KEY) {
                                         log_message('error', 'Missing STRIPE_API_KEY for Stripe notification handling');
                                         $this->response($this->error->setError('STRIPE_NOT_CONFIGURED'), 500);
+                                    }
+                                    $stripe_signature = isset($_SERVER['HTTP_STRIPE_SIGNATURE']) ? $_SERVER['HTTP_STRIPE_SIGNATURE'] : null;
+                                    if (!$this->isValidStripeWebhookSignature($this->request->raw, $stripe_signature)) {
+                                        log_message('error', 'Invalid Stripe webhook signature');
+                                        $this->response($this->error->setError('INVALID_STRIPE_SIGNATURE'), 400);
                                     }
                                     require_once(APPPATH . '/libraries/stripe/init.php');
                                     \Stripe\Stripe::setApiKey(STRIPE_API_KEY);

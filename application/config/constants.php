@@ -45,6 +45,7 @@ define('PAYMENT_CHANNEL_PAYPAL', 'PayPal');
 define('PAYMENT_CHANNEL_STRIPE', 'Stripe');
 define('STRIPE_API_KEY', getenv('STRIPE_API_KEY') ?: '');
 define('STRIPE_PUBLISHABLE_KEY', getenv('STRIPE_PUBLISHABLE_KEY') ?: '');
+define('STRIPE_WEBHOOK_SECRET', getenv('STRIPE_WEBHOOK_SECRET') ?: '');
 define('PAYPAL_ENV', '');
 define('PAYPAL_IPN_VERIFIED', 'VERIFIED');
 define('PAYPAL_IPN_INVALID', 'INVALID');
