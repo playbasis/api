@@ -89,6 +89,8 @@ Application and integration configuration is split across files under `applicati
 - `S3_KEY`
 - `S3_SECRET`
 - `S3_ENDPOINT`
+- `S3_BUCKET`
+- `S3_IMAGE`
 
 Legacy Node services also read `PORT`, and `iodocs` can read `REDISTOGO_URL`.
 

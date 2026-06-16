@@ -3,7 +3,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 require_once APPPATH . '/libraries/REST2_Controller.php';
 require_once APPPATH . '/libraries/S3.php';
 define('MAX_UPLOADED_FILE_SIZE', 3 * 1024 * 1024);
-define('S3_BUCKET', 'elasticbeanstalk-ap-southeast-1-007834438823');
 
 class File extends REST2_Controller
 {
@@ -82,12 +81,21 @@ class File extends REST2_Controller
             }
             $directory = $this->normalizeDirectory(isset($input['directory']) ? $input['directory'] : null);
             $filename = basename(html_entity_decode($image['name'], ENT_QUOTES, 'UTF-8'));
+            $extension = strtolower((string)pathinfo($filename, PATHINFO_EXTENSION));
 
-            $t = explode('.', $filename);
-            $type = end($t);
+            $allowed_mimes_by_extension = array(
+                'jpg' => array('image/jpeg', 'image/pjpeg'),
+                'jpeg' => array('image/jpeg', 'image/pjpeg'),
+                'png' => array('image/png', 'image/x-png'),
+                'gif' => array('image/gif'),
+                'tiff' => array('image/tiff')
+            );
+            if (!isset($allowed_mimes_by_extension[$extension])) {
+                $this->response($this->error->setError('FILE_TYPE_NOT_ALLOWED'), 200);
+            }
 
             // Save as unique file ID with current datetime
-            $filename = md5(rtrim($client_id . $site_id . $filename.strtotime('now')))."." . $type;
+            $filename = md5(rtrim($client_id . $site_id . $filename.strtotime('now')))."." . $extension;
 
             if ((strlen($filename) < 3) || (strlen($filename) > 255)) {
                 $this->response($this->error->setError('FILE_NAME_IS_INVALID'), 200);
@@ -103,7 +111,11 @@ class File extends REST2_Controller
                 $this->response($this->error->setError('UPLOAD_FILE_TOO_LARGE'), 200);
             }
 
-            $image_info = getimagesize($image["tmp_name"]);
+            $image_info = @getimagesize($image["tmp_name"]);
+            if ($image_info === false || empty($image_info['mime'])) {
+                $this->response($this->error->setError('FILE_TYPE_NOT_ALLOWED'), 200);
+            }
+
             $image_width = $image_info[0];
             $image_height = $image_info[1];
 
@@ -122,29 +134,7 @@ class File extends REST2_Controller
                 $this->response($this->error->setError('IMAGE_HEIGHT_IS_INVALID'), 200);
             }
 
-            $allowed = array(
-                'image/jpeg',
-                'image/pjpeg',
-                'image/png',
-                'image/x-png',
-                'image/gif',
-                'image/tiff',
-                'application/x-shockwave-flash',
-                'application/octet-stream'
-            );
-            if (!in_array($image['type'], $allowed)) {
-                $this->response($this->error->setError('FILE_TYPE_NOT_ALLOWED'), 200);
-            }
-
-            $allowed = array(
-                '.jpg',
-                '.jpeg',
-                '.gif',
-                '.png',
-                '.tiff',
-                '.flv'
-            );
-            if (!in_array(strtolower(strrchr($filename, '.')), $allowed)) {
+            if (!in_array($image['type'], $allowed_mimes_by_extension[$extension])) {
                 $this->response($this->error->setError('FILE_TYPE_NOT_ALLOWED'), 200);
             }
 
