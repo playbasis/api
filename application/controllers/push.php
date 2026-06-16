@@ -1,7 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 require_once APPPATH . '/libraries/REST2_Controller.php';
-require_once APPPATH . '/libraries/ApnsPHP/Autoload.php';
 
 class Push extends REST2_Controller
 {
