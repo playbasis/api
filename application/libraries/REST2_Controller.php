@@ -51,6 +51,71 @@ abstract class REST2_Controller extends REST_Controller
         }
     }
 
+    private function redactCredentialForLog($value)
+    {
+        return !empty($value) ? '[redacted]' : null;
+    }
+
+    private function isSensitiveLogKey($key)
+    {
+        $key = strtolower((string)$key);
+        return preg_match('/(^|[\[\]_-])(api[_-]?key|token|access[_-]?token|refresh[_-]?token|auth[_-]?token|client[_-]?secret|password|passwd|secret)([\[\]_-]|$)/', $key) === 1;
+    }
+
+    private function redactQueryStringForLog($query)
+    {
+        if ($query === null || $query === '') {
+            return $query;
+        }
+
+        $parts = explode('&', (string)$query);
+        foreach ($parts as $index => $part) {
+            $pair = explode('=', $part, 2);
+            $key = rawurldecode($pair[0]);
+            if ($this->isSensitiveLogKey($key)) {
+                $parts[$index] = $pair[0] . '=[redacted]';
+            }
+        }
+
+        return implode('&', $parts);
+    }
+
+    private function redactStringForLog($value)
+    {
+        $value = preg_replace(
+            '/((?:api[_-]?key|token|access[_-]?token|refresh[_-]?token|auth[_-]?token|client[_-]?secret|password|passwd|secret)=)[^&\s]+/i',
+            '$1[redacted]',
+            $value
+        );
+
+        return preg_replace(
+            '/("(?:api[_-]?key|token|access[_-]?token|refresh[_-]?token|auth[_-]?token|client[_-]?secret|password|passwd|secret)"\s*:\s*")[^"]*(")/i',
+            '$1[redacted]$2',
+            $value
+        );
+    }
+
+    private function redactRequestDataForLog($data)
+    {
+        if (is_array($data)) {
+            $redacted = array();
+            foreach ($data as $key => $value) {
+                if ($this->isSensitiveLogKey($key)) {
+                    $redacted[$key] = '[redacted]';
+                } else {
+                    $redacted[$key] = $this->redactRequestDataForLog($value);
+                }
+            }
+            return $redacted;
+        }
+
+        if (is_string($data)) {
+            return $this->redactStringForLog($data);
+        }
+
+        return $data;
+    }
+
     protected function _early_checks($token=null, $api_key=null)
     {
         /* 0.1 Load libraries */
@@ -89,15 +154,15 @@ abstract class REST2_Controller extends REST_Controller
             $this->log_id = $this->rest_model->logRequest(array(
                 'client_id' => $this->client_id,
                 'site_id' => $this->site_id,
-                'api_key' => !empty($api_key) ? $api_key : null,
-                'token' => !empty($token) ? $token : null,
+                'api_key' => $this->redactCredentialForLog($api_key),
+                'token' => $this->redactCredentialForLog($token),
                 'class_name' => null,
                 'class_method' => null,
                 'method' => $this->request->method,
                 'scheme' => isset($_SERVER['REQUEST_SCHEME']) && $_SERVER['REQUEST_SCHEME'] ? $_SERVER['REQUEST_SCHEME'] : (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] ? 'https' : 'http'),
                 'uri' => $this->uri->uri_string(),
-                'query' => isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : null,
-                'request' => !empty($this->request->body) ? $this->request->body : $_POST,
+                'query' => $this->redactQueryStringForLog(isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : null),
+                'request' => $this->redactRequestDataForLog(!empty($this->request->body) ? $this->request->body : $_POST),
                 'response' => null,
                 'format' => null,
                 'ip' => $this->input->ip_address(),
