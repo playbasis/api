@@ -27,6 +27,8 @@ These repositories do not currently rely on public CI checks as the merge gate. 
 - Preserve issue-specific checks for security, config, and tenant-guard changes.
 - Stop on conflicts, lint failures, or replay failures.
 
+The repositories include bundled legacy third-party adapters under `application/libraries`. Syntax failures in any PHP file are blockers. Deprecation warnings from untouched bundled adapters are tracked as compatibility debt rather than blocking unrelated fixes. If a change touches or depends on one of those adapters, verify that adapter directly and document the config/runtime assumptions in the PR.
+
 ## Continuation Ledger
 
 - 2026-06-13: Main session, `playbasis/api`, branch `codex/fix-social-callback-challenge-shape`; scope: guard Facebook and Instagram verification challenge callbacks against non-scalar `hub_challenge` values; intended files: `application/controllers/facebook.php`, `application/controllers/instagram.php`, and this ledger; status: PR branch prepared; blockers: none.
