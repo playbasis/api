@@ -23,6 +23,11 @@ class Email extends REST2_Controller
         $this->load->library('parser');
     }
 
+    private function loadAmazonSes()
+    {
+        $this->load->library('amazon_ses');
+    }
+
     private function commaListParameter($value, $parameter)
     {
         if (!is_scalar($value) && $value !== null) {
@@ -142,6 +147,7 @@ class Email extends REST2_Controller
             $_to = $this->filter_email_out($to, $this->site_id);
             if (count($_to) > 0) {
                 /* send the email */
+                $this->loadAmazonSes();
                 $this->amazon_ses->from(EMAIL_FROM, $from);
                 $this->amazon_ses->subject($subject);
                 $this->amazon_ses->message($htmlMessage);

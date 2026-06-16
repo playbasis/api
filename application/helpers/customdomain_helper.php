@@ -12,6 +12,7 @@ function get_verified_custom_domain($client_id, $site_id)
             $domain_name = $email_array[1];
 
             // check domain's status from amazon ses
+            $CI->load->library('amazon_ses');
             $domain_verification = $CI->amazon_ses->get_identity_verification($domain_name);
             if (isset($domain_verification['VerificationStatus']) && $domain_verification['VerificationStatus'] == "Success") {
                 $data = array('client_id'=>$client_id,

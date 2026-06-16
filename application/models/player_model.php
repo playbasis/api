@@ -1563,6 +1563,7 @@ class Player_model extends MY_Model
                 $this->email->message($htmlMessage);
                 $this->email->send();*/
 
+                $this->load->library('amazon_ses');
                 $this->amazon_ses->from(EMAIL_FROM, 'Playbasis');
                 $this->amazon_ses->to('cscteam@playbasis.com,devteam@playbasis.com');
                 $this->amazon_ses->subject($subject);
