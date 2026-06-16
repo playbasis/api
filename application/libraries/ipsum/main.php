@@ -8,10 +8,10 @@
  * @name main.php
  */
 
-require_once 'Calculator.class.php';
+require_once __DIR__ . '/Calculator.class.php';
 
 /* if you want use the Calculator, you don't need to include the Parser.class.php */
-require_once 'Parser.class.php';
+require_once __DIR__ . '/Parser.class.php';
 
 /**
  * @method divide2

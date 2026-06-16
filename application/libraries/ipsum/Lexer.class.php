@@ -8,7 +8,7 @@
  * @name Lexer.class.php
  */
 
-require_once 'Morphem.class.php';
+require_once __DIR__ . '/Morphem.class.php';
 
 class Lexer{
     
