@@ -12,6 +12,11 @@ class Push_model extends MY_Model
         $this->load->library('mongo_db');
     }
 
+    private function ensureApnsLoaded()
+    {
+        require_once APPPATH . '/libraries/ApnsPHP/Autoload.php';
+    }
+
     public function signAsyncPayload($notificationInfo, $type, $client_id, $site_id)
     {
         $signedInfo = $notificationInfo;
@@ -97,6 +102,7 @@ class Push_model extends MY_Model
         $type = strtolower($type);
         switch ($type) {
             case "ios":
+                $this->ensureApnsLoaded();
                 $setup = $this->getIosSetup($data['data']['client_id'], $data['data']['site_id']);
                 if (!$setup) {
                     break;
@@ -242,6 +248,7 @@ class Push_model extends MY_Model
 
     public function server($data)
     {
+        $this->ensureApnsLoaded();
 
         $server = new ApnsPHP_Push_Server(
             ApnsPHP_Abstract::ENVIRONMENT_PRODUCTION,

@@ -2,8 +2,6 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 require_once APPPATH . '/libraries/REST2_Controller.php';
 require_once(APPPATH . 'controllers/quest.php');
-require_once APPPATH . '/libraries/ApnsPHP/Autoload.php';
-require_once APPPATH . '/libraries/ipsum/Parser.class.php';
 
 /*function myround2($number){
     $result  = round($number,2);
@@ -41,6 +39,11 @@ class Engine extends Quest
         $this->load->model('location_model');
         $this->load->model('link_model');
         $this->load->model('custom_reward_model');
+    }
+
+    private function ensureIpsumParserLoaded()
+    {
+        require_once APPPATH . '/libraries/ipsum/Parser.class.php';
     }
 
     public function getActionConfig_get()
@@ -1052,6 +1055,7 @@ class Engine extends Quest
                             $f = str_replace('{' . $key . '}', $value, $f);
                         }
 
+                        $this->ensureIpsumParserLoaded();
                         $parser = new Parser($f);
 
                         //$parser->addFunction('round2', 'myround2');
@@ -1083,6 +1087,7 @@ class Engine extends Quest
                                 $f = str_replace('{' . $key . '}', $value, $f);
                             }
 
+                            $this->ensureIpsumParserLoaded();
                             $parser = new Parser($f);
                             try {
                                 $jigsawConfigGroup['quantity'] = intval($parser->run());
