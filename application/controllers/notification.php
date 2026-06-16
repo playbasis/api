@@ -50,17 +50,12 @@ class Notification extends Engine
             'SigningCertURL'
         );
 
-        foreach ($required as $field) {
-            if (!array_key_exists($field, $message) || !is_string($message[$field]) || $message[$field] === '') {
-                return false;
-            }
-        }
-
-        return $message['Type'] === 'SubscriptionConfirmation'
+        return $this->hasRequiredSnsStringFields($message, $required)
+            && $message['Type'] === 'SubscriptionConfirmation'
             && in_array($message['SignatureVersion'], array('1', '2'), true)
             && $this->matchesSnsHeaders($message)
             && $this->isAwsSnsUrl($message['SubscribeURL'])
-            && $this->isAwsSnsUrl($message['SigningCertURL'])
+            && $this->isAwsSnsSigningCertUrl($message['SigningCertURL'])
             && $this->verifySnsSignature($message, array(
                 'Message',
                 'MessageId',
@@ -72,9 +67,109 @@ class Notification extends Engine
             ));
     }
 
+    private function isValidSnsNotification($message)
+    {
+        if (!is_array($message)) {
+            return false;
+        }
+
+        $required = array(
+            'Type',
+            'MessageId',
+            'TopicArn',
+            'Message',
+            'Timestamp',
+            'SignatureVersion',
+            'Signature',
+            'SigningCertURL'
+        );
+
+        $fields = array('Message', 'MessageId');
+        if (array_key_exists('Subject', $message) && is_string($message['Subject'])) {
+            $fields[] = 'Subject';
+        }
+        $fields = array_merge($fields, array('Timestamp', 'TopicArn', 'Type'));
+
+        return $this->hasRequiredSnsStringFields($message, $required)
+            && $message['Type'] === 'Notification'
+            && in_array($message['SignatureVersion'], array('1', '2'), true)
+            && $this->matchesSnsHeaders($message)
+            && $this->isAwsSnsSigningCertUrl($message['SigningCertURL'])
+            && $this->verifySnsSignature($message, $fields);
+    }
+
+    private function isValidSnsUnsubscribeConfirmation($message)
+    {
+        if (!is_array($message)) {
+            return false;
+        }
+
+        $required = array(
+            'Type',
+            'MessageId',
+            'Token',
+            'TopicArn',
+            'Message',
+            'SubscribeURL',
+            'Timestamp',
+            'SignatureVersion',
+            'Signature',
+            'SigningCertURL'
+        );
+
+        return $this->hasRequiredSnsStringFields($message, $required)
+            && $message['Type'] === 'UnsubscribeConfirmation'
+            && in_array($message['SignatureVersion'], array('1', '2'), true)
+            && $this->matchesSnsHeaders($message)
+            && $this->isAwsSnsUrl($message['SubscribeURL'])
+            && $this->isAwsSnsSigningCertUrl($message['SigningCertURL'])
+            && $this->verifySnsSignature($message, array(
+                'Message',
+                'MessageId',
+                'SubscribeURL',
+                'Timestamp',
+                'Token',
+                'TopicArn',
+                'Type'
+            ));
+    }
+
+    private function hasRequiredSnsStringFields($message, $required)
+    {
+        foreach ($required as $field) {
+            if (!array_key_exists($field, $message) || !is_string($message[$field]) || $message[$field] === '') {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function snsLogContext($message, $status = null)
+    {
+        $context = array();
+        if (is_array($message)) {
+            foreach (array('Type', 'MessageId', 'TopicArn', 'Timestamp', 'SignatureVersion') as $field) {
+                if (isset($message[$field]) && is_scalar($message[$field])) {
+                    $context[$field] = (string)$message[$field];
+                }
+            }
+        }
+
+        if ($status !== null) {
+            $context['validation_status'] = $status;
+        }
+
+        return $context;
+    }
+
     private function matchesSnsHeaders($message)
     {
         if (isset($_SERVER['HTTP_X_AMZ_SNS_MESSAGE_TYPE']) && $_SERVER['HTTP_X_AMZ_SNS_MESSAGE_TYPE'] !== $message['Type']) {
+            return false;
+        }
+
+        if (isset($_SERVER['HTTP_X_AMZ_SNS_MESSAGE_ID']) && $_SERVER['HTTP_X_AMZ_SNS_MESSAGE_ID'] !== $message['MessageId']) {
             return false;
         }
 
@@ -129,7 +224,9 @@ class Notification extends Engine
         $options = array(
             CURLOPT_CONNECTTIMEOUT => 2,
             CURLOPT_TIMEOUT => 5,
-            CURLOPT_FOLLOWLOCATION => false
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2
         );
 
         if (defined('CURLOPT_PROTOCOLS') && defined('CURLPROTO_HTTPS')) {
@@ -163,6 +260,16 @@ class Notification extends Engine
             || preg_match('/^sns\.[a-z0-9-]+\.amazonaws\.com(\.cn)?$/', $host) === 1;
     }
 
+    private function isAwsSnsSigningCertUrl($url)
+    {
+        if (!$this->isAwsSnsUrl($url)) {
+            return false;
+        }
+
+        $path = parse_url($url, PHP_URL_PATH);
+        return is_string($path) && preg_match('/\.pem$/i', $path) === 1;
+    }
+
     public function index_get()
     {
         if (empty($this->validToken) || empty($this->client_id) || empty($this->site_id)) {
@@ -185,38 +292,42 @@ class Notification extends Engine
         if (!is_array($message)) {
             $message = array('raw_message' => $message);
         }
-        log_message('debug', '_SERVER = ' . print_r($_SERVER, true));
-        log_message('debug', 'message = ' . print_r($message, true));
-        $log_id = $this->notification_model->log($this->site_id, $message);
+        $log_id = null;
         if (array_key_exists('HTTP_X_AMZ_SNS_MESSAGE_TYPE',
             $_SERVER)) { // Amazon SNS: http://docs.aws.amazon.com/sns/latest/dg/json-formats.html#http-header
             log_message('error', 'type = ' . print_r($_SERVER['HTTP_X_AMZ_SNS_MESSAGE_TYPE'], true));
             switch ($_SERVER['HTTP_X_AMZ_SNS_MESSAGE_TYPE']) {
                 case 'SubscriptionConfirmation': // http://docs.aws.amazon.com/sns/latest/dg/json-formats.html#http-subscription-confirmation-json
                     // fields: Type, MessageId, Token, TopicArn, Message, SubscribeURL, Timestamp, SignatureVersion, Signature, SigningCertURL
-                    if (!array_key_exists('SubscribeURL', $message) || !is_string($message['SubscribeURL'])) {
-                        break;
-                    }
-                    log_message('debug', 'SubscribeURL = ' . print_r($message['SubscribeURL'], true));
                     if (!$this->isValidSnsSubscriptionConfirmation($message)) {
+                        $this->notification_model->log($this->site_id, $this->snsLogContext($message, 'invalid'));
                         $this->response($this->error->setError('PARAMETER_INVALID', array('SubscribeURL')), 200);
                     }
+                    $log_id = $this->notification_model->log($this->site_id, $message);
+                    log_message('debug', 'SNS SubscriptionConfirmation = ' . print_r($this->snsLogContext($message, 'valid'), true));
                     $response = $this->curl->simple_get($message['SubscribeURL'], array(),
                         $this->snsCurlOptions()); // http://philsturgeon.co.uk/code/codeigniter-curl
                     log_message('debug', 'response = ' . $response);
                     break;
                 case 'Notification': // http://docs.aws.amazon.com/sns/latest/dg/json-formats.html#http-notification-json
                     // fields: Type, MessageId, TopicArn, Subject, Message, Timestamp, SignatureVersion, Signature, SigningCertURL, UnsubscribeURL
-                    if (!array_key_exists('Message', $message) || !is_string($message['Message'])) {
-                        $response = false;
-                        break;
+                    if (!$this->isValidSnsNotification($message)) {
+                        $this->notification_model->log($this->site_id, $this->snsLogContext($message, 'invalid'));
+                        $this->response($this->error->setError('PARAMETER_INVALID', array('Message')), 200);
                     }
-                    log_message('debug', 'message = ' . $message['Message']);
+                    $log_id = $this->notification_model->log($this->site_id, $message);
+                    log_message('debug', 'SNS Notification = ' . print_r($this->snsLogContext($message, 'valid'), true));
                     $response = $this->handleNotification($this->convertToJson($message['Message']));
                     log_message('debug', 'response = ' . $response);
                     break;
                 case 'UnsubscribeConfirmation': // http://docs.aws.amazon.com/sns/latest/dg/json-formats.html#http-unsubscribe-confirmation-json
                     // fields: Type, MessageId, Token, TopicArn, Message, SubscribeURL, Timestamp, SignatureVersion, Signature, SigningCertURL
+                    if (!$this->isValidSnsUnsubscribeConfirmation($message)) {
+                        $this->notification_model->log($this->site_id, $this->snsLogContext($message, 'invalid'));
+                        $this->response($this->error->setError('PARAMETER_INVALID', array('SubscribeURL')), 200);
+                    }
+                    $log_id = $this->notification_model->log($this->site_id, $message);
+                    log_message('debug', 'SNS UnsubscribeConfirmation = ' . print_r($this->snsLogContext($message, 'valid'), true));
                     break;
                 default:
                     $this->response($this->error->setError('UNKNOWN_SNS_MESSAGE_TYPE',
@@ -225,6 +336,9 @@ class Notification extends Engine
             }
             $this->response($this->resp->setRespond('Handle notification message successfully'), 200);
         } else {
+            log_message('debug', '_SERVER = ' . print_r($_SERVER, true));
+            log_message('debug', 'message = ' . print_r($message, true));
+            $log_id = $this->notification_model->log($this->site_id, $message);
             if (strpos($_SERVER['HTTP_USER_AGENT'],
                 PAYMENT_CHANNEL_PAYPAL) === false ? false : true
             ) { // PayPal IPN: https://developer.paypal.com/docs/classic/ipn/ht_ipn/
