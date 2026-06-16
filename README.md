@@ -81,6 +81,7 @@ Application and integration configuration is split across files under `applicati
 - `TWILIO_NUMBER`
 - `STRIPE_API_KEY`
 - `STRIPE_PUBLISHABLE_KEY`
+- `STRIPE_WEBHOOK_SECRET`
 - `FULLCONTACT_API_KEY`
 - `GECKO_API_KEY`
 - `DEBUG_KEY`
@@ -95,6 +96,7 @@ Application and integration configuration is split across files under `applicati
 Legacy Node services also read `PORT`, and `iodocs` can read `REDISTOGO_URL`.
 
 Do not commit live credentials. Use environment variables or deployment secrets for private keys and service tokens.
+When `STRIPE_WEBHOOK_SECRET` is set, Stripe notification callbacks must include a valid `Stripe-Signature` header. Leave it unset only for legacy deployments that still rely on event retrieval with `STRIPE_API_KEY`.
 
 ## Verification
 

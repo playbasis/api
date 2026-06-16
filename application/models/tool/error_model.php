@@ -174,6 +174,10 @@ class Error_model extends CI_Model
                 $errorData['message'] = "Stripe payment processing is not configured";
                 $errorData['error_code'] = '0015';
                 break;
+            case 'INVALID_STRIPE_SIGNATURE':
+                $errorData['message'] = "Invalid Stripe webhook signature";
+                $errorData['error_code'] = '0016';
+                break;
             case 'CLIENTSITE_NOTFOUND':
                 $errorData['message'] = "Cannot find client ID and site ID in playbasis_permission";
                 $errorData['error_code'] = '0014';
