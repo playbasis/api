@@ -23,6 +23,7 @@ class Test_amazon_ses extends CI_Controller
 
         // Load the required libraries
         $this->load->library('unit_test');
+        $this->load->library('amazon_ses');
 
         // Make sure we're running in strict test mode
         $this->unit->use_strict(true);
@@ -83,6 +84,7 @@ class Test_amazon_ses extends CI_Controller
     {
 
         $this->load->library('parser');
+        $this->load->library('amazon_ses');
         $data = array(
             'user_left' => 1000,
             'user_count' => 10000,
