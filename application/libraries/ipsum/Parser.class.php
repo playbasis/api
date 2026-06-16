@@ -8,8 +8,8 @@
  * @name Parser.class.php
  */
 
-require_once 'Morphem.class.php';
-require_once 'Lexer.class.php';
+require_once __DIR__ . '/Morphem.class.php';
+require_once __DIR__ . '/Lexer.class.php';
 
 class Parser {
     

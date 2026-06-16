@@ -7,7 +7,7 @@
  * @version 1.0.0 (november 2011)
  * @name Calculator.class.php
  */
-require_once 'Parser.class.php';
+require_once __DIR__ . '/Parser.class.php';
 
 class Calculator {
     
