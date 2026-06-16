@@ -12,7 +12,6 @@
  *
  *
  */
-require_once __DIR__ . '/Services/Twilio.php';
 
 Class TwilioMini
 {
@@ -26,6 +25,7 @@ Class TwilioMini
     protected $api_version;
     protected $number;
     protected $config;
+    protected $configuration_error;
 
     function __construct($config)
     {
@@ -41,19 +41,46 @@ Class TwilioMini
         $this->number      = isset($config['number']) ? $config['number'] : '';
 
         if (!$this->account_sid || !$this->auth_token) {
-            log_message('error', 'Missing Twilio configuration: account_sid and auth_token are required');
-            return;
+            $this->configuration_error = 'Missing Twilio configuration: account_sid and auth_token are required';
+            log_message('error', $this->configuration_error);
+        }
+    }
+
+    private function ensureTwilioClient()
+    {
+        if ($this->_twilio) {
+            return true;
         }
 
-        //initialize the client
-        $this->_twilio = new Services_Twilio($this->account_sid, $this->auth_token);
+        if ($this->configuration_error) {
+            return false;
+        }
+
+        $adapter = __DIR__ . '/Services/Twilio.php';
+        if (!is_file($adapter)) {
+            $this->configuration_error = 'Missing Twilio adapter library';
+            log_message('error', $this->configuration_error);
+            return false;
+        }
+
+        require_once $adapter;
+
+        try {
+            $this->_twilio = new Services_Twilio($this->account_sid, $this->auth_token);
+        } catch (Exception $e) {
+            $this->configuration_error = $e->getMessage();
+            log_message('error', 'Unable to initialize Twilio adapter: ' . $this->configuration_error);
+            return false;
+        }
+
+        return true;
     }
 
     private function configurationErrorResponse()
     {
         $res = (object)array();
         $res->IsError = true;
-        $res->error_message = 'Missing Twilio configuration: account_sid and auth_token are required';
+        $res->error_message = $this->configuration_error ? $this->configuration_error : 'Twilio adapter is unavailable';
         return $res;
     }
 
@@ -71,7 +98,7 @@ Class TwilioMini
     public function dial($from, $to, $make, $optional = array())
     {
 
-        if (!$this->_twilio) {
+        if (!$this->ensureTwilioClient()) {
             return $this->configurationErrorResponse();
         }
 
@@ -104,7 +131,7 @@ Class TwilioMini
     public function sms($from, $to, $message)
     {
 
-        if (!$this->_twilio) {
+        if (!$this->ensureTwilioClient()) {
             return $this->configurationErrorResponse();
         }
 
