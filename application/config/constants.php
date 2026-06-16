@@ -145,7 +145,8 @@ define('SMS_VERIFICATION_CODE_LENGTH', 6);
 
 define('RETURN_LIMIT_FOR_RANK', 20);
 
-define('S3_IMAGE', 'http://elasticbeanstalk-ap-southeast-1-007834438823.s3.amazonaws.com/');
+define('S3_BUCKET', getenv('S3_BUCKET') ?: 'elasticbeanstalk-ap-southeast-1-007834438823');
+define('S3_IMAGE', rtrim(getenv('S3_IMAGE') ?: 'https://elasticbeanstalk-ap-southeast-1-007834438823.s3.amazonaws.com/', '/') . '/');
 define('S3_CONTENT_FOLDER','user_content/');
 define('S3_DATA_FOLDER','data/');
 define('DIR_IMAGE', FCPATH.'images/');
