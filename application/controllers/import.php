@@ -3,6 +3,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 require_once APPPATH . '/libraries/REST2_Controller.php';
 require_once(APPPATH . 'controllers/engine.php');
 
+define('IMPORT_MAX_REMOTE_BYTES', 10 * 1024 * 1024);
+
 class import extends REST2_Controller
 {
     public function __construct()
@@ -27,6 +29,128 @@ class import extends REST2_Controller
 
         $value = (string)$value;
         return $this->utility->is_not_empty($value) ? $value : null;
+    }
+
+    private function isPublicImportIp($ip)
+    {
+        return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false;
+    }
+
+    private function isAllowedImportUrl($url)
+    {
+        if (!is_string($url)) {
+            return false;
+        }
+
+        $url = trim($url);
+        if ($url === '' || strpos($url, "\0") !== false) {
+            return false;
+        }
+
+        $parts = parse_url($url);
+        if (!is_array($parts) || empty($parts['scheme']) || empty($parts['host'])) {
+            return false;
+        }
+
+        $scheme = strtolower($parts['scheme']);
+        if (!in_array($scheme, array('http', 'https'), true)) {
+            return false;
+        }
+
+        if (isset($parts['user']) || isset($parts['pass'])) {
+            return false;
+        }
+
+        $host = trim($parts['host'], "[] \t\n\r\0\x0B");
+        $host_lower = strtolower($host);
+        if ($host_lower === 'localhost' || substr($host_lower, -10) === '.localhost') {
+            return false;
+        }
+
+        if (filter_var($host, FILTER_VALIDATE_IP)) {
+            return $this->isPublicImportIp($host);
+        }
+
+        $ips = @gethostbynamel($host);
+        if (!is_array($ips) || empty($ips)) {
+            return false;
+        }
+
+        foreach ($ips as $ip) {
+            if (!$this->isPublicImportIp($ip)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function fetchImportUrl($url)
+    {
+        if (!$this->isAllowedImportUrl($url)) {
+            return false;
+        }
+
+        $response = '';
+        $bytes = 0;
+        $ch = curl_init($url);
+        if (!$ch) {
+            return false;
+        }
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, false);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($ch, CURLOPT_WRITEFUNCTION, function ($ch, $chunk) use (&$response, &$bytes) {
+            $bytes += strlen($chunk);
+            if ($bytes > IMPORT_MAX_REMOTE_BYTES) {
+                return 0;
+            }
+            $response .= $chunk;
+            return strlen($chunk);
+        });
+
+        if (defined('CURLOPT_PROTOCOLS') && defined('CURLPROTO_HTTP') && defined('CURLPROTO_HTTPS')) {
+            curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
+        }
+
+        if (defined('CURLOPT_REDIR_PROTOCOLS')) {
+            curl_setopt($ch, CURLOPT_REDIR_PROTOCOLS, 0);
+        }
+
+        if (defined('CURLOPT_IPRESOLVE') && defined('CURL_IPRESOLVE_V4')) {
+            curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+        }
+
+        $result = curl_exec($ch);
+        $error = curl_errno($ch);
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($result === false || $error || $status < 200 || $status >= 300) {
+            return false;
+        }
+
+        return $response;
+    }
+
+    private function isPlayerImportList($jsonData)
+    {
+        if (!is_array($jsonData) || empty($jsonData)) {
+            return false;
+        }
+
+        foreach ($jsonData as $row) {
+            if (!is_array($row)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function importSetting_post()
@@ -92,6 +216,7 @@ class import extends REST2_Controller
 
     public function processImport_post()
     {
+        $return = false;
         $importType = $this->scalarPost('import_type');
         if ($importType === null) {
             $this->response($this->error->setError('PARAMETER_MISSING', array('import_type')), 200);
@@ -109,14 +234,16 @@ class import extends REST2_Controller
         );
 
         if ($importData['import_type'] == ('player')){
-            $url = $importData['url'];
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_URL, $url);
-            $result = curl_exec($ch);
-            curl_close($ch);
+            $result = isset($importData['url']) ? $this->fetchImportUrl($importData['url']) : false;
+            if ($result === false) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('url')), 200);
+            }
+
             $jsonData = json_decode($result, true);
+            if (!$this->isPlayerImportList($jsonData)) {
+                $this->response($this->error->setError('PARAMETER_INVALID', array('url')), 200);
+            }
+
             $return = $this->player_model->bulkRegisterPlayer($jsonData, $data, null);
         } elseif ($importData['import_type'] == ('transaction')){
 
