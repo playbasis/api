@@ -291,15 +291,26 @@ app.post('/feed', function(req, res)
 });
 
 /* memory leak detection */
+function shouldEnableMemwatch()
+{
+	var value = process.env.ENABLE_INSTAGRAM_MEMWATCH;
+	return value === '1' || value === 'true';
+}
 
-var memwatch = require('memwatch');
+if (shouldEnableMemwatch()) {
+	try {
+		var memwatch = require('memwatch');
 
-// 'leak' event
-memwatch.on('leak', function(info) {
-    console.log(info);
-});
+		// 'leak' event
+		memwatch.on('leak', function(info) {
+		    console.log(info);
+		});
 
-// after 'gc' event, this should be baselnie
-memwatch.on('stats', function(stats) {
-    console.log(stats);
-});
+		// after 'gc' event, this should be baselnie
+		memwatch.on('stats', function(stats) {
+		    console.log(stats);
+		});
+	} catch (err) {
+		console.warn('memwatch unavailable; Instagram memory leak detection disabled: ' + err.message);
+	}
+}

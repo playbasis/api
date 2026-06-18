@@ -93,7 +93,7 @@ Application and integration configuration is split across files under `applicati
 - `S3_BUCKET`
 - `S3_IMAGE`
 
-Legacy Node services also read `PORT`, and `iodocs` can read `REDISTOGO_URL`.
+Legacy Node services also read `PORT`, and `iodocs` can read `REDISTOGO_URL`. The Instagram side service can opt into the legacy native `memwatch` diagnostic module with `ENABLE_INSTAGRAM_MEMWATCH=1`; leave it unset for normal local/runtime use.
 
 Do not commit live credentials. Use environment variables or deployment secrets for private keys and service tokens.
 When `STRIPE_WEBHOOK_SECRET` is set, Stripe notification callbacks must include a valid `Stripe-Signature` header. Leave it unset only for legacy deployments that still rely on event retrieval with `STRIPE_API_KEY`.
